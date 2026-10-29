@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { inside, stableRandom } from './osm.js';
-import { crownGeometry, foliageMaterial, crownBase, crownProfile, treeLODWeights, TREE_LOD } from './foliage.js';
+import { crownGeometry, foliageMaterial, crownBase, crownProfile, crownMorphWeight, treeLODWeights, TREE_LOD } from './foliage.js';
 export { TREE_LOD } from './foliage.js';
 
 // These additions are spatially constrained illustrations, not surveyed street assets.
@@ -282,19 +282,20 @@ export function buildStreetLife(data, options = {}) {
     lastPosition = [x, y, z];
     const next = treeLODWeights(plan.trees, camera.position), activeSet = new Set(next.active.map(item => item.index));
     for (const index of new Set([...previousActive, ...activeSet])) {
-      const base = baseShapes[index], weight = next.weights[index];
+      const base = baseShapes[index], weight = crownMorphWeight(next.weights[index]);
       transform(far, index, base.position, [base.scale[0] * (1 - .26 * weight), base.scale[1] * (1 - .18 * weight), base.scale[2] * (1 - .26 * weight)], base.angle);
     }
     if (previousActive.size || activeSet.size) far.instanceMatrix.needsUpdate = true;
     let n = 0, b = 0;
-    for (const { index, weight } of next.active) {
+    for (const { index, weight: selectionWeight } of next.active) {
+      const weight = crownMorphWeight(selectionWeight);
       if (!profiles.has(index)) profiles.set(index, crownProfile(plan.trees[index]));
-      const profile = profiles.get(index), origin = profile.base.position;
+      const profile = profiles.get(index);
       for (const cluster of profile.clusters) {
         // Lobes emerge from inside the common crown. No alpha, dithering or
         // pass-specific discard is involved: color, depth, normal, ID and
         // shadow passes all consume the very same instance transforms.
-        const position = cluster.position.map((v, axis) => origin[axis] + (v - origin[axis]) * weight);
+        const position = cluster.position.map((v, axis) => cluster.anchor[axis] + (v - cluster.anchor[axis]) * weight);
         transform(near, n++, position, cluster.scale.map(v => v * weight), cluster.angle, tint.copy(baseColors[index]).multiplyScalar(cluster.tint));
       }
       for (const branch of profile.branches) strut(branches, b++, branch.a, branch.b.map((v, axis) => branch.a[axis] + (v - branch.a[axis]) * weight), branch.radius * weight);

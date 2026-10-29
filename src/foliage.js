@@ -5,6 +5,10 @@ import { stableRandom } from './osm.js';
 // unrelated crowns. The hard triangle budget is unchanged by camera history.
 export const TREE_LOD = Object.freeze({ distance: 110, nearDistance: 38, maxTrees: 96, clusters: 18, branches: 6 });
 const smoothstep = t => { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); };
+// Preserve the near silhouette through the useful middle of the LOD band.
+// The raw selection weight still reaches zero smoothly at both budget/distance
+// boundaries; only the geometric deployment is accelerated.
+export const crownMorphWeight = weight => 1 - (1 - Math.max(0, Math.min(1, weight))) ** 4;
 
 /** Camera-position-only LOD: continuous across distance and nearest-N boundaries. */
 export function treeLODWeights(trees, position, settings = TREE_LOD) {
@@ -45,7 +49,14 @@ export function crownProfile(tree) {
       const y = tree.h * ((columnar ? .55 : .60) + t * (columnar ? .45 : .36) + lift) + .35;
       const size = .32 + rng() * .12;
       const position = [tree.x + Math.cos(azimuth) * radial, y, tree.z + Math.sin(azimuth) * radial];
-      clusters.push({ position, scale: [width * size, tree.h * (.083 + rng() * .034), width * size * (.75 + rng() * .28)], angle: azimuth, tint: .97 + rng() * .06 });
+      const offset = position.map((v, axis) => v - base.position[axis]);
+      const normalizedRadius = Math.hypot(offset[0] / (width * .92), offset[1] / base.scale[1], offset[2] / (width * .92));
+      const anchorScale = Math.min(1, .62 / normalizedRadius);
+      const anchor = offset.map((v, axis) => base.position[axis] + v * anchorScale);
+      // Zero-sized lobes start inside the shared crown, along their own branch.
+      // Starting every lobe at the centre and scaling its offset as well as its
+      // size hides essentially all middle-distance detail behind the base.
+      clusters.push({ position, anchor, scale: [width * size, tree.h * (.083 + rng() * .034), width * size * (.75 + rng() * .28)], angle: azimuth, tint: .97 + rng() * .06 });
       if (leaf === 1) tip = position;
     }
     branches.push({ a: [tree.x, tree.h * (.38 + rng() * .08) + .35, tree.z], b: tip, radius: tree.h * (.0065 + rng() * .0025) });

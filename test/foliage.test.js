@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { crownGeometry, crownBase, crownProfile, treeLODWeights, TREE_LOD } from '../src/foliage.js';
+import { crownGeometry, crownBase, crownProfile, crownMorphWeight, treeLODWeights, TREE_LOD } from '../src/foliage.js';
 import { buildStreetLife } from '../src/streetlife.js';
 
 test('canopy surfaces have reproducible closed seams, unit normals and a bounded mesh budget',()=>{
@@ -101,4 +101,35 @@ test('dense groves obey the cap with non-singular opaque instances and retain ev
     assert(life.stats.crownTriangles<=196*180+96*18*320);
   }
   life.dispose();
+});
+
+test('middle-distance silhouettes expose several leaf lobes outside the shared base crown',()=>{
+  const directions=[];
+  for(const y of [-.4,0,.4])for(let i=0;i<24;i++)directions.push([Math.cos(i*Math.PI/12),y,Math.sin(i*Math.PI/12)]);
+  // Measure the actual uploaded geometry rather than inferring visibility from
+  // a nonzero LOD weight: a nonzero lobe can still be entirely buried in base.
+  const supports=(mesh,instance)=>{
+    const p=mesh.geometry.attributes.position,m=mesh.instanceMatrix.array,o=instance*16,result=directions.map(()=>-Infinity);
+    for(let i=0;i<p.count;i++){
+      const x=p.getX(i),y=p.getY(i),z=p.getZ(i),world=[m[o]*x+m[o+4]*y+m[o+8]*z+m[o+12],m[o+1]*x+m[o+5]*y+m[o+9]*z+m[o+13],m[o+2]*x+m[o+6]*y+m[o+10]*z+m[o+14]];
+      directions.forEach((d,j)=>{result[j]=Math.max(result[j],world[0]*d[0]+world[1]*d[1]+world[2]*d[2]);});
+    }
+    return result;
+  };
+  let minimumExposed=18;
+  for(const id of [1,2,3,4]){
+    const life=buildStreetLife({bounds:[-200,-200,200,200],roads:[],buildings:[],greens:[],trees:[{id,point:[0,0],height:8}],treeRows:[],streetNodes:[]});
+    const base=life.treeGroup.getObjectByName('Distant tree crowns'),lobes=life.treeGroup.getObjectByName('Nearby crown clusters');
+    for(const distance of [65,80,90]){
+      life.updateLOD({position:{x:0,y:6.43,z:distance}});
+      const envelope=supports(base,0);let exposed=0;
+      for(let i=0;i<lobes.count;i++)if(supports(lobes,i).some((extent,j)=>extent>envelope[j]+.025))exposed++;
+      minimumExposed=Math.min(minimumExposed,exposed);
+      assert(exposed>=4,`tree ${id} at ${distance} m has only ${exposed} lobes beyond the base silhouette`);
+    }
+    life.dispose();
+  }
+  assert.equal(crownMorphWeight(0),0);assert.equal(crownMorphWeight(1),1);
+  assert(crownMorphWeight(.25)>.65);
+  console.log('Canopy silhouette regression: minimum exposed lobes',minimumExposed);
 });
