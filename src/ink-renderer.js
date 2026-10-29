@@ -169,7 +169,8 @@ void main(){
     }
     density*=1.-air;
     density=clamp(density,0.,.82);
-    density=floor(density*12.+.25)/12.;
+    // Keep coverage continuous: a hard density bucket amplifies tiny lighting
+    // differences between coplanar road triangles into visible white patches.
     float glassInk=smoothstep(.32,.82,windowMask)*(1.-air*.65);
     float dx=max(innerWidth,.85)/resolution.x,dy=max(innerWidth,.85)/resolution.y;
     float glassEdge=max(max(abs(windowMask-windowAt(vUv+vec2(dx,0.))),abs(windowMask-windowAt(vUv-vec2(dx,0.)))),max(abs(windowMask-windowAt(vUv+vec2(0.,dy))),abs(windowMask-windowAt(vUv-vec2(0.,dy)))));
