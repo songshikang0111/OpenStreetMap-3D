@@ -196,7 +196,10 @@ export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110,
         if (nearJunction(p, Math.max(11, road.width))) continue;
         for (const side of [-1, 1]) {
           const q = [p[0] - dz * side * (road.width / 2 + .12), p[1] + dx * side * (road.width / 2 + .12)];
-          if (!atBuilding(q, .1)) curbs.push({ point: q, angle: Math.atan2(dx, dz), length: size });
+          // A center-only check leaves eight-metre kerbs protruding into a
+          // joining carriageway. Check both ends and intermediate sections.
+          const clear=[-.5,-.25,0,.25,.5].every(t=>roadClear([q[0]+dx*size*t,q[1]+dz*size*t],.02));
+          if (clear&&!atBuilding(q, .1)) curbs.push({ point: q, angle: Math.atan2(dx, dz), length: size });
         }
       }
     }

@@ -3,6 +3,7 @@ import { area, inside, stableRandom } from './osm.js';
 import { buildingStyle, landmarkKind, roofEquipment } from './building-rules.js';
 import { buildChinaZun, buildCctv } from './landmarks.js';
 import { buildStreetLife } from './streetlife.js';
+import { buildRoadSurface } from './road-surface.js';
 
 class MeshWriter {
   constructor() { this.positions = []; this.normals = []; this.colors = []; this.facades = []; this.ids = []; this.styles=[]; this.style=0; this.variant=0; }
@@ -49,20 +50,6 @@ function polygon(writer, feature, y, color, id = 0) {
   const holes = (feature.holes || []).map(h => h.map(p => new THREE.Vector2(...p)));
   const all = [...outer, ...holes.flat()];
   for (const t of THREE.ShapeUtils.triangulateShape(outer, holes)) writer.triangle(...t.map(i => [all[i].x, y, all[i].y]), [0, 1, 0], color, id);
-}
-
-function ribbon(writer, a, b, width, y, color, id = 0) {
-  const dx = b[0] - a[0], dz = b[1] - a[1], len = Math.hypot(dx, dz);
-  if (len < .01) return;
-  const nx = -dz / len * width / 2, nz = dx / len * width / 2;
-  writer.quad([[a[0]+nx,y,a[1]+nz], [b[0]+nx,y,b[1]+nz], [b[0]-nx,y,b[1]-nz], [a[0]-nx,y,a[1]-nz]], [0,1,0], color, id);
-}
-
-function disc(writer, p, radius, y, color, id = 0) {
-  for (let i = 0; i < 12; i++) {
-    const a = i / 12 * Math.PI * 2, b = (i + 1) / 12 * Math.PI * 2;
-    writer.triangle([p[0],y,p[1]], [p[0]+Math.cos(a)*radius,y,p[1]+Math.sin(a)*radius], [p[0]+Math.cos(b)*radius,y,p[1]+Math.sin(b)*radius], [0,1,0],color,id);
-  }
 }
 
 function orientedBox(writer,center,axes,dimensions,color,id=0){
@@ -147,24 +134,7 @@ export function buildCity(data) {
   for (const feature of data.greens) polygon(groundWriter, feature, .18, '#aebea0', 60000);
   for (const feature of data.water) polygon(groundWriter, feature, .22, '#8dacae', 60001);
   const landCover=groundWriter.mesh(baseMaterial,'Land cover');landCover.userData.inkClass=5;group.add(landCover);
-  const roadWriter = new MeshWriter(), pavingWriter = new MeshWriter(), markingsWriter = new MeshWriter();
-  for (const road of data.roads) {
-    const walk = /footway|path|steps|pedestrian|cycleway/.test(road.type);
-    const y = road.bridge ? 7 * Math.max(1, road.layer) : .32 + (walk ? .05 : 0);
-    for (const [a,b] of road.segments) {
-      if (!walk) { ribbon(pavingWriter,a,b,road.width+3.5,y-.09,'#eee9dc',60002); disc(pavingWriter,a,(road.width+3.5)/2,y-.09,'#eee9dc',60002); }
-      ribbon(roadWriter,a,b,road.width,y,walk?'#cbc4b3':'#979b9a',60003);
-      disc(roadWriter,a,road.width/2,y,walk?'#cbc4b3':'#979b9a',60003);
-      if (!walk && road.width >= 7) {
-        const length = Math.hypot(b[0]-a[0],b[1]-a[1]);
-        const dx = (b[0]-a[0])/length,dz=(b[1]-a[1])/length;
-        for(let t=4;t<length-2;t+=11) ribbon(markingsWriter,[a[0]+dx*t,a[1]+dz*t],[a[0]+dx*Math.min(t+4,length),a[1]+dz*Math.min(t+4,length)],.18,y+.025,'#f9f6e9');
-      }
-    }
-  }
-  for (const [writer,name] of [[pavingWriter,'Sidewalks'],[roadWriter,'Roads'],[markingsWriter,'Road markings']]) {
-    const mesh = writer.mesh(baseMaterial,name); mesh.castShadow=false;mesh.userData.inkClass=3; group.add(mesh);
-  }
+  const roadSurface=buildRoadSurface(data);group.add(roadSurface.group);
 
   const buildings=[],nearDetails=[],landmarks=[],familyCounts={};
   const sourceColors={height:'#60988e',levels:'#86a8c3',estimated:'#daab73'};
@@ -267,5 +237,5 @@ export function buildCity(data) {
     shared.provenance.value=on?1:0;
     for(const mesh of buildings){const colors=mesh.geometry.attributes.color;if(on){const c=mesh.userData.sourceColor;for(let i=0;i<colors.count;i++)colors.setXYZ(i,c.r,c.g,c.b);}else colors.array.set(mesh.userData.originalColors);colors.needsUpdate=true;}
   }
-  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,sourceColors,landmarks,familyCounts};
+  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,sourceColors,landmarks,familyCounts};
 }

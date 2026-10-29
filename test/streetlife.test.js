@@ -38,6 +38,16 @@ test('junction-based crossings stay on connected approaches and remain stable', 
   for (const c of plan.crosswalks) assert(data.roads.some(r => r.segments.some(([a, b]) => segmentDistance(c.point, a, b) < .8)));
 });
 
+test('kerb segments leave shallow-angle and wide connecting carriageways clear',()=>{
+  const data=fixture();data.buildings=[];data.greens=[];
+  data.roads.push(road(3,[[-100,-20],[110,35]],18));
+  const plan=planStreetLife(data);assert(plan.curbs.length>0);
+  for(const curb of plan.curbs)for(const t of [-.5,-.25,0,.25,.5]){
+    const q=[curb.point[0]+Math.sin(curb.angle)*curb.length*t,curb.point[1]+Math.cos(curb.angle)*curb.length*t];
+    for(const r of data.roads)for(const[a,b]of r.segments)assert(segmentDistance(q,a,b)>=r.width/2+.019);
+  }
+});
+
 test('OSM crossing observations suppress speculative junction crossings and tree rows remain attributed', () => {
   const data = fixture();
   data.streetNodes = [{ id: 91, point: [35, 0], kind: 'crossing', tags: {} }, { id: 92, point: [-100, -100], kind: 'crossing', tags: {} }];
