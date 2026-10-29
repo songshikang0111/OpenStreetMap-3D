@@ -352,7 +352,8 @@ export function buildStreetLife(data, options = {}) {
       stripes.push({ point: [item.point[0] + dz * lateral, item.point[1] - dx * lateral], angle: item.angle });
   }
   const zebra = mesh(streetGroup, 'Inferred zebra crossings', box, stripes.length, '#f5f3e6', 3.5);
-  stripes.forEach((item, i) => transform(zebra, i, [item.point[0], .365, item.point[1]], [.58, .025, 3.6], item.angle));
+  // Paint sits just above the .32m carriageway, not as raised paving blocks.
+  stripes.forEach((item, i) => transform(zebra, i, [item.point[0], .326, item.point[1]], [.58, .006, 3.6], item.angle));
   const signalPoles = mesh(streetGroup, 'Inferred traffic signals', cylinder, plan.signals.length, '#65716c', 4);
   const signalBoxes = mesh(streetGroup, 'Signal housings', box, plan.signals.length, '#303a36', 4);
   const signalLamp = mesh(streetGroup, 'Signal lights', box, plan.signals.length, '#a6b47a', 4);
