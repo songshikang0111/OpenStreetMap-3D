@@ -179,7 +179,7 @@ export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, 
   const add = (target, polygon, seg, kind) => {
     polygon = intersectConvex(polygon, frame);
     const raised=!seg.road.bridge&&(kind==='paving'||kind==='walk'&&seg.road.tags?.footway!=='crossing');
-    if (polygon.length) target.push({ polygon, bounds: bounds(polygon), level: seg.level, y: seg.y+(raised?.15:0), roadId: seg.road.id, kind, source:kind==='paving'?'inferred-roadside-margin':'osm-highway-centerline', bridge:seg.road.bridge });
+    if (polygon.length) target.push({ polygon, bounds: bounds(polygon), level: seg.level, y: seg.y+(raised?.15:0), roadId: seg.road.id, kind, source:kind==='paving'?'inferred-roadside-margin':'osm-highway-centerline', bridge:seg.road.bridge, atGradeCrossing:seg.road.tags?.footway==='crossing' });
   };
   const ordered = [...data.roads].sort((a, b) => b.width - a.width || String(a.id).localeCompare(String(b.id)));
   for (const road of ordered) {
@@ -333,7 +333,9 @@ export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, 
   // Vehicle surface owns shared ground. Pedestrian paths and pavement are cut
   // around it rather than covering a road with a differently coloured plane.
   const drivePolygons = uniqueUnion(drive, [], stats);
-  const walkPolygons = uniqueUnion(walks, drive, stats);
+  // Observed crossing approaches own shared pedestrian ground, so a raised
+  // sidewalk cannot fill back in the level crossing corridor.
+  const walkPolygons = uniqueUnion([...walks].sort((a,b)=>Number(b.atGradeCrossing)-Number(a.atGradeCrossing)), drive, stats);
   const buildingBlockers=buildingPavementBlockers(data);
   // Same logical ground level despite the physical 15 cm curb step.
   const pavingPolygons = uniqueUnion(paving, [...drive, ...walks,...buildingBlockers], stats);
