@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { facadeGrammar, facadeLayout, facadeWindows } from '../src/facade-layout.js';
+import { facadeGrammar, facadeLayout, facadeWindows, nearbyFacadeFrames, distanceToFacade } from '../src/facade-layout.js';
 import { buildingStyle } from '../src/building-rules.js';
 import { buildCity } from '../src/city.js';
 
@@ -26,7 +26,7 @@ test('facade grammars are stable and place glass inside wall and floor boundarie
   assert.equal(names.size,12);
 });
 
-test('solid nearby sills follow GPU layout at arbitrary wall length, including paired grammars', () => {
+test('solid nearby sills follow GPU layout at arbitrary wall length', () => {
   const feature={id:'layout-test',osmId:42,osmType:'way',tags:{building:'office'},outer:[[0,0],[13.7,0],[13.7,10],[0,10]],holes:[],height:24,minHeight:0,levels:6,area:137,center:[6.85,5],source:'height'};
   const data={bounds:[-30,-30,40,40],buildings:[feature],roads:[],greens:[],water:[],trees:[],streetNodes:[],treeRows:[]};
   const city=buildCity(data),g=city.buildings[0].geometry;
@@ -48,4 +48,20 @@ test('solid nearby sills follow GPU layout at arbitrary wall length, including p
   for(const x of firstRow)assert(Math.abs(x/13.7*bays%1-.5)<1e-5);
   assert.equal(Object.values(city.grammarCounts).reduce((a,b)=>a+b,0),1);
   assert.equal(buildingStyle(feature).bay,facadeGrammar(buildingStyle(feature).family,buildingStyle(feature).variant).bay);
+});
+
+test('nearby frames do not depend on extract order or a long wall midpoint, and respect the instance budget', () => {
+  const style={family:'residential',variant:.4,floor:3.8,balcony:true};
+  const make=(key,x,z,len=35)=>({key,a:[x,z],dx:len,dz:0,len,normal:[0,0,-1],angle:0,layout:facadeLayout(len,45,style),baseY:.45,style});
+  const distant=Array.from({length:120},(_,i)=>make(`far-${i}`,1000+i*50,1000));
+  const close=make('close',0,0),long=make('long',-1000,15,1100),position=new THREE.Vector3(1,8,-12);
+  assert(distanceToFacade(long,position)<30,'the nearby end is considered even with a far-away midpoint');
+  const forward=nearbyFacadeFrames([...distant,close,long],position);
+  const reverse=nearbyFacadeFrames([long,close,...distant.reverse()],position);
+  assert(forward.length>300);
+  assert.deepEqual(forward,reverse,'same camera and geometry produce the same frames regardless of data order');
+  assert(forward.some(d=>d.z>10),'the long facade contributes nearby frames');
+  assert(forward.every(d=>Math.hypot(d.x-position.x,d.z-position.z)<162));
+  assert(nearbyFacadeFrames([close,long],position,50).length<=50);
+  assert.deepEqual(nearbyFacadeFrames([close],new THREE.Vector3(0,200,0)),[]);
 });

@@ -4,7 +4,7 @@ import { buildingStyle, landmarkKind, roofEquipment } from './building-rules.js'
 import { buildChinaZun, buildCctv } from './landmarks.js';
 import { buildStreetLife } from './streetlife.js';
 import { buildRoadSurface } from './road-surface.js';
-import { facadeLayout, facadeWindows } from './facade-layout.js';
+import { facadeLayout, nearbyFacadeFrames } from './facade-layout.js';
 
 class MeshWriter {
   constructor() { this.positions = []; this.normals = []; this.colors = []; this.facades = []; this.ids = []; this.styles=[]; this.style=0; this.variant=0; this.layouts=[]; this.layout=[0,0,0,0]; }
@@ -171,7 +171,7 @@ export function buildCity(data) {
   const landCover=groundWriter.mesh(baseMaterial,'Land cover');landCover.userData.inkClass=5;group.add(landCover);
   const roadSurface=buildRoadSurface(data);group.add(roadSurface.group);
 
-  const buildings=[],nearDetails=[],landmarks=[],familyCounts={},grammarCounts={};
+  const buildings=[],nearWalls=[],landmarks=[],familyCounts={},grammarCounts={};
   const sourceColors={height:'#60988e',levels:'#86a8c3',estimated:'#daab73'};
   const roofWriter=new MeshWriter();
   data.buildings.forEach((building,index)=>{
@@ -207,26 +207,7 @@ export function buildCity(data) {
             addBox(writer,[mid[0]+normal[0]*.22,y,mid[1]+normal[2]*.22],[len,.3,.7],trim,id,angle);
           }
         }
-        if(!ringIndex&&len>7&&nearDetails.length<42000){
-          for(const cell of facadeWindows(layout,12)){
-            // Keep a strict city-wide allocation bound, including split frames.
-            if(nearDetails.length+6>42000)break;
-            const {bay,level}=cell,u=cell.x/len,y=baseY+cell.y,w=cell.width,h=cell.height;
-            const x=a[0]+dx*u+normal[0]*.10,z=a[1]+dz*u+normal[2]*.10;
-            nearDetails.push({x,y:y-h/2,z,angle,w,h:.13,d:.35});
-            if(cell.split===1)nearDetails.push({x,y,z,angle,w:.036*layout.bayWidth,h,d:.20});
-            if(cell.split===2)nearDetails.push({x,y:y+.16*floorHeight,z,angle,w,h:.036*floorHeight,d:.20});
-            if(style.family==='residential'){
-              nearDetails.push({x:x-dx/len*w/2,y,z:z-dz/len*w/2,angle,w:.12,h,d:.24});
-              nearDetails.push({x:x+dx/len*w/2,y,z:z+dz/len*w/2,angle,w:.12,h,d:.24});
-              if(style.balcony&&bay%3===1&&level%2===0){
-                const bx=x+normal[0]*.55,bz=z+normal[2]*.55;
-                nearDetails.push({x:bx,y:y-h/2-.15,z:bz,angle,w:w+1,h:.18,d:1.25});
-                nearDetails.push({x:bx+normal[0]*.55,y:y-h/2+.42,z:bz+normal[2]*.55,angle,w:w+1,h:1,d:.13});
-              }
-            }
-          }
-        }
+        if(!ringIndex&&len>7)nearWalls.push({key:`${building.id}:${i}`,a,dx,dz,len,normal,angle,layout,baseY,style});
       }
       grammarCounts[grammarName]=(grammarCounts[grammarName]||0)+1;
       writer.style=0;polygon(writer,building,topY,'#e1e3dd',id);
@@ -254,15 +235,14 @@ export function buildCity(data) {
   });
   const equipment=roofWriter.mesh(baseMaterial,'Procedural roof equipment groups');equipment.userData.inkClass=4;group.add(equipment);
   const dummy=new THREE.Object3D();
-  const frameMesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({color:'#dadbd4',roughness:.83}),Math.min(18000,nearDetails.length));
+  const frameMesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({color:'#dadbd4',roughness:.83}),nearWalls.length?18000:0);
   frameMesh.name='Nearby frames, sills and balconies (inferred)';frameMesh.userData.inkClass=4;frameMesh.castShadow=true;frameMesh.receiveShadow=true;frameMesh.count=0;
   const detailGroup=new THREE.Group();detailGroup.name='Near building details';detailGroup.add(frameMesh);group.add(detailGroup);
   let lodKey='';
   function updateLOD(camera){
     const key=`${Math.round(camera.position.x/25)},${Math.round(camera.position.z/25)},${Math.round(camera.position.y/25)}`;
     if(key!==lodKey){lodKey=key;let count=0;
-      if(camera.position.y<180)for(const d of nearDetails){
-        if(count>=18000)break;if(Math.hypot(d.x-camera.position.x,d.z-camera.position.z)>160||Math.abs(d.y-camera.position.y)>90)continue;
+      for(const d of nearbyFacadeFrames(nearWalls,camera.position)){
         dummy.position.set(d.x,d.y,d.z);dummy.rotation.set(0,d.angle,0);dummy.scale.set(d.w,d.h,d.d);dummy.updateMatrix();frameMesh.setMatrixAt(count++,dummy.matrix);
       }
       frameMesh.count=count;frameMesh.instanceMatrix.needsUpdate=true;frameMesh.computeBoundingSphere();
@@ -276,5 +256,5 @@ export function buildCity(data) {
     shared.provenance.value=on?1:0;
     for(const mesh of buildings){const colors=mesh.geometry.attributes.color;if(on){const c=mesh.userData.sourceColor;for(let i=0;i<colors.count;i++)colors.setXYZ(i,c.r,c.g,c.b);}else colors.array.set(mesh.userData.originalColors);colors.needsUpdate=true;}
   }
-  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,sourceColors,landmarks,familyCounts,grammarCounts};
+  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,sourceColors,landmarks,familyCounts,grammarCounts,facadeStats:{candidateWalls:nearWalls.length,maxInstances:18000}};
 }
