@@ -5,6 +5,7 @@ import { buildChinaZun, buildCctv } from './landmarks.js';
 import { buildStreetLife } from './streetlife.js';
 import { buildRoadSurface } from './road-surface.js';
 import { facadeLayout, nearbyFacadeFrames } from './facade-layout.js';
+import { installFacadeShader } from './facade-shader.js';
 
 class MeshWriter {
   constructor() { this.positions = []; this.normals = []; this.colors = []; this.facades = []; this.ids = []; this.styles=[]; this.style=0; this.variant=0; this.layouts=[]; this.layout=[0,0,0,0]; }
@@ -71,89 +72,8 @@ function addBeam(writer,a,b,width,color,id=0){
 
 function facadeMaterial(shared) {
   const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .76, metalness: .04 });
-  material.onBeforeCompile = shader => {
-    shader.uniforms.uWindows = shared.windows;
-    shader.uniforms.uProvenance = shared.provenance;
-    shader.uniforms.uFacadeDetail = shared.facadeDetail;
-    shader.uniforms.uGlassReflection = shared.glassReflection;
-    shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nattribute vec4 aFacade; varying vec4 vFacade; attribute vec2 aStyle; varying vec2 vStyle; attribute vec4 aLayout; varying vec4 vLayout; varying vec3 vGlassWorld; varying vec3 vGlassNormal;');
-    shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvFacade = aFacade; vStyle=aStyle; vLayout=aLayout; vGlassWorld=(modelMatrix*vec4(position,1.)).xyz; vGlassNormal=normalize(mat3(modelMatrix)*normal);');
-    shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
-      varying vec4 vFacade;
-      varying vec2 vStyle;
-      varying vec4 vLayout;
-      varying vec3 vGlassWorld;
-      varying vec3 vGlassNormal;
-      uniform float uWindows;
-      uniform float uProvenance;
-      uniform float uFacadeDetail;
-      uniform float uGlassReflection;
-      float inkWindow=0.0;
-      // Integrate a periodic window over its pixel footprint. A smoothstep of
-      // fract() aliases when a pixel spans more than one window cell.
-      float stripeIntegral(float p,float width){return floor(p)*2.*width+clamp(fract(p)-(.5-width),0.,2.*width);}
-      float stripe(float p,float width){float w=max(fwidth(p),.001);return clamp((stripeIntegral(p+w*.5,width)-stripeIntegral(p-w*.5,width))/w,0.,1.);}
-    `);
-    shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
-      if (vFacade.z > 0.5 && uWindows > 0.5 && uProvenance < 0.5) {
-        float family=vStyle.x;
-        float curtain=1.-step(.2,abs(family-1.));
-        float residential=1.-step(.2,abs(family-2.));
-        float ribbon=1.-step(.2,abs(family-3.));
-        float diagrid=1.-step(.2,abs(family-5.));
-        float zun=1.-step(.2,abs(family-6.));
-        float isGlass=max(curtain,max(diagrid,zun));
-        float bay=mix(3.5,2.4,isGlass);
-        float hasLayout=step(.5,vLayout.w);
-        float bays = mix(max(1.0, floor(vFacade.z / bay)),vLayout.x,hasLayout);
-        float u = vFacade.x / vFacade.z * bays;
-        float v = vFacade.y / max(2.8, vFacade.w);
-        float paneWidth=mix(mix(.30,.46,isGlass),vLayout.y,hasLayout);
-        float paneHeight=mix(mix(.30,.44,isGlass),vLayout.z,hasLayout);
-        float splitVertical=(1.-step(.2,abs(vLayout.w-2.)))*hasLayout;
-        float splitHorizontal=(1.-step(.2,abs(vLayout.w-3.)))*hasLayout;
-        // Integrate pane coverage minus the frame intervals. Multiplying two
-        // separately filtered masks would darken the shared subpixel footprint.
-        float horizontalPane=max(0.,stripe(u,paneWidth)-stripe(u,.018)*splitVertical);
-        float verticalPane=max(0.,stripe(v,paneHeight)-stripe(v-.16,.018)*splitHorizontal);
-        float mask=horizontalPane*verticalPane;
-        // Stop drawing individual panes before their frames become subpixel.
-        // Color keeps the average glass coverage; ink drops fine pane outlines.
-        float fade = 1.0 - smoothstep(mix(.04,.12,uFacadeDetail),mix(.18,.42,uFacadeDetail),max(fwidth(u),fwidth(v)));
-        // A deliberately simple, continuous sky field, not a captured cubemap
-        // or neighbouring-building reflection. It responds to view direction
-        // and wall orientation rather than assigning random tones per pane.
-        vec3 reflected=reflect(normalize(vGlassWorld-cameraPosition),normalize(vGlassNormal));
-        float sky=smoothstep(-.16,.65,reflected.y);
-        float cloud=.5+.5*sin(reflected.x*5.+reflected.z*3.+reflected.y*8.+vStyle.y*2.);
-        float reflectedSky=smoothstep(.14,.9,sky*.70+cloud*.30);
-        float reflection=reflectedSky*clamp(uGlassReflection,0.,1.);
-        inkWindow=mask*fade*mix(.91,mix(.72,.34,reflection),isGlass);
-        float cell = fract(sin(dot(floor(vec2(u,v)),vec2(17.21,59.17))) * 12345.31);
-        vec3 glass = mix(vec3(.17,.24,.28),vec3(.31,.39,.44), cell*.06*fade+vStyle.y*.4);
-        glass=mix(glass,vec3(.21,.31,.37),zun*.55);
-        // Broad reflection replaces the old sawtooth of dark vertical patches.
-        // Matte/punched-window families retain their restrained fixed glazing.
-        glass=mix(glass,vec3(.55,.65,.70),reflection*isGlass*.70);
-        float meanMask=(2.*paneWidth-.036*splitVertical)*(2.*paneHeight-.036*splitHorizontal);
-        diffuseColor.rgb = mix(diffuseColor.rgb, glass, mix(meanMask,mask,fade)*.9);
-        float seam = stripe(v+.47,.025) * mix(.12,.26,ribbon) * fade;
-        diffuseColor.rgb *= 1.0-seam;
-        if(diagrid>.5){
-          // Large structural diagonals have a different screen footprint from
-          // window panes. Keep the landmark's diagrid when fine glazing fades.
-          // Pitch is an illustrative rule, not a surveyed structural drawing.
-          float d1=vFacade.x/14.+vFacade.y/20.,d2=vFacade.x/14.-vFacade.y/20.;
-          float structureFade=1.-smoothstep(.22,.85,max(fwidth(d1),fwidth(d2)));
-          float diagonals=max(stripe(d1,.035),stripe(d2,.035))*structureFade;
-          diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.49,.55,.57),diagonals*.85);
-          inkWindow=max(inkWindow*.65,diagonals*.94);
-        }
-      }
-    `);
-    shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>','#include <opaque_fragment>\ngl_FragColor.a=inkWindow;');
-  };
-  material.customProgramCacheKey = () => 'city-ink-facade-v4-reflections';
+  material.onBeforeCompile = shader => installFacadeShader(shader,shared);
+  material.customProgramCacheKey = () => 'city-ink-facade-v5-multiscale';
   return material;
 }
 

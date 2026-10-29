@@ -145,6 +145,7 @@ function updateGenerationStats(){
 }
 function regenerate(nextSeed){
   const old=city;seed=nextSeed;data=parseOSM(rawData,seed);city=buildCity(data);scene.remove(old.group);scene.add(city.group);
+  ink.setFacadeShared?.(city.shared);
   const geometries=new Set(),materials=new Set();old.group.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);});
   for(const g of geometries)g.dispose();for(const m of materials)m.dispose();
   city.setProvenance(inspect);applyParameters();updateGenerationStats();$('building-info').hidden=true;drawMap();
@@ -239,7 +240,7 @@ async function initialize(){
     scene.add(new THREE.HemisphereLight('#f4f3e8','#a8b4a2',1.7));
     sun=new THREE.DirectionalLight('#fff8e8',2.3);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
     Object.assign(sun.shadow.camera,{left:-1400,right:1400,top:1400,bottom:-1400,near:10,far:3600});sun.shadow.bias=-.00025;sun.shadow.normalBias=.5;sun.shadow.radius=2;scene.add(sun);scene.add(sun.target);updateLight();
-    ink=new InkRenderer(renderer,scene,camera);preset('overview');resize();
+    ink=new InkRenderer(renderer,scene,camera,city.shared);preset('overview');resize();
     const counts={height:0,levels:0,estimated:0};for(const b of data.buildings)counts[b.source]++;
     $('stat-buildings').textContent=data.buildings.length;$('stat-roads').textContent=data.roads.length;$('stat-known').textContent=`${Math.round((counts.height+counts.levels)/data.buildings.length*100)}%`;
     const center=data.metadata.center;$('coordinate').textContent=`${center[0].toFixed(5)}° N · ${center[1].toFixed(5)}° E`;

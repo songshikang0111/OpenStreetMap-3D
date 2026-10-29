@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { foliageGLSL } from './foliage.js';
+import { installFacadeShader, facadeAttributeDefaults } from './facade-shader.js';
 
 // Independent screen-space illustration renderer. Render targets remain linear.
 export const INK_DEFAULTS = Object.freeze({
@@ -155,6 +156,14 @@ void main(){
     float threshold=mix(.32,.95,toneThreshold);
     float shade=clamp((threshold-illumination)/max(threshold,.08),0.,1.);
     float density=(shade*.58*shadowStrength+ao*.48)*inkDensity;
+    // On generated facades light.a carries unresolved material ink; elsewhere
+    // it remains the cast-shadow mask. Never use it as an edge or black fill.
+    float facade=1.-step(.10,abs(id.a-1.25));
+    float materialTone=clamp(lighting.a,0.,.72)*facade;
+    // Leave paper between resolved panes. Dense neutral-light dots competing
+    // with the window grid were reading as a second, unrelated wall texture.
+    density*=1.-facade*.48;
+    density=1.-(1.-density)*(1.-materialTone*inkDensity);
     // Unshadowed paving reads as paper, even when its neutral diffuse lighting
     // is below the facade tone threshold. Keep cast shadows and contact AO as
     // separate signals instead of spreading one gray tone across the street.
@@ -189,7 +198,7 @@ void main(){
     density=clamp(density,0.,.82);
     // Keep coverage continuous: a hard density bucket amplifies tiny lighting
     // differences between coplanar road triangles into visible white patches.
-    float glassInk=smoothstep(.32,.82,windowMask)*(1.-air*.65);
+    float glassInk=windowMask*(1.-air*.65);
     float dx=max(innerWidth,.85)/resolution.x,dy=max(innerWidth,.85)/resolution.y;
     float glassEdge=max(max(abs(windowMask-windowAt(vUv+vec2(dx,0.))),abs(windowMask-windowAt(vUv-vec2(dx,0.)))),max(abs(windowMask-windowAt(vUv+vec2(0.,dy))),abs(windowMask-windowAt(vUv-vec2(0.,dy)))));
     glassEdge=smoothstep(.17,.6,glassEdge)*(1.-air*.8);
@@ -228,8 +237,10 @@ function inferredClass(object) {
 }
 
 export class InkRenderer {
-  constructor(renderer,scene,camera){
+  constructor(renderer,scene,camera,facadeShared={windows:{value:1},provenance:{value:0},facadeDetail:{value:.5},glassReflection:{value:.65}}){
     this.renderer=renderer;this.scene=scene;this.camera=camera;
+    this.facadeSource=facadeShared;
+    this.facadeUniforms=Object.fromEntries(Object.entries(facadeShared).map(([key,u])=>[key,{value:u.value}]));
     const makeTarget=(filter=THREE.LinearFilter)=>new THREE.WebGLRenderTarget(1,1,{minFilter:filter,magFilter:filter,type:THREE.HalfFloatType,depthBuffer:true});
     this.color=makeTarget();this.light=makeTarget();this.normal=makeTarget(THREE.NearestFilter);this.ids=makeTarget(THREE.NearestFilter);this.ao=makeTarget();
     // The renderer's canvas antialias flag does not cover offscreen targets.
@@ -239,13 +250,14 @@ export class InkRenderer {
     // A neutral reflectance pass separates lighting/cast shadows from glass,
     // asphalt and paint. These dark materials must not all become black ink.
     this.lightMaterial=new THREE.MeshStandardMaterial({color:new THREE.Color(.6,.6,.6),roughness:1,side:THREE.DoubleSide});
+    this.lightMaterial.defaultAttributeValues={...this.lightMaterial.defaultAttributeValues,...facadeAttributeDefaults};
     this.lightMaterial.onBeforeCompile=shader=>{
       shader.fragmentShader=shader.fragmentShader
-        .replace('#include <color_fragment>','')
-        .replace('#include <shadowmap_pars_fragment>','#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>')
-        .replace('#include <opaque_fragment>','#include <opaque_fragment>\ngl_FragColor.a = 1.0 - getShadowMask();');
+        .replace('#include <shadowmap_pars_fragment>','#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>');
+      installFacadeShader(shader,this.facadeUniforms,true);
+      shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','');
     };
-    this.lightMaterial.customProgramCacheKey=()=> 'neutral-light-shadow-mask-v2';
+    this.lightMaterial.customProgramCacheKey=()=> 'neutral-light-facade-tone-v3';
     this.normal.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
     this.normalMaterial=new THREE.MeshNormalMaterial();this.normalMaterial.side=THREE.DoubleSide;
     this.idMaterial=new THREE.ShaderMaterial({
@@ -297,7 +309,10 @@ export class InkRenderer {
     this.aoMaterial.uniforms.resolution.value.set(width,height);
   }
 
+  setFacadeShared(shared){this.facadeSource=shared;}
+
   render(){
+    for(const [key,u] of Object.entries(this.facadeUniforms))u.value=this.facadeSource[key].value;
     const r=this.renderer,s=this.scene,c=this.camera,background=s.background,override=s.overrideMaterial,autoUpdate=r.shadowMap.autoUpdate;
     const clear=r.getClearColor(new THREE.Color()),alpha=r.getClearAlpha();
     this.prepareScene();c.updateMatrixWorld();this.inverseProjection.copy(c.projectionMatrixInverse);this.inverseView.copy(c.matrixWorld);
