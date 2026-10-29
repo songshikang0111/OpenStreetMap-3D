@@ -153,7 +153,7 @@ test('actual Guomao extract: every surface is disjoint, paint avoids all same-le
   assert(paintedArea > 500);
   built.group.traverse(mesh => {
     if (!mesh.isMesh) return;
-    assert.equal(mesh.userData.inkClass, 3);
+    assert.equal(mesh.userData.inkClass, mesh.name.includes('lane paint')?3.5:3);
     assert.equal(mesh.castShadow, false);
     const p = mesh.geometry.attributes.position;
     assert([...p.array].every(Number.isFinite));

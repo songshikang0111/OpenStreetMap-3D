@@ -86,7 +86,8 @@ vec2 boundary(vec2 offset,float depth,vec3 normal,vec4 id){
   float foreground=step(depth,otherDepth+.05);
   float silhouette=max(jump*foreground,step(.999999,raw));
   float crease=smoothstep(.27,.65,1.-dot(normal,normalAt(p)));
-  float separate=step(.004,length(otherId.rgb-id.rgb));
+  // IDs differ by 1/255; a .004 threshold misses consecutive objects.
+  float separate=step(.0018,length(otherId.rgb-id.rgb));
   // Thin fins can alternate foreground normals below one pixel even though the
   // color target resolves them correctly with MSAA. At district-view distances
   // use the building's silhouette and ID boundary instead of each micro-crease.
@@ -123,6 +124,7 @@ void main(){
     vec4 id=sample0(tId,vUv);
     float kind=classAt(id),depth=linearDepth(rawDepth);
     float tree=isClass(kind,2.),ground=max(isClass(kind,3.),isClass(kind,5.));
+    float roadPaint=isClass(kind,3.)*step(.4,fract(id.a));
     float distanceFade=1.-smoothstep(850.,6500.,depth);
     float innerWidth=lineWidth*mix(.82,1.,distanceFade);
     float outerWidth=innerWidth*outlineWidth*mix(1.,1.25,tree);
@@ -147,9 +149,11 @@ void main(){
     float shade=clamp((threshold-illumination)/max(threshold,.08),0.,1.);
     float density=(shade*.58*shadowStrength+ao*.48)*inkDensity;
     density*=mix(1.,.65,ground);
+    density*=1.-roadPaint;
     float solid=1.-smoothstep(blackPoint*.65,blackPoint*1.15+.015,lum);
     solid*=1.-ground*.88;
     solid*=1.-isClass(kind,1.);
+    solid*=1.-roadPaint;
     vec3 worldNormal=normalize(mat3(inverseView)*normal);
     vec3 worldPoint=(inverseView*vec4(viewPosition(vUv,rawDepth),1.)).xyz;
     float worldPixel=length(fwidth(worldPoint));

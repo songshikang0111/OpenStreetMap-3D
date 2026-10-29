@@ -249,7 +249,7 @@ export function buildStreetLife(data, options = {}) {
     // would multiply it twice and make every crown unnaturally dark.
     const result = new THREE.InstancedMesh(geometry, inkClass===2?foliageMaterial('#ffffff'):new THREE.MeshStandardMaterial({ color, roughness: .93 }), Math.max(1, count));
     result.count = count; result.name = name; result.userData.inkClass = inkClass;
-    result.userData.procedural = true; result.castShadow = inkClass !== 3; result.receiveShadow = true;
+    result.userData.procedural = true; result.castShadow = Math.floor(inkClass) !== 3; result.receiveShadow = true;
     group.add(result); return result;
   }
   function transform(target, i, pos, scale, angle = 0, color = null) {
@@ -309,7 +309,7 @@ export function buildStreetLife(data, options = {}) {
     for (let lateral = -item.width / 2 + .5; lateral < item.width / 2 - .2; lateral += 1.15)
       stripes.push({ point: [item.point[0] + dz * lateral, item.point[1] - dx * lateral], angle: item.angle });
   }
-  const zebra = mesh(streetGroup, 'Inferred zebra crossings', box, stripes.length, '#f5f3e6', 3);
+  const zebra = mesh(streetGroup, 'Inferred zebra crossings', box, stripes.length, '#f5f3e6', 3.5);
   stripes.forEach((item, i) => transform(zebra, i, [item.point[0], .365, item.point[1]], [.58, .025, 3.6], item.angle));
   const signalPoles = mesh(streetGroup, 'Inferred traffic signals', cylinder, plan.signals.length, '#65716c', 4);
   const signalBoxes = mesh(streetGroup, 'Signal housings', box, plan.signals.length, '#303a36', 4);

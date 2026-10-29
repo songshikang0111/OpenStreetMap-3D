@@ -342,7 +342,7 @@ export function buildRoadSurface(data, options = {}) {
     for (const [key, values] of [['position', positions], ['normal', normals], ['color', colors], ['objectId', ids]]) geometry.setAttribute(key, new THREE.Float32BufferAttribute(values, 3));
     geometry.computeBoundingBox(); geometry.computeBoundingSphere();
     const result = new THREE.Mesh(geometry, material); result.name = name;
-    result.userData.inkClass = 3; result.userData.procedural = true; result.receiveShadow = true; result.castShadow = false;
+    result.userData.inkClass = objectId===60004?3.5:3; result.userData.procedural = true; result.receiveShadow = true; result.castShadow = false;
     group.add(result);
   }
   mesh(plan.surfaces.filter(p => p.kind === 'drive'), 'Continuous carriageways', '#979b9a', 60003);
