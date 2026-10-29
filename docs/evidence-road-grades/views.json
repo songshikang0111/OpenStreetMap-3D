@@ -1,0 +1,62 @@
+[
+  {
+    "key": "01-vehicle",
+    "position": [
+      20,
+      60,
+      340
+    ],
+    "target": [
+      -230,
+      4,
+      275
+    ],
+    "mode": 2,
+    "lens": 42
+  },
+  {
+    "key": "02-footbridge",
+    "position": [
+      80,
+      27,
+      335
+    ],
+    "target": [
+      33,
+      4,
+      276
+    ],
+    "mode": 0,
+    "lens": 42
+  },
+  {
+    "key": "03-stairs-close",
+    "position": [
+      67,
+      6,
+      337
+    ],
+    "target": [
+      35,
+      3.5,
+      307
+    ],
+    "mode": 2,
+    "lens": 60
+  },
+  {
+    "key": "04-interchange",
+    "position": [
+      -620,
+      65,
+      420
+    ],
+    "target": [
+      -420,
+      10,
+      270
+    ],
+    "mode": 2,
+    "lens": 55
+  }
+]

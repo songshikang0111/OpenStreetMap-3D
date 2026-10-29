@@ -1,0 +1,92 @@
+[
+  {
+    "key": "03-stairs-close",
+    "phase": "after",
+    "camera": "机位 83.5, 41.2, 385.6 m · FOV 60.0°",
+    "lens": "60",
+    "loadingHidden": true,
+    "mode": "2",
+    "version": " 程序化城市 · v0.4.1"
+  },
+  {
+    "key": "02-footbridge",
+    "phase": "after",
+    "camera": "机位 53.9, 16.5, 351.0 m · FOV 42.0°",
+    "lens": "42",
+    "loadingHidden": true,
+    "mode": "0",
+    "version": " 程序化城市 · v0.4.1"
+  },
+  {
+    "key": "01-vehicle",
+    "phase": "before",
+    "camera": "机位 20.0, 60.0, 340.0 m · FOV 42.0°",
+    "lens": "42",
+    "loadingHidden": true,
+    "mode": "2",
+    "version": " 程序化城市 · v0.4"
+  },
+  {
+    "key": "02-footbridge",
+    "phase": "before",
+    "camera": "机位 80.0, 27.0, 335.0 m · FOV 42.0°",
+    "lens": "42",
+    "loadingHidden": true,
+    "mode": "0",
+    "version": " 程序化城市 · v0.4"
+  },
+  {
+    "key": "03-stairs-close",
+    "phase": "before",
+    "camera": "机位 67.0, 6.0, 337.0 m · FOV 60.0°",
+    "lens": "60",
+    "loadingHidden": true,
+    "mode": "2",
+    "version": " 程序化城市 · v0.4"
+  },
+  {
+    "key": "04-interchange",
+    "phase": "before",
+    "camera": "机位 -620.0, 65.0, 420.0 m · FOV 55.0°",
+    "lens": "55",
+    "loadingHidden": true,
+    "mode": "2",
+    "version": " 程序化城市 · v0.4"
+  },
+  {
+    "key": "01-vehicle",
+    "phase": "after",
+    "camera": "机位 20.0, 60.0, 340.0 m · FOV 42.0°",
+    "lens": "42",
+    "loadingHidden": true,
+    "mode": "2",
+    "version": " 程序化城市 · v0.4.1"
+  },
+  {
+    "key": "02-footbridge",
+    "phase": "after",
+    "camera": "机位 80.0, 27.0, 335.0 m · FOV 42.0°",
+    "lens": "42",
+    "loadingHidden": true,
+    "mode": "0",
+    "version": " 程序化城市 · v0.4.1"
+  },
+  {
+    "key": "03-stairs-close",
+    "phase": "after",
+    "camera": "机位 67.0, 6.0, 337.0 m · FOV 60.0°",
+    "lens": "60",
+    "loadingHidden": true,
+    "mode": "2",
+    "version": " 程序化城市 · v0.4.1"
+  },
+  {
+    "key": "04-interchange",
+    "phase": "after",
+    "camera": "机位 -620.0, 65.0, 420.0 m · FOV 55.0°",
+    "lens": "55",
+    "loadingHidden": true,
+    "mode": "2",
+    "version": " 程序化城市 · v0.4.1"
+  }
+]

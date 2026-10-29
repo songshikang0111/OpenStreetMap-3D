@@ -1,0 +1,42 @@
+[
+  {
+    "path": "after/01-vehicle.png",
+    "bytes": 182921,
+    "sha256": "0ea871642ec5be908f9fa008c81c0d2bd4d8d60cb8e268179e731868d980e694"
+  },
+  {
+    "path": "after/02-footbridge.png",
+    "bytes": 380939,
+    "sha256": "2a72d1d5fb3c294c057045885cba8a4aed9f963013a32fcf4cce3da204b7f7e7"
+  },
+  {
+    "path": "after/03-stairs-close.png",
+    "bytes": 130460,
+    "sha256": "c25ad4be38206567d0967c14b690c2f7cfc7dcedf9a31d77698d2735059eadcd"
+  },
+  {
+    "path": "after/04-interchange.png",
+    "bytes": 179265,
+    "sha256": "b9a79b0ccab5e6c8f024ce08b4595a8a1ac5039f6420876250a81d4af63fff3a"
+  },
+  {
+    "path": "before/01-vehicle.png",
+    "bytes": 180768,
+    "sha256": "758190290cbd5f409c7c5c70778a330f412562ec31eed6a82abb0dbba69d5930"
+  },
+  {
+    "path": "before/02-footbridge.png",
+    "bytes": 385984,
+    "sha256": "8ea891533a9de9230388eca31526e523cc4fe0ce3ccf1c4c25e847b6f21cc068"
+  },
+  {
+    "path": "before/03-stairs-close.png",
+    "bytes": 129391,
+    "sha256": "e1568b2fedaf5eb4b459a649e4fda2f5a136342bf6d48cc1c24dd6899df14fbc"
+  },
+  {
+    "path": "before/04-interchange.png",
+    "bytes": 179215,
+    "sha256": "1aca2995d5a214314cc15f5ee0f2ade51b0da541abe3f1b7c4e76ad39772981d"
+  }
+]

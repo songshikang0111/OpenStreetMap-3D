@@ -1,0 +1,82 @@
+[
+  {
+    "key": "01-vehicle",
+    "phase": "before",
+    "size": [
+      1920,
+      889
+    ],
+    "detailStd": 44.74253328649544,
+    "matched": true
+  },
+  {
+    "key": "01-vehicle",
+    "phase": "after",
+    "size": [
+      1920,
+      889
+    ],
+    "detailStd": 44.87465231336103,
+    "matched": true
+  },
+  {
+    "key": "02-footbridge",
+    "phase": "before",
+    "size": [
+      1920,
+      889
+    ],
+    "detailStd": 66.56314264728886,
+    "matched": true
+  },
+  {
+    "key": "02-footbridge",
+    "phase": "after",
+    "size": [
+      1920,
+      889
+    ],
+    "detailStd": 67.75636925720691,
+    "matched": true
+  },
+  {
+    "key": "03-stairs-close",
+    "phase": "before",
+    "size": [
+      1920,
+      889
+    ],
+    "detailStd": 51.773992811484256,
+    "matched": true
+  },
+  {
+    "key": "03-stairs-close",
+    "phase": "after",
+    "size": [
+      1920,
+      889
+    ],
+    "detailStd": 51.687683948824315,
+    "matched": true
+  },
+  {
+    "key": "04-interchange",
+    "phase": "before",
+    "size": [
+      1920,
+      889
+    ],
+    "detailStd": 50.40534209564567,
+    "matched": true
+  },
+  {
+    "key": "04-interchange",
+    "phase": "after",
+    "size": [
+      1920,
+      889
+    ],
+    "detailStd": 50.44263281897564,
+    "matched": true
+  }
+]
