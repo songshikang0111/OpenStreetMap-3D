@@ -92,7 +92,10 @@ function facadeMaterial(shared) {
       uniform float uWindows;
       uniform float uProvenance;
       float inkWindow=0.0;
-      float stripe(float p, float width) { float d = abs(fract(p)-0.5); float aa = max(fwidth(p), .002); return 1.0 - smoothstep(width-aa, width+aa, d); }
+      // Integrate a periodic window over its pixel footprint. A smoothstep of
+      // fract() aliases when a pixel spans more than one window cell.
+      float stripeIntegral(float p,float width){return floor(p)*2.*width+clamp(fract(p)-(.5-width),0.,2.*width);}
+      float stripe(float p,float width){float w=max(fwidth(p),.001);return clamp((stripeIntegral(p+w*.5,width)-stripeIntegral(p-w*.5,width))/w,0.,1.);}
     `);
     shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
       if (vFacade.z > 0.5 && uWindows > 0.5 && uProvenance < 0.5) {
@@ -111,14 +114,16 @@ function facadeMaterial(shared) {
         mask=mix(mask,stripe(u,.455)*stripe(v,.27),ribbon);
         float lower=1.-smoothstep(.95,1.15,v);
         mask=mix(mask,stripe(u*.5,.44)*stripe(v,.46),lower*(1.-residential));
-        float fade = 1.0 - smoothstep(.8, 2.8, max(fwidth(u),fwidth(v)));
-        float narrowMullion=(1.-stripe(u,.47))*.2;
-        inkWindow=mask*fade*mix(.87,.55,isGlass);
+        // Stop drawing individual panes before their frames become subpixel.
+        // Color keeps the average glass coverage; ink drops fine pane outlines.
+        float fade = 1.0 - smoothstep(.08, .30, max(fwidth(u),fwidth(v)));
+        inkWindow=mask*fade*mix(.91,.72,isGlass);
         float cell = fract(sin(dot(floor(vec2(u,v)),vec2(17.21,59.17))) * 12345.31);
-        vec3 glass = mix(vec3(.12,.19,.23),vec3(.29,.36,.40), cell*.35+vStyle.y*.4);
+        vec3 glass = mix(vec3(.17,.24,.28),vec3(.31,.39,.44), cell*.06*fade+vStyle.y*.4);
         glass=mix(glass,vec3(.21,.31,.37),zun*.55);
         glass*=mix(.72,1.1,smoothstep(.08,.92,fract(u*.083+vStyle.y)));
-        diffuseColor.rgb = mix(diffuseColor.rgb, glass, mask * fade * .9);
+        float meanMask=mix(.36,.81,isGlass);meanMask=mix(meanMask,.49,ribbon);
+        diffuseColor.rgb = mix(diffuseColor.rgb, glass, mix(meanMask,mask,fade)*.9);
         float seam = stripe(v+.47,.025) * mix(.12,.26,ribbon) * fade;
         diffuseColor.rgb *= 1.0-seam;
         if(diagrid>.5){float diagonals=max(stripe(u*.47+v*.46,.035),stripe(u*.47-v*.46,.035))*fade;diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.49,.55,.57),diagonals*.85);inkWindow*=1.-diagonals*.95;}
@@ -126,7 +131,7 @@ function facadeMaterial(shared) {
     `);
     shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>','#include <opaque_fragment>\ngl_FragColor.a=inkWindow;');
   };
-  material.customProgramCacheKey = () => 'city-ink-facade-v2-families';
+  material.customProgramCacheKey = () => 'city-ink-facade-v3-filtered';
   return material;
 }
 

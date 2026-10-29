@@ -51,7 +51,7 @@ void main(){
 
 const fragmentShader = `
 varying vec2 vUv;
-uniform sampler2D tColor,tNormal,tDepth,tId,tAO;
+uniform sampler2D tColor,tLight,tNormal,tDepth,tId,tAO;
 uniform vec2 resolution,aoResolution;
 uniform mat4 inverseProjection,inverseView;
 uniform float nearPlane,farPlane,lineWidth,outlineWidth,toneSize,inkDensity,blackPoint,mode;
@@ -134,30 +134,34 @@ void main(){
     }
     // Preserve ink opacity in a whole-district view. Distance reduces detail
     // width, not the contrast of structural contours against the white paper.
-    float edge=max(outer*mix(.98,1.,distanceFade),inner*mix(.94,1.,distanceFade));
+    float air=clamp((1.-exp(-max(depth-180.,0.)/2400.))*haze,0.,.65);
+    float edge=max(outer*(1.-air*.45),inner*(1.-air*.8));
     float ao=filteredAO(depth)*aoStrength;
     float lum=dot(color,vec3(.2126,.7152,.0722));
+    float illumination=dot(sample0(tLight,vUv).rgb,vec3(.2126,.7152,.0722));
     float windowMask=windowAt(vUv);
     // Ground planes retain white areas; glass and tree crowns carry the darks.
-    float threshold=toneThreshold*mix(1.,.42,ground);
-    float shade=clamp((threshold-lum)/max(threshold,.08),0.,1.);
-    float density=(shade*.50*shadowStrength+ao*.48)*inkDensity;
+    float threshold=mix(.32,.95,toneThreshold);
+    float shade=clamp((threshold-illumination)/max(threshold,.08),0.,1.);
+    float density=(shade*.58*shadowStrength+ao*.48)*inkDensity;
+    density*=mix(1.,.65,ground);
     float solid=1.-smoothstep(blackPoint*.65,blackPoint*1.15+.015,lum);
     solid*=1.-ground*.88;
+    solid*=1.-isClass(kind,1.);
     vec3 worldNormal=normalize(mat3(inverseView)*normal);
     if(tree>.5){
       float lower=1.-smoothstep(-.22,.35,worldNormal.y);
-      float canopyShade=clamp((.5-lum)/.5,0.,1.);
+      float canopyShade=clamp((threshold-illumination)/max(threshold,.08),0.,1.);
       density=mix(density,.10+canopyShade*.27+ao*.12,treeInk);
       solid=mix(solid,smoothstep(.52,.80,lower*.60+canopyShade*.20+ao*.16),treeInk);
     }
-    density*=mix(.82,1.,distanceFade);
+    density*=1.-air;
     density=clamp(density,0.,.82);
     density=floor(density*12.+.25)/12.;
-    float glassInk=smoothstep(.42,.78,windowMask)*mix(.86,.98,distanceFade);
+    float glassInk=smoothstep(.32,.82,windowMask)*(1.-air*.65);
     float dx=max(innerWidth,.85)/resolution.x,dy=max(innerWidth,.85)/resolution.y;
     float glassEdge=max(max(abs(windowMask-windowAt(vUv+vec2(dx,0.))),abs(windowMask-windowAt(vUv-vec2(dx,0.)))),max(abs(windowMask-windowAt(vUv+vec2(0.,dy))),abs(windowMask-windowAt(vUv-vec2(0.,dy)))));
-    glassEdge=smoothstep(.17,.6,glassEdge)*mix(.80,.95,distanceFade);
+    glassEdge=smoothstep(.17,.6,glassEdge)*(1.-air*.8);
     vec3 result;
     if(mode<.5){
       float coverage=max(edge,max(screentone(density),max(solid,glassInk)));
@@ -196,10 +200,16 @@ export class InkRenderer {
   constructor(renderer,scene,camera){
     this.renderer=renderer;this.scene=scene;this.camera=camera;
     const makeTarget=(filter=THREE.LinearFilter)=>new THREE.WebGLRenderTarget(1,1,{minFilter:filter,magFilter:filter,type:THREE.HalfFloatType,depthBuffer:true});
-    this.color=makeTarget();this.normal=makeTarget(THREE.NearestFilter);this.ids=makeTarget(THREE.NearestFilter);this.ao=makeTarget();
+    this.color=makeTarget();this.light=makeTarget();this.normal=makeTarget(THREE.NearestFilter);this.ids=makeTarget(THREE.NearestFilter);this.ao=makeTarget();
     // The renderer's canvas antialias flag does not cover offscreen targets.
     // Resolve subpixel facade ribs before the color buffer reaches post effects.
     this.color.samples=4;
+    this.light.samples=4;
+    // A neutral reflectance pass separates lighting/cast shadows from glass,
+    // asphalt and paint. These dark materials must not all become black ink.
+    this.lightMaterial=new THREE.MeshStandardMaterial({color:new THREE.Color(.6,.6,.6),roughness:1,side:THREE.DoubleSide});
+    this.lightMaterial.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','');};
+    this.lightMaterial.customProgramCacheKey=()=> 'neutral-light-no-instance-color-v1';
     this.normal.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
     this.normalMaterial=new THREE.MeshNormalMaterial();this.normalMaterial.side=THREE.DoubleSide;
     this.idMaterial=new THREE.ShaderMaterial({
@@ -215,7 +225,7 @@ export class InkRenderer {
     this.inverseProjection=new THREE.Matrix4();this.inverseView=new THREE.Matrix4();
     const common={tNormal:{value:this.normal.texture},tDepth:{value:this.normal.depthTexture},nearPlane:{value:camera.near},farPlane:{value:camera.far},inverseProjection:{value:this.inverseProjection}};
     this.material=new THREE.ShaderMaterial({vertexShader,fragmentShader,depthTest:false,depthWrite:false,uniforms:{
-      ...common,tColor:{value:this.color.texture},tId:{value:this.ids.texture},tAO:{value:this.ao.texture},
+      ...common,tColor:{value:this.color.texture},tLight:{value:this.light.texture},tId:{value:this.ids.texture},tAO:{value:this.ao.texture},
       resolution:{value:new THREE.Vector2(1,1)},aoResolution:{value:new THREE.Vector2(1,1)},inverseView:{value:this.inverseView},
       ...Object.fromEntries(Object.entries(INK_DEFAULTS).map(([key,value])=>[key,{value}])),mode:{value:0},
       paper:{value:new THREE.Color('#ffffff')},ink:{value:new THREE.Color('#17191b')},
@@ -243,7 +253,7 @@ export class InkRenderer {
   }
 
   resize(width,height){
-    for(const target of [this.color,this.normal,this.ids])target.setSize(width,height);
+    for(const target of [this.color,this.light,this.normal,this.ids])target.setSize(width,height);
     const aw=Math.max(1,Math.ceil(width/2)),ah=Math.max(1,Math.ceil(height/2));this.ao.setSize(aw,ah);
     this.material.uniforms.resolution.value.set(width,height);this.material.uniforms.aoResolution.value.set(aw,ah);
     this.aoMaterial.uniforms.resolution.value.set(width,height);
@@ -254,11 +264,13 @@ export class InkRenderer {
     const clear=r.getClearColor(new THREE.Color()),alpha=r.getClearAlpha();
     this.prepareScene();c.updateMatrixWorld();this.inverseProjection.copy(c.projectionMatrixInverse);this.inverseView.copy(c.matrixWorld);
     this.material.uniforms.nearPlane.value=c.near;this.material.uniforms.farPlane.value=c.far;
+    this.aoMaterial.uniforms.nearPlane.value=c.near;this.aoMaterial.uniforms.farPlane.value=c.far;
     this.aoMaterial.uniforms.projectionScale.value=this.color.height*c.projectionMatrix.elements[5]*.5;
     try{
       s.overrideMaterial=this.material.uniforms.mode.value===3?this.clayMaterial:null;
       r.setRenderTarget(this.color);r.clear();r.render(s,c);
       r.shadowMap.autoUpdate=false;s.background=null;r.setClearColor(0x000000,0);
+      if(this.material.uniforms.mode.value===0){s.overrideMaterial=this.lightMaterial;r.setRenderTarget(this.light);r.clear();r.render(s,c);}
       s.overrideMaterial=this.normalMaterial;r.setRenderTarget(this.normal);r.clear();r.render(s,c);
       s.overrideMaterial=this.idMaterial;r.setRenderTarget(this.ids);r.clear();r.render(s,c);
       this.screenMesh.material=this.aoMaterial;r.setRenderTarget(this.ao);r.clear();r.render(this.screen,this.screenCamera);
@@ -269,8 +281,8 @@ export class InkRenderer {
   }
 
   dispose(){
-    for(const target of [this.color,this.normal,this.ids,this.ao])target.dispose();
-    for(const m of [this.normalMaterial,this.idMaterial,this.material,this.aoMaterial,this.clayMaterial])m.dispose();
+    for(const target of [this.color,this.light,this.normal,this.ids,this.ao])target.dispose();
+    for(const m of [this.normalMaterial,this.idMaterial,this.material,this.aoMaterial,this.clayMaterial,this.lightMaterial])m.dispose();
     this.screenGeometry.dispose();
   }
 }
