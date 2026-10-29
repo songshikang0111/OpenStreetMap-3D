@@ -130,6 +130,8 @@ function applyParameters(){
   $('sun-output').value=`${$('sun-angle').value}°`;$('sun-height-output').value=`${$('sun-height').value}°`;updateLight();
   camera.fov=Number($('lens').value);camera.updateProjectionMatrix();$('lens-output').value=`${camera.fov}°`;
   city.shared.windows.value=$('windows-toggle').checked?1:0;city.detailGroup.visible=$('windows-toggle').checked;
+  if(city.shared.facadeDetail)city.shared.facadeDetail.value=Number($('facade-detail').value)/100;
+  $('facade-output').value=`${$('facade-detail').value}%`;
   city.treeGroup.visible=$('trees-toggle').checked;if(city.streetGroup)city.streetGroup.visible=$('props-toggle').checked;
   sun.castShadow=$('shadows-toggle').checked;sun.shadow.needsUpdate=true;invalidate();
 }

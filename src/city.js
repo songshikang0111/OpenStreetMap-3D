@@ -71,6 +71,7 @@ function facadeMaterial(shared) {
   material.onBeforeCompile = shader => {
     shader.uniforms.uWindows = shared.windows;
     shader.uniforms.uProvenance = shared.provenance;
+    shader.uniforms.uFacadeDetail = shared.facadeDetail;
     shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nattribute vec4 aFacade; varying vec4 vFacade; attribute vec2 aStyle; varying vec2 vStyle;');
     shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvFacade = aFacade; vStyle=aStyle;');
     shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
@@ -78,6 +79,7 @@ function facadeMaterial(shared) {
       varying vec2 vStyle;
       uniform float uWindows;
       uniform float uProvenance;
+      uniform float uFacadeDetail;
       float inkWindow=0.0;
       // Integrate a periodic window over its pixel footprint. A smoothstep of
       // fract() aliases when a pixel spans more than one window cell.
@@ -103,7 +105,7 @@ function facadeMaterial(shared) {
         mask=mix(mask,stripe(u*.5,.44)*stripe(v,.46),lower*(1.-residential));
         // Stop drawing individual panes before their frames become subpixel.
         // Color keeps the average glass coverage; ink drops fine pane outlines.
-        float fade = 1.0 - smoothstep(.08, .30, max(fwidth(u),fwidth(v)));
+        float fade = 1.0 - smoothstep(mix(.04,.12,uFacadeDetail),mix(.18,.42,uFacadeDetail),max(fwidth(u),fwidth(v)));
         inkWindow=mask*fade*mix(.91,.72,isGlass);
         float cell = fract(sin(dot(floor(vec2(u,v)),vec2(17.21,59.17))) * 12345.31);
         vec3 glass = mix(vec3(.17,.24,.28),vec3(.31,.39,.44), cell*.06*fade+vStyle.y*.4);
@@ -124,7 +126,7 @@ function facadeMaterial(shared) {
 
 export function buildCity(data) {
   const group = new THREE.Group(); group.name = 'Beijing CBD — OpenStreetMap';
-  const shared = { windows: { value: 1 }, provenance: { value: 0 } };
+  const shared = { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: {value:.5} };
   const material = facadeMaterial(shared);
   const baseMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .98 });
   const [x0,z0,x1,z1] = data.bounds;

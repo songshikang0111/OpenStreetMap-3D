@@ -4,6 +4,7 @@ export const parameterRanges={
   'outline-width':[1,2.5], 'tone-threshold':[25,85], 'ao-strength':[0,200],
   'shadow-strength':[0,200], haze:[0,100], 'tree-ink':[0,100],
   'black-point':[2,35], 'sun-angle':[0,360], 'sun-height':[10,85], lens:[18,100],
+  'facade-detail':[0,100],
 };
 export function decodeView(hash){
   try{
