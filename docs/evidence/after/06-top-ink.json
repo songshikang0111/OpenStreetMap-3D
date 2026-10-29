@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "view": "top",
+  "seed": 1,
+  "mode": 0,
+  "position": [
+    0,
+    2556.646,
+    0.01
+  ],
+  "target": [
+    0,
+    0,
+    0
+  ],
+  "parameters": {
+    "line-width": 1,
+    "tone-size": 4.2,
+    "density": 85,
+    "outline-width": 1.35,
+    "tone-threshold": 52,
+    "ao-strength": 65,
+    "shadow-strength": 100,
+    "haze": 30,
+    "tree-ink": 80,
+    "black-point": 10,
+    "sun-angle": 135,
+    "sun-height": 45,
+    "lens": 43
+  },
+  "toggles": {
+    "windows-toggle": true,
+    "trees-toggle": true,
+    "props-toggle": true,
+    "shadows-toggle": true
+  }
+}

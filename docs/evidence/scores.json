@@ -1,0 +1,188 @@
+{
+  "status": "reviewed",
+  "reviewed_at": "2026-10-29",
+  "reviewer": "Codex 主代理 · 截图人工工程验收",
+  "summary": "本轮七项需求从 31.0 提升至 64.8 / 100。地标、立面类型和街道层次明显改善；原版在树冠、远景抗噪、立面丰富度和地形上仍领先。分数是人工工程量表，不是还原率或统计相似度。",
+  "scores": [
+    {
+      "id": "R1",
+      "before": 3,
+      "after": 7,
+      "result": "中国尊从直筒变为圆角收腰扩顶；央视双塔加入倾斜，连接体保留 161 m 离地高度。",
+      "remaining": "只对两处地标拟合形体；比例与倾角为独立参数近似，其他高楼仍以挤出为主。",
+      "evidence": [
+        "matched-before/07-citic.jpg",
+        "after/07-citic.jpg",
+        "matched-before/08-cctv.jpg",
+        "after/08-cctv.jpg"
+      ]
+    },
+    {
+      "id": "R2",
+      "before": 3,
+      "after": 6.5,
+      "result": "单一方窗改为幕墙、住宅、横窗带、低层等规则；街道同机位可辨立面节奏差异。",
+      "remaining": "规则家族有限，缺少原版更丰富的地区、店铺招牌、空调与凹窗变化；不能还原真实每扇窗。",
+      "evidence": [
+        "matched-before/03-street-ink.jpg",
+        "after/03-street-ink.jpg",
+        "after/04-street-color.jpg",
+        "after/09-facade.jpg"
+      ]
+    },
+    {
+      "id": "R3",
+      "before": 3,
+      "after": 6,
+      "result": "女儿墙、窗台/框、楼层带、屋顶设备组具有实体厚度；设备放置检查屋顶边界及内庭院。",
+      "remaining": "设备规模与布局依旧简单；主体没有完整屋顶形状库；近景构件还不够自然，几何量上升。",
+      "evidence": [
+        "matched-before/10-roof.jpg",
+        "after/10-roof.jpg",
+        "after/09-facade.jpg"
+      ]
+    },
+    {
+      "id": "R4",
+      "before": 2,
+      "after": 6.5,
+      "result": "补入 215 个 OSM 街道节点；生成 85 处有标注依据的过街线、29 处信号，以及路缘、灯、车、人和沿街补植。",
+      "remaining": "灯车人仍为规则推测。道路交口融合、桥梁支撑/高差和部分接缝不够完整；不等同真实交通场景。",
+      "evidence": [
+        "matched-before/11-crossing.jpg",
+        "after/11-crossing.jpg",
+        "after/03-street-ink.jpg"
+      ]
+    },
+    {
+      "id": "R5",
+      "before": 3,
+      "after": 5.5,
+      "result": "从稀疏单球树升级为近处分枝和多团簇树冠、远处简化树形；沿路补植及树冠明暗明显增加。",
+      "remaining": "近看仍偏低多边形，树种差异和枝叶纹理弱于原版；当前 2473 棵均是推测补植，没有逐棵实测位置。",
+      "evidence": [
+        "matched-before/03-street-ink.jpg",
+        "after/03-street-ink.jpg",
+        "after/04-street-color.jpg"
+      ]
+    },
+    {
+      "id": "R6",
+      "before": 4,
+      "after": 6,
+      "result": "纸白背景、外/内线分级、近似接触 AO、玻璃/树冠分类、网点留白可调；4× MSAA 和远处微折线衰减修复大面积条纹。",
+      "remaining": "高楼远景窗格仍有密集噪声；远处内转角随微线衰减而损失；未将固有色、光照、投影完全分离，树冠实黑和空气感仍有差距。",
+      "evidence": [
+        "matched-before/01-overview-ink.jpg",
+        "after/01-overview-ink.jpg",
+        "after/02-skyline-ink.jpg",
+        "after/03-street-ink.jpg",
+        "after/12-street-lines.jpg",
+        "after/13-parameter-variant.jpg",
+        "after/14-controls.jpg"
+      ]
+    },
+    {
+      "id": "R7",
+      "before": 4,
+      "after": 9,
+      "result": "11 个机位保存位置、目标、FOV、参数和种子，并在旧/新版重放；真实高度与生成形体分开说明；截图和提交可追踪。",
+      "remaining": "原版仅做到同地段/同类机位，没有精确外参。人工评分不是像素相似度，也没有多设备性能基准。",
+      "evidence": [
+        "matched-camera-checks.json",
+        "after-camera-checks.json",
+        "views.json",
+        "original/ui-controls.json"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "npm test",
+      "status": "passed",
+      "detail": "20/20：地理解析、地标高度、屋顶避障、街道摆放、渲染状态恢复、相机参数与种子保持。"
+    },
+    {
+      "name": "npm run build",
+      "status": "passed",
+      "detail": "Vite 生产构建通过；Three.js vendor 包约546 kB，有体积提示，非构建错误。"
+    },
+    {
+      "name": "同机位重放",
+      "status": "passed",
+      "detail": "11 组 position / target / FOV / seed / style 保存到 JSON；旧新版机位读数核验一致。截图包含相同本地范围，原版另标同区域参考。"
+    },
+    {
+      "name": "PNG 导出",
+      "status": "passed",
+      "detail": "实际导出 2400 × 1211，已打开图像核对 OSM 署名；导出样本位于 exports/city-export.png。"
+    },
+    {
+      "name": "GLB 导出",
+      "status": "passed",
+      "detail": "实际文件 50,929,872 bytes；glTF 2.0 头、长度、JSON 与 OSM 署名已检查。15801 节点/499 meshes；未做外部三维软件导入验收。"
+    },
+    {
+      "name": "真实性边界",
+      "status": "passed",
+      "detail": "477 个建筑体块，高度28直接标注/267楼层换算/182推测。2473棵树全部规则补植；地标形体非测绘模型。"
+    }
+  ],
+  "commits": [
+    {
+      "hash": "b721375",
+      "requirement": "基线",
+      "detail": "冻结v0.1"
+    },
+    {
+      "hash": "c9c3be1",
+      "requirement": "研究",
+      "detail": "原版证据与7项需求"
+    },
+    {
+      "hash": "ebf2222",
+      "requirement": "R4",
+      "detail": "街道节点数据"
+    },
+    {
+      "hash": "97eb1f6",
+      "requirement": "R7",
+      "detail": "视角和种子序列化"
+    },
+    {
+      "hash": "e6f5549",
+      "requirement": "R1",
+      "detail": "地标形体"
+    },
+    {
+      "hash": "ebbb6c5",
+      "requirement": "R2",
+      "detail": "立面家族与屋顶规则"
+    },
+    {
+      "hash": "0bd7eb4",
+      "requirement": "R4 / R5",
+      "detail": "街道设施与树冠"
+    },
+    {
+      "hash": "f4b4094",
+      "requirement": "R3",
+      "detail": "近景细节集成"
+    },
+    {
+      "hash": "9914af5",
+      "requirement": "R6",
+      "detail": "漫画渲染"
+    },
+    {
+      "hash": "487b88f",
+      "requirement": "R7",
+      "detail": "UI、参数与匹配基线"
+    },
+    {
+      "hash": "5107346",
+      "requirement": "R7",
+      "detail": "真实过街点机位"
+    }
+  ]
+}

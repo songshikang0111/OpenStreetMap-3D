@@ -1,0 +1,57 @@
+[
+  {
+    "key": "01-overview-ink",
+    "readout": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "match": true
+  },
+  {
+    "key": "02-skyline-ink",
+    "readout": "机位 -157.3, 137.5, 1598.7 m · FOV 42.0°",
+    "match": true
+  },
+  {
+    "key": "03-street-ink",
+    "readout": "机位 13.7, 2.1, -96.3 m · FOV 65.0°",
+    "match": true
+  },
+  {
+    "key": "04-street-color",
+    "readout": "机位 13.7, 2.1, -96.3 m · FOV 65.0°",
+    "match": true
+  },
+  {
+    "key": "05-overview-color",
+    "readout": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "match": true
+  },
+  {
+    "key": "06-top-ink",
+    "readout": "机位 0.0, 2556.6, 0.0 m · FOV 43.0°",
+    "match": true
+  },
+  {
+    "key": "07-citic",
+    "readout": "机位 367.4, 270.0, 437.8 m · FOV 42.0°",
+    "match": true
+  },
+  {
+    "key": "08-cctv",
+    "readout": "机位 -563.3, 150.0, -50.1 m · FOV 42.0°",
+    "match": true
+  },
+  {
+    "key": "09-facade",
+    "readout": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+    "match": true
+  },
+  {
+    "key": "10-roof",
+    "readout": "机位 -230.0, 160.0, 220.0 m · FOV 42.0°",
+    "match": true
+  },
+  {
+    "key": "11-crossing",
+    "readout": "机位 48.1, 2.1, 329.4 m · FOV 65.0°",
+    "match": true
+  }
+]

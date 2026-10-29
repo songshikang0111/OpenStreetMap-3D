@@ -1,0 +1,23 @@
+{
+  "file": "beijing-city-ink (1).glb",
+  "magic": "glTF",
+  "version": 2,
+  "bytes": 50929872,
+  "validLength": true,
+  "nodes": 15801,
+  "meshes": 499,
+  "attribution": {
+    "attribution": "© OpenStreetMap contributors",
+    "license": "ODbL-1.0",
+    "licenseUrl": "https://www.openstreetmap.org/copyright",
+    "center": [
+      39.909499999999994,
+      116.4605
+    ],
+    "description": "OSM geometry plus inferred procedural details. Screen-space ink and shader windows are not included."
+  },
+  "pngSize": [
+    2400,
+    1211
+  ]
+}

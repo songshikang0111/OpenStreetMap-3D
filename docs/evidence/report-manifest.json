@@ -1,0 +1,570 @@
+{
+  "generated": "2026-10-29T07:38:29+00:00",
+  "date": "2026-10-29",
+  "views": [
+    {
+      "id": "01",
+      "title": "街区俯瞰",
+      "subtitle": "整体体块与空间密度",
+      "note": "同时检查楼栋轮廓、树阵和远景线条；不要拿建筑数量差直接算还原率。",
+      "original": {
+        "src": "original/01-overview-ink.jpg",
+        "bytes": 470929,
+        "sha256": "50ab50e07d4a5e73c9972f03d4a0bac52564fbd0e90dd193211b6d12589aa88f"
+      },
+      "before": {
+        "src": "matched-before/01-overview-ink.jpg",
+        "bytes": 226293,
+        "sha256": "1592c4222625d52711021e3a77ad0051bd2ff97f9cc23d414981a06951c3cfd6"
+      },
+      "after": {
+        "src": "after/01-overview-ink.jpg",
+        "bytes": 226591,
+        "sha256": "c808bcb063489ea6e41a0bef99b1b6a672050896ee9dc4bbd418d5bbd292b6e8"
+      },
+      "matched": true
+    },
+    {
+      "id": "02",
+      "title": "天际线",
+      "subtitle": "地标轮廓与距离层次",
+      "note": "原版使用广域机位作参考；检查曲面/退台是否改善辨识度，不能视为同外参配准。",
+      "original": {
+        "src": "original/02-wide-ink.jpg",
+        "bytes": 432066,
+        "sha256": "8368a20d004e85e31a6a553f670de5cb9e5cec530f9d6512c2f9cb03f8126422"
+      },
+      "before": {
+        "src": "matched-before/02-skyline-ink.jpg",
+        "bytes": 234861,
+        "sha256": "1d63f0fc9061873bba0f2f54c6563d85df2aa9b18c93d0ad1a85b5ee51240d15"
+      },
+      "after": {
+        "src": "after/02-skyline-ink.jpg",
+        "bytes": 224339,
+        "sha256": "163c41e6e4dc1cb7c4ef039f82f8439864f28ff1419155d2f001fd4fb5e1ec43"
+      },
+      "matched": true
+    },
+    {
+      "id": "03",
+      "title": "街道人眼 · 漫画",
+      "subtitle": "树冠、立面与地面留白",
+      "note": "观察上方树冠是否遮挡过多，窗框是否糊成黑墙，路面是否保留亮部。",
+      "original": {
+        "src": "original/04-street-eye-ink.jpg",
+        "bytes": 278763,
+        "sha256": "6b7908d2658156edd362c214207ef5dc7f0a710cc7f635c4ebe4a09ea8bf7833"
+      },
+      "before": {
+        "src": "matched-before/03-street-ink.jpg",
+        "bytes": 458154,
+        "sha256": "5e6d03f9a3672bc0b6beb3f63f25fc2fbed4df53f8ffb378cb8a0b6d4c9ce75c"
+      },
+      "after": {
+        "src": "after/03-street-ink.jpg",
+        "bytes": 383988,
+        "sha256": "0a48bf97d12ad18678685ab8adf5ed21e0cd6b611d1e127f774c6697e45217e4"
+      },
+      "matched": true
+    },
+    {
+      "id": "04",
+      "title": "街道人眼 · 彩色",
+      "subtitle": "区分几何与后处理贡献",
+      "note": "彩色模式用于判断窗框、枝叶、路缘是真几何还是漫画描边效果。",
+      "original": {
+        "src": "original/05-street-eye-color.jpg",
+        "bytes": 222861,
+        "sha256": "5393bf11663887064702f589e982df785d8433d716cdd862808b68b823959ba3"
+      },
+      "before": {
+        "src": "matched-before/04-street-color.jpg",
+        "bytes": 143576,
+        "sha256": "9efc8a0da32d2c1f61419a7e8e97641d5c80de45e55c4fde80299d04b42e4f79"
+      },
+      "after": {
+        "src": "after/04-street-color.jpg",
+        "bytes": 147813,
+        "sha256": "7de63f3b5ce058a1755a6d8bc41d7b9370543b15a93c8ac9ff89be306508ad4b"
+      },
+      "matched": true
+    },
+    {
+      "id": "05",
+      "title": "街区俯瞰 · 彩色",
+      "subtitle": "材质家族与建筑分部",
+      "note": "看材质差异和地标形体；色彩变化不应掩盖定位或楼高错误。",
+      "original": {
+        "src": "original/09-overview-color.jpg",
+        "bytes": 322772,
+        "sha256": "322ccc52b653eb39d32f845978108bb67c69b7ef73c5753a3c9974e4c22f0d01"
+      },
+      "before": {
+        "src": "matched-before/05-overview-color.jpg",
+        "bytes": 144478,
+        "sha256": "ec46bee3fcc0f8888e0d43f7efbcb54a0e039193c73f179df2e187fba4f4be94"
+      },
+      "after": {
+        "src": "after/05-overview-color.jpg",
+        "bytes": 133591,
+        "sha256": "3ce623851bfb10084b85cd88942a334433a89fbc9eb707c85fc13edfbda5e1f5"
+      },
+      "matched": true
+    },
+    {
+      "id": "06",
+      "title": "正上方",
+      "subtitle": "轮廓、道路和补植分布",
+      "note": "检查补树是否沿路与绿地、庭院是否被设备填满、道路接缝是否过重。",
+      "original": {
+        "src": "original/08-top-ink.jpg",
+        "bytes": 402924,
+        "sha256": "4030138eea7af9c94f13255f563c59e3383138a5e3aae5ce2b896dfa51decf06"
+      },
+      "before": {
+        "src": "matched-before/06-top-ink.jpg",
+        "bytes": 292128,
+        "sha256": "56d119c6aef2432f413c2938ec56aae18550c72d08fa60b66eb7736003c218ff"
+      },
+      "after": {
+        "src": "after/06-top-ink.jpg",
+        "bytes": 252939,
+        "sha256": "eac8477c52e775985c1a5975ab67ec5f259e8acd2a7fe82fab2691855d0ad580"
+      },
+      "matched": true
+    },
+    {
+      "id": "07",
+      "title": "中国尊",
+      "subtitle": "收腰、圆角与顶部扩展",
+      "note": "原版是地标广角参考，非独立近景外参；重点检查轮廓机制，不宣称测绘级还原。",
+      "original": {
+        "src": "original/10-landmark-wide-20mm.jpg",
+        "bytes": 383404,
+        "sha256": "b7990962eab7d116644f4e8ada29deaf16838b2c92d1490bff54cd4bfec57252"
+      },
+      "before": {
+        "src": "matched-before/07-citic.jpg",
+        "bytes": 288833,
+        "sha256": "d7dd512c5062b1cd903222ddd92201c7ed4c8e505635625aa34e9619c23de57d"
+      },
+      "after": {
+        "src": "after/07-citic.jpg",
+        "bytes": 273785,
+        "sha256": "bcc8d40b3a0089b663f16c2658b06aea587d6db00d091b93f1bf52ade07e3bf2"
+      },
+      "matched": true
+    },
+    {
+      "id": "08",
+      "title": "央视总部",
+      "subtitle": "双塔倾斜与空中连接",
+      "note": "对照空洞与连接关系；地标近似模型的参数来源必须另行说明。",
+      "original": {
+        "src": "original/10-landmark-wide-20mm.jpg",
+        "bytes": 383404,
+        "sha256": "b7990962eab7d116644f4e8ada29deaf16838b2c92d1490bff54cd4bfec57252"
+      },
+      "before": {
+        "src": "matched-before/08-cctv.jpg",
+        "bytes": 502814,
+        "sha256": "ee5b36f6720a81180908020f0050ab0598fe3d7104fb6d1df80d2ca6d5ae8092"
+      },
+      "after": {
+        "src": "after/08-cctv.jpg",
+        "bytes": 484187,
+        "sha256": "afb0044d5ce3f90f666b815754e3f454e1ab873c6f3248aacedb7e8b25fb95c0"
+      },
+      "matched": true
+    },
+    {
+      "id": "09",
+      "title": "立面近景",
+      "subtitle": "开间、分层和首层入口",
+      "note": "原版采用街道彩色参考；本地版本之间使用匹配近景来衡量具体改动。",
+      "original": {
+        "src": "original/05-street-eye-color.jpg",
+        "bytes": 222861,
+        "sha256": "5393bf11663887064702f589e982df785d8433d716cdd862808b68b823959ba3"
+      },
+      "before": {
+        "src": "matched-before/09-facade.jpg",
+        "bytes": 355062,
+        "sha256": "15826c7ec03fd2010e284f889a6435a5c9f2bb2de44f39a9628af678e8a4bb85"
+      },
+      "after": {
+        "src": "after/09-facade.jpg",
+        "bytes": 500635,
+        "sha256": "3cad59abba7fdda731461de263fcc9a1b803c67853cefb0bcf9c6c814b6acdb2"
+      },
+      "matched": true
+    },
+    {
+      "id": "10",
+      "title": "屋顶细节",
+      "subtitle": "女儿墙、设备与退台",
+      "note": "原版仅有中高俯视参考；屋顶需求主要用本地匹配机位检查几何与放置规则。",
+      "original": {
+        "src": "original/03-street-high-ink.jpg",
+        "bytes": 362222,
+        "sha256": "0a5fece7e4d68a158ed9b3ea53a9b2bab2afb60408df8fad2b322a893eff4d3e"
+      },
+      "before": {
+        "src": "matched-before/10-roof.jpg",
+        "bytes": 546543,
+        "sha256": "561538b7fe16411995a5fa2036077d321eee466f5e52249f0257818399763555"
+      },
+      "after": {
+        "src": "after/10-roof.jpg",
+        "bytes": 444144,
+        "sha256": "80d2ae55e74fe9d493526ad5a9819559b619a2ae5c9762ff2cda9e1720019690"
+      },
+      "matched": true
+    },
+    {
+      "id": "11",
+      "title": "道路交叉口",
+      "subtitle": "标线、信号与人的尺度",
+      "note": "查看斑马线与实际道路的关系；规则补充的灯、车、人不能标成实测对象。",
+      "original": {
+        "src": "original/07-crossing-ink.jpg",
+        "bytes": 318444,
+        "sha256": "d2a1a97dee9cf0201cb38547fcd744dffb2c02284a3ee6ce1d07de184d00478c"
+      },
+      "before": {
+        "src": "matched-before/11-crossing.jpg",
+        "bytes": 365695,
+        "sha256": "4b6a35aa619dca043681dd0815a520599f9d8814e8acfa0b59adcdff2352a228"
+      },
+      "after": {
+        "src": "after/11-crossing.jpg",
+        "bytes": 248118,
+        "sha256": "6b1317ebeba8ca0d8036205436695343fd1a5b6c6ad431db97368bc05bb537de"
+      },
+      "matched": true
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "weight": 20,
+      "title": "地标轮廓",
+      "criterion": "中国尊收腰扩顶、央视倾斜双塔与连接体；保持 OSM 定位与总高。",
+      "views": [
+        "07",
+        "08",
+        "02"
+      ]
+    },
+    {
+      "id": "R2",
+      "weight": 20,
+      "title": "立面家族",
+      "criterion": "幕墙、住宅、商业/低层有不同开间与楼层节奏；刷新结果稳定。",
+      "views": [
+        "09",
+        "04",
+        "05"
+      ]
+    },
+    {
+      "id": "R3",
+      "weight": 10,
+      "title": "建筑实体细节",
+      "criterion": "近看有窗框、女儿墙和屋顶设备深度；设备避开庭院并控制几何成本。",
+      "views": [
+        "10",
+        "09",
+        "06"
+      ]
+    },
+    {
+      "id": "R4",
+      "weight": 15,
+      "title": "街道尺度",
+      "criterion": "树与人避开建筑和行车道；道路设施有来源区分，支持关闭。",
+      "views": [
+        "11",
+        "03",
+        "04"
+      ]
+    },
+    {
+      "id": "R5",
+      "weight": 10,
+      "title": "植被形态",
+      "criterion": "至少两种树形、枝干与近处团簇；漫画叶冠抑制内部碎线。",
+      "views": [
+        "03",
+        "04",
+        "11"
+      ]
+    },
+    {
+      "id": "R6",
+      "weight": 20,
+      "title": "漫画层次",
+      "criterion": "留白、网点、实黑有层次；外形与内部线分级，远景降噪，参数有效。",
+      "views": [
+        "01",
+        "02",
+        "03",
+        "09"
+      ]
+    },
+    {
+      "id": "R7",
+      "weight": 5,
+      "title": "可复现与数据诚实",
+      "criterion": "机位与参数可重现；真实轮廓/高度与推测细节明确区分。",
+      "views": [
+        "01",
+        "06"
+      ]
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewed_at": "2026-10-29",
+    "reviewer": "Codex 主代理 · 截图人工工程验收",
+    "summary": "本轮七项需求从 31.0 提升至 64.8 / 100。地标、立面类型和街道层次明显改善；原版在树冠、远景抗噪、立面丰富度和地形上仍领先。分数是人工工程量表，不是还原率或统计相似度。",
+    "scores": [
+      {
+        "id": "R1",
+        "before": 3,
+        "after": 7,
+        "result": "中国尊从直筒变为圆角收腰扩顶；央视双塔加入倾斜，连接体保留 161 m 离地高度。",
+        "remaining": "只对两处地标拟合形体；比例与倾角为独立参数近似，其他高楼仍以挤出为主。",
+        "evidence": [
+          "matched-before/07-citic.jpg",
+          "after/07-citic.jpg",
+          "matched-before/08-cctv.jpg",
+          "after/08-cctv.jpg"
+        ]
+      },
+      {
+        "id": "R2",
+        "before": 3,
+        "after": 6.5,
+        "result": "单一方窗改为幕墙、住宅、横窗带、低层等规则；街道同机位可辨立面节奏差异。",
+        "remaining": "规则家族有限，缺少原版更丰富的地区、店铺招牌、空调与凹窗变化；不能还原真实每扇窗。",
+        "evidence": [
+          "matched-before/03-street-ink.jpg",
+          "after/03-street-ink.jpg",
+          "after/04-street-color.jpg",
+          "after/09-facade.jpg"
+        ]
+      },
+      {
+        "id": "R3",
+        "before": 3,
+        "after": 6,
+        "result": "女儿墙、窗台/框、楼层带、屋顶设备组具有实体厚度；设备放置检查屋顶边界及内庭院。",
+        "remaining": "设备规模与布局依旧简单；主体没有完整屋顶形状库；近景构件还不够自然，几何量上升。",
+        "evidence": [
+          "matched-before/10-roof.jpg",
+          "after/10-roof.jpg",
+          "after/09-facade.jpg"
+        ]
+      },
+      {
+        "id": "R4",
+        "before": 2,
+        "after": 6.5,
+        "result": "补入 215 个 OSM 街道节点；生成 85 处有标注依据的过街线、29 处信号，以及路缘、灯、车、人和沿街补植。",
+        "remaining": "灯车人仍为规则推测。道路交口融合、桥梁支撑/高差和部分接缝不够完整；不等同真实交通场景。",
+        "evidence": [
+          "matched-before/11-crossing.jpg",
+          "after/11-crossing.jpg",
+          "after/03-street-ink.jpg"
+        ]
+      },
+      {
+        "id": "R5",
+        "before": 3,
+        "after": 5.5,
+        "result": "从稀疏单球树升级为近处分枝和多团簇树冠、远处简化树形；沿路补植及树冠明暗明显增加。",
+        "remaining": "近看仍偏低多边形，树种差异和枝叶纹理弱于原版；当前 2473 棵均是推测补植，没有逐棵实测位置。",
+        "evidence": [
+          "matched-before/03-street-ink.jpg",
+          "after/03-street-ink.jpg",
+          "after/04-street-color.jpg"
+        ]
+      },
+      {
+        "id": "R6",
+        "before": 4,
+        "after": 6,
+        "result": "纸白背景、外/内线分级、近似接触 AO、玻璃/树冠分类、网点留白可调；4× MSAA 和远处微折线衰减修复大面积条纹。",
+        "remaining": "高楼远景窗格仍有密集噪声；远处内转角随微线衰减而损失；未将固有色、光照、投影完全分离，树冠实黑和空气感仍有差距。",
+        "evidence": [
+          "matched-before/01-overview-ink.jpg",
+          "after/01-overview-ink.jpg",
+          "after/02-skyline-ink.jpg",
+          "after/03-street-ink.jpg",
+          "after/12-street-lines.jpg",
+          "after/13-parameter-variant.jpg",
+          "after/14-controls.jpg"
+        ]
+      },
+      {
+        "id": "R7",
+        "before": 4,
+        "after": 9,
+        "result": "11 个机位保存位置、目标、FOV、参数和种子，并在旧/新版重放；真实高度与生成形体分开说明；截图和提交可追踪。",
+        "remaining": "原版仅做到同地段/同类机位，没有精确外参。人工评分不是像素相似度，也没有多设备性能基准。",
+        "evidence": [
+          "matched-camera-checks.json",
+          "after-camera-checks.json",
+          "views.json",
+          "original/ui-controls.json"
+        ]
+      }
+    ],
+    "checks": [
+      {
+        "name": "npm test",
+        "status": "passed",
+        "detail": "20/20：地理解析、地标高度、屋顶避障、街道摆放、渲染状态恢复、相机参数与种子保持。"
+      },
+      {
+        "name": "npm run build",
+        "status": "passed",
+        "detail": "Vite 生产构建通过；Three.js vendor 包约546 kB，有体积提示，非构建错误。"
+      },
+      {
+        "name": "同机位重放",
+        "status": "passed",
+        "detail": "11 组 position / target / FOV / seed / style 保存到 JSON；旧新版机位读数核验一致。截图包含相同本地范围，原版另标同区域参考。"
+      },
+      {
+        "name": "PNG 导出",
+        "status": "passed",
+        "detail": "实际导出 2400 × 1211，已打开图像核对 OSM 署名；导出样本位于 exports/city-export.png。"
+      },
+      {
+        "name": "GLB 导出",
+        "status": "passed",
+        "detail": "实际文件 50,929,872 bytes；glTF 2.0 头、长度、JSON 与 OSM 署名已检查。15801 节点/499 meshes；未做外部三维软件导入验收。"
+      },
+      {
+        "name": "真实性边界",
+        "status": "passed",
+        "detail": "477 个建筑体块，高度28直接标注/267楼层换算/182推测。2473棵树全部规则补植；地标形体非测绘模型。"
+      }
+    ],
+    "commits": [
+      {
+        "hash": "b721375",
+        "requirement": "基线",
+        "detail": "冻结v0.1"
+      },
+      {
+        "hash": "c9c3be1",
+        "requirement": "研究",
+        "detail": "原版证据与7项需求"
+      },
+      {
+        "hash": "ebf2222",
+        "requirement": "R4",
+        "detail": "街道节点数据"
+      },
+      {
+        "hash": "97eb1f6",
+        "requirement": "R7",
+        "detail": "视角和种子序列化"
+      },
+      {
+        "hash": "e6f5549",
+        "requirement": "R1",
+        "detail": "地标形体"
+      },
+      {
+        "hash": "ebbb6c5",
+        "requirement": "R2",
+        "detail": "立面家族与屋顶规则"
+      },
+      {
+        "hash": "0bd7eb4",
+        "requirement": "R4 / R5",
+        "detail": "街道设施与树冠"
+      },
+      {
+        "hash": "f4b4094",
+        "requirement": "R3",
+        "detail": "近景细节集成"
+      },
+      {
+        "hash": "9914af5",
+        "requirement": "R6",
+        "detail": "漫画渲染"
+      },
+      {
+        "hash": "487b88f",
+        "requirement": "R7",
+        "detail": "UI、参数与匹配基线"
+      },
+      {
+        "hash": "5107346",
+        "requirement": "R7",
+        "detail": "真实过街点机位"
+      }
+    ]
+  },
+  "originalArchive": [
+    {
+      "src": "original/01-overview-ink.jpg",
+      "bytes": 470929,
+      "sha256": "50ab50e07d4a5e73c9972f03d4a0bac52564fbd0e90dd193211b6d12589aa88f"
+    },
+    {
+      "src": "original/02-wide-ink.jpg",
+      "bytes": 432066,
+      "sha256": "8368a20d004e85e31a6a553f670de5cb9e5cec530f9d6512c2f9cb03f8126422"
+    },
+    {
+      "src": "original/03-street-high-ink.jpg",
+      "bytes": 362222,
+      "sha256": "0a5fece7e4d68a158ed9b3ea53a9b2bab2afb60408df8fad2b322a893eff4d3e"
+    },
+    {
+      "src": "original/04-street-eye-ink.jpg",
+      "bytes": 278763,
+      "sha256": "6b7908d2658156edd362c214207ef5dc7f0a710cc7f635c4ebe4a09ea8bf7833"
+    },
+    {
+      "src": "original/05-street-eye-color.jpg",
+      "bytes": 222861,
+      "sha256": "5393bf11663887064702f589e982df785d8433d716cdd862808b68b823959ba3"
+    },
+    {
+      "src": "original/06-crossing-color.jpg",
+      "bytes": 229505,
+      "sha256": "d6935f85ff64768b5f14599e5efca5130b4998196186fd4fad9f910e266d20ef"
+    },
+    {
+      "src": "original/07-crossing-ink.jpg",
+      "bytes": 318444,
+      "sha256": "d2a1a97dee9cf0201cb38547fcd744dffb2c02284a3ee6ce1d07de184d00478c"
+    },
+    {
+      "src": "original/08-top-ink.jpg",
+      "bytes": 402924,
+      "sha256": "4030138eea7af9c94f13255f563c59e3383138a5e3aae5ce2b896dfa51decf06"
+    },
+    {
+      "src": "original/09-overview-color.jpg",
+      "bytes": 322772,
+      "sha256": "322ccc52b653eb39d32f845978108bb67c69b7ef73c5753a3c9974e4c22f0d01"
+    },
+    {
+      "src": "original/10-landmark-wide-20mm.jpg",
+      "bytes": 383404,
+      "sha256": "b7990962eab7d116644f4e8ada29deaf16838b2c92d1490bff54cd4bfec57252"
+    }
+  ],
+  "requirementsSha256": "75581d8d29d7ca9173b7e01e4bb444b6e4d10f2e9df378fafbc8d155bfb36077",
+  "scoreFile": "scores.json",
+  "originalUrl": "https://tools.oyasumi-gamedev.com/rokehan/#ll=39.909500%2C116.460500&s=1000&far=2&n=Beijing+CBD"
+}
