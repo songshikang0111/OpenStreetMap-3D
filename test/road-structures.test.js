@@ -55,6 +55,13 @@ test('height changes are disclosed rather than inventing ramps, and no bridge-on
   assert.deepEqual(plan,planRoadStructures(input,planRoadSurface(input)));
 });
 
+test('guardrails leave an opening at same-level bridge branches',()=>{
+  const input=data([road(1,[-100,0],[100,0],12,{bridge:true,layer:1}),road(2,[0,-100],[0,0],8,{bridge:true,layer:1})]);
+  const plan=planRoadStructures(input,planRoadSurface(input));
+  assert(plan.stats.bridgeRailInteriorSkipped>0);
+  for(const r of plan.rails.filter(r=>r.roadId===1&&(r.a[1]+r.b[1])<0))assert(Math.max(r.a[0],r.b[0])<=-4||Math.min(r.a[0],r.b[0])>=4,'barrier must not span the branch mouth');
+});
+
 test('Guomao supports pass independent whole-extract clearance checks and structure budgets',()=>{
   const raw=JSON.parse(readFileSync(new URL('../public/data/beijing-cbd.json',import.meta.url)));
   const input=parseOSM(raw),surface=planRoadSurface(input),built=buildRoadStructures(input,surface);
