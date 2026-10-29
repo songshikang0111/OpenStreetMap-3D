@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { inside, stableRandom } from './osm.js';
+import { clipPaintSegment } from './road-surface.js';
 import { crownGeometry, foliageMaterial, crownBase, crownProfile, crownMorphWeight, treeLODWeights, TREE_LOD } from './foliage.js';
 export { TREE_LOD } from './foliage.js';
 
@@ -12,6 +13,26 @@ export function segmentDistance(p, a, b) {
   const dx = b[0] - a[0], dz = b[1] - a[1];
   const t = clamp(((p[0] - a[0]) * dx + (p[1] - a[1]) * dz) / (dx * dx + dz * dz || 1), 0, 1);
   return Math.hypot(p[0] - a[0] - dx * t, p[1] - a[1] - dz * t);
+}
+
+// Crosswalk centres are retained; the 4.8m access width is an illustrative rule.
+export function clipKerbsAtCrossings(curbs, crossings) {
+  const zones=crossings.map(c=>{
+    const d=[Math.sin(c.angle),Math.cos(c.angle)],side=[-d[1],d[0]],half=c.width/2+2;
+    return {center:c.point,radius:Math.hypot(half,2.4),polygon:[[-2.4,-half],[2.4,-half],[2.4,half],[-2.4,half]].map(([a,b])=>[c.point[0]+d[0]*a+side[0]*b,c.point[1]+d[1]*a+side[1]*b])};
+  });
+  const result=[];let cutSegments=0,droppedLength=0;
+  for(const curb of curbs){
+    const direction=[Math.sin(curb.angle),Math.cos(curb.angle)];
+    const end=t=>[curb.point[0]+direction[0]*t,curb.point[1]+direction[1]*t];
+    const nearby=zones.filter(z=>Math.hypot(z.center[0]-curb.point[0],z.center[1]-curb.point[1])<=z.radius+curb.length/2+.2);
+    if(!nearby.length){result.push(curb);continue;}
+    const pieces=clipPaintSegment(end(-curb.length/2),end(curb.length/2),nearby,.5);
+    let kept=0;
+    for(const [a,b]of pieces){const length=Math.hypot(b[0]-a[0],b[1]-a[1]);kept+=length;result.push({...curb,point:[(a[0]+b[0])/2,(a[1]+b[1])/2],length});}
+    if(curb.length-kept>1e-5){cutSegments++;droppedLength+=curb.length-kept;}
+  }
+  return {curbs:result,cutSegments,droppedLength};
 }
 
 class Grid {
@@ -235,6 +256,8 @@ export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110,
     }
   }
   Object.assign(stats, { trees: trees.length, generatedTrees: stats.rowTrees + stats.streetTrees + stats.greenTrees, lamps: lamps.length, cars: cars.length, people: people.length, crosswalks: crosswalks.length, signals: signals.length, curbs: curbs.length, observedCrossings: crosswalks.filter(c => c.source === 'osm-crossing-node').length, observedSignals: signals.filter(s => s.source === 'osm-node').length, observedLamps: lamps.filter(l => l.source === 'osm-node').length });
+  const clippedKerbs=clipKerbsAtCrossings(curbs,crosswalks);curbs.length=0;curbs.push(...clippedKerbs.curbs);
+  Object.assign(stats,{curbs:curbs.length,curbCrossingCuts:clippedKerbs.cutSegments,curbCrossingClearanceMetres:clippedKerbs.droppedLength});
   return { trees, lamps, cars, people, curbs, crosswalks, signals, stats };
 }
 
