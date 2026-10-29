@@ -79,7 +79,7 @@ function facadeMaterial(shared) {
 
 export function buildCity(data) {
   const group = new THREE.Group(); group.name = 'Beijing CBD — OpenStreetMap';
-  const shared = { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: {value:.5}, glassReflection: {value:.65} };
+  const shared = { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: {value:.5}, glassReflection: {value:.65}, toneSize:{value:4.2} };
   const material = facadeMaterial(shared);
   const baseMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .98 });
   const [x0,z0,x1,z1] = data.bounds;

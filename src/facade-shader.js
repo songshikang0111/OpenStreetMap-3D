@@ -5,6 +5,7 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
   Object.assign(shader.uniforms, {
     uWindows: shared.windows, uProvenance: shared.provenance,
     uFacadeDetail: shared.facadeDetail, uGlassReflection: shared.glassReflection,
+    uFacadeToneSize: shared.toneSize || {value:4.2},
   });
   shader.vertexShader = shader.vertexShader
     .replace('#include <common>', `#include <common>
@@ -19,7 +20,7 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
   shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
     varying vec4 vFacade; varying vec2 vStyle; varying vec4 vLayout;
     varying vec3 vGlassWorld; varying vec3 vGlassNormal;
-    uniform float uWindows,uProvenance,uFacadeDetail,uGlassReflection;
+    uniform float uWindows,uProvenance,uFacadeDetail,uGlassReflection,uFacadeToneSize;
     float inkWindow=0.,inkTone=0.;
     // Exact box integration, including footprints spanning multiple periods.
     float stripeIntegral(float p,float width){return floor(p)*2.*width+clamp(fract(p)-(.5-width),0.,2.*width);}
@@ -53,7 +54,12 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
       // It describes broad glazing strips, not a new camera-dependent texture.
       float group=mix(6.,8.,step(2.5,vLayout.w));
       float groupPane=mix(stripe(u/group,.38),stripe(v/3.,.35),ribbon);
-      float groupedGlass=mix(.24,1.,groupPane);
+      // Tone dots are larger than a pixel. A band at the dot-grid frequency
+      // creates beating even when the band itself is correctly antialiased.
+      // Hand it to the per-face mean before it drops below ~2 tone cells.
+      float groupFootprint=mix(fwidth(u/group),fwidth(v/3.),ribbon);
+      float macroKeep=1.-smoothstep(1./(max(uFacadeToneSize,1.7)*4.),1./(max(uFacadeToneSize,1.7)*2.),groupFootprint);
+      float groupedGlass=mix(.24,1.,mix(mix(.76,.70,ribbon),groupPane,macroKeep));
       vec3 reflected=reflect(normalize(vGlassWorld-cameraPosition),normalize(vGlassNormal));
       float sky=smoothstep(-.16,.65,reflected.y);
       float cloud=.5+.5*sin(reflected.x*5.+reflected.z*3.+reflected.y*8.+vStyle.y*2.);
@@ -79,7 +85,7 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
       vec3 glass=mix(vec3(.17,.24,.28),vec3(.31,.39,.44),cell*.06*resolved+vStyle.y*.4);
       glass=mix(glass,vec3(.21,.31,.37),zun*.55);
       glass=mix(glass,vec3(.55,.65,.70),reflection*isGlass*.70);
-      glass=mix(glass,vec3(.63,.67,.68),(1.-groupedGlass)*max(isGlass,ribbon));
+      glass=mix(glass,vec3(.63,.67,.68),(1.-mix(.24,1.,groupPane))*max(isGlass,ribbon));
       diffuseColor.rgb=mix(diffuseColor.rgb,glass,mask*.9);
       diffuseColor.rgb*=1.-stripe(v+.47,.025)*mix(.12,.26,ribbon)*keepV;
       diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.49,.55,.57),diagonals*.85);`}

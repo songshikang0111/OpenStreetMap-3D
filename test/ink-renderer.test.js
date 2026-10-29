@@ -62,17 +62,18 @@ test('comic pass isolates light, reuses shadows, and tracks a changed camera nea
 test('facade controls remain live after seed regeneration without another scene pass', () => {
   const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(),passes=[];
   const fake={shadowMap:{autoUpdate:true},getClearColor:c=>c.set('#fff'),getClearAlpha:()=>1,setClearColor(){},setRenderTarget(t){this.target=t;},clear(){},render(){passes.push(this.target);}};
-  const first={windows:{value:1},provenance:{value:0},facadeDetail:{value:.5},glassReflection:{value:.65}};
+  const first={windows:{value:1},provenance:{value:0},facadeDetail:{value:.5},glassReflection:{value:.65},toneSize:{value:4.2}};
   const ink=new InkRenderer(fake,scene,camera,first);
   const shader={uniforms:{},vertexShader:THREE.ShaderLib.standard.vertexShader,fragmentShader:THREE.ShaderLib.standard.fragmentShader};
   ink.lightMaterial.onBeforeCompile(shader);
   const bound=shader.uniforms.uWindows;
   first.windows.value=0;ink.render();assert.equal(bound.value,0);
-  const second={windows:{value:1},provenance:{value:0},facadeDetail:{value:.9},glassReflection:{value:.12}};
+  const second={windows:{value:1},provenance:{value:0},facadeDetail:{value:.9},glassReflection:{value:.12},toneSize:{value:7}};
   ink.setFacadeShared(second);passes.length=0;ink.render();
   assert.equal(shader.uniforms.uWindows,bound,'compiled uniforms remain valid');
   assert.equal(bound.value,1);assert.equal(shader.uniforms.uFacadeDetail.value,.9);
   assert.equal(shader.uniforms.uGlassReflection.value,.12);
+  assert.equal(shader.uniforms.uFacadeToneSize.value,7,'macro filtering follows the actual tone-cell size after regeneration');
   second.provenance.value=1;ink.render();assert.equal(shader.uniforms.uProvenance.value,1);
   assert.equal(passes.length,12,'two frames still use the existing six passes');
   assert.deepEqual(ink.lightMaterial.defaultAttributeValues.aFacade,[0,0,0,0]);
