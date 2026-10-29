@@ -2,7 +2,7 @@ import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
-import { parseOSM } from './osm.js';
+import { parseOSM, mergeOSMOverlay } from './osm.js';
 import { buildCity as buildEnhancedCity } from './city.js';
 import { InkRenderer as EnhancedInkRenderer } from './ink-renderer.js';
 import { decodeView,encodeView,parameterRanges } from './view-state.js';
@@ -229,7 +229,11 @@ async function initialize(){
     const response=await fetch(`${import.meta.env.BASE_URL}data/beijing-cbd.json`);
     if(!response.ok)throw new Error(`地图数据读取失败 (${response.status})，请先运行 npm run data:fetch。`);
     const raw=await response.json();
-    try{const extra=await fetch(`${import.meta.env.BASE_URL}data/street-details.json`);if(extra.ok){const overlay=await extra.json();raw.elements.push(...overlay.elements);raw.metadata.streetOverlay=overlay.metadata;}}catch{ /* Optional overlay; original data still works offline. */ }
+    const overlays=await Promise.allSettled(['street-details','landscape-details'].map(async name=>{
+      const response=await fetch(`${import.meta.env.BASE_URL}data/${name}.json`);
+      return response.ok?{name,overlay:await response.json()}:null;
+    }));
+    for(const result of overlays)if(result.status==='fulfilled'&&result.value)mergeOSMOverlay(raw,result.value.overlay,result.value.name);
     rawData=raw;data=parseOSM(raw,seed);city=buildCity(data);
     scene=new THREE.Scene();scene.background=new THREE.Color('#f7f5ed');scene.add(city.group);
     renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:false,powerPreference:'high-performance'});

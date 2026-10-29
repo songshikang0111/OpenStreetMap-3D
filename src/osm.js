@@ -1,3 +1,5 @@
+import { classifyLandscape, classifyLandscapeContext, isSurfaceLandscape } from './landscape-tags.js';
+
 // All coordinates are local metres, x = east, z = south. No GCJ-02 offset.
 export function projection(lat, lon) {
   const north = 111132.92 - 559.82 * Math.cos(2 * lat * Math.PI / 180);
@@ -100,6 +102,16 @@ export function clipSegment(a, b, bounds) {
   return [[a[0] + dx * t0, a[1] + dz * t0], [a[0] + dx * t1, a[1] + dz * t1]];
 }
 
+export function mergeOSMOverlay(raw, overlay, name) {
+  const seen = new Set(raw.elements.map(e => `${e.type}:${e.id}`));
+  for (const element of overlay.elements || []) {
+    const key = `${element.type}:${element.id}`;
+    if (!seen.has(key)) { raw.elements.push(element); seen.add(key); }
+  }
+  raw.metadata[name] = overlay.metadata;
+  return raw;
+}
+
 export function parseOSM(raw, seed = 1) {
   if (!raw?.metadata?.bbox || !Array.isArray(raw.elements)) throw new Error('需要包含 metadata.bbox 和 elements 的 Overpass 数据文件。');
   const [south, west, north, east] = raw.metadata.bbox;
@@ -130,19 +142,29 @@ export function parseOSM(raw, seed = 1) {
     const g = geometry(e);
     if (g.length >= 4 && equalPoint(g[0], g.at(-1))) polygons.push({ id: `w${e.id}`, osmType: 'way', osmId: e.id, outer: g.slice(0, -1).map(project.point), holes: [], tags: e.tags || {} });
   }
-  let buildings = [], greens = [], water = [];
+  let buildings = [], greens = [], water = [], landscapes = [], landscapeContexts = [];
   for (const p of polygons) {
     const extent = p.outer.reduce((b, q) => [Math.min(b[0], q[0]), Math.min(b[1], q[1]), Math.max(b[2], q[0]), Math.max(b[3], q[1])], [Infinity, Infinity, -Infinity, -Infinity]);
     p.center = [(extent[0] + extent[2]) / 2, (extent[1] + extent[3]) / 2];
     p.area = area(p.outer) - p.holes.reduce((s, h) => s + area(h), 0);
-    if (!contains(p.center) || p.area < 4) continue;
+    if (p.area < 4 || extent[2] < bounds[0] || extent[0] > bounds[2] || extent[3] < bounds[1] || extent[1] > bounds[3]) continue;
     if ((p.tags.building && p.tags.building !== 'no') || (p.tags['building:part'] && p.tags['building:part'] !== 'no')) {
+      if (!contains(p.center)) continue;
       if (p.tags.location === 'underground' || Number(p.tags.level) < 0) continue;
       Object.assign(p, heightInfo(p.tags, p.area, p.id, seed));
       p.part = Boolean(p.tags['building:part'] && p.tags['building:part'] !== 'no');
       buildings.push(p);
-    } else if (p.tags.natural === 'water') water.push(p);
-    else if (/grass|forest|recreation_ground/.test(p.tags.landuse || '') || /park|garden/.test(p.tags.leisure || '')) greens.push(p);
+    } else {
+      if (!isSurfaceLandscape(p.tags)) continue;
+      if (p.tags.natural === 'water' || p.tags.amenity === 'fountain') { water.push(p); continue; }
+      const kind = classifyLandscape(p.tags);
+      if (kind) {
+        landscapes.push({ ...p, kind, source: 'osm' });
+        if (['lawn', 'wood', 'garden', 'park'].includes(kind)) greens.push(p);
+      }
+      const context = classifyLandscapeContext(p.tags);
+      if (context) landscapeContexts.push({ ...p, context, source: 'osm' });
+    }
   }
   // A fully represented building outline must not overlap its 3D parts.
   const parts = buildings.filter(b => b.part);
@@ -173,5 +195,5 @@ export function parseOSM(raw, seed = 1) {
   const trees = raw.elements.filter(e => e.type === 'node' && e.tags?.natural === 'tree').map(e => ({ point: project.point(e), id: e.id, height: metres(e.tags.height) || 7 })).filter(e => contains(e.point));
   const streetNodes=raw.elements.filter(e=>e.type==='node' && /^(crossing|traffic_signals|street_lamp|bus_stop)$/.test(e.tags?.highway||'')).map(e=>({id:e.id,point:project.point(e),kind:e.tags.highway,tags:e.tags})).filter(e=>contains(e.point));
   const treeRows=raw.elements.filter(e=>e.type==='way' && e.tags?.natural==='tree_row').map(e=>({id:e.id,points:geometry(e).map(project.point),tags:e.tags}));
-  return { buildings, roads, greens, water, trees, streetNodes, treeRows, bounds, project, metadata: raw.metadata, stats: { invalidRings, suppressed } };
+  return { buildings, roads, greens, water, landscapes, landscapeContexts, trees, streetNodes, treeRows, bounds, project, metadata: raw.metadata, stats: { invalidRings, suppressed, landscapePolygons: landscapes.length } };
 }
