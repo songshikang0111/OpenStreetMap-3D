@@ -97,6 +97,7 @@ export function gradeStreetLife(plan, roadPlan) {
   });
   const result={...plan,trees,curbs:attach(plan.curbs),crosswalks:attach(plan.crosswalks),cars:attach(plan.cars),people:attach(plan.people,true),lamps:attach(plan.lamps,true),signals:attach(plan.signals,true)};
   result.stats={...plan.stats,trees:trees.length,streetTrees:plan.stats.streetTrees-removed.length-structureRemoved.filter(t=>t.source==='inferred-street').length,generatedTrees:plan.stats.generatedTrees-removed.length-structureRemoved.length,gradeAdjustedFurnishings:elevated,gradeSuppressedTrees:removed.length,structureSuppressedTrees:structureRemoved.length};
+  for(const [counter,source]of [['landscapeTrees','inferred-landscape'],['greenTrees','inferred-green'],['rowTrees','inferred-osm-row']]) result.stats[counter]=(plan.stats[counter]||0)-structureRemoved.filter(t=>t.source===source).length;
   return result;
 }
 
@@ -122,7 +123,7 @@ function crossing(a, b, c, d) {
 }
 
 /** Pure deterministic placement. Kept independent of Three.js rendering for clearance tests. */
-export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110, maxPeople = 170, roadPlan = null } = {}) {
+export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110, maxPeople = 170, roadPlan = null, landscapeTrees = [] } = {}) {
   const bounds = data.bounds, buildings = new Grid(), roads = new Grid(), occupiedTrees = new Grid(12);
   const validBounds = (p, margin = 1) => p[0] > bounds[0] + margin && p[0] < bounds[2] - margin && p[1] > bounds[1] + margin && p[1] < bounds[3] - margin;
   for (const building of data.buildings) buildings.add(building, boundsOf(building.outer));
@@ -165,9 +166,18 @@ export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110,
   }
   const nearJunction = (p, distance = 14) => [...junctionGrid.near(p, distance)].some(j => Math.hypot(j.point[0] - p[0], j.point[1] - p[1]) < distance);
   const trees = [], lamps = [], cars = [], people = [], curbs = [], crosswalks = [], signals = [];
-  const stats = { observedTrees: 0, rejectedObservedTrees: 0, rowTrees: 0, streetTrees: 0, greenTrees: 0, junctions: junctions.length, placementSource: 'OSM trees / tree rows / street nodes + constrained inferred furnishings; no imagery' };
+  const stats = { observedTrees: 0, rejectedObservedTrees: 0, rowTrees: 0, streetTrees: 0, greenTrees: 0, landscapeTrees: 0, junctions: junctions.length, placementSource: 'OSM observations + constrained inferred furnishings and landscape templates; no image-derived geometry' };
+  const forbiddenTrees = new Grid();
+  for (const p of [...(data.water || []), ...(data.landscapes || []).filter(p=>['parking','sport','construction','plaza','soil'].includes(p.kind))]) forbiddenTrees.add(p,boundsOf(p.outer));
+  const paths = new Grid();
+  for (const road of data.roads.filter(r=>!r.bridge && /footway|path|steps|pedestrian|cycleway/.test(r.type))) for (const [a,b] of road.segments) {
+    const box=boundsOf([a,b]),pad=road.width/2+1;
+    paths.add({a,b,width:road.width},[box[0]-pad,box[1]-pad,box[2]+pad,box[3]+pad]);
+  }
+  const treeSiteClear = p => ![...forbiddenTrees.near(p)].some(poly=>inPoly(p,poly)) && ![...paths.near(p)].some(s=>segmentDistance(p,s.a,s.b)<s.width/2+1);
   const treeNear = (p, distance) => [...occupiedTrees.near(p, distance)].some(t => Math.hypot(t.x - p[0], t.z - p[1]) < distance);
   function addTree(point, key, height, source, shape) {
+    if (source !== 'osm' && !treeSiteClear(point)) return false;
     if (trees.length >= maxTrees || !isClear(point, source === 'osm' ? .5 : 2.1) || treeNear(point, source === 'osm' ? 2.6 : source === 'inferred-street' ? 9 : 6)) return false;
     const rng = stableRandom(`crown:${key}:${seed}`), h = clamp(height || 6.8 + rng() * 3, 3.8, 19);
     const tree = { x: point[0], z: point[1], h, radius: h * (shape === 'columnar' ? .17 : .29), shape: shape || (rng() < .22 ? 'columnar' : 'spreading'), key, source, rotation: rng() * Math.PI * 2, variation: rng() };
@@ -198,14 +208,19 @@ export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110,
   }
   for (const green of data.greens || []) {
     const rng = stableRandom(`green:${green.id}:${seed}`), box = boundsOf(green.outer);
-    const dense = /forest|wood/.test(green.tags?.landuse || green.tags?.natural || ''), step = dense ? 8.5 : 13;
+    const dense = /forest|wood|trees/.test([green.tags?.landuse,green.tags?.natural,green.tags?.landcover].join(' ')), step = dense ? 8.5 : 16;
+    const lawn = /^(grass|meadow)$/.test(green.tags?.landuse || green.tags?.landcover || green.tags?.natural || '');
     for (let x = Math.max(bounds[0] + 3, box[0]) + step / 2; x < Math.min(bounds[2] - 3, box[2]); x += step)
       for (let z = Math.max(bounds[1] + 3, box[1]) + step / 2; z < Math.min(bounds[3] - 3, box[3]); z += step) {
-        if (!dense && rng() < .23) continue;
+        if (!dense && rng() < .28) continue;
         const p = [x + (rng() - .5) * step * .6, z + (rng() - .5) * step * .6];
+        const edge = Math.min(...green.outer.map((a,i)=>segmentDistance(p,a,green.outer[(i+1)%green.outer.length])));
+        // A lawn is an open surface, not a forest. Parks retain open centres.
+        if (!dense && (lawn ? edge>7 : edge>18 && rng()<.88)) continue;
         if (inPoly(p, green) && addTree(p, `green:${green.id}:${x}:${z}`, 6 + rng() * 5, 'inferred-green')) stats.greenTrees++;
       }
   }
+  for (const tree of landscapeTrees) if (addTree(tree.point, tree.key, tree.height, 'inferred-landscape', tree.shape)) stats.landscapeTrees++;
   const facilityGrid = new Grid(20), reserveFacility = (p, distance = 12) => {
     if ([...facilityGrid.near(p, distance)].some(q => Math.hypot(q[0] - p[0], q[1] - p[1]) < distance)) return false;
     facilityGrid.add(p, [p[0], p[1], p[0], p[1]]); return true;
@@ -300,7 +315,7 @@ export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110,
       }
     }
   }
-  Object.assign(stats, { trees: trees.length, generatedTrees: stats.rowTrees + stats.streetTrees + stats.greenTrees, lamps: lamps.length, cars: cars.length, people: people.length, crosswalks: crosswalks.length, signals: signals.length, curbs: curbs.length, observedCrossings: crosswalks.filter(c => c.source === 'osm-crossing-node').length, observedSignals: signals.filter(s => s.source === 'osm-node').length, observedLamps: lamps.filter(l => l.source === 'osm-node').length });
+  Object.assign(stats, { trees: trees.length, generatedTrees: stats.rowTrees + stats.streetTrees + stats.greenTrees + stats.landscapeTrees, lamps: lamps.length, cars: cars.length, people: people.length, crosswalks: crosswalks.length, signals: signals.length, curbs: curbs.length, observedCrossings: crosswalks.filter(c => c.source === 'osm-crossing-node').length, observedSignals: signals.filter(s => s.source === 'osm-node').length, observedLamps: lamps.filter(l => l.source === 'osm-node').length });
   const clippedKerbs=clipKerbsAtCrossings(curbs,crosswalks);curbs.length=0;curbs.push(...clippedKerbs.curbs);
   Object.assign(stats,{curbs:curbs.length,curbCrossingCuts:clippedKerbs.cutSegments,curbCrossingClearanceMetres:clippedKerbs.droppedLength});
   return gradeStreetLife({ trees, lamps, cars, people, curbs, crosswalks, signals, stats },roadPlan);

@@ -12,8 +12,9 @@ const viewport=$('viewport');
 let renderer,scene,camera,controls,ink,city,data,sun,needsRender=true,mode=0,inspect=false,toastTimer;
 let mapState=null;
 const initialView=decodeView(location.hash);
+if(initialView?.toggles?.['landscape-toggle']===false)$('landscape-toggle').checked=false;
 let rawData,seed=initialView?.seed||1,currentView='overview';
-let buildCity=buildEnhancedCity,InkRenderer=EnhancedInkRenderer;
+let buildCity=data=>buildEnhancedCity(data,{landscapeEnabled:$('landscape-toggle').checked}),InkRenderer=EnhancedInkRenderer;
 const baselineMode=new URLSearchParams(location.search).get('baseline')==='1';
 const rangeBindings=[
   ['line-width','line-output','lineWidth',1,1],['tone-size','tone-output','toneSize',1,1],['density','density-output','inkDensity',100,0],
@@ -123,7 +124,7 @@ function download(blob,name){const link=document.createElement('a');const url=UR
 
 function captureState(){
   const rounded=v=>v.toArray().map(x=>Math.round(x*1000)/1000);
-  return {version:2,view:currentView,seed,mode,position:rounded(camera.position),target:rounded(controls.target),parameters:Object.fromEntries(Object.keys(parameterRanges).map(id=>[id,Number($(id).value)])),toggles:Object.fromEntries(['windows-toggle','trees-toggle','props-toggle','shadows-toggle'].map(id=>[id,$(id).checked]))};
+  return {version:2,view:currentView,seed,mode,position:rounded(camera.position),target:rounded(controls.target),parameters:Object.fromEntries(Object.keys(parameterRanges).map(id=>[id,Number($(id).value)])),toggles:Object.fromEntries(['windows-toggle','trees-toggle','props-toggle','shadows-toggle','landscape-toggle'].map(id=>[id,$(id).checked]))};
 }
 function applyParameters(){
   for(const [id,output,uniform,divisor,precision]of rangeBindings){const value=Number($(id).value);$(output).value=divisor===100?`${value}%`:value.toFixed(precision);if(ink.material.uniforms[uniform])ink.material.uniforms[uniform].value=value/divisor;}
@@ -141,7 +142,8 @@ function applyParameters(){
 function updateGenerationStats(){
   $('seed-label').textContent=`种子 ${seed}`;
   const stats=city.streetStats||city.stats||{};
-  $('generation-stats').textContent=`树木 ${city.treeCount}（规则补充 ${city.generatedTrees}） · 街道标注 ${data.streetNodes.length} 个。刷新使用相同种子，布局保持一致。`;
+  const land=city.landscapeStats;
+  $('generation-stats').textContent=`树木 ${city.treeCount}（规则补充 ${city.generatedTrees}） · 街道标注 ${data.streetNodes.length} 个。${land?`场地：OSM ${data.landscapes.length} 处，景观补全 ${land.inferredSites} 处。`:''} 补全为示意；相同种子保持布局。`;
   $('render-status').textContent=`${data.buildings.length} 个体块 · ${city.treeCount} 棵树 · 规则生成细节`;
 }
 function regenerate(nextSeed){
@@ -196,6 +198,7 @@ function connectUI(){
   for(const id of Object.keys(parameterRanges))$(id).addEventListener('input',applyParameters);
   $('detail-view').onchange=()=>{if($('detail-view').value)preset($('detail-view').value);};
   $('props-toggle').onchange=applyParameters;
+  $('landscape-toggle').onchange=()=>{regenerate(seed);sun.shadow.needsUpdate=true;invalidate();};
   $('reset-look').onclick=()=>{for(const id of Object.keys(parameterRanges))if(id!=='lens')$(id).value=$(id).defaultValue;applyParameters();};
   $('save-view').onclick=async()=>{const hash=encodeView(captureState());history.replaceState(null,'',hash);$('view-link').value=location.href;try{await navigator.clipboard.writeText(location.href);toast('视角链接已复制，包含机位、参数与种子。');}catch{toast('视角已写入地址栏，也可在侧栏复制链接。');}};
   $('export-state').onclick=()=>download(new Blob([JSON.stringify(captureState(),null,2)],{type:'application/json'}),'beijing-city-ink-view.json');
@@ -234,6 +237,7 @@ async function initialize(){
       return response.ok?{name,overlay:await response.json()}:null;
     }));
     for(const result of overlays)if(result.status==='fulfilled'&&result.value)mergeOSMOverlay(raw,result.value.overlay,result.value.name);
+    try{const response=await fetch(`${import.meta.env.BASE_URL}data/landscape-profile.json`);if(response.ok)raw.metadata.landscapeProfile=await response.json();}catch{/* Default profile also works without a regional configuration. */}
     rawData=raw;data=parseOSM(raw,seed);city=buildCity(data);
     scene=new THREE.Scene();scene.background=new THREE.Color('#f7f5ed');scene.add(city.group);
     renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:false,powerPreference:'high-performance'});

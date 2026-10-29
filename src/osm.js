@@ -195,5 +195,5 @@ export function parseOSM(raw, seed = 1) {
   const trees = raw.elements.filter(e => e.type === 'node' && e.tags?.natural === 'tree').map(e => ({ point: project.point(e), id: e.id, height: metres(e.tags.height) || 7 })).filter(e => contains(e.point));
   const streetNodes=raw.elements.filter(e=>e.type==='node' && /^(crossing|traffic_signals|street_lamp|bus_stop)$/.test(e.tags?.highway||'')).map(e=>({id:e.id,point:project.point(e),kind:e.tags.highway,tags:e.tags})).filter(e=>contains(e.point));
   const treeRows=raw.elements.filter(e=>e.type==='way' && e.tags?.natural==='tree_row').map(e=>({id:e.id,points:geometry(e).map(project.point),tags:e.tags}));
-  return { buildings, roads, greens, water, landscapes, landscapeContexts, trees, streetNodes, treeRows, bounds, project, metadata: raw.metadata, stats: { invalidRings, suppressed, landscapePolygons: landscapes.length } };
+  return { buildings, roads, greens, water, landscapes, landscapeContexts, trees, streetNodes, treeRows, bounds, project, seed, metadata: raw.metadata, stats: { invalidRings, suppressed, landscapePolygons: landscapes.length } };
 }

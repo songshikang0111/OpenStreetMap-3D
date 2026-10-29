@@ -18,7 +18,7 @@ export function decodeView(hash){
     result.parameters={};
     for(const [name,[lo,hi]]of Object.entries(parameterRanges))if(Number.isFinite(raw.parameters?.[name]))result.parameters[name]=Math.max(lo,Math.min(hi,raw.parameters[name]));
     result.toggles={};
-    for(const name of ['windows-toggle','trees-toggle','props-toggle','shadows-toggle'])if(typeof raw.toggles?.[name]==='boolean')result.toggles[name]=raw.toggles[name];
+    for(const name of ['windows-toggle','trees-toggle','props-toggle','shadows-toggle','landscape-toggle'])if(typeof raw.toggles?.[name]==='boolean')result.toggles[name]=raw.toggles[name];
     for(const name of ['position','target'])if(Array.isArray(raw[name]) && raw[name].length===3 && raw[name].every(n=>Number.isFinite(n)&&Math.abs(n)<=10000))result[name]=raw[name];
     return result;
   }catch{return null;}

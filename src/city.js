@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import clipping from 'polygon-clipping';
 import { area, inside, stableRandom } from './osm.js';
 import { buildingStyle, landmarkKind, roofEquipment } from './building-rules.js';
 import { buildChinaZun, buildCctv } from './landmarks.js';
@@ -6,6 +7,7 @@ import { buildStreetLife } from './streetlife.js';
 import { buildRoadSurface } from './road-surface.js';
 import { facadeLayout, nearbyFacadeFrames } from './facade-layout.js';
 import { installFacadeShader } from './facade-shader.js';
+import { buildLandscape } from './landscape.js';
 
 class MeshWriter {
   constructor() { this.positions = []; this.normals = []; this.colors = []; this.facades = []; this.ids = []; this.styles=[]; this.style=0; this.variant=0; this.layouts=[]; this.layout=[0,0,0,0]; }
@@ -52,8 +54,11 @@ function normalizedRing(ring, clockwise = false) {
 function polygon(writer, feature, y, color, id = 0) {
   const outer = feature.outer.map(p => new THREE.Vector2(...p));
   const holes = (feature.holes || []).map(h => h.map(p => new THREE.Vector2(...p)));
+  // triangulateShape removes repeated closing vertices in-place. Build its
+  // index lookup afterwards, including for closed boolean-clipping results.
+  const triangles = THREE.ShapeUtils.triangulateShape(outer, holes);
   const all = [...outer, ...holes.flat()];
-  for (const t of THREE.ShapeUtils.triangulateShape(outer, holes)) writer.triangle(...t.map(i => [all[i].x, y, all[i].y]), [0, 1, 0], color, id);
+  for (const t of triangles) writer.triangle(...t.map(i => [all[i].x, y, all[i].y]), [0, 1, 0], color, id);
 }
 
 function orientedBox(writer,center,axes,dimensions,color,id=0){
@@ -77,7 +82,7 @@ function facadeMaterial(shared) {
   return material;
 }
 
-export function buildCity(data) {
+export function buildCity(data, { landscapeEnabled = true } = {}) {
   const group = new THREE.Group(); group.name = 'Beijing CBD — OpenStreetMap';
   const shared = { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: {value:.5}, glassReflection: {value:.65}, toneSize:{value:4.2} };
   const material = facadeMaterial(shared);
@@ -86,10 +91,12 @@ export function buildCity(data) {
   const base = new THREE.Mesh(new THREE.BoxGeometry(x1-x0+34,14,z1-z0+34), new THREE.MeshStandardMaterial({color:'#d8d4c7',roughness:1}));
   base.position.set((x0+x1)/2,-7,(z0+z1)/2); base.receiveShadow = true; base.name = 'Flat ground / no DEM'; base.userData.inkClass=5; group.add(base);
   const groundWriter = new MeshWriter();
-  for (const feature of data.greens) polygon(groundWriter, feature, .18, '#aebea0', 60000);
-  for (const feature of data.water) polygon(groundWriter, feature, .22, '#8dacae', 60001);
+  const groundFrame=[[[x0,z0],[x1,z0],[x1,z1],[x0,z1]]];
+  for (const feature of data.water) for(const [outer,...holes] of clipping.intersection([feature.outer,...(feature.holes||[])],groundFrame)) polygon(groundWriter, {outer,holes}, .22, '#8dacae', 60001);
   const landCover=groundWriter.mesh(baseMaterial,'Land cover');landCover.userData.inkClass=5;group.add(landCover);
   const roadSurface=buildRoadSurface(data);group.add(roadSurface.group);
+  const landscape=buildLandscape(data,{roadPlan:roadSurface.plan,seed:data.seed||1,profile:{...data.metadata?.landscapeProfile,enabled:landscapeEnabled}});
+  group.add(landscape.group);
 
   const buildings=[],nearWalls=[],landmarks=[],familyCounts={},grammarCounts={};
   const sourceColors={height:'#60988e',levels:'#86a8c3',estimated:'#daab73'};
@@ -170,11 +177,12 @@ export function buildCity(data) {
     streetlife.updateLOD(camera);
   }
 
-  const streetlife=buildStreetLife(data,{roadPlan:roadSurface.plan});
+  const streetlife=buildStreetLife(data,{roadPlan:roadSurface.plan,seed:data.seed||1,landscapeTrees:landscape.plan.trees});
   const {treeGroup,streetGroup}=streetlife;group.add(treeGroup,streetGroup);
+  streetGroup.add(landscape.details);
   function setProvenance(on) {
     shared.provenance.value=on?1:0;
     for(const mesh of buildings){const colors=mesh.geometry.attributes.color;if(on){const c=mesh.userData.sourceColor;for(let i=0;i<colors.count;i++)colors.setXYZ(i,c.r,c.g,c.b);}else colors.array.set(mesh.userData.originalColors);colors.needsUpdate=true;}
   }
-  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,sourceColors,landmarks,familyCounts,grammarCounts,facadeStats:{candidateWalls:nearWalls.length,maxInstances:18000}};
+  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,landscapeStats:landscape.stats,sourceColors,landmarks,familyCounts,grammarCounts,facadeStats:{candidateWalls:nearWalls.length,maxInstances:18000}};
 }

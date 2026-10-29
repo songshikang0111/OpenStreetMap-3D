@@ -168,6 +168,10 @@ void main(){
     // is below the facade tone threshold. Keep cast shadows and contact AO as
     // separate signals instead of spreading one gray tone across the street.
     float groundDensity=(castShadow*.46*shadowStrength+ao*.34)*inkDensity;
+    // Ground-use subclasses encode broad material values, not micro textures.
+    // Paving stays paper; lawn and hedge retain a quiet tone in full sunlight.
+    float siteTone=isClass(kind,5.)*clamp(id.a-5.,0.,.3);
+    groundDensity=1.-(1.-groundDensity)*(1.-siteTone*.65*inkDensity);
     groundDensity*=mix(1.,.68,walkway);
     density=mix(density,groundDensity,ground);
     density*=1.-roadPaint;
