@@ -241,7 +241,9 @@ export function buildStreetLife(data, options = {}) {
   const box = new THREE.BoxGeometry(1, 1, 1), cylinder = new THREE.CylinderGeometry(1, 1, 1, 7), crown = crownGeometry(), detailedCrown = crownGeometry(true);
   const dummy = new THREE.Object3D(), up = new THREE.Vector3(0, 1, 0);
   function mesh(group, name, geometry, count, color, inkClass) {
-    const result = new THREE.InstancedMesh(geometry, inkClass===2?foliageMaterial(color):new THREE.MeshStandardMaterial({ color, roughness: .93 }), Math.max(1, count));
+    // Leaf instances already carry a species tint; a second green material
+    // would multiply it twice and make every crown unnaturally dark.
+    const result = new THREE.InstancedMesh(geometry, inkClass===2?foliageMaterial('#ffffff'):new THREE.MeshStandardMaterial({ color, roughness: .93 }), Math.max(1, count));
     result.count = count; result.name = name; result.userData.inkClass = inkClass;
     result.userData.procedural = true; result.castShadow = inkClass !== 3; result.receiveShadow = true;
     group.add(result); return result;

@@ -153,11 +153,13 @@ void main(){
     vec3 worldNormal=normalize(mat3(inverseView)*normal);
     vec3 worldPoint=(inverseView*vec4(viewPosition(vUv,rawDepth),1.)).xyz;
     float worldPixel=length(fwidth(worldPoint));
+    float leafLine=0.;
     if(tree>.5){
       float lower=1.-smoothstep(-.22,.35,worldNormal.y);
       float canopyShade=clamp((threshold-illumination)/max(threshold,.08),0.,1.);
       float leaf=leafTexture(worldPoint,worldPixel);
       float leafShadow=lower*.52+canopyShade*.34+ao*.12+(leaf-.5)*.9;
+      leafLine=(1.-smoothstep(.012,.05,abs(leaf-.54)))*(1.-smoothstep(.04,.2,worldPixel))*.65;
       density=mix(density,.10+canopyShade*.28+ao*.12,treeInk);
       solid=mix(solid,smoothstep(.40,.62,leafShadow),treeInk);
     }
@@ -173,7 +175,7 @@ void main(){
       float coverage=max(edge,max(screentone(density),max(solid,glassInk)));
       result=mix(paper,ink,coverage);
     }else if(mode<1.5){
-      result=mix(paper,ink,max(edge,max(glassEdge,glassInk*.075)));
+      result=mix(paper,ink,max(edge,max(leafLine,max(glassEdge,glassInk*.075))));
     }else if(mode<2.5){
       vec3 lit=color*(1.-ao*.48);
       float air=(1.-exp(-depth/2500.))*haze;
