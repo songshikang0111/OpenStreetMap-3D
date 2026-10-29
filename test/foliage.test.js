@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { crownGeometry } from '../src/foliage.js';
+import { crownGeometry, crownBase, crownProfile, treeLODWeights, TREE_LOD } from '../src/foliage.js';
 import { buildStreetLife } from '../src/streetlife.js';
 
 test('canopy surfaces have reproducible closed seams, unit normals and a bounded mesh budget',()=>{
@@ -12,17 +12,93 @@ test('canopy surfaces have reproducible closed seams, unit normals and a bounded
       assert(Math.abs(Math.hypot(n.getX(i),n.getY(i),n.getZ(i))-1)<1e-6);
     }
     // The triangle soup duplicates shared positions, but they must coincide.
-    const edges=new Map(),key=i=>[p.getX(i),p.getY(i),p.getZ(i)].map(v=>v.toFixed(5)).join(',');
+    const edges=new Map(),normals=new Map(),key=i=>[p.getX(i),p.getY(i),p.getZ(i)].map(v=>v.toFixed(5)).join(',');
+    for(let i=0;i<p.count;i++){const normal=[n.getX(i),n.getY(i),n.getZ(i)],existing=normals.get(key(i));if(existing)assert.deepEqual(normal,existing);else normals.set(key(i),normal);}
     for(let i=0;i<p.count;i+=3)for(const [s,t]of [[0,1],[1,2],[2,0]]){const k=[key(i+s),key(i+t)].sort().join('|');edges.set(k,(edges.get(k)||0)+1);}
     assert([...edges.values()].every(c=>c===2));a.dispose();b.dispose();
   }
 });
 
-test('tree LOD changes appearance only, and rebuilding a near view repeats the leaf transforms',()=>{
+test('tree LOD keeps a common opaque crown in every pass and deterministic geometry on return',()=>{
   const data={bounds:[-500,-500,500,500],roads:[],buildings:[],greens:[],trees:[{id:1,point:[0,0],height:8}],treeRows:[],streetNodes:[]};
   const life=buildStreetLife(data),camera={position:{x:0,y:3,z:10}},near=life.treeGroup.getObjectByName('Nearby crown clusters');
-  life.updateLOD(camera);const first=near.instanceMatrix.array.slice();assert.equal(near.count,19);
-  life.updateLOD({position:{x:400,y:500,z:400}});assert.equal(near.count,0);
+  const base=life.treeGroup.getObjectByName('Distant tree crowns');
+  life.updateLOD(camera);const first=near.instanceMatrix.array.slice();assert.equal(near.count,TREE_LOD.clusters);assert.equal(base.count,1);
+  for(const mesh of [base,near]){assert.equal(mesh.material.transparent,false);assert.equal(mesh.material.opacity,1);assert.equal(mesh.material.alphaTest,0);assert.equal(mesh.castShadow,true);assert.equal(mesh.userData.inkClass,2);assert.equal(mesh.customDepthMaterial,undefined);}
+  life.updateLOD({position:{x:400,y:500,z:400}});assert.equal(near.count,0);assert.equal(base.count,1);
   life.updateLOD(camera);assert.equal(life.treeCount,1);assert.deepEqual(near.instanceMatrix.array,first);
   assert.equal(life.plan.trees[0].source,'osm');life.dispose();
+});
+
+const illustrativeTree=(key,x=0,z=0)=>({key,x,z,h:8,shape:'spreading',rotation:.37,variation:.42});
+
+test('branch-associated canopy profiles are seeded, bounded and lower in triangles than the previous budget',()=>{
+  const tree=illustrativeTree('a'),a=crownProfile(tree),b=crownProfile(tree),other=crownProfile(illustrativeTree('b'));
+  assert.deepEqual(a,b);assert.notDeepEqual(a.clusters,other.clusters);
+  assert.equal(a.clusters.length,18);assert.equal(a.branches.length,6);
+  assert.equal(a.clusters.length+1,19,'persistent base belongs to the 19-mass near crown');
+  assert(new Set(a.clusters.map(c=>c.scale.join(','))).size>12,'lobes have different proportions');
+  for(const c of a.clusters){assert(c.position.every(Number.isFinite));assert(c.scale.every(v=>v>0));assert(c.position[1]>tree.h*.5);assert(c.position[1]+c.scale[1]*1.3<tree.h*1.2+.35);assert(Math.hypot(c.position[0],c.position[2])+Math.max(c.scale[0],c.scale[2])*1.3<tree.h*.38);}
+  a.branches.forEach((branch,i)=>assert.deepEqual(branch.b,a.clusters[i*3+1].position));
+  const far=crownGeometry(),near=crownGeometry(true),perTree=far.attributes.position.count/3+near.attributes.position.count/3*TREE_LOD.clusters;
+  assert.equal(far.attributes.position.count/3,180);assert.equal(near.attributes.position.count/3,320);assert(perTree<19*500);
+  far.dispose();near.dispose();
+});
+
+test('distance transitions are continuous at near, former hard cutoff and far boundaries',()=>{
+  const trees=[illustrativeTree('a')],y=crownBase(trees[0]).position[1];
+  const at=x=>treeLODWeights(trees,{x,y,z:0});
+  assert.equal(at(10).weights[0],1);assert.equal(at(111).weights[0],0);
+  for(const boundary of [TREE_LOD.nearDistance,95,TREE_LOD.distance]){
+    const a=at(boundary-.001),b=at(boundary+.001);
+    assert(Math.abs(a.weights[0]-b.weights[0])<.0001,`continuous at ${boundary} m`);
+  }
+  assert(at(94.9).weights[0]>at(95.1).weights[0]);
+});
+
+test('nearest-tree budget changes at zero weight, without source-order or location dependence',()=>{
+  const trees=Array.from({length:95},(_,i)=>illustrativeTree(`inner-${i}`,Math.cos(i)*20,Math.sin(i)*20));
+  trees.push(illustrativeTree('left',-80,0),illustrativeTree('right',80,0));
+  const y=crownBase(trees[0]).position[1];
+  const a=treeLODWeights(trees,{x:-.01,y,z:0}),b=treeLODWeights(trees,{x:.01,y,z:0});
+  for(const result of [a,b])assert(result.active.length<=96);
+  assert(a.weights[95]<.0001&&b.weights[96]<.0001,'the entering/leaving 96th crown must be almost invisible');
+  assert.equal(a.weights[96],0);assert.equal(b.weights[95],0);
+  trees.forEach((_,i)=>assert(Math.abs(a.weights[i]-b.weights[i])<.0001));
+  const reversed=treeLODWeights([...trees].reverse(),{x:-.01,y,z:0});
+  trees.forEach((_,i)=>assert.equal(a.weights[i],reversed.weights[trees.length-1-i]));
+  const translated=treeLODWeights(trees.map(t=>({...t,x:t.x+8732,z:t.z-3159})),{x:8731.99,y,z:-3159});
+  trees.forEach((_,i)=>assert(Math.abs(a.weights[i]-translated.weights[i])<1e-6));
+});
+
+test('small camera movement updates geometry continuously, including former 15 m grid boundaries',()=>{
+  const data={bounds:[-500,-500,500,500],roads:[],buildings:[],greens:[],trees:[{id:1,point:[0,0],height:8}],treeRows:[],streetNodes:[]};
+  const life=buildStreetLife(data),near=life.treeGroup.getObjectByName('Nearby crown clusters'),base=life.treeGroup.getObjectByName('Distant tree crowns');
+  const pose=x=>({position:{x,y:6.43,z:65}});
+  life.updateLOD(pose(7.49));const before=near.instanceMatrix.array.slice(),baseBefore=base.instanceMatrix.array.slice();
+  life.updateLOD(pose(7.51));const after=near.instanceMatrix.array;
+  const delta=Math.max(...after.map((v,i)=>Math.abs(v-before[i])));assert(delta>0&&delta<.002);
+  assert(Math.max(...base.instanceMatrix.array.map((v,i)=>Math.abs(v-baseBefore[i])))<.002);
+  const version=near.instanceMatrix.version;life.updateLOD(pose(7.51));assert.equal(near.instanceMatrix.version,version,'stationary cameras need no repeated upload');
+  for(const z of [109.99,110,110.01]){life.updateLOD({position:{x:0,y:6.43,z}});assert.equal(base.count,1);if(z<110)assert(life.lodState.weights[0]<1e-6);else assert.equal(near.count,0);}
+  life.dispose();
+});
+
+test('dense groves obey the cap with non-singular opaque instances and retain every base crown',()=>{
+  const trees=Array.from({length:196},(_,i)=>({id:i+1,point:[(i%14-6.5)*4,(Math.floor(i/14)-6.5)*4],height:8}));
+  const data={bounds:[-100,-100,100,100],roads:[],buildings:[],greens:[],trees,treeRows:[],streetNodes:[]},life=buildStreetLife(data);
+  assert.equal(life.treeCount,196);
+  const base=life.treeGroup.getObjectByName('Distant tree crowns'),near=life.treeGroup.getObjectByName('Nearby crown clusters'),branches=life.treeGroup.getObjectByName('Nearby branching');
+  for(const x of [-.01,0,.01,3.99,4.01]){
+    life.updateLOD({position:{x,y:3,z:0}});
+    assert(life.stats.nearTrees>0&&life.stats.nearTrees<=96);assert(life.lodState.radius<110);assert.equal(base.count,196);
+    assert.equal(near.count,life.stats.nearTrees*18);assert.equal(branches.count,life.stats.nearTrees*6);
+    for(const mesh of [base,near,branches])for(let i=0;i<mesh.count;i++){
+      const a=mesh.instanceMatrix.array,o=i*16;
+      const determinant=a[o]*(a[o+5]*a[o+10]-a[o+9]*a[o+6])-a[o+4]*(a[o+1]*a[o+10]-a[o+9]*a[o+2])+a[o+8]*(a[o+1]*a[o+6]-a[o+5]*a[o+2]);
+      assert(determinant>0,'normal/depth/shadow passes require non-singular active transforms');
+    }
+    assert(life.stats.crownTriangles<=196*180+96*18*320);
+  }
+  life.dispose();
 });

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { parseOSM, inside } from '../src/osm.js';
-import { planStreetLife, buildStreetLife, segmentDistance } from '../src/streetlife.js';
+import { planStreetLife, buildStreetLife, segmentDistance, TREE_LOD } from '../src/streetlife.js';
 
 const square = (x, z, w) => [[x, z], [x + w, z], [x + w, z + w], [x, z + w]];
 const road = (id, points, width = 10, type = 'primary') => ({ id, type, width, layer: 0, bridge: false, segments: points.slice(1).map((p, i) => [points[i], p]) });
@@ -65,10 +65,15 @@ test('Beijing furniture has finite instance transforms and foliage-only ink clas
   const details = JSON.parse(readFileSync(new URL('../public/data/street-details.json', import.meta.url)));
   raw.elements.push(...details.elements);
   const data = parseOSM(raw), life = buildStreetLife(data);
+  const placementSnapshot=JSON.stringify(life.plan.trees);
   assert(life.treeCount > data.trees.length);
   assert(life.stats.observedCrossings > 0 && life.stats.observedSignals > 0);
   life.updateLOD({ position: { x: 0, y: 3, z: 0 } });
   assert(life.stats.nearTrees > 0);
+  assert(life.stats.nearTrees<=TREE_LOD.maxTrees);
+  assert.equal(life.treeGroup.getObjectByName('Distant tree crowns').count,life.treeCount);
+  assert(life.stats.maxCrownTriangles<life.treeCount*180+96*(19*500-180),'bounded budget is lower than v0.3');
+  assert.equal(life.stats.crownTriangles,life.treeCount*180+life.stats.nearTrees*18*320);
   for (const group of [life.treeGroup, life.streetGroup]) group.traverse(mesh => {
     if (!mesh.isInstancedMesh) return;
     assert([...mesh.instanceMatrix.array].every(Number.isFinite));
@@ -77,6 +82,8 @@ test('Beijing furniture has finite instance transforms and foliage-only ink clas
   });
   const roads = data.roads.filter(r => !r.bridge && !/footway|path|steps|pedestrian|cycleway/.test(r.type));
   for (const t of life.plan.trees) for (const r of roads) for (const [a, b] of r.segments) assert(segmentDistance([t.x, t.z], a, b) >= r.width / 2 + .64);
+  life.updateLOD({position:{x:57.5,y:7.5,z:22.5}});
+  assert.equal(JSON.stringify(life.plan.trees),placementSnapshot,'LOD must not move, replace or relabel trees');
   console.log('Street life:', life.stats);
   life.dispose();
 });

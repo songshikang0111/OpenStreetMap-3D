@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { inside, stableRandom } from './osm.js';
-import { crownGeometry, foliageMaterial } from './foliage.js';
-export const TREE_LOD=Object.freeze({distance:95,maxTrees:96,clusters:19});
+import { crownGeometry, foliageMaterial, crownBase, crownProfile, treeLODWeights, TREE_LOD } from './foliage.js';
+export { TREE_LOD } from './foliage.js';
 
 // These additions are spatially constrained illustrations, not surveyed street assets.
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
@@ -264,32 +264,50 @@ export function buildStreetLife(data, options = {}) {
   const far = mesh(treeGroup, 'Distant tree crowns', crown, plan.trees.length, '#81916b', 2);
   const maxDetailedTrees=TREE_LOD.maxTrees,clusters=TREE_LOD.clusters;
   const near = mesh(treeGroup, 'Nearby crown clusters', detailedCrown, Math.min(plan.trees.length, maxDetailedTrees) * clusters, '#81916b', 2);
-  const branches = mesh(treeGroup, 'Nearby branching', cylinder, Math.min(plan.trees.length, maxDetailedTrees) * 4, '#756650', 4);
+  const branches = mesh(treeGroup, 'Nearby branching', cylinder, Math.min(plan.trees.length, maxDetailedTrees) * TREE_LOD.branches, '#756650', 4);
   near.instanceMatrix.setUsage(THREE.DynamicDrawUsage); far.instanceMatrix.setUsage(THREE.DynamicDrawUsage); branches.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   plan.trees.forEach((tree, i) => transform(trunks, i, [tree.x, tree.h * .28 + .35, tree.z], [tree.h * .016, tree.h * .56, tree.h * .016]));
   const colors = ['#778865', '#8b9975', '#738568', '#94a079'];
-  let lodKey = '';
+  const baseShapes = plan.trees.map(crownBase), baseColors = plan.trees.map(tree => new THREE.Color(colors[Math.floor(tree.variation * colors.length)]));
+  baseShapes.forEach((base, i) => transform(far, i, base.position, base.scale, base.angle, baseColors[i]));
+  // This base remains present in every pass and at every distance. Its initial
+  // bounding sphere is valid throughout LOD because it only shrinks in place.
+  far.computeBoundingSphere();
+  const profiles = new Map(), tint = new THREE.Color();
+  const lodState = { weights: new Float32Array(plan.trees.length), active: [], radius: TREE_LOD.distance, fullDistance: TREE_LOD.nearDistance };
+  let lastPosition = null, previousActive = new Set();
   function updateLOD(camera) {
-    const key = `${Math.round(camera.position.x / 15)},${Math.round(camera.position.z / 15)},${Math.round(camera.position.y / 15)}`;
-    if (key === lodKey) return; lodKey = key;
-    let f = 0, n = 0, b = 0, detailedTrees = 0;
-    for (const tree of plan.trees) {
-      const color = colors[Math.floor(tree.variation * colors.length)], isNear = Math.hypot(tree.x-camera.position.x,tree.h*.76-camera.position.y,tree.z-camera.position.z)<TREE_LOD.distance && detailedTrees < maxDetailedTrees;
-      const width = tree.shape === 'columnar' ? tree.h * .145 : tree.h * .24;
-      if (!isNear) { transform(far, f++, [tree.x, tree.h * .76 + .35, tree.z], [width, tree.h * .29, width * .92], tree.rotation, color); continue; }
-      detailedTrees++;
-      const rng=stableRandom(`leaf-clusters:${tree.key}`);
-      for (let j = 0; j < clusters; j++) {
-        const angle = tree.rotation + j * 2.39996+(rng()-.5)*.6, t = (j - 1) / (clusters-2);
-        const radius = j === 0 ? 0 : width * (.75+rng()*.15) * Math.sqrt(1 - Math.pow((t - .5) * 1.65, 2));
-        const y = tree.h * (j === 0 ? .77 : tree.shape === 'columnar' ? .55 + t * .43 : .60 + t * .34) + .35;
-        const scale = j === 0 ? .70 : .28+rng()*.19;
-        transform(near, n++, [tree.x + Math.cos(angle) * radius, y, tree.z + Math.sin(angle) * radius], [width * scale, tree.h * (j === 0 ? .22 : .09+rng()*.045), width * scale*(.8+rng()*.3)], angle, color);
-        if (j > 0 && j <= 4) strut(branches, b++, [tree.x, tree.h * .35 + .35, tree.z], [tree.x + Math.cos(angle) * width * .65, tree.h * .65, tree.z + Math.sin(angle) * width * .65], tree.h * .009);
-      }
+    const { x, y, z } = camera.position;
+    if (lastPosition && x === lastPosition[0] && y === lastPosition[1] && z === lastPosition[2]) return;
+    lastPosition = [x, y, z];
+    const next = treeLODWeights(plan.trees, camera.position), activeSet = new Set(next.active.map(item => item.index));
+    for (const index of new Set([...previousActive, ...activeSet])) {
+      const base = baseShapes[index], weight = next.weights[index];
+      transform(far, index, base.position, [base.scale[0] * (1 - .26 * weight), base.scale[1] * (1 - .18 * weight), base.scale[2] * (1 - .26 * weight)], base.angle);
     }
-    for (const [target, count] of [[far, f], [near, n], [branches, b]]) { target.count = count; target.instanceMatrix.needsUpdate = true; if (target.instanceColor) target.instanceColor.needsUpdate = true; target.computeBoundingSphere(); }
-    plan.stats.nearTrees = detailedTrees;
+    if (previousActive.size || activeSet.size) far.instanceMatrix.needsUpdate = true;
+    let n = 0, b = 0;
+    for (const { index, weight } of next.active) {
+      if (!profiles.has(index)) profiles.set(index, crownProfile(plan.trees[index]));
+      const profile = profiles.get(index), origin = profile.base.position;
+      for (const cluster of profile.clusters) {
+        // Lobes emerge from inside the common crown. No alpha, dithering or
+        // pass-specific discard is involved: color, depth, normal, ID and
+        // shadow passes all consume the very same instance transforms.
+        const position = cluster.position.map((v, axis) => origin[axis] + (v - origin[axis]) * weight);
+        transform(near, n++, position, cluster.scale.map(v => v * weight), cluster.angle, tint.copy(baseColors[index]).multiplyScalar(cluster.tint));
+      }
+      for (const branch of profile.branches) strut(branches, b++, branch.a, branch.b.map((v, axis) => branch.a[axis] + (v - branch.a[axis]) * weight), branch.radius * weight);
+    }
+    for (const [target, count] of [[near, n], [branches, b]]) { target.count = count; target.instanceMatrix.needsUpdate = true; if (target.instanceColor) target.instanceColor.needsUpdate = true; target.computeBoundingSphere(); }
+    // Limit CPU-side profiles as well; re-created profiles are exactly seeded.
+    if (profiles.size > maxDetailedTrees * 2) for (const index of profiles.keys()) { if (!activeSet.has(index)) profiles.delete(index); if (profiles.size <= maxDetailedTrees * 2) break; }
+    previousActive = activeSet; Object.assign(lodState, next);
+    const triangles = geometry => (geometry.index?.count || geometry.attributes.position.count) / 3;
+    Object.assign(plan.stats, { nearTrees: next.active.length, transitionTrees: next.active.filter(item => item.weight < .999).length, treeDetailRadius: next.radius,
+      crownTriangles: far.count * triangles(crown) + near.count * triangles(detailedCrown),
+      treeTriangles: far.count * triangles(crown) + near.count * triangles(detailedCrown) + (trunks.count + branches.count) * triangles(cylinder),
+      maxCrownTriangles: plan.trees.length * triangles(crown) + Math.min(plan.trees.length, maxDetailedTrees) * clusters * triangles(detailedCrown) });
   }
   updateLOD({ position: new THREE.Vector3(0, 1000, 0) });
   const poles = mesh(streetGroup, 'Roadside lamp poles', cylinder, plan.lamps.length, '#718080', 4);
@@ -344,7 +362,7 @@ export function buildStreetLife(data, options = {}) {
   for (const group of [treeGroup, streetGroup]) group.traverse(object => { if (object.isInstancedMesh) { object.instanceMatrix.needsUpdate = true; if (object.instanceColor) object.instanceColor.needsUpdate = true; object.computeBoundingSphere(); } });
   return {
     treeGroup, streetGroup, treeCount: plan.trees.length, generatedTrees: plan.stats.generatedTrees,
-    stats: plan.stats, plan, updateLOD,
+    stats: plan.stats, plan, lodState, updateLOD,
     dispose() { const geometries = new Set(), materials = new Set(); for (const group of [treeGroup, streetGroup]) group.traverse(o => { if (o.geometry) geometries.add(o.geometry); if (o.material) materials.add(o.material); }); for (const g of geometries) g.dispose(); for (const m of materials) m.dispose(); },
   };
 }
