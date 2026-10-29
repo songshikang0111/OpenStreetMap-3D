@@ -251,6 +251,8 @@ export class InkRenderer {
     this.screenGeometry=new THREE.PlaneGeometry(2,2);this.screenMesh=new THREE.Mesh(this.screenGeometry,this.material);
     this.screen=new THREE.Scene();this.screen.add(this.screenMesh);this.screenCamera=new THREE.Camera();
     this.clayMaterial=new THREE.MeshStandardMaterial({color:'#e5e5df',roughness:1});
+    this.clayMaterial.onBeforeCompile=this.lightMaterial.onBeforeCompile;
+    this.clayMaterial.customProgramCacheKey=()=> 'neutral-clay-no-instance-color-v1';
     this._classification=new WeakMap();this.prepareScene();
   }
 

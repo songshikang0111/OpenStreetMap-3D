@@ -52,5 +52,7 @@ test('comic pass isolates light, reuses shadows, and tracks a changed camera nea
   assert(!passes.some(p=>p.target===ink.light),'color view skips unnecessary illumination draw');
   const shader={fragmentShader:'#include <color_fragment>'};ink.lightMaterial.onBeforeCompile(shader);
   assert.equal(shader.fragmentShader,'','instance tint cannot contaminate the neutral pass');
+  const clayShader={fragmentShader:'#include <color_fragment>'};ink.clayMaterial.onBeforeCompile(clayShader);
+  assert.equal(clayShader.fragmentShader,'','white model must also ignore per-instance green tint');
   ink.dispose();
 });
