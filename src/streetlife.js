@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { inside, stableRandom } from './osm.js';
 import { clipPaintSegment } from './road-surface.js';
+import { roadHeightAt } from './road-grade.js';
 import { crownGeometry, foliageMaterial, crownBase, crownProfile, crownMorphWeight, treeLODWeights, TREE_LOD } from './foliage.js';
 export { TREE_LOD } from './foliage.js';
 
@@ -55,6 +56,44 @@ class Grid {
   }
 }
 
+/** Attach furnishings to the same source carriageway profile as their road. */
+export function gradeStreetLife(plan, roadPlan) {
+  if (!roadPlan?.segments?.length) return plan;
+  const index=new Grid();
+  for(const segment of roadPlan.segments){
+    if(segment.walk || segment.road.bridge)continue;
+    const box=boundsOf([segment.a,segment.b]),pad=segment.width/2+4;
+    index.add(segment,[box[0]-pad,box[1]-pad,box[2]+pad,box[3]+pad]);
+  }
+  const sample=(point,roadId)=>{
+    let candidates=[...index.near(point)].map(s=>({s,d:segmentDistance(point,s.a,s.b)})).filter(({s,d})=>d<=s.width/2+4);
+    const own=candidates.filter(({s})=>s.road.id===roadId);if(own.length)candidates=own;
+    candidates.sort((a,b)=>a.d-b.d||String(a.s.road.id).localeCompare(String(b.s.road.id))||a.s.a[0]-b.s.a[0]||a.s.a[1]-b.s.a[1]);
+    if(!candidates.length)return null;
+    const {s,d}=candidates[0],length=Math.hypot(s.b[0]-s.a[0],s.b[1]-s.a[1]);
+    const rise=Number.isFinite(s.yA+s.yB)?s.yB-s.yA:0;
+    return {baseY:roadHeightAt(s,point),grade:[(s.b[0]-s.a[0])*rise/(length*length),(s.b[1]-s.a[1])*rise/(length*length)],roadId:s.road.id,distance:d,width:s.width};
+  };
+  let elevated=0;
+  const attach=(items,sidewalk=false)=>items.map(item=>{
+    const support=sample(item.point,item.roadId);if(!support)return item;
+    if(support.baseY>.37)elevated++;
+    return {...item,baseY:support.baseY+(sidewalk?.15:0),grade:support.grade,roadId:support.roadId};
+  });
+  // Trees inferred on a raised approach cannot be rooted in its thin side
+  // paving. Remove only that speculative planting; actual OSM trees stay put.
+  const removed=[];
+  const trees=plan.trees.filter(tree=>{
+    if(tree.source!=='inferred-street')return true;
+    const support=sample([tree.x,tree.z]);
+    const suppress=support&&support.baseY>.62&&support.distance<=support.width/2+2;
+    if(suppress)removed.push(tree);return !suppress;
+  });
+  const result={...plan,trees,curbs:attach(plan.curbs),crosswalks:attach(plan.crosswalks),cars:attach(plan.cars),people:attach(plan.people,true),lamps:attach(plan.lamps,true),signals:attach(plan.signals,true)};
+  result.stats={...plan.stats,trees:trees.length,streetTrees:plan.stats.streetTrees-removed.length,generatedTrees:plan.stats.generatedTrees-removed.length,gradeAdjustedFurnishings:elevated,gradeSuppressedTrees:removed.length};
+  return result;
+}
+
 function sampleRoad(road, step, phase, callback) {
   let distance = phase, serial = 0;
   for (const [a, b] of road.segments) {
@@ -77,7 +116,7 @@ function crossing(a, b, c, d) {
 }
 
 /** Pure deterministic placement. Kept independent of Three.js rendering for clearance tests. */
-export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110, maxPeople = 170 } = {}) {
+export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110, maxPeople = 170, roadPlan = null } = {}) {
   const bounds = data.bounds, buildings = new Grid(), roads = new Grid(), occupiedTrees = new Grid(12);
   const validBounds = (p, margin = 1) => p[0] > bounds[0] + margin && p[0] < bounds[2] - margin && p[1] > bounds[1] + margin && p[1] < bounds[3] - margin;
   for (const building of data.buildings) buildings.add(building, boundsOf(building.outer));
@@ -185,15 +224,15 @@ export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110,
     const position = roadClear(node.point) ? node.point : [center[0] - dz * side * (road.width / 2 + 1.35), center[1] + dx * side * (road.width / 2 + 1.35)];
     if (!isClear(position, .3) || treeNear(position, 1.25) || !reserveFacility(position, 3)) continue;
     const observation = { source: 'osm-node', osmId: node.id, originalPoint: node.point, positionAdjusted: Math.hypot(position[0] - node.point[0], position[1] - node.point[1]) > .05 };
-    if (node.kind === 'street_lamp') lamps.push({ point: position, direction: [dz * side, -dx * side], h: clamp(parseFloat(node.tags?.height) || 9, 4, 16), ...observation });
-    else signals.push({ point: position, angle: Math.atan2(dx, dz), ...observation });
+    if (node.kind === 'street_lamp') lamps.push({ point: position, direction: [dz * side, -dx * side], h: clamp(parseFloat(node.tags?.height) || 9, 4, 16), roadId:seg.road.id, ...observation });
+    else signals.push({ point: position, angle: Math.atan2(dx, dz), roadId:seg.road.id, ...observation });
   }
   for (const road of plantedRoads) {
     const rng = stableRandom(`life:${road.id}:${seed}`);
     sampleRoad(road, 46, 9 + rng() * 22, (p, dx, dz, index) => {
       const side = index % 2 ? 1 : -1, offset = road.width / 2 + 1.45;
       const q = [p[0] - dz * side * offset, p[1] + dx * side * offset];
-      if (isClear(q, .65) && !nearJunction(q, 10) && !treeNear(q, 2.4) && reserveFacility(q)) lamps.push({ point: q, direction: [dz * side, -dx * side], h: road.width >= 12 ? 10.5 : 8.5 });
+      if (isClear(q, .65) && !nearJunction(q, 10) && !treeNear(q, 2.4) && reserveFacility(q)) lamps.push({ point: q, direction: [dz * side, -dx * side], h: road.width >= 12 ? 10.5 : 8.5, roadId:road.id });
     });
     sampleRoad(road, 104, 12 + rng() * 60, (p, dx, dz, index) => {
       if (cars.length >= maxCars || nearJunction(p, 17)) return;
@@ -201,13 +240,13 @@ export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110,
       const q = [p[0] - dz * side * offset, p[1] + dx * side * offset];
       if (!validBounds(q, 6) || atBuilding(q, 1.2)) return;
       if (cars.some(c => Math.hypot(c.point[0] - q[0], c.point[1] - q[1]) < 14)) return;
-      cars.push({ point: q, angle: Math.atan2(dx * side, dz * side), color: rng() < .56 ? '#d2d5d2' : rng() < .6 ? '#4b626c' : '#938472', source: 'inferred' });
+      cars.push({ point: q, angle: Math.atan2(dx * side, dz * side), color: rng() < .56 ? '#d2d5d2' : rng() < .6 ? '#4b626c' : '#938472', source: 'inferred', roadId:road.id });
     });
     sampleRoad(road, 34, 7 + rng() * 25, (p, dx, dz, index) => {
       if (people.length >= maxPeople || rng() < .38) return;
       const side = index % 2 ? -1 : 1, offset = road.width / 2 + .95;
       const q = [p[0] - dz * side * offset, p[1] + dx * side * offset];
-      if (isClear(q, .4) && !nearJunction(q, 5) && !treeNear(q, 1.6) && reserveFacility(q, 2)) people.push({ point: q, angle: Math.atan2(dx, dz), h: 1.55 + rng() * .25, source: 'inferred' });
+      if (isClear(q, .4) && !nearJunction(q, 5) && !treeNear(q, 1.6) && reserveFacility(q, 2)) people.push({ point: q, angle: Math.atan2(dx, dz), h: 1.55 + rng() * .25, source: 'inferred', roadId:road.id });
     });
     for (const [a, b] of road.segments) {
       const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
@@ -221,7 +260,7 @@ export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110,
           // A center-only check leaves eight-metre kerbs protruding into a
           // joining carriageway. Check both ends and intermediate sections.
           const clear=[-.5,-.25,0,.25,.5].every(t=>roadClear([q[0]+dx*size*t,q[1]+dz*size*t],.02));
-          if (clear&&!atBuilding(q, .1)) curbs.push({ point: q, angle: Math.atan2(dx, dz), length: size });
+          if (clear&&!atBuilding(q, .1)) curbs.push({ point: q, angle: Math.atan2(dx, dz), length: size, roadId:road.id });
         }
       }
     }
@@ -234,7 +273,7 @@ export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110,
     const along = clamp(((node.point[0] - seg.a[0]) * dx + (node.point[1] - seg.a[1]) * dz) / length, 0, length);
     const point = [seg.a[0] + dx / length * along, seg.a[1] + dz / length * along];
     if (crosswalks.some(c => Math.hypot(c.point[0] - point[0], c.point[1] - point[1]) < 8)) continue;
-    crosswalks.push({ point, angle: Math.atan2(dx, dz), width: Math.max(3, seg.road.width - 1), source: 'osm-crossing-node', osmId: node.id });
+    crosswalks.push({ point, angle: Math.atan2(dx, dz), width: Math.max(3, seg.road.width - 1), source: 'osm-crossing-node', osmId: node.id, roadId:seg.road.id });
   }
   // If the extract includes crossing nodes, use those observations instead of fabricating extra junctions.
   const inferredJunctions = knownCrossings.length ? [] : junctions.slice().sort((a, b) => b.roads[0].width - a.roads[0].width).slice(0, 20);
@@ -249,16 +288,16 @@ export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110,
         // A connected approach must really exist here; do not paint beyond a T-junction.
         if (!road.segments.some(([a, b]) => segmentDistance(p, a, b) < .8)) continue;
         if (crosswalks.some(c => Math.hypot(c.point[0] - p[0], c.point[1] - p[1]) < 10)) continue;
-        crosswalks.push({ point: p, angle: Math.atan2(dx, dz), width: Math.max(3, road.width - 1), source: 'inferred-junction' });
+        crosswalks.push({ point: p, angle: Math.atan2(dx, dz), width: Math.max(3, road.width - 1), source: 'inferred-junction', roadId:road.id });
         const q = [p[0] - dz * (road.width / 2 + 1.3), p[1] + dx * (road.width / 2 + 1.3)];
-        if (isClear(q, .4) && !treeNear(q, 1.4) && reserveFacility(q, 4)) signals.push({ point: q, angle: Math.atan2(dx * direction, dz * direction), source: 'inferred-junction' });
+        if (isClear(q, .4) && !treeNear(q, 1.4) && reserveFacility(q, 4)) signals.push({ point: q, angle: Math.atan2(dx * direction, dz * direction), source: 'inferred-junction', roadId:road.id });
       }
     }
   }
   Object.assign(stats, { trees: trees.length, generatedTrees: stats.rowTrees + stats.streetTrees + stats.greenTrees, lamps: lamps.length, cars: cars.length, people: people.length, crosswalks: crosswalks.length, signals: signals.length, curbs: curbs.length, observedCrossings: crosswalks.filter(c => c.source === 'osm-crossing-node').length, observedSignals: signals.filter(s => s.source === 'osm-node').length, observedLamps: lamps.filter(l => l.source === 'osm-node').length });
   const clippedKerbs=clipKerbsAtCrossings(curbs,crosswalks);curbs.length=0;curbs.push(...clippedKerbs.curbs);
   Object.assign(stats,{curbs:curbs.length,curbCrossingCuts:clippedKerbs.cutSegments,curbCrossingClearanceMetres:clippedKerbs.droppedLength});
-  return { trees, lamps, cars, people, curbs, crosswalks, signals, stats };
+  return gradeStreetLife({ trees, lamps, cars, people, curbs, crosswalks, signals, stats },roadPlan);
 }
 
 export function buildStreetLife(data, options = {}) {
@@ -278,6 +317,15 @@ export function buildStreetLife(data, options = {}) {
   function transform(target, i, pos, scale, angle = 0, color = null) {
     dummy.position.set(...pos); dummy.rotation.set(0, angle, 0); dummy.scale.set(...scale); dummy.updateMatrix(); target.setMatrixAt(i, dummy.matrix);
     if (color) target.setColorAt(i, new THREE.Color(color));
+  }
+  function surfaceTransform(target,i,item,scale,offset) {
+    const [gx,gz]=item.grade||[0,0];
+    transform(target,i,[item.point[0],(item.baseY??.32)+offset,item.point[1]],scale,item.angle);
+    // Vertical shear follows the road plane while preserving kerb/paint depth.
+    // Tilting only the object's centre leaves its far edge cutting the ramp.
+    const m=dummy.matrix.elements;
+    for(const column of [0,4,8])m[column+1]+=gx*m[column]+gz*m[column+2];
+    target.setMatrixAt(i,dummy.matrix);
   }
   function strut(target, i, a, b, radius) {
     const start = new THREE.Vector3(...a), end = new THREE.Vector3(...b), direction = end.clone().sub(start);
@@ -338,51 +386,59 @@ export function buildStreetLife(data, options = {}) {
   const arms = mesh(streetGroup, 'Lamp arms', cylinder, plan.lamps.length, '#718080', 4);
   const lights = mesh(streetGroup, 'Lamp housings', box, plan.lamps.length, '#e0dfc8', 4);
   plan.lamps.forEach((lamp, i) => {
-    const [x, z] = lamp.point, [dx, dz] = lamp.direction, y = lamp.h + .35;
-    transform(poles, i, [x, lamp.h / 2 + .35, z], [.09, lamp.h, .09]);
+    const [x, z] = lamp.point, [dx, dz] = lamp.direction, baseY=lamp.baseY??.35,y = lamp.h + baseY;
+    transform(poles, i, [x, lamp.h / 2 + baseY, z], [.09, lamp.h, .09]);
     strut(arms, i, [x, y - .5, z], [x + dx * 2.3, y, z + dz * 2.3], .065);
     transform(lights, i, [x + dx * 2.3, y, z + dz * 2.3], [.38, .14, .85], Math.atan2(dx, dz));
   });
   const curb = mesh(streetGroup, 'Raised road kerbs', box, plan.curbs.length, '#d9d9ce', 4);
-  plan.curbs.forEach((item, i) => transform(curb, i, [item.point[0], .4, item.point[1]], [.2, .23, item.length + .015], item.angle));
+  plan.curbs.forEach((item, i) => surfaceTransform(curb,i,item,[.2,.23,item.length+.015],.08));
   const stripes = [];
   for (const item of plan.crosswalks) {
     const dx = Math.sin(item.angle), dz = Math.cos(item.angle);
-    for (let lateral = -item.width / 2 + .5; lateral < item.width / 2 - .2; lateral += 1.15)
-      stripes.push({ point: [item.point[0] + dz * lateral, item.point[1] - dx * lateral], angle: item.angle });
+    for (let lateral = -item.width / 2 + .5; lateral < item.width / 2 - .2; lateral += 1.15) {
+      const point=[item.point[0]+dz*lateral,item.point[1]-dx*lateral],[gx,gz]=item.grade||[0,0];
+      stripes.push({point,angle:item.angle,grade:item.grade,baseY:(item.baseY??.32)+gx*(point[0]-item.point[0])+gz*(point[1]-item.point[1])});
+    }
   }
   const zebra = mesh(streetGroup, 'Inferred zebra crossings', box, stripes.length, '#f5f3e6', 3.5);
   // Paint sits just above the .32m carriageway, not as raised paving blocks.
-  stripes.forEach((item, i) => transform(zebra, i, [item.point[0], .326, item.point[1]], [.58, .006, 3.6], item.angle));
+  stripes.forEach((item, i) => surfaceTransform(zebra,i,item,[.58,.006,3.6],.006));
   const signalPoles = mesh(streetGroup, 'Inferred traffic signals', cylinder, plan.signals.length, '#65716c', 4);
   const signalBoxes = mesh(streetGroup, 'Signal housings', box, plan.signals.length, '#303a36', 4);
   const signalLamp = mesh(streetGroup, 'Signal lights', box, plan.signals.length, '#a6b47a', 4);
   plan.signals.forEach((item, i) => {
-    const [x, z] = item.point;
-    transform(signalPoles, i, [x, 1.9, z], [.065, 3.2, .065]);
-    transform(signalBoxes, i, [x, 3.3, z], [.28, .82, .2], item.angle);
-    transform(signalLamp, i, [x + Math.sin(item.angle) * .105, 3.1, z + Math.cos(item.angle) * .105], [.16, .16, .025], item.angle);
+    const [x, z] = item.point,baseY=item.baseY??.3;
+    transform(signalPoles, i, [x, baseY+1.6, z], [.065, 3.2, .065]);
+    transform(signalBoxes, i, [x, baseY+3, z], [.28, .82, .2], item.angle);
+    transform(signalLamp, i, [x + Math.sin(item.angle) * .105, baseY+2.8, z + Math.cos(item.angle) * .105], [.16, .16, .025], item.angle);
   });
   const carBodies = mesh(streetGroup, 'Inferred parked vehicles', box, plan.cars.length, '#bdc8c6', 4);
   const carCabins = mesh(streetGroup, 'Vehicle glass', box, plan.cars.length, '#485c61', 4);
   const wheels = mesh(streetGroup, 'Vehicle wheels', box, plan.cars.length * 4, '#454b47', 4);
   plan.cars.forEach((car, i) => {
-    const [x, z] = car.point, dx = Math.sin(car.angle), dz = Math.cos(car.angle);
-    transform(carBodies, i, [x, .99, z], [1.75, .66, 4.2], car.angle, car.color);
-    transform(carCabins, i, [x - dx * .2, 1.48, z - dz * .2], [1.54, .52, 2.25], car.angle);
+    const [x,z]=car.point,dx=Math.sin(car.angle),dz=Math.cos(car.angle),[gx,gz]=car.grade||[0,0];
+    const normal=new THREE.Vector3(-gx,1,-gz).normalize(),forward=new THREE.Vector3(dx,gx*dx+gz*dz,dz).normalize(),right=normal.clone().cross(forward).normalize();
+    const frame=new THREE.Matrix4().makeBasis(right,normal,forward).setPosition(x,car.baseY??.32,z);
+    const place=(mesh,index,offset,scale,color)=>{
+      const matrix=frame.clone().multiply(new THREE.Matrix4().makeTranslation(...offset)).scale(new THREE.Vector3(...scale));
+      mesh.setMatrixAt(index,matrix);if(color)mesh.setColorAt(index,new THREE.Color(color));
+    };
+    place(carBodies,i,[0,.67,0],[1.75,.66,4.2],car.color);
+    place(carCabins,i,[0,1.16,-.2],[1.54,.52,2.25]);
     for (let j = 0; j < 4; j++) {
       const side = j % 2 ? 1 : -1, longitudinal = j < 2 ? 1.24 : -1.24;
-      transform(wheels, i * 4 + j, [x + dz * side * .86 + dx * longitudinal, .69, z - dx * side * .86 + dz * longitudinal], [.2, .56, .62], car.angle);
+      place(wheels,i*4+j,[side*.86,.28,longitudinal],[.2,.56,.62]);
     }
   });
   const torsos = mesh(streetGroup, 'Inferred pedestrians', cylinder, plan.people.length, '#797b70', 4);
   const heads = mesh(streetGroup, 'Pedestrian heads', new THREE.SphereGeometry(1, 7, 5), plan.people.length, '#c3b19b', 4);
   const legs = mesh(streetGroup, 'Pedestrian legs', cylinder, plan.people.length * 2, '#56615e', 4);
   plan.people.forEach((person, i) => {
-    const [x, z] = person.point, h = person.h, dx = Math.sin(person.angle), dz = Math.cos(person.angle);
-    transform(torsos, i, [x, .35 + h * .57, z], [.19, h * .39, .15], person.angle);
-    transform(heads, i, [x, .35 + h * .89, z], [.14, .17, .14]);
-    for (let j = 0; j < 2; j++) transform(legs, i * 2 + j, [x + dz * (j ? .09 : -.09), .35 + h * .21, z - dx * (j ? .09 : -.09)], [.065, h * .42, .065]);
+    const [x, z] = person.point, h = person.h, dx = Math.sin(person.angle), dz = Math.cos(person.angle),baseY=person.baseY??.35;
+    transform(torsos, i, [x, baseY + h * .57, z], [.19, h * .39, .15], person.angle);
+    transform(heads, i, [x, baseY + h * .89, z], [.14, .17, .14]);
+    for (let j = 0; j < 2; j++) transform(legs, i * 2 + j, [x + dz * (j ? .09 : -.09), baseY + h * .21, z - dx * (j ? .09 : -.09)], [.065, h * .42, .065]);
   });
   for (const group of [treeGroup, streetGroup]) group.traverse(object => { if (object.isInstancedMesh) { object.instanceMatrix.needsUpdate = true; if (object.instanceColor) object.instanceColor.needsUpdate = true; object.computeBoundingSphere(); } });
   return {
