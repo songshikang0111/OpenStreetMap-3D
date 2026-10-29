@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { buildRoadStructures } from './road-structures.js';
+import { planRoadGrades, roadHeightAt } from './road-grade.js';
+import { buildRoadStairs } from './road-stairs.js';
 
 // Local planar construction only. The source widths, topology and coordinates
 // remain OSM-derived; pavement margins and paint are illustrative rules.
@@ -172,6 +174,8 @@ export function clipPaintSegment(a, b, zones, minimumLength = 1) {
 
 /** Pure, deterministic plan; all polygons are disjoint within each level/layer. */
 export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, junctionClearance = 2.5, stopLines = true } = {}) {
+  const grades=planRoadGrades(data),gradedRoads=new Map();
+  for(const s of grades.segments){if(!gradedRoads.has(s.road.id))gradedRoads.set(s.road.id,[]);gradedRoads.get(s.road.id).push(s);}
   const stats = { sourceRoads: data.roads.length, segments: 0, driveSegments: 0, walkSegments: 0, miterJoins: 0, bevelJoins: 0, duplicateSegments: 0, clippedOverlaps: 0, junctions: 0, crossingExclusions: 0, dashes: 0, stopLines: 0 };
   const segments = [], drive = [], walks = [], paving = [], segmentKeys = new Set();
   const edgeIndex = new Grid(), endpoints = new Map();
@@ -179,21 +183,22 @@ export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, 
   const frame = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]];
   const add = (target, polygon, seg, kind) => {
     polygon = intersectConvex(polygon, frame);
-    const raised=!seg.road.bridge&&(kind==='paving'||kind==='walk'&&seg.road.tags?.footway!=='crossing');
-    if (polygon.length) target.push({ polygon, bounds: bounds(polygon), level: seg.level, y: seg.y+(raised?.15:0), roadId: seg.road.id, kind, source:kind==='paving'?'inferred-roadside-margin':'osm-highway-centerline', bridge:seg.road.bridge, atGradeCrossing:seg.road.tags?.footway==='crossing' });
+    const raised=kind==='paving'?.15:0;
+    if (polygon.length) target.push({ polygon, bounds: bounds(polygon), level: seg.level, y: seg.y+raised, a:seg.a,b:seg.b,yA:seg.yA,yB:seg.yB,heightOffset:raised,ramp:seg.ramp,stairFlight:seg.stairFlight, roadId: seg.road.id, kind, source:kind==='paving'?'inferred-roadside-margin':'osm-highway-centerline', bridge:seg.road.bridge, atGradeCrossing:seg.road.tags?.footway==='crossing' });
   };
   const ordered = [...data.roads].sort((a, b) => b.width - a.width || String(a.id).localeCompare(String(b.id)));
   for (const road of ordered) {
     if (!(road.width > 0) || !Number.isFinite(road.width) || road.tags?.tunnel === 'yes' || road.layer < 0) continue;
     let run = 0;
-    for (const [a, b] of road.segments) {
+    for (const grade of gradedRoads.get(road.id)||[]) {
+      const {a,b}=grade;
       const length = distance(a, b);
       if (!a.every(Number.isFinite) || !b.every(Number.isFinite) || length < .01) continue;
-      const walk = WALK.test(road.type), y = road.bridge ? 7 * Math.max(1, road.layer || 1) : .32, level = `${y}`;
+      const walk = WALK.test(road.type), y = grade.y, level = `${road.bridge?7*Math.max(1,road.layer||1):.32}`;
       const keyPoint = p => p.map(v => v.toFixed(4)).join(',');
       const key = `${level}:${walk}:${road.width}:${[keyPoint(a), keyPoint(b)].sort().join('|')}`;
       if (segmentKeys.has(key)) { stats.duplicateSegments++; run += length; continue; } segmentKeys.add(key);
-      const seg = { a: [...a], b: [...b], length, direction: sub(b, a).map(v => v / length), width: road.width, walk, y, level, road, run, id: segments.length, pavementSides:pavementSides(road) };
+      const seg = { ...grade, a: [...a], b: [...b], length, direction: sub(b, a).map(v => v / length), width: road.width, walk, y, level, road, run, id: segments.length, pavementSides:pavementSides(road) };
       run += length; segments.push(seg); edgeIndex.add(seg, bounds([a, b]));
       add(walk ? walks : drive, strip(a, b, road.width), seg, walk ? 'walk' : 'drive');
       if (!walk) for(const side of seg.pavementSides){
@@ -201,7 +206,7 @@ export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, 
         add(paving,strip(shift(a,n,offset),shift(b,n,offset),pavementWidth),seg,'paving');
       }
       for (const [point, direction] of [[a, seg.direction], [b, seg.direction.map(v => -v)]]) {
-        const k = `${level}:${walk}:${keyPoint(point)}`;
+        const k = `${walk}:${point===a?grade.nodeA:grade.nodeB}`;
         if (!endpoints.has(k)) endpoints.set(k, []);
         endpoints.get(k).push({ seg, point, away: direction });
       }
@@ -213,7 +218,8 @@ export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, 
     const join = joinPrimitive(a.point, incoming, outgoing, a.seg.width, b.seg.width, miterLimit);
     if (!join) continue;
     stats[join.type === 'miter' ? 'miterJoins' : 'bevelJoins']++;
-    add(a.seg.walk ? walks : drive, join.polygon, a.seg, a.seg.walk ? 'walk' : 'drive');
+    const joinY=roadHeightAt(a.seg,a.point),joinSeg={...a.seg,y:joinY,yA:joinY,yB:joinY};
+    add(a.seg.walk ? walks : drive, join.polygon, joinSeg, a.seg.walk ? 'walk' : 'drive');
     if (!a.seg.walk&&a.seg.pavementSides.length===2&&b.seg.pavementSides.length===2) {
       const outer = joinPrimitive(a.point, incoming, outgoing, a.seg.width + pavementWidth * 2, b.seg.width + pavementWidth * 2, miterLimit);
       if (outer) add(paving, outer.polygon, a.seg, 'paving');
@@ -289,7 +295,7 @@ export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, 
       for (const [a, b] of clearLine(shift(seg.a, seg.direction, start), shift(seg.a, seg.direction, end), seg.level, .75)) {
         const key = `${seg.level}:${[a, b].map(p => p.map(v => v.toFixed(2)).join(',')).sort().join('|')}`;
         if (markingKeys.has(key)) continue; markingKeys.add(key);
-        markings.push({ a, b, width: .18, y: seg.y + .018, level: seg.level, kind: 'dash', roadId: seg.road.id, source: 'inferred-lane-paint' });
+        markings.push({ a, b, width: .18, y: seg.y + .018,yA:roadHeightAt(seg,a),yB:roadHeightAt(seg,b),heightOffset:.018, level: seg.level, kind: 'dash', roadId: seg.road.id, source: 'inferred-lane-paint' });
       }
     }
   }
@@ -309,7 +315,7 @@ export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, 
     if (clear.length !== 1 || distance(clear[0][0], a) > .01 || distance(clear[0][1], b) > .01) continue;
     const polygon = strip(a, b, .4);
     if (exclusionZones.some(z => z.level === seg.level && intersectConvex(polygon, z.polygon).length)) continue;
-    markings.push({ a, b, width: .4, y: seg.y + .02, level: seg.level, kind: 'stop', roadId: seg.road.id, source: 'inferred-from-osm-controlled-crossing', osmId: node.id });
+    markings.push({ a, b, width: .4, y: seg.y + .02,yA:roadHeightAt(seg,a),yB:roadHeightAt(seg,b),heightOffset:.02, level: seg.level, kind: 'stop', roadId: seg.road.id, source: 'inferred-from-osm-controlled-crossing', osmId: node.id });
   }
 
   // Also clip the *paint area*, not just its centre line: an oblique junction
@@ -346,7 +352,8 @@ export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, 
   stats.observedCrossingWays=data.roads.filter(r=>r.tags?.footway==='crossing').length;
   stats.inferredMarginWays=new Set(paving.map(p=>p.roadId)).size;
   stats.pavementBuildingBlockers=buildingBlockers.length;
-  return { surfaces, markings, junctions, exclusionZones, stopZones, segments, stats };
+  Object.assign(stats,grades.stats);
+  return { surfaces, markings, junctions, exclusionZones, stopZones, segments, stats, grades };
 }
 
 /** Minimal integration: replace old road/paving/paint meshes with this group. */
@@ -358,6 +365,7 @@ export function buildRoadSurface(data, options = {}) {
     if (!items.length) return;
     const positions = [], normals = [], colors = [], ids = [], c = new THREE.Color(color);
     for (const item of items) {
+      if(item.stairFlight)continue;
       const p = item.polygon || strip(item.a, item.b, item.width);
       for (let i = 1; i < p.length - 1; i++) {
         let triangle = [p[0], p[i + 1], p[i]].map(point => point.map(Math.fround));
@@ -367,12 +375,15 @@ export function buildRoadSurface(data, options = {}) {
         // Drop only triangles thinner than 0.15 mm to avoid flipped coplanar dust.
         if (Math.abs(signed) < longest * .00015) { plan.stats.discardedMicroTriangles = (plan.stats.discardedMicroTriangles || 0) + 1; continue; }
         if (signed < 0) [triangle[1], triangle[2]] = [triangle[2], triangle[1]];
-        for (const point of triangle) {
-          positions.push(point[0], item.y, point[1]); normals.push(0, 1, 0); colors.push(c.r, c.g, c.b);
+        const vertices=triangle.map(p=>new THREE.Vector3(p[0],roadHeightAt(item,p),p[1]));
+        const normal=new THREE.Vector3().subVectors(vertices[1],vertices[0]).cross(new THREE.Vector3().subVectors(vertices[2],vertices[0])).normalize();
+        for (const point of vertices) {
+          positions.push(point.x, point.y, point.z); normals.push(normal.x, normal.y, normal.z); colors.push(c.r, c.g, c.b);
           ids.push((objectId & 255) / 255, ((objectId >> 8) & 255) / 255, ((objectId >> 16) & 255) / 255);
         }
       }
     }
+    if(!positions.length)return;
     const geometry = new THREE.BufferGeometry();
     for (const [key, values] of [['position', positions], ['normal', normals], ['color', colors], ['objectId', ids]]) geometry.setAttribute(key, new THREE.Float32BufferAttribute(values, 3));
     geometry.computeBoundingBox(); geometry.computeBoundingSphere();
@@ -386,5 +397,6 @@ export function buildRoadSurface(data, options = {}) {
   mesh(plan.markings, 'Junction-aware lane paint and inferred stop lines', '#f9f6e9', 60004);
   plan.stats.renderedTriangles = group.children.reduce((n, mesh) => n + mesh.geometry.attributes.position.count / 3, 0);
   const structures=buildRoadStructures(data,plan);group.add(structures.group);Object.assign(plan.stats,structures.stats);
-  return { group, plan, structures:structures.plan, stats: plan.stats, dispose() { for(const child of group.children)if(child.isMesh)child.geometry.dispose();structures.dispose();material.dispose(); } };
+  const stairs=buildRoadStairs(plan.grades.stairs);group.add(stairs.group);Object.assign(plan.stats,stairs.stats);
+  return { group, plan, structures:structures.plan, stats: plan.stats, dispose() { for(const child of group.children)if(child.isMesh)child.geometry.dispose();structures.dispose();stairs.dispose();material.dispose(); } };
 }

@@ -250,7 +250,7 @@ export function buildCity(data) {
     streetlife.updateLOD(camera);
   }
 
-  const streetlife=buildStreetLife(data);
+  const streetlife=buildStreetLife(data,{roadPlan:roadSurface.plan});
   const {treeGroup,streetGroup}=streetlife;group.add(treeGroup,streetGroup);
   function setProvenance(on) {
     shared.provenance.value=on?1:0;

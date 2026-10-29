@@ -159,9 +159,16 @@ export function parseOSM(raw, seed = 1) {
     const t = e.tags || {};
     if (!t.highway || t.area === 'yes' || t.tunnel === 'yes' || Number(t.layer) < 0 || t.highway === 'construction') continue;
     const points = geometry(e).map(project.point);
-    const segments = [];
-    for (let i = 1; i < points.length; i++) { const clipped = clipSegment(points[i - 1], points[i], bounds); if (clipped) segments.push(clipped); }
-    if (segments.length) roads.push({ id: e.id, name: t.name || '', type: t.highway, tags:t, nodes:e.nodes || [], segments, width: Math.min(50, Math.max(1, metres(t.width) || Number(t.lanes) * 3.2 || widths[t.highway] || 6)), bridge: t.bridge === 'yes', layer: Number(t.layer) || 0 });
+    const segments = [], segmentNodes = [];
+    for (let i = 1; i < points.length; i++) {
+      const clipped = clipSegment(points[i - 1], points[i], bounds);
+      if (!clipped) continue;
+      segments.push(clipped);
+      // A cropped endpoint is not the original OSM node. Preserve the mapping
+      // alongside each surviving segment, including internal/shared nodes.
+      segmentNodes.push(clipped.map((p,j)=>Math.hypot(p[0]-points[i-1+j][0],p[1]-points[i-1+j][1])<1e-5 ? e.nodes?.[i-1+j]??null : null));
+    }
+    if (segments.length) roads.push({ id: e.id, name: t.name || '', type: t.highway, tags:t, nodes:e.nodes || [], segments, segmentNodes, width: Math.min(50, Math.max(1, metres(t.width) || Number(t.lanes) * 3.2 || widths[t.highway] || 6)), bridge: t.bridge === 'yes', layer: Number(t.layer) || 0 });
   }
   const trees = raw.elements.filter(e => e.type === 'node' && e.tags?.natural === 'tree').map(e => ({ point: project.point(e), id: e.id, height: metres(e.tags.height) || 7 })).filter(e => contains(e.point));
   const streetNodes=raw.elements.filter(e=>e.type==='node' && /^(crossing|traffic_signals|street_lamp|bus_stop)$/.test(e.tags?.highway||'')).map(e=>({id:e.id,point:project.point(e),kind:e.tags.highway,tags:e.tags})).filter(e=>contains(e.point));

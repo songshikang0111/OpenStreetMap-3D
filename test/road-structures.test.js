@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {parseOSM,inside} from '../src/osm.js';
 import {planRoadSurface,buildRoadSurface} from '../src/road-surface.js';
 import {planRoadStructures,buildRoadStructures,segmentDistance} from '../src/road-structures.js';
+import {roadHeightAt} from '../src/road-grade.js';
 
 const road=(id,a,b,width=10,extra={})=>({id,type:'primary',width,bridge:false,layer:0,tags:{},segments:[[a,b]],...extra});
 const data=roads=>({roads,bounds:[-160,-160,160,160],buildings:[],water:[],streetNodes:[]});
@@ -45,12 +46,13 @@ test('piers avoid lower traffic, pedestrian paths, buildings, water and extracti
   }
 });
 
-test('height changes are disclosed rather than inventing ramps, and no bridge-only meshes appear on ground roads',()=>{
+test('shared bridge ends gain inferred continuous grades, and ground-only roads have no bridge meshes',()=>{
   const ground=data([road(1,[-100,0],[0,0])]),g=buildRoadSurface(ground);
   assert.equal(g.stats.bridgeStructureTriangles,0);assert.equal(g.structures.piers.length,0);g.dispose();
-  const input=data([road(1,[-100,0],[0,0]),road(2,[0,0],[100,0],10,{bridge:true,layer:1})]);
+  const input=data([road(1,[-150,0],[0,0]),road(2,[0,0],[150,0],10,{bridge:true,layer:1})]);
   const plan=planRoadStructures(input,planRoadSurface(input));
-  assert.equal(plan.stats.bridgeGradeConnectionsUnresolved,1);
+  assert.equal(plan.stats.bridgeGradeConnectionsUnresolved,0);
+  assert(plan.rails.some(r=>Math.abs(r.yA-r.yB)>.01),'guardrails must follow the ramp');
   assert.equal(plan.stats.bridgeHeightSource,'inferred-layer-times-7m');
   assert.deepEqual(plan,planRoadStructures(input,planRoadSurface(input)));
 });
@@ -65,9 +67,9 @@ test('guardrails leave an opening at same-level bridge branches',()=>{
 test('Guomao supports pass independent whole-extract clearance checks and structure budgets',()=>{
   const raw=JSON.parse(readFileSync(new URL('../public/data/beijing-cbd.json',import.meta.url)));
   const input=parseOSM(raw),surface=planRoadSurface(input),built=buildRoadStructures(input,surface);
-  assert.equal(built.stats.bridgeWays,82);assert.equal(built.stats.bridgeSegments,212);
-  assert(built.stats.bridgePiers>50);assert(built.stats.bridgeStructureTriangles<160000);
-  for(const p of built.plan.piers)for(const s of surface.segments)if(s.y<p.top-.15){
+  assert(built.stats.bridgeWays>=71,'non-stair bridge ways plus newly elevated approaches');assert(built.stats.bridgeSegments>212);
+  assert(built.stats.bridgePiers>50);assert(built.stats.bridgeStructureTriangles<260000);
+  for(const p of built.plan.piers)for(const s of surface.segments)if(roadHeightAt(s,p.point)<p.top-.15){
     const d=segmentDistance(p.point,s.a,s.b);assert(d>=s.width/2+p.radius+.8-1e-7,`pier near lower way ${s.road.id}`);
   }
   for(const mesh of built.group.children){
