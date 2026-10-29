@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { foliageGLSL } from './foliage.js';
 
 // Independent screen-space illustration renderer. Render targets remain linear.
 export const INK_DEFAULTS = Object.freeze({
@@ -58,6 +59,7 @@ uniform float nearPlane,farPlane,lineWidth,outlineWidth,toneSize,inkDensity,blac
 uniform float aoStrength,toneThreshold,shadowStrength,haze,treeInk;
 uniform vec3 paper,ink;
 ${depthFunctions}
+${foliageGLSL}
 float classAt(vec4 id){return floor(id.a+.01);}
 float isClass(float kind,float test){return 1.-step(.4,abs(kind-test));}
 float filteredAO(float depth){
@@ -149,11 +151,15 @@ void main(){
     solid*=1.-ground*.88;
     solid*=1.-isClass(kind,1.);
     vec3 worldNormal=normalize(mat3(inverseView)*normal);
+    vec3 worldPoint=(inverseView*vec4(viewPosition(vUv,rawDepth),1.)).xyz;
+    float worldPixel=length(fwidth(worldPoint));
     if(tree>.5){
       float lower=1.-smoothstep(-.22,.35,worldNormal.y);
       float canopyShade=clamp((threshold-illumination)/max(threshold,.08),0.,1.);
-      density=mix(density,.10+canopyShade*.27+ao*.12,treeInk);
-      solid=mix(solid,smoothstep(.52,.80,lower*.60+canopyShade*.20+ao*.16),treeInk);
+      float leaf=leafTexture(worldPoint,worldPixel);
+      float leafShadow=lower*.52+canopyShade*.34+ao*.12+(leaf-.5)*.9;
+      density=mix(density,.10+canopyShade*.28+ao*.12,treeInk);
+      solid=mix(solid,smoothstep(.40,.62,leafShadow),treeInk);
     }
     density*=1.-air;
     density=clamp(density,0.,.82);

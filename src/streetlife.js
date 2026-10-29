@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { inside, stableRandom } from './osm.js';
+import { crownGeometry, foliageMaterial } from './foliage.js';
 
 // These additions are spatially constrained illustrations, not surveyed street assets.
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
@@ -233,33 +234,14 @@ export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110,
   return { trees, lamps, cars, people, curbs, crosswalks, signals, stats };
 }
 
-function sculptedCrown(detailed = false) {
-  const geometry = detailed ? new THREE.IcosahedronGeometry(1, 2) : new THREE.SphereGeometry(1, 12, 9), p = geometry.attributes.position;
-  for (let i = 0; i < p.count; i++) {
-    const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
-    const r = 1 + .09 * Math.sin(x * 7 + z * 3) * Math.sin(y * 9 - z * 5) + .045 * Math.cos(x * 15 + y * 8);
-    p.setXYZ(i, x * r, y * r, z * r);
-  }
-  if (detailed) {
-    // IcosahedronGeometry is non-indexed: recomputing face normals would make
-    // every lobe faceted. Preserve a smooth radial canopy normal instead.
-    const normals = geometry.attributes.normal;
-    for (let i = 0; i < p.count; i++) {
-      const length = Math.hypot(p.getX(i), p.getY(i), p.getZ(i)) || 1;
-      normals.setXYZ(i, p.getX(i) / length, p.getY(i) / length, p.getZ(i) / length);
-    }
-  } else geometry.computeVertexNormals();
-  return geometry;
-}
-
 export function buildStreetLife(data, options = {}) {
   const plan = planStreetLife(data, options), treeGroup = new THREE.Group(), streetGroup = new THREE.Group();
   treeGroup.name = 'Trees — OSM observations and constrained procedural additions';
   streetGroup.name = 'Street life — inferred lamps, crossings, cars and pedestrians';
-  const box = new THREE.BoxGeometry(1, 1, 1), cylinder = new THREE.CylinderGeometry(1, 1, 1, 7), crown = sculptedCrown(), detailedCrown = sculptedCrown(true);
+  const box = new THREE.BoxGeometry(1, 1, 1), cylinder = new THREE.CylinderGeometry(1, 1, 1, 7), crown = crownGeometry(), detailedCrown = crownGeometry(true);
   const dummy = new THREE.Object3D(), up = new THREE.Vector3(0, 1, 0);
   function mesh(group, name, geometry, count, color, inkClass) {
-    const result = new THREE.InstancedMesh(geometry, new THREE.MeshStandardMaterial({ color, roughness: .93 }), Math.max(1, count));
+    const result = new THREE.InstancedMesh(geometry, inkClass===2?foliageMaterial(color):new THREE.MeshStandardMaterial({ color, roughness: .93 }), Math.max(1, count));
     result.count = count; result.name = name; result.userData.inkClass = inkClass;
     result.userData.procedural = true; result.castShadow = inkClass !== 3; result.receiveShadow = true;
     group.add(result); return result;
@@ -274,27 +256,29 @@ export function buildStreetLife(data, options = {}) {
   }
   const trunks = mesh(treeGroup, 'Trunks', cylinder, plan.trees.length, '#756650', 4);
   const far = mesh(treeGroup, 'Distant tree crowns', crown, plan.trees.length, '#81916b', 2);
-  const near = mesh(treeGroup, 'Nearby crown clusters', detailedCrown, Math.min(plan.trees.length, 350) * 13, '#81916b', 2);
-  const branches = mesh(treeGroup, 'Nearby branching', cylinder, Math.min(plan.trees.length, 350) * 4, '#756650', 4);
+  const maxDetailedTrees=180,clusters=19;
+  const near = mesh(treeGroup, 'Nearby crown clusters', detailedCrown, Math.min(plan.trees.length, maxDetailedTrees) * clusters, '#81916b', 2);
+  const branches = mesh(treeGroup, 'Nearby branching', cylinder, Math.min(plan.trees.length, maxDetailedTrees) * 4, '#756650', 4);
   near.instanceMatrix.setUsage(THREE.DynamicDrawUsage); far.instanceMatrix.setUsage(THREE.DynamicDrawUsage); branches.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   plan.trees.forEach((tree, i) => transform(trunks, i, [tree.x, tree.h * .28 + .35, tree.z], [tree.h * .016, tree.h * .56, tree.h * .016]));
   const colors = ['#778865', '#8b9975', '#738568', '#94a079'];
   let lodKey = '';
   function updateLOD(camera) {
-    const key = `${Math.round(camera.position.x / 35)},${Math.round(camera.position.z / 35)},${Math.round(camera.position.y / 30)}`;
+    const key = `${Math.round(camera.position.x / 15)},${Math.round(camera.position.z / 15)},${Math.round(camera.position.y / 15)}`;
     if (key === lodKey) return; lodKey = key;
     let f = 0, n = 0, b = 0, detailedTrees = 0;
     for (const tree of plan.trees) {
-      const color = colors[Math.floor(tree.variation * colors.length)], isNear = camera.position.y < 160 && Math.hypot(tree.x - camera.position.x, tree.z - camera.position.z) < 190 && detailedTrees < 350;
+      const color = colors[Math.floor(tree.variation * colors.length)], isNear = camera.position.y < 160 && Math.hypot(tree.x - camera.position.x, tree.z - camera.position.z) < 145 && detailedTrees < maxDetailedTrees;
       const width = tree.shape === 'columnar' ? tree.h * .145 : tree.h * .24;
       if (!isNear) { transform(far, f++, [tree.x, tree.h * .76 + .35, tree.z], [width, tree.h * .29, width * .92], tree.rotation, color); continue; }
       detailedTrees++;
-      for (let j = 0; j < 13; j++) {
-        const angle = tree.rotation + j * 2.39996, t = (j - 1) / 11;
-        const radius = j === 0 ? 0 : width * .67 * Math.sqrt(1 - Math.pow((t - .5) * 1.35, 2));
-        const y = tree.h * (j === 0 ? .78 : tree.shape === 'columnar' ? .58 + t * .37 : .65 + t * .23) + .35;
-        const scale = j === 0 ? .68 : .44 + tree.variation * .08;
-        transform(near, n++, [tree.x + Math.cos(angle) * radius, y, tree.z + Math.sin(angle) * radius], [width * scale, tree.h * (j === 0 ? .22 : .145), width * scale], angle, color);
+      const rng=stableRandom(`leaf-clusters:${tree.key}`);
+      for (let j = 0; j < clusters; j++) {
+        const angle = tree.rotation + j * 2.39996+(rng()-.5)*.6, t = (j - 1) / (clusters-2);
+        const radius = j === 0 ? 0 : width * (.75+rng()*.15) * Math.sqrt(1 - Math.pow((t - .5) * 1.65, 2));
+        const y = tree.h * (j === 0 ? .77 : tree.shape === 'columnar' ? .55 + t * .43 : .60 + t * .34) + .35;
+        const scale = j === 0 ? .70 : .28+rng()*.19;
+        transform(near, n++, [tree.x + Math.cos(angle) * radius, y, tree.z + Math.sin(angle) * radius], [width * scale, tree.h * (j === 0 ? .22 : .09+rng()*.045), width * scale*(.8+rng()*.3)], angle, color);
         if (j > 0 && j <= 4) strut(branches, b++, [tree.x, tree.h * .35 + .35, tree.z], [tree.x + Math.cos(angle) * width * .65, tree.h * .65, tree.z + Math.sin(angle) * width * .65], tree.h * .009);
       }
     }
