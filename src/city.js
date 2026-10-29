@@ -75,15 +75,19 @@ function facadeMaterial(shared) {
     shader.uniforms.uWindows = shared.windows;
     shader.uniforms.uProvenance = shared.provenance;
     shader.uniforms.uFacadeDetail = shared.facadeDetail;
-    shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nattribute vec4 aFacade; varying vec4 vFacade; attribute vec2 aStyle; varying vec2 vStyle; attribute vec4 aLayout; varying vec4 vLayout;');
-    shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvFacade = aFacade; vStyle=aStyle; vLayout=aLayout;');
+    shader.uniforms.uGlassReflection = shared.glassReflection;
+    shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nattribute vec4 aFacade; varying vec4 vFacade; attribute vec2 aStyle; varying vec2 vStyle; attribute vec4 aLayout; varying vec4 vLayout; varying vec3 vGlassWorld; varying vec3 vGlassNormal;');
+    shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvFacade = aFacade; vStyle=aStyle; vLayout=aLayout; vGlassWorld=(modelMatrix*vec4(position,1.)).xyz; vGlassNormal=normalize(mat3(modelMatrix)*normal);');
     shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
       varying vec4 vFacade;
       varying vec2 vStyle;
       varying vec4 vLayout;
+      varying vec3 vGlassWorld;
+      varying vec3 vGlassNormal;
       uniform float uWindows;
       uniform float uProvenance;
       uniform float uFacadeDetail;
+      uniform float uGlassReflection;
       float inkWindow=0.0;
       // Integrate a periodic window over its pixel footprint. A smoothstep of
       // fract() aliases when a pixel spans more than one window cell.
@@ -116,11 +120,21 @@ function facadeMaterial(shared) {
         // Stop drawing individual panes before their frames become subpixel.
         // Color keeps the average glass coverage; ink drops fine pane outlines.
         float fade = 1.0 - smoothstep(mix(.04,.12,uFacadeDetail),mix(.18,.42,uFacadeDetail),max(fwidth(u),fwidth(v)));
-        inkWindow=mask*fade*mix(.91,.72,isGlass);
+        // A deliberately simple, continuous sky field, not a captured cubemap
+        // or neighbouring-building reflection. It responds to view direction
+        // and wall orientation rather than assigning random tones per pane.
+        vec3 reflected=reflect(normalize(vGlassWorld-cameraPosition),normalize(vGlassNormal));
+        float sky=smoothstep(-.16,.65,reflected.y);
+        float cloud=.5+.5*sin(reflected.x*5.+reflected.z*3.+reflected.y*8.+vStyle.y*2.);
+        float reflectedSky=smoothstep(.14,.9,sky*.70+cloud*.30);
+        float reflection=reflectedSky*clamp(uGlassReflection,0.,1.);
+        inkWindow=mask*fade*mix(.91,mix(.72,.34,reflection),isGlass);
         float cell = fract(sin(dot(floor(vec2(u,v)),vec2(17.21,59.17))) * 12345.31);
         vec3 glass = mix(vec3(.17,.24,.28),vec3(.31,.39,.44), cell*.06*fade+vStyle.y*.4);
         glass=mix(glass,vec3(.21,.31,.37),zun*.55);
-        glass*=mix(.72,1.1,smoothstep(.08,.92,fract(u*.083+vStyle.y)));
+        // Broad reflection replaces the old sawtooth of dark vertical patches.
+        // Matte/punched-window families retain their restrained fixed glazing.
+        glass=mix(glass,vec3(.55,.65,.70),reflection*isGlass*.70);
         float meanMask=(2.*paneWidth-.036*splitVertical)*(2.*paneHeight-.036*splitHorizontal);
         diffuseColor.rgb = mix(diffuseColor.rgb, glass, mix(meanMask,mask,fade)*.9);
         float seam = stripe(v+.47,.025) * mix(.12,.26,ribbon) * fade;
@@ -139,13 +153,13 @@ function facadeMaterial(shared) {
     `);
     shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>','#include <opaque_fragment>\ngl_FragColor.a=inkWindow;');
   };
-  material.customProgramCacheKey = () => 'city-ink-facade-v4-layout';
+  material.customProgramCacheKey = () => 'city-ink-facade-v4-reflections';
   return material;
 }
 
 export function buildCity(data) {
   const group = new THREE.Group(); group.name = 'Beijing CBD — OpenStreetMap';
-  const shared = { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: {value:.5} };
+  const shared = { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: {value:.5}, glassReflection: {value:.65} };
   const material = facadeMaterial(shared);
   const baseMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .98 });
   const [x0,z0,x1,z1] = data.bounds;
