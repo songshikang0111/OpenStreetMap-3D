@@ -144,13 +144,19 @@ void main(){
     float edge=max(outer*(1.-air*.45),inner*(1.-air*.8));
     float ao=filteredAO(depth)*aoStrength;
     float lum=dot(color,vec3(.2126,.7152,.0722));
-    float illumination=dot(sample0(tLight,vUv).rgb,vec3(.2126,.7152,.0722));
+    vec4 lighting=sample0(tLight,vUv);
+    float illumination=dot(lighting.rgb,vec3(.2126,.7152,.0722));
+    float castShadow=clamp(lighting.a,0.,1.);
     float windowMask=windowAt(vUv);
     // Ground planes retain white areas; glass and tree crowns carry the darks.
     float threshold=mix(.32,.95,toneThreshold);
     float shade=clamp((threshold-illumination)/max(threshold,.08),0.,1.);
     float density=(shade*.58*shadowStrength+ao*.48)*inkDensity;
-    density*=mix(1.,.65,ground);
+    // Unshadowed paving reads as paper, even when its neutral diffuse lighting
+    // is below the facade tone threshold. Keep cast shadows and contact AO as
+    // separate signals instead of spreading one gray tone across the street.
+    float groundDensity=(castShadow*.46*shadowStrength+ao*.34)*inkDensity;
+    density=mix(density,groundDensity,ground);
     density*=1.-roadPaint;
     float solid=1.-smoothstep(blackPoint*.65,blackPoint*1.15+.015,lum);
     solid*=1.-ground*.88;
@@ -223,8 +229,13 @@ export class InkRenderer {
     // A neutral reflectance pass separates lighting/cast shadows from glass,
     // asphalt and paint. These dark materials must not all become black ink.
     this.lightMaterial=new THREE.MeshStandardMaterial({color:new THREE.Color(.6,.6,.6),roughness:1,side:THREE.DoubleSide});
-    this.lightMaterial.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','');};
-    this.lightMaterial.customProgramCacheKey=()=> 'neutral-light-no-instance-color-v1';
+    this.lightMaterial.onBeforeCompile=shader=>{
+      shader.fragmentShader=shader.fragmentShader
+        .replace('#include <color_fragment>','')
+        .replace('#include <shadowmap_pars_fragment>','#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>')
+        .replace('#include <opaque_fragment>','#include <opaque_fragment>\ngl_FragColor.a = 1.0 - getShadowMask();');
+    };
+    this.lightMaterial.customProgramCacheKey=()=> 'neutral-light-shadow-mask-v2';
     this.normal.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
     this.normalMaterial=new THREE.MeshNormalMaterial();this.normalMaterial.side=THREE.DoubleSide;
     this.idMaterial=new THREE.ShaderMaterial({
@@ -251,7 +262,7 @@ export class InkRenderer {
     this.screenGeometry=new THREE.PlaneGeometry(2,2);this.screenMesh=new THREE.Mesh(this.screenGeometry,this.material);
     this.screen=new THREE.Scene();this.screen.add(this.screenMesh);this.screenCamera=new THREE.Camera();
     this.clayMaterial=new THREE.MeshStandardMaterial({color:'#e5e5df',roughness:1});
-    this.clayMaterial.onBeforeCompile=this.lightMaterial.onBeforeCompile;
+    this.clayMaterial.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','');};
     this.clayMaterial.customProgramCacheKey=()=> 'neutral-clay-no-instance-color-v1';
     this._classification=new WeakMap();this.prepareScene();
   }
