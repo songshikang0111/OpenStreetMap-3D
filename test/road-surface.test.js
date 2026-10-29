@@ -108,6 +108,24 @@ test('grade-separated roads never form junctions or erase pavement at the other 
   assertDisjoint(plan.surfaces);
 });
 
+test('sidewalks rise above asphalt, crossings stay flat, and inferred margins respect road access and buildings', () => {
+  const input=data([
+    road(1,[[-100,0],[100,0]],10),
+    road(2,[[-100,20],[100,20]],2,{type:'footway',tags:{footway:'sidewalk'}}),
+    road(3,[[20,-20],[20,20]],2,{type:'footway',tags:{footway:'crossing'}}),
+    road(4,[[-100,50],[100,50]],12,{type:'trunk',tags:{foot:'no'}}),
+    road(5,[[-100,80],[100,80]],8,{bridge:true,layer:1}),
+  ]);
+  input.buildings=[{outer:[[25,5],[45,5],[45,20],[25,20]],holes:[],minHeight:0}];
+  const plan=planRoadSurface(input);
+  assert(plan.surfaces.filter(s=>s.roadId===2).every(s=>Math.abs(s.y-.47)<1e-8));
+  assert(plan.surfaces.filter(s=>s.roadId===3).every(s=>s.y===.32));
+  assert(!plan.surfaces.some(s=>s.kind==='paving'&&(s.roadId===4||s.roadId===5)));
+  for(const p of plan.surfaces.filter(s=>s.kind==='paving'))assert(intersectionArea(p.polygon,input.buildings[0].outer)<1e-8);
+  assert.equal(plan.stats.observedSidewalkWays,1);assert.equal(plan.stats.observedCrossingWays,1);
+  assertDisjoint(plan.surfaces);
+});
+
 test('observed zebra exclusions and inferred controlled stop lines keep a geometric buffer', () => {
   const input = data([road(1, [[-100, 0], [100, 0]], 12), road(2, [[0, -100], [0, 100]], 10)]);
   input.streetNodes = [{ id: 90, point: [16, 0], kind: 'crossing', tags: { crossing: 'traffic_signals' } }];
@@ -153,7 +171,7 @@ test('actual Guomao extract: every surface is disjoint, paint avoids all same-le
   assert(paintedArea > 500);
   built.group.traverse(mesh => {
     if (!mesh.isMesh) return;
-    assert.equal(mesh.userData.inkClass, mesh.name.includes('lane paint')?3.5:3);
+    assert.equal(mesh.userData.inkClass, mesh.name.includes('lane paint')?3.5:mesh.name.includes('carriageways')?3:3.2);
     assert.equal(mesh.castShadow, false);
     const p = mesh.geometry.attributes.position;
     assert([...p.array].every(Number.isFinite));

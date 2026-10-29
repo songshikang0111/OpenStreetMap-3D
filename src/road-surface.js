@@ -13,6 +13,28 @@ const left = d => [-d[1], d[0]];
 const area = p => p.reduce((s, a, i) => s + cross(a, p[(i + 1) % p.length]), 0) / 2;
 const bounds = p => p.reduce((b, q) => [Math.min(b[0], q[0]), Math.min(b[1], q[1]), Math.max(b[2], q[0]), Math.max(b[3], q[1])], [Infinity, Infinity, -Infinity, -Infinity]);
 
+function pavementSides(road) {
+  const tags=road.tags||{},value=tags.sidewalk;
+  if(road.bridge||tags.foot==='no'||/^(no|none|separate)$/.test(value||''))return [];
+  if(value==='left')return [1];if(value==='right')return [-1];
+  if(/^(yes|both)$/.test(value||''))return [-1,1];
+  // No invented sidewalks along motorways, slip roads or service access lanes.
+  return /^(primary|secondary|tertiary|residential|living_street|unclassified)$/.test(road.type)?[-1,1]:[];
+}
+
+function buildingPavementBlockers(data) {
+  const result=[];
+  for(const building of data.buildings||[]){
+    if(building.minHeight>.47)continue;
+    const ring=building.outer.map(p=>new THREE.Vector2(...p)),holes=(building.holes||[]).map(h=>h.map(p=>new THREE.Vector2(...p))),points=[...ring,...holes.flat()];
+    for(const triangle of THREE.ShapeUtils.triangulateShape(ring,holes)){
+      const polygon=cleanPolygon(triangle.map(i=>points[i].toArray()));
+      if(polygon.length)result.push({polygon,bounds:bounds(polygon),level:'0.32'});
+    }
+  }
+  return result;
+}
+
 function cleanPolygon(points) {
   let p = points.filter((q, i) => q.every(Number.isFinite) && (!i || distance(q, points[i - 1]) > EPS));
   if (p.length > 1 && distance(p[0], p.at(-1)) < EPS) p.pop();
@@ -156,7 +178,8 @@ export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, 
   const frame = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]];
   const add = (target, polygon, seg, kind) => {
     polygon = intersectConvex(polygon, frame);
-    if (polygon.length) target.push({ polygon, bounds: bounds(polygon), level: seg.level, y: seg.y + (kind === 'walk' ? .05 : kind === 'paving' ? .035 : 0), roadId: seg.road.id, kind });
+    const raised=!seg.road.bridge&&(kind==='paving'||kind==='walk'&&seg.road.tags?.footway!=='crossing');
+    if (polygon.length) target.push({ polygon, bounds: bounds(polygon), level: seg.level, y: seg.y+(raised?.15:0), roadId: seg.road.id, kind, source:kind==='paving'?'inferred-roadside-margin':'osm-highway-centerline', bridge:seg.road.bridge });
   };
   const ordered = [...data.roads].sort((a, b) => b.width - a.width || String(a.id).localeCompare(String(b.id)));
   for (const road of ordered) {
@@ -169,10 +192,13 @@ export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, 
       const keyPoint = p => p.map(v => v.toFixed(4)).join(',');
       const key = `${level}:${walk}:${road.width}:${[keyPoint(a), keyPoint(b)].sort().join('|')}`;
       if (segmentKeys.has(key)) { stats.duplicateSegments++; run += length; continue; } segmentKeys.add(key);
-      const seg = { a: [...a], b: [...b], length, direction: sub(b, a).map(v => v / length), width: road.width, walk, y, level, road, run, id: segments.length };
+      const seg = { a: [...a], b: [...b], length, direction: sub(b, a).map(v => v / length), width: road.width, walk, y, level, road, run, id: segments.length, pavementSides:pavementSides(road) };
       run += length; segments.push(seg); edgeIndex.add(seg, bounds([a, b]));
       add(walk ? walks : drive, strip(a, b, road.width), seg, walk ? 'walk' : 'drive');
-      if (!walk) add(paving, strip(a, b, road.width + pavementWidth * 2), seg, 'paving');
+      if (!walk) for(const side of seg.pavementSides){
+        const offset=side*(road.width+pavementWidth)/2,n=left(seg.direction);
+        add(paving,strip(shift(a,n,offset),shift(b,n,offset),pavementWidth),seg,'paving');
+      }
       for (const [point, direction] of [[a, seg.direction], [b, seg.direction.map(v => -v)]]) {
         const k = `${level}:${walk}:${keyPoint(point)}`;
         if (!endpoints.has(k)) endpoints.set(k, []);
@@ -187,7 +213,7 @@ export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, 
     if (!join) continue;
     stats[join.type === 'miter' ? 'miterJoins' : 'bevelJoins']++;
     add(a.seg.walk ? walks : drive, join.polygon, a.seg, a.seg.walk ? 'walk' : 'drive');
-    if (!a.seg.walk) {
+    if (!a.seg.walk&&a.seg.pavementSides.length===2&&b.seg.pavementSides.length===2) {
       const outer = joinPrimitive(a.point, incoming, outgoing, a.seg.width + pavementWidth * 2, b.seg.width + pavementWidth * 2, miterLimit);
       if (outer) add(paving, outer.polygon, a.seg, 'paving');
     }
@@ -308,9 +334,15 @@ export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, 
   // around it rather than covering a road with a differently coloured plane.
   const drivePolygons = uniqueUnion(drive, [], stats);
   const walkPolygons = uniqueUnion(walks, drive, stats);
-  const pavingPolygons = uniqueUnion(paving, [...drive, ...walks], stats);
+  const buildingBlockers=buildingPavementBlockers(data);
+  // Same logical ground level despite the physical 15 cm curb step.
+  const pavingPolygons = uniqueUnion(paving, [...drive, ...walks,...buildingBlockers], stats);
   const surfaces = [...drivePolygons, ...walkPolygons, ...pavingPolygons];
   Object.assign(stats, { segments: segments.length, driveSegments: drivable.length, walkSegments: segments.length - drivable.length, junctions: junctions.length, crossingExclusions: crossings.length, dashes: markings.filter(m => m.kind === 'dash').length, stopLines: markings.filter(m => m.kind === 'stop').length, drivePolygons: drivePolygons.length, walkPolygons: walkPolygons.length, pavingPolygons: pavingPolygons.length, surfaceTriangles: surfaces.reduce((s, p) => s + p.polygon.length - 2, 0), roadArea: drivePolygons.reduce((s, p) => s + area(p.polygon), 0), pavementArea: [...walkPolygons, ...pavingPolygons].reduce((s, p) => s + area(p.polygon), 0) });
+  stats.observedSidewalkWays=data.roads.filter(r=>r.tags?.footway==='sidewalk').length;
+  stats.observedCrossingWays=data.roads.filter(r=>r.tags?.footway==='crossing').length;
+  stats.inferredMarginWays=new Set(paving.map(p=>p.roadId)).size;
+  stats.pavementBuildingBlockers=buildingBlockers.length;
   return { surfaces, markings, junctions, exclusionZones, stopZones, segments, stats };
 }
 
@@ -342,12 +374,12 @@ export function buildRoadSurface(data, options = {}) {
     for (const [key, values] of [['position', positions], ['normal', normals], ['color', colors], ['objectId', ids]]) geometry.setAttribute(key, new THREE.Float32BufferAttribute(values, 3));
     geometry.computeBoundingBox(); geometry.computeBoundingSphere();
     const result = new THREE.Mesh(geometry, material); result.name = name;
-    result.userData.inkClass = objectId===60004?3.5:3; result.userData.procedural = true; result.receiveShadow = true; result.castShadow = false;
+    result.userData.inkClass = objectId===60004?3.5:objectId===60002?3.2:3; result.userData.procedural = true; result.userData.roadSurface=true; result.receiveShadow = true; result.castShadow = false;
     group.add(result);
   }
-  mesh(plan.surfaces.filter(p => p.kind === 'drive'), 'Continuous carriageways', '#979b9a', 60003);
-  mesh(plan.surfaces.filter(p => p.kind === 'walk'), 'Pedestrian paths clipped at carriageways', '#cbc4b3', 60002);
-  mesh(plan.surfaces.filter(p => p.kind === 'paving'), 'Non-overlapping pavement margins', '#eee9dc', 60002);
+  mesh(plan.surfaces.filter(p => p.kind === 'drive'), 'Continuous carriageways', '#777e7c', 60003);
+  mesh(plan.surfaces.filter(p => p.kind === 'walk'), 'OSM pedestrian paths and at-grade crossings', '#d0c9b9', 60002);
+  mesh(plan.surfaces.filter(p => p.kind === 'paving'), 'Inferred roadside margins clipped at buildings', '#ddd7c8', 60002);
   mesh(plan.markings, 'Junction-aware lane paint and inferred stop lines', '#f9f6e9', 60004);
   plan.stats.renderedTriangles = group.children.reduce((n, mesh) => n + mesh.geometry.attributes.position.count / 3, 0);
   return { group, plan, stats: plan.stats, dispose() { group.traverse(o => o.geometry?.dispose()); material.dispose(); } };
