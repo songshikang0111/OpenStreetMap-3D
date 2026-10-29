@@ -82,15 +82,21 @@ export function gradeStreetLife(plan, roadPlan) {
   });
   // Trees inferred on a raised approach cannot be rooted in its thin side
   // paving. Remove only that speculative planting; actual OSM trees stay put.
-  const removed=[];
+  const removed=[],structureRemoved=[];
+  const elevatedPaths=roadPlan.segments.filter(s=>s.walk&&(s.road.bridge||s.stairFlight||s.ramp)&&Math.max(s.yA,s.yB)>.8);
   const trees=plan.trees.filter(tree=>{
+    // Inferred planting must leave room for new stairs and elevated walkways.
+    // Preserve observed OSM trees; their real conflict requires source review.
+    if(tree.source!=='osm'&&elevatedPaths.some(s=>segmentDistance([tree.x,tree.z],s.a,s.b)<s.width/2+tree.radius*.75+.25&&roadHeightAt(s,[tree.x,tree.z])<tree.h+.5)){
+      structureRemoved.push(tree);return false;
+    }
     if(tree.source!=='inferred-street')return true;
     const support=sample([tree.x,tree.z]);
     const suppress=support&&support.baseY>.62&&support.distance<=support.width/2+2;
     if(suppress)removed.push(tree);return !suppress;
   });
   const result={...plan,trees,curbs:attach(plan.curbs),crosswalks:attach(plan.crosswalks),cars:attach(plan.cars),people:attach(plan.people,true),lamps:attach(plan.lamps,true),signals:attach(plan.signals,true)};
-  result.stats={...plan.stats,trees:trees.length,streetTrees:plan.stats.streetTrees-removed.length,generatedTrees:plan.stats.generatedTrees-removed.length,gradeAdjustedFurnishings:elevated,gradeSuppressedTrees:removed.length};
+  result.stats={...plan.stats,trees:trees.length,streetTrees:plan.stats.streetTrees-removed.length-structureRemoved.filter(t=>t.source==='inferred-street').length,generatedTrees:plan.stats.generatedTrees-removed.length-structureRemoved.length,gradeAdjustedFurnishings:elevated,gradeSuppressedTrees:removed.length,structureSuppressedTrees:structureRemoved.length};
   return result;
 }
 

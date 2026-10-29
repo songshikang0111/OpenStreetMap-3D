@@ -181,7 +181,7 @@ export function planRoadGrades(data, options={}){
   }
   stats.gradeSteepVehicleRuns=chains.filter(c=>!c.stairs&&c.edges.some(e=>!WALK.test(e.road.type))&&c.edges.some(e=>Math.abs(e.b.y-e.a.y)/e.length>settings.warningGrade)).length;
   stats.gradeChangedWays=changed.size;stats.gradeResolvedConnections=transitions.length;stats.stairFlights=stairs.length;
-  const steepWalk=segments.filter(s=>WALK.test(s.road.type)&&s.road.type!=='steps'&&Math.abs(s.yB-s.yA)/distance(s.a,s.b)>.12);
+  const steepWalk=segments.filter(s=>WALK.test(s.road.type)&&s.road.type!=='steps'&&Math.abs(s.yB-s.yA)/distance(s.a,s.b)>.12+1e-6);
   stats.gradeSteepWalkingWays=new Set(steepWalk.map(s=>s.road.id)).size;
   stats.gradeMaxWalkingSlope=Math.max(0,...steepWalk.map(s=>Math.abs(s.yB-s.yA)/distance(s.a,s.b)));
   for(const s of segments)delete s.sourceSegment;

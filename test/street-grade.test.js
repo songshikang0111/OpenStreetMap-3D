@@ -60,3 +60,12 @@ test('rendered kerbs and zebra paint follow the slope, and all four car wheels t
   built.streetGroup.traverse(mesh=>{if(mesh.isInstancedMesh)assert([...mesh.instanceMatrix.array].every(Number.isFinite));});
   built.dispose();
 });
+
+test('mapped stairs keep speculative tree crowns clear while preserving observed trees',()=>{
+  const plan=fixture();plan.stats={trees:3,streetTrees:1,generatedTrees:2};
+  plan.trees=[{x:0,z:0,h:8,radius:2,source:'inferred-street',key:'conflict'},{x:0,z:8,h:8,radius:2,source:'inferred-green',key:'clear'},{x:0,z:0,h:8,radius:2,source:'osm',key:'observed'}];
+  const stairs={...ramp,a:[-10,0],b:[10,0],width:2,walk:true,stairFlight:'flight',road:{...road,type:'steps'},yA:.47,yB:7};
+  const result=gradeStreetLife(plan,{segments:[stairs]});
+  assert.deepEqual(result.trees.map(t=>t.key),['clear','observed']);
+  assert.equal(result.stats.structureSuppressedTrees,1);
+});
