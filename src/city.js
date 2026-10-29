@@ -115,7 +115,16 @@ function facadeMaterial(shared) {
         diffuseColor.rgb = mix(diffuseColor.rgb, glass, mix(meanMask,mask,fade)*.9);
         float seam = stripe(v+.47,.025) * mix(.12,.26,ribbon) * fade;
         diffuseColor.rgb *= 1.0-seam;
-        if(diagrid>.5){float diagonals=max(stripe(u*.47+v*.46,.035),stripe(u*.47-v*.46,.035))*fade;diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.49,.55,.57),diagonals*.85);inkWindow*=1.-diagonals*.95;}
+        if(diagrid>.5){
+          // Large structural diagonals have a different screen footprint from
+          // window panes. Keep the landmark's diagrid when fine glazing fades.
+          // Pitch is an illustrative rule, not a surveyed structural drawing.
+          float d1=vFacade.x/14.+vFacade.y/20.,d2=vFacade.x/14.-vFacade.y/20.;
+          float structureFade=1.-smoothstep(.22,.85,max(fwidth(d1),fwidth(d2)));
+          float diagonals=max(stripe(d1,.035),stripe(d2,.035))*structureFade;
+          diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.49,.55,.57),diagonals*.85);
+          inkWindow=max(inkWindow*.65,diagonals*.94);
+        }
       }
     `);
     shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>','#include <opaque_fragment>\ngl_FragColor.a=inkWindow;');
