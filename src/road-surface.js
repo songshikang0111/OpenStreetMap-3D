@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { buildRoadStructures } from './road-structures.js';
 
 // Local planar construction only. The source widths, topology and coordinates
 // remain OSM-derived; pavement margins and paint are illustrative rules.
@@ -384,5 +385,6 @@ export function buildRoadSurface(data, options = {}) {
   mesh(plan.surfaces.filter(p => p.kind === 'paving'), 'Inferred roadside margins clipped at buildings', '#ddd7c8', 60002);
   mesh(plan.markings, 'Junction-aware lane paint and inferred stop lines', '#f9f6e9', 60004);
   plan.stats.renderedTriangles = group.children.reduce((n, mesh) => n + mesh.geometry.attributes.position.count / 3, 0);
-  return { group, plan, stats: plan.stats, dispose() { group.traverse(o => o.geometry?.dispose()); material.dispose(); } };
+  const structures=buildRoadStructures(data,plan);group.add(structures.group);Object.assign(plan.stats,structures.stats);
+  return { group, plan, structures:structures.plan, stats: plan.stats, dispose() { for(const child of group.children)if(child.isMesh)child.geometry.dispose();structures.dispose();material.dispose(); } };
 }
