@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#f5f3ed"/><title>京城线境 · Beijing City Ink</title></head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="京城线境首页"><span class="brand-icon">京</span><span><strong>京城线境</strong><small>BEIJING CITY INK</small></span></a>
+    <span class="top-description">从真实地图，到一页城市漫画</span>
+    <div class="header-actions"><span class="local-badge"><i></i> 本地原型</span><button id="export-png" class="button primary">导出 PNG <span>↗</span></button><button id="export-glb" class="button">3D 模型 ↓</button></div>
+  </header>
+  <main class="workspace">
+    <aside class="sidebar">
+      <section class="location-card">
+        <div class="eyebrow">01 / LOCATION</div><h1>北京 · 国贸 CBD</h1><p class="muted">国贸中心 · 央视总部 · 中国尊</p>
+        <canvas id="map" width="520" height="320" aria-label="北京国贸街区俯视地图，可点击移动相机"></canvas>
+        <div class="map-caption"><span id="coordinate">39.90950° N · 116.45825° E</span><span>WGS84</span></div>
+        <div class="stats"><div><strong id="stat-buildings">—</strong><span>建筑体块</span></div><div><strong id="stat-roads">—</strong><span>道路对象</span></div><div><strong id="stat-known">—</strong><span>有高度 / 层数</span></div></div>
+      </section>
+      <section>
+        <div class="section-label"><h2>画面风格</h2><span>02 / LOOK</span></div>
+        <div class="style-grid" role="group" aria-label="画面风格">
+          <button class="style-button active" data-mode="0" aria-pressed="true"><span class="swatch tone"></span><span>漫画网点</span></button>
+          <button class="style-button" data-mode="1" aria-pressed="false"><span class="swatch lines"></span><span>建筑线稿</span></button>
+          <button class="style-button" data-mode="2" aria-pressed="false"><span class="swatch color"></span><span>柔和彩色</span></button>
+          <button class="style-button" data-mode="3" aria-pressed="false"><span class="swatch clay"></span><span>空间白模</span></button>
+        </div>
+        <label class="slider-label" for="line-width"><span>线条粗细</span><output id="line-output">1.0</output></label><input id="line-width" type="range" min=".5" max="2.5" step=".1" value="1"/>
+        <label class="slider-label" for="tone-size"><span>网点间距</span><output id="tone-output">4.2</output></label><input id="tone-size" type="range" min="2" max="8" step=".2" value="4.2"/>
+        <label class="slider-label" for="density"><span>墨色浓度</span><output id="density-output">85%</output></label><input id="density" type="range" min="20" max="150" value="85"/>
+      </section>
+      <section>
+        <div class="section-label"><h2>光照与细节</h2><span>03 / SCENE</span></div>
+        <label class="slider-label" for="sun-angle"><span>太阳方位</span><output id="sun-output">135°</output></label><input id="sun-angle" type="range" min="0" max="360" value="135"/>
+        <div class="toggles"><label><input id="windows-toggle" type="checkbox" checked/> 程序化窗户</label><label><input id="trees-toggle" type="checkbox" checked/> 树木</label><label><input id="shadows-toggle" type="checkbox" checked/> 投射阴影</label><label><input id="rotate-toggle" type="checkbox"/> 自动环绕</label></div>
+      </section>
+      <section class="data-section">
+        <div class="section-label"><h2>真实与生成</h2><span>04 / DATA</span></div>
+        <button class="button full" id="provenance" aria-pressed="false">查看高度来源 <span>◉</span></button>
+        <div class="legend"><span><i class="height"></i>标注高度 <b id="count-height">—</b></span><span><i class="levels"></i>楼层换算 <b id="count-levels">—</b></span><span><i class="estimated"></i>规则估算 <b id="count-estimated">—</b></span></div>
+        <p class="data-note">轮廓与道路来自 OSM。窗户、屋顶设备与部分树木由程序生成。本原型使用平坦地面。</p>
+      </section>
+      <footer class="side-footer"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a><span>地图数据 ODbL · Three.js</span></footer>
+    </aside>
+    <section class="stage" aria-label="可交互三维城市">
+      <div class="stage-toolbar"><div class="camera-presets" role="group" aria-label="相机视角"><button class="active" data-camera="overview">街区俯瞰</button><button data-camera="skyline">城市天际线</button><button data-camera="street">街道视角</button><button data-camera="top">正上方</button></div><button id="reset-view" class="icon-button" aria-label="重置视角" title="重置视角">↺</button></div>
+      <div id="viewport"><div id="loading"><span class="loader"></span><strong>正在从地图构建北京…</strong><small>解析轮廓 · 生成立面 · 铺设街道</small></div></div>
+      <div class="view-title"><span class="eyebrow">BEIJING / CHAOYANG</span><strong id="view-name">城市的另一种笔触。</strong><span class="view-subtitle" id="view-subtitle">真实街区，程序构建。</span></div>
+      <div class="compass" title="北向"><span>N</span><svg viewBox="0 0 50 50" aria-hidden="true"><g id="compass-arrow"><path d="M25 6L18 33L25 28L32 33Z" fill="#485c57"/><path d="M25 28L18 33L25 44L32 33Z" fill="#bac5bb"/></g></svg></div>
+      <div id="building-info" class="building-info" hidden><button id="close-info" aria-label="关闭建筑信息">×</button><span class="eyebrow">BUILDING RECORD</span><strong id="building-name"></strong><div id="building-details"></div><a id="osm-link" target="_blank" rel="noopener">在 OpenStreetMap 查看 ↗</a></div>
+      <div class="stage-bottom"><span><i class="status-dot"></i><span id="render-status">准备数据中</span></span><span class="interaction-hint">拖动旋转 · 右键平移 · 滚轮缩放 · 点击建筑查看来源</span><span id="scale-label">1.6 × 1.8 km</span></div>
+      <div id="toast" role="status" hidden></div>
+    </section>
+  </main>
+  <script type="module" src="/src/main.js"></script>
+</body></html>
