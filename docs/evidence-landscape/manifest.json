@@ -1,0 +1,114 @@
+[
+  {
+    "file": "after/01-overview-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "a438742a13fe90f39124db95ca0b640d1b5225650024c6028b29b288120c7c8d"
+  },
+  {
+    "file": "after/02-mid-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "41a2ff403896249b621b513b042c17495bc54b04ebc9d186bf85314af2964ab8"
+  },
+  {
+    "file": "after/03-court-color-initial.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "f1b8dda308b3e1d496da180745edd44585161e5ff0fee66014990e12d5af2732"
+  },
+  {
+    "file": "after/03-court-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "61ea056488aece09d888b362488e9d354039ee7d4c88038fdc7c9801ed3832c1"
+  },
+  {
+    "file": "after/04-top-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "900a7fd1671301893b61f6aedaf9595f7d457875fd1a3573b87f93bd5f62dc7a"
+  },
+  {
+    "file": "before/01-overview-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "ed4bfc45405a22474afcc38ae47218ccc4fbe4ec393cb1c0bc1cedeaf1422977"
+  },
+  {
+    "file": "before/02-mid-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "a29f8b13fa7748021da8fea390d8f1a46ce0fa265b2b443f8d0fdfefcf380fc2"
+  },
+  {
+    "file": "before/03-court-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "ac72c678534ebfeadfb54bb62e4a6573fdb05d59781a6f0f6704f6db2e47e617"
+  },
+  {
+    "file": "before/04-top-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "7c241b55c623c911fa779b9805e4d4d3d8a1d7634180c391a92f7b4e45848230"
+  },
+  {
+    "file": "checks/export.png",
+    "size": [
+      2400,
+      1211
+    ],
+    "sha256": "31ea4091e85c2996a8423583236432287755b1d3fae8d31b0bd94c69cd411c0d"
+  },
+  {
+    "file": "checks/landscape-off.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "3015e5ef8015e9c20565ef12a2ce57dffa3d1a74d342e07256f9445189cf3bcc"
+  },
+  {
+    "file": "checks/report-preview.png",
+    "size": [
+      1905,
+      882
+    ],
+    "sha256": "81721f2ad5d239861b1b1fe5b2ed2c4bda819c950d327534c1cb94fc45bd1a49"
+  },
+  {
+    "file": "comparison.jpg",
+    "size": [
+      2180,
+      624
+    ],
+    "sha256": "bb7d6658f474d91b59fce5513420cf5ff32f4b465f501dfe5ef67c2cacad7ca5"
+  },
+  {
+    "file": "references/cbd-plaza-aerial.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "41584957986772591b38a2d00ee767b3738935216038482ba8ef43840f244d12"
+  }
+]

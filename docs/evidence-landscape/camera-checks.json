@@ -1,0 +1,34 @@
+[
+  {
+    "view": "02-mid-ink",
+    "camera": "机位 900.0, 670.0, 950.0 m · FOV 42.0°",
+    "mode": "漫画网点",
+    "ready": true,
+    "stats": "树木 2692（规则补充 2692） · 街道标注 215 个。场地：OSM 69 处，景观补全 604 处。 补全为示意；相同种子保持布局。"
+  },
+  {
+    "view": "03-court-color",
+    "camera": "机位 650.0, 310.0, 720.0 m · FOV 48.0°",
+    "mode": "柔和彩色",
+    "ready": true,
+    "stats": "树木 2692（规则补充 2692） · 街道标注 215 个。场地：OSM 69 处，景观补全 604 处。 补全为示意；相同种子保持布局。"
+  },
+  {
+    "view": "02-mid-ink-final",
+    "camera": "机位 900.0, 670.0, 950.0 m · FOV 42.0°",
+    "mode": "漫画网点",
+    "ready": true
+  },
+  {
+    "view": "04-top-color",
+    "camera": "机位 0.0, 2556.6, 0.0 m · FOV 43.0°",
+    "mode": "柔和彩色",
+    "ready": true
+  },
+  {
+    "view": "01-overview-color",
+    "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "mode": "柔和彩色",
+    "ready": true
+  }
+]

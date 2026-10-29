@@ -1,0 +1,22 @@
+{
+  "candidateTrees": 600,
+  "acceptedLandTrees": 591,
+  "totalTrees": 2692,
+  "treeCentersInProtectedAreas": 0,
+  "treeCentersInPaths": 0,
+  "templateTrees": {
+    "forecourt": 112,
+    "garden-court": 244,
+    "verge": 122,
+    "pocket-common": 122
+  },
+  "templates": {
+    "garden-court": 340,
+    "forecourt": 108,
+    "verge": 128,
+    "pocket-common": 28
+  },
+  "rejectedGeometry": 0,
+  "unfilledBeforeFraction": 0.4654229790075539,
+  "unfilledAfterFraction": 0.25708442886356997
+}

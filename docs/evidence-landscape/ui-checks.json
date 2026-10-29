@@ -1,0 +1,33 @@
+[
+  {
+    "check": "landscape-off",
+    "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "checked": false,
+    "stats": "树木 2101（规则补充 2101） · 街道标注 215 个。场地：OSM 69 处，景观补全 0 处。 补全为示意；相同种子保持布局。"
+  },
+  {
+    "check": "landscape-restored",
+    "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "checked": true,
+    "stats": "树木 2692（规则补充 2692） · 街道标注 215 个。场地：OSM 69 处，景观补全 604 处。 补全为示意；相同种子保持布局。"
+  },
+  {
+    "check": "png-export",
+    "buttonEnabled": true,
+    "camera": "机位 650.0, 310.0, 720.0 m · FOV 48.0°",
+    "toast": "已导出 2400 × 1211 PNG，含地图来源标注。"
+  },
+  {
+    "check": "console-errors",
+    "errors": []
+  },
+  {
+    "check": "report-view-switch-and-solo",
+    "verified": true,
+    "views": [
+      "03-court-color",
+      "02-mid-ink"
+    ],
+    "restoredCut": "50%"
+  }
+]

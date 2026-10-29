@@ -1,4 +1,4 @@
-# 京城线境 / Beijing City Ink · v0.4.2
+# 京城线境 / Beijing City Ink · v0.5.0
 
 使用真实北京 OSM 数据、Three.js 与独立编写的程序化建模/漫画渲染代码，在浏览器中构建国贸 CBD 街区。
 
@@ -12,6 +12,8 @@ v0.4.1 补足道路纵断面：真实OSM节点建图，78处共享节点高差�
 
 v0.4.2 修复远景立面同质化：细窗墨线与平均材质灰度分离，横纵轴和宽组带按投影尺寸/网点尺寸分别过滤；收腰放样共享UV参考周长，避免竖纹扭转。70项测试通过，6组匹配机位加原版远窗开关实验见[本轮对照](docs/evidence-distance/report.html)。[独立评审](docs/distance-facade-validation.md)给立面类型辨识2→7.5/10，噪声克制7.5→6.5/10，近景8→8/10；静态改善通过，部分板楼颗粒与运动稳定性仍待打磨。
 
+v0.5.0 新增通用场地补全：恢复 OSM 场地标签、补充同区域48个对象，在空白处按建筑/道路关系生成前场、庭院、退界绿带和大空隙庭园。已知停车、运动、施工、水体和桥梯净空优先；场地、低灌木、疏树与座椅共用预算。支持参数文件与关闭开关，不按北京坐标定制。[场地引擎与换区方法](docs/landscape-engine.md)、[前后滑动对照](docs/evidence-landscape/report.html)及[独立验收](docs/landscape-validation.md)记录边界与结果。参考真实鸟瞰照片选择模板比例，未从照片恢复真实几何。
+
 ## 运行
 
 要求：Node.js 20.19+ 或 Node.js 22（本机验证版本 22.11.0）；重新下载数据时需要 Python 3。
@@ -24,7 +26,7 @@ npm run dev
 
 打开 <http://127.0.0.1:5178/>。也可在 PowerShell 中运行 `./start.ps1`。
 
-主数据保存在 `public/data/beijing-cbd.json`，补充街道标注在 `public/data/street-details.json`。首次安装依赖后，预览不需要外部网络、地图密钥或在线推理服务。没有使用卫星影像、街景纹理或外部三维模型；侧栏俯视图也是按矢量数据绘制。
+主数据保存在 `public/data/beijing-cbd.json`，补充街道标注在 `public/data/street-details.json`，补充场地在 `public/data/landscape-details.json`，场地模板参数在 `public/data/landscape-profile.json`。首次安装依赖后，预览不需要外部网络、地图密钥或在线推理服务。没有使用卫星影像、街景纹理或外部三维模型；侧栏俯视图也是按矢量数据绘制。
 
 ```powershell
 npm test          # 数据、建筑、街道、渲染接口与视角状态回归检查
@@ -32,7 +34,7 @@ npm run build     # 生成 dist/
 npm run preview   # 预览生产构建；请先停止同端口的 dev 服务
 ```
 
-当前通过68项完整自动测试与生产构建。v0.2的历史截图和评分见 [对比验收报告](docs/comparison-report.md)；依据见 [需求与评分约定](docs/comparison-requirements.md)及[原项目证据研究](docs/research-evidence.md)。构建仍会提示 Three.js 分包超过500kB，这是体积提示，不是失败。
+当前通过88项完整自动测试与生产构建。v0.2的历史截图和评分见 [对比验收报告](docs/comparison-report.md)；依据见 [需求与评分约定](docs/comparison-requirements.md)及[原项目证据研究](docs/research-evidence.md)。构建仍会提示 Three.js 分包超过500kB，这是体积提示，不是失败。
 
 ## v0.2 已实现
 
