@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { inside, stableRandom } from './osm.js';
 import { crownGeometry, foliageMaterial } from './foliage.js';
+export const TREE_LOD=Object.freeze({distance:95,maxTrees:96,clusters:19});
 
 // These additions are spatially constrained illustrations, not surveyed street assets.
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
@@ -261,7 +262,7 @@ export function buildStreetLife(data, options = {}) {
   }
   const trunks = mesh(treeGroup, 'Trunks', cylinder, plan.trees.length, '#756650', 4);
   const far = mesh(treeGroup, 'Distant tree crowns', crown, plan.trees.length, '#81916b', 2);
-  const maxDetailedTrees=180,clusters=19;
+  const maxDetailedTrees=TREE_LOD.maxTrees,clusters=TREE_LOD.clusters;
   const near = mesh(treeGroup, 'Nearby crown clusters', detailedCrown, Math.min(plan.trees.length, maxDetailedTrees) * clusters, '#81916b', 2);
   const branches = mesh(treeGroup, 'Nearby branching', cylinder, Math.min(plan.trees.length, maxDetailedTrees) * 4, '#756650', 4);
   near.instanceMatrix.setUsage(THREE.DynamicDrawUsage); far.instanceMatrix.setUsage(THREE.DynamicDrawUsage); branches.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -273,7 +274,7 @@ export function buildStreetLife(data, options = {}) {
     if (key === lodKey) return; lodKey = key;
     let f = 0, n = 0, b = 0, detailedTrees = 0;
     for (const tree of plan.trees) {
-      const color = colors[Math.floor(tree.variation * colors.length)], isNear = camera.position.y < 160 && Math.hypot(tree.x - camera.position.x, tree.z - camera.position.z) < 145 && detailedTrees < maxDetailedTrees;
+      const color = colors[Math.floor(tree.variation * colors.length)], isNear = Math.hypot(tree.x-camera.position.x,tree.h*.76-camera.position.y,tree.z-camera.position.z)<TREE_LOD.distance && detailedTrees < maxDetailedTrees;
       const width = tree.shape === 'columnar' ? tree.h * .145 : tree.h * .24;
       if (!isNear) { transform(far, f++, [tree.x, tree.h * .76 + .35, tree.z], [width, tree.h * .29, width * .92], tree.rotation, color); continue; }
       detailedTrees++;
