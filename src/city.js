@@ -1,8 +1,11 @@
 import * as THREE from 'three';
 import { area, inside, stableRandom } from './osm.js';
+import { buildingStyle, landmarkKind, roofEquipment } from './building-rules.js';
+import { buildChinaZun, buildCctv } from './landmarks.js';
+import { buildStreetLife } from './streetlife.js';
 
 class MeshWriter {
-  constructor() { this.positions = []; this.normals = []; this.colors = []; this.facades = []; this.ids = []; }
+  constructor() { this.positions = []; this.normals = []; this.colors = []; this.facades = []; this.ids = []; this.styles=[]; this.style=0; this.variant=0; }
   triangle(a, b, c, normal, color, id = 0, uv = null) {
     const ab = new THREE.Vector3().subVectors(new THREE.Vector3(...b), new THREE.Vector3(...a));
     const ac = new THREE.Vector3().subVectors(new THREE.Vector3(...c), new THREE.Vector3(...a));
@@ -12,6 +15,7 @@ class MeshWriter {
     [a, b, c].forEach((p, i) => {
       this.positions.push(...p); this.normals.push(...normal); this.colors.push(col.r, col.g, col.b);
       this.ids.push(...code); this.facades.push(...(uv ? uv[i] : [0, 0, 0, 0]));
+      this.styles.push(this.style,this.variant);
     });
   }
   quad(points, normal, color, id = 0, uv = null) {
@@ -24,6 +28,7 @@ class MeshWriter {
     geo.setAttribute('color', new THREE.Float32BufferAttribute(this.colors, 3));
     geo.setAttribute('aFacade', new THREE.Float32BufferAttribute(this.facades, 4));
     geo.setAttribute('objectId', new THREE.Float32BufferAttribute(this.ids, 3));
+    geo.setAttribute('aStyle', new THREE.Float32BufferAttribute(this.styles, 2));
     geo.computeBoundingBox(); geo.computeBoundingSphere();
     return geo;
   }
@@ -60,15 +65,30 @@ function disc(writer, p, radius, y, color, id = 0) {
   }
 }
 
+function orientedBox(writer,center,axes,dimensions,color,id=0){
+  const old=writer.style;writer.style=0;
+  const p=([x,y,z])=>center.map((v,k)=>v+axes[0][k]*x*dimensions[0]/2+axes[1][k]*y*dimensions[1]/2+axes[2][k]*z*dimensions[2]/2);
+  const signs=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],points=signs.map(p);
+  for(const [ix,axis,sign]of [[[0,1,2,3],2,-1],[[4,7,6,5],2,1],[[0,4,5,1],1,-1],[[3,2,6,7],1,1],[[0,3,7,4],0,-1],[[1,5,6,2],0,1]])writer.quad(ix.map(i=>points[i]),axes[axis].map(v=>v*sign),color,id);
+  writer.style=old;
+}
+function addBox(writer,center,dimensions,color,id=0,angle=0){const c=Math.cos(angle),s=Math.sin(angle);orientedBox(writer,center,[[c,0,-s],[0,1,0],[s,0,c]],dimensions,color,id);}
+function addBeam(writer,a,b,width,color,id=0){
+  const y=new THREE.Vector3().subVectors(new THREE.Vector3(...b),new THREE.Vector3(...a)),length=y.length();if(length<.001)return;y.normalize();
+  const ref=Math.abs(y.z)<.9?new THREE.Vector3(0,0,1):new THREE.Vector3(1,0,0),x=new THREE.Vector3().crossVectors(y,ref).normalize(),z=new THREE.Vector3().crossVectors(x,y).normalize();
+  orientedBox(writer,a.map((v,i)=>(v+b[i])/2),[x.toArray(),y.toArray(),z.toArray()],[width,length,width],color,id);
+}
+
 function facadeMaterial(shared) {
-  const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .9, metalness: .04 });
+  const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .76, metalness: .04 });
   material.onBeforeCompile = shader => {
     shader.uniforms.uWindows = shared.windows;
     shader.uniforms.uProvenance = shared.provenance;
-    shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nattribute vec4 aFacade; varying vec4 vFacade;');
-    shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvFacade = aFacade;');
+    shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nattribute vec4 aFacade; varying vec4 vFacade; attribute vec2 aStyle; varying vec2 vStyle;');
+    shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvFacade = aFacade; vStyle=aStyle;');
     shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
       varying vec4 vFacade;
+      varying vec2 vStyle;
       uniform float uWindows;
       uniform float uProvenance;
       float inkWindow=0.0;
@@ -76,22 +96,37 @@ function facadeMaterial(shared) {
     `);
     shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
       if (vFacade.z > 0.5 && uWindows > 0.5 && uProvenance < 0.5) {
-        float bays = max(1.0, floor(vFacade.z / 3.3));
+        float family=vStyle.x;
+        float curtain=1.-step(.2,abs(family-1.));
+        float residential=1.-step(.2,abs(family-2.));
+        float ribbon=1.-step(.2,abs(family-3.));
+        float diagrid=1.-step(.2,abs(family-5.));
+        float zun=1.-step(.2,abs(family-6.));
+        float isGlass=max(curtain,max(diagrid,zun));
+        float bay=mix(3.5,2.4,isGlass);
+        float bays = max(1.0, floor(vFacade.z / bay));
         float u = vFacade.x / vFacade.z * bays;
         float v = vFacade.y / max(2.8, vFacade.w);
-        float mask = stripe(u, .32) * stripe(v, .31);
-        float fade = 1.0 - smoothstep(.45, 1.8, max(fwidth(u),fwidth(v)));
-        inkWindow=mask*fade;
+        float mask = stripe(u, mix(.30,.46,isGlass)) * stripe(v, mix(.30,.44,isGlass));
+        mask=mix(mask,stripe(u,.455)*stripe(v,.27),ribbon);
+        float lower=1.-smoothstep(.95,1.15,v);
+        mask=mix(mask,stripe(u*.5,.44)*stripe(v,.46),lower*(1.-residential));
+        float fade = 1.0 - smoothstep(.8, 2.8, max(fwidth(u),fwidth(v)));
+        float narrowMullion=(1.-stripe(u,.47))*.2;
+        inkWindow=mask*fade*mix(.87,.55,isGlass);
         float cell = fract(sin(dot(floor(vec2(u,v)),vec2(17.21,59.17))) * 12345.31);
-        vec3 glass = mix(vec3(.095,.135,.155),vec3(.31,.36,.38), cell);
+        vec3 glass = mix(vec3(.12,.19,.23),vec3(.29,.36,.40), cell*.35+vStyle.y*.4);
+        glass=mix(glass,vec3(.21,.31,.37),zun*.55);
+        glass*=mix(.72,1.1,smoothstep(.08,.92,fract(u*.083+vStyle.y)));
         diffuseColor.rgb = mix(diffuseColor.rgb, glass, mask * fade * .9);
-        float seam = stripe(v+.47,.025) * .12 * fade;
+        float seam = stripe(v+.47,.025) * mix(.12,.26,ribbon) * fade;
         diffuseColor.rgb *= 1.0-seam;
+        if(diagrid>.5){float diagonals=max(stripe(u*.47+v*.46,.035),stripe(u*.47-v*.46,.035))*fade;diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.49,.55,.57),diagonals*.85);inkWindow*=1.-diagonals*.95;}
       }
     `);
     shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>','#include <opaque_fragment>\ngl_FragColor.a=inkWindow;');
   };
-  material.customProgramCacheKey = () => 'city-ink-facade-v1';
+  material.customProgramCacheKey = () => 'city-ink-facade-v2-families';
   return material;
 }
 
@@ -102,11 +137,11 @@ export function buildCity(data) {
   const baseMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .98 });
   const [x0,z0,x1,z1] = data.bounds;
   const base = new THREE.Mesh(new THREE.BoxGeometry(x1-x0+34,14,z1-z0+34), new THREE.MeshStandardMaterial({color:'#d8d4c7',roughness:1}));
-  base.position.set((x0+x1)/2,-7,(z0+z1)/2); base.receiveShadow = true; base.name = 'Flat ground / no DEM'; group.add(base);
+  base.position.set((x0+x1)/2,-7,(z0+z1)/2); base.receiveShadow = true; base.name = 'Flat ground / no DEM'; base.userData.inkClass=5; group.add(base);
   const groundWriter = new MeshWriter();
   for (const feature of data.greens) polygon(groundWriter, feature, .18, '#aebea0', 60000);
   for (const feature of data.water) polygon(groundWriter, feature, .22, '#8dacae', 60001);
-  group.add(groundWriter.mesh(baseMaterial,'Land cover'));
+  const landCover=groundWriter.mesh(baseMaterial,'Land cover');landCover.userData.inkClass=5;group.add(landCover);
   const roadWriter = new MeshWriter(), pavingWriter = new MeshWriter(), markingsWriter = new MeshWriter();
   for (const road of data.roads) {
     const walk = /footway|path|steps|pedestrian|cycleway/.test(road.type);
@@ -123,100 +158,109 @@ export function buildCity(data) {
     }
   }
   for (const [writer,name] of [[pavingWriter,'Sidewalks'],[roadWriter,'Roads'],[markingsWriter,'Road markings']]) {
-    const mesh = writer.mesh(baseMaterial,name); mesh.castShadow=false; group.add(mesh);
+    const mesh = writer.mesh(baseMaterial,name); mesh.castShadow=false;mesh.userData.inkClass=3; group.add(mesh);
   }
 
-  const buildings = [], roofBoxes = [], detailedWindows = [];
-  const wallPalette = ['#d5d0c2','#bdc9ca','#bcc3c4','#d6c6af','#b7c1c1','#d7d9d4'];
-  const sourceColors = { height: '#60988e', levels: '#86a8c3', estimated: '#daab73' };
-  data.buildings.forEach((building,index) => {
-    const writer = new MeshWriter(), id = index + 1, random = stableRandom(building.id);
-    const wall = new THREE.Color(wallPalette[Math.floor(random()*wallPalette.length)]);
-    const floorHeight = Math.max(2.8, Math.min(5.5, building.height/building.levels));
-    const baseY = .45 + building.minHeight, topY = .45 + building.height;
-    const rings = [normalizedRing(building.outer), ...building.holes.map(h=>normalizedRing(h,true))];
-    for (const ring of rings) {
-      for (let i=0;i<ring.length;i++) {
-        const a = ring[i],b=ring[(i+1)%ring.length],dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz);
-        if(len<.03) continue;
-        const normal=[dz/len,0,-dx/len];
+  const buildings=[],nearDetails=[],landmarks=[],familyCounts={};
+  const sourceColors={height:'#60988e',levels:'#86a8c3',estimated:'#daab73'};
+  const roofWriter=new MeshWriter();
+  data.buildings.forEach((building,index)=>{
+    const writer=new MeshWriter(),id=index+1,style=buildingStyle(building),landmark=landmarkKind(building);
+    writer.style=style.code;writer.variant=style.variant;familyCounts[style.family]=(familyCounts[style.family]||0)+1;
+    const wall=new THREE.Color(style.color),floorHeight=style.floor,baseY=.45+building.minHeight,topY=.45+building.height;
+    const trim=style.family==='curtain'?'#c9d5d7':'#e5e1d6';
+    let profile=null;
+    if(landmark==='china-zun')profile=buildChinaZun(writer,building,id,addBeam);
+    else if(landmark==='cctv')profile=buildCctv(writer,building,id,polygon,addBeam);
+    else{
+      const rings=[normalizedRing(building.outer),...building.holes.map(h=>normalizedRing(h,true))];
+      let longest=null;
+      for(const [ringIndex,ring]of rings.entries())for(let i=0;i<ring.length;i++){
+        const a=ring[i],b=ring[(i+1)%ring.length],dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz);if(len<.03)continue;
+        const normal=[dz/len,0,-dx/len],angle=Math.atan2(-dz,dx),mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];
         writer.quad([[a[0],baseY,a[1]],[b[0],baseY,b[1]],[b[0],topY,b[1]],[a[0],topY,a[1]]],normal,wall,id,
-          [[0,baseY,len,floorHeight],[len,baseY,len,floorHeight],[len,topY,len,floorHeight],[0,topY,len,floorHeight]]);
-        // A small real-geometry detail tier complements shader windows near the camera.
-        const bays=Math.floor(len/3.3);
-        if (building.height < 95 && bays>0 && len>5 && detailedWindows.length < 18000) {
-          for(let level=1;level<Math.min(18,building.levels);level++) {
-            const y=(level+.5)*floorHeight;
-            if(y<=baseY || y>=topY-.8) continue;
-            for(let bay=0;bay<bays;bay++) {
-              const u=(bay+.5)/bays;
-              detailedWindows.push({ position:[a[0]+dx*u+normal[0]*.1,y,a[1]+dz*u+normal[2]*.1], angle:Math.atan2(-dz,dx), width:len/bays*.7, building:index });
+          [[0,0,len,floorHeight],[len,0,len,floorHeight],[len,topY-baseY,len,floorHeight],[0,topY-baseY,len,floorHeight]]);
+        if(!ringIndex&&(!longest||len>longest.len))longest={a,b,len,normal,angle,mid,dx,dz};
+        // Each wall ends with a parapet, not a featureless white cap.
+        if(len>2&&building.height>6){
+          // Recess the outer parapet face from the wall plane. Exactly coplanar
+          // surfaces become unstable in a kilometre-wide perspective view.
+          addBox(writer,[mid[0]-normal[0]*.35,topY+.32,mid[1]-normal[2]*.35],[len,.65,.5],trim,id,angle);
+          if(style.family==='curtain'&&building.height>60){
+            addBox(writer,[mid[0]+normal[0]*.22,topY-4,mid[1]+normal[2]*.22],[len,1.1,.7],trim,id,angle);
+            if(len>12)for(let distance=0;distance<len;distance+=Math.max(6,style.bay*3)){
+              const u=distance/len;addBox(writer,[a[0]+dx*u+normal[0]*.20,(baseY+topY)/2,a[1]+dz*u+normal[2]*.20],[.30,topY-baseY,.8],trim,id,angle);
+            }
+          }
+          if(style.family==='ribbon')for(let y=baseY+floorHeight;y<topY-.5;y+=floorHeight){
+            addBox(writer,[mid[0]+normal[0]*.22,y,mid[1]+normal[2]*.22],[len,.3,.7],trim,id,angle);
+          }
+        }
+        const bays=Math.floor(len/style.bay),levels=Math.min(12,Math.floor((topY-baseY)/floorHeight));
+        if(!ringIndex&&len>7&&bays&&nearDetails.length<42000){
+          for(let level=1;level<levels;level++)for(let bay=0;bay<bays;bay++){
+            const u=(bay+.5)/bays,y=baseY+(level+.5)*floorHeight,w=len/bays*(style.family==='curtain'?.88:.60),h=floorHeight*.60;
+            const x=a[0]+dx*u+normal[0]*.10,z=a[1]+dz*u+normal[2]*.10;
+            if(y+h/2>=topY)continue;
+            nearDetails.push({x,y:y-h/2,z,angle,w,h:.13,d:.35});
+            if(style.family==='residential'){
+              nearDetails.push({x:x-dx/len*w/2,y,z:z-dz/len*w/2,angle,w:.12,h,d:.24});
+              nearDetails.push({x:x+dx/len*w/2,y,z:z+dz/len*w/2,angle,w:.12,h,d:.24});
+              if(style.balcony&&bay%3===1&&level%2===0){
+                const bx=x+normal[0]*.55,bz=z+normal[2]*.55;
+                nearDetails.push({x:bx,y:y-h/2-.15,z:bz,angle,w:w+1,h:.18,d:1.25});
+                nearDetails.push({x:bx+normal[0]*.55,y:y-h/2+.42,z:bz+normal[2]*.55,angle,w:w+1,h:1,d:.13});
+              }
             }
           }
         }
       }
-    }
-    polygon(writer,building,topY,'#e2e1d6',id);
-    if(building.minHeight>0) {
-      const start=writer.positions.length; polygon(writer,building,baseY,wall,id);
-      for(let i=start;i<writer.positions.length;i+=9) {
-        for(let c=0;c<3;c++) [writer.positions[i+3+c],writer.positions[i+6+c]]=[writer.positions[i+6+c],writer.positions[i+3+c]];
-        for(let c=0;c<3;c++) writer.normals[i+c*3+1]=-1;
+      writer.style=0;polygon(writer,building,topY,'#e1e3dd',id);
+      if(building.minHeight>0){
+        const start=writer.positions.length;polygon(writer,building,baseY,wall,id);
+        for(let i=start;i<writer.positions.length;i+=9){for(let c=0;c<3;c++)[writer.positions[i+3+c],writer.positions[i+6+c]]=[writer.positions[i+6+c],writer.positions[i+3+c]];for(let c=0;c<3;c++)writer.normals[i+c*3+1]=-1;}
+      }
+      if(longest&&building.minHeight===0&&building.height>10&&longest.len>12){
+        const {mid,normal,angle,len}=longest,w=Math.min(len*.28,11),x=mid[0]+normal[0]*.32,z=mid[1]+normal[2]*.32;
+        addBox(writer,[x,baseY+2.15,z],[w,4.3,.35],'#637b86',id,angle);
+        addBox(writer,[x+normal[0]*1,baseY+4.4,z+normal[2]*1],[w+2,.28,2.6],trim,id,angle);
+        addBox(writer,[x,baseY+2.15,z],[.16,4.3,.48],trim,id,angle);
+      }
+      for(const box of roofEquipment(building)){
+        addBox(roofWriter,[box.x,topY+box.h/2,box.z],[box.w,box.h,box.d],'#aeb7b4',id);
+        addBox(roofWriter,[box.x,topY+box.h+.1,box.z],[box.w+.3,.2,box.d+.3],'#d6dbd8',id);
+        for(let j=0;j<3;j++)addBox(roofWriter,[box.x-box.w*.3+j*box.w*.3,topY+box.h+.23,box.z],[.18,.14,box.d*.8],'#6b7e7c',id);
       }
     }
-    const mesh=writer.mesh(material,building.tags.name||building.id);
-    mesh.userData.feature=building; mesh.userData.generatedFacade=true;
-    mesh.userData.originalColors=mesh.geometry.attributes.color.array.slice();
-    mesh.userData.sourceColor=new THREE.Color(sourceColors[building.source]);
-    group.add(mesh); buildings.push(mesh);
-    if(building.area>120 && !building.holes.length && inside(building.center,building.outer)) {
-      roofBoxes.push({x:building.center[0],z:building.center[1],y:topY+1.4,w:Math.min(9,Math.sqrt(building.area)*.16),d:Math.min(7,Math.sqrt(building.area)*.12)});
-    }
+    const mesh=writer.mesh(material,building.tags.name||building.id);mesh.userData.feature=building;mesh.userData.generatedFacade=true;mesh.userData.inkClass=1;
+    mesh.userData.facadeFamily=style.family;mesh.userData.landmark=profile;
+    if(profile){landmarks.push({...profile,osmId:building.osmId});building.generatedShape=profile.name;building.generatedShapeNote=profile.note;}
+    mesh.userData.originalColors=mesh.geometry.attributes.color.array.slice();mesh.userData.sourceColor=new THREE.Color(sourceColors[building.source]);
+    group.add(mesh);buildings.push(mesh);
   });
-  const equipment=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({color:'#c5c7bf',roughness:.9}),roofBoxes.length);
+  const equipment=roofWriter.mesh(baseMaterial,'Procedural roof equipment groups');equipment.userData.inkClass=4;group.add(equipment);
   const dummy=new THREE.Object3D();
-  roofBoxes.forEach((b,i)=>{dummy.position.set(b.x,b.y,b.z);dummy.rotation.set(0,0,0);dummy.scale.set(b.w,2.8,b.d);dummy.updateMatrix();equipment.setMatrixAt(i,dummy.matrix);});
-  equipment.castShadow=true;equipment.receiveShadow=true;equipment.name='Procedural roof equipment';group.add(equipment);
-
-  const frameMesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,.12,.34),new THREE.MeshStandardMaterial({color:'#dfdfd6',roughness:.8}),detailedWindows.length);
-  frameMesh.name='Nearby window ledges (procedural)';
-  const detailGroup=new THREE.Group(); detailGroup.add(frameMesh);group.add(detailGroup);
+  const frameMesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({color:'#dadbd4',roughness:.83}),Math.min(18000,nearDetails.length));
+  frameMesh.name='Nearby frames, sills and balconies (inferred)';frameMesh.userData.inkClass=4;frameMesh.castShadow=true;frameMesh.receiveShadow=true;frameMesh.count=0;
+  const detailGroup=new THREE.Group();detailGroup.name='Near building details';detailGroup.add(frameMesh);group.add(detailGroup);
   let lodKey='';
-  function updateLOD(camera) {
-    const key=`${Math.round(camera.position.x/60)},${Math.round(camera.position.z/60)},${Math.round(camera.position.y/60)}`;
-    if(key===lodKey)return;lodKey=key;
-    let count=0;
-    if(camera.position.y<260) for(const w of detailedWindows) {
-      if(Math.hypot(w.position[0]-camera.position.x,w.position[2]-camera.position.z)>210)continue;
-      dummy.position.set(...w.position);dummy.position.y-=.9;dummy.rotation.set(0,w.angle,0);dummy.scale.set(w.width,1,1);dummy.updateMatrix();frameMesh.setMatrixAt(count++,dummy.matrix);
+  function updateLOD(camera){
+    const key=`${Math.round(camera.position.x/25)},${Math.round(camera.position.z/25)},${Math.round(camera.position.y/25)}`;
+    if(key!==lodKey){lodKey=key;let count=0;
+      if(camera.position.y<180)for(const d of nearDetails){
+        if(count>=18000)break;if(Math.hypot(d.x-camera.position.x,d.z-camera.position.z)>160||Math.abs(d.y-camera.position.y)>90)continue;
+        dummy.position.set(d.x,d.y,d.z);dummy.rotation.set(0,d.angle,0);dummy.scale.set(d.w,d.h,d.d);dummy.updateMatrix();frameMesh.setMatrixAt(count++,dummy.matrix);
+      }
+      frameMesh.count=count;frameMesh.instanceMatrix.needsUpdate=true;frameMesh.computeBoundingSphere();
     }
-    frameMesh.count=count;frameMesh.instanceMatrix.needsUpdate=true;frameMesh.computeBoundingSphere();
+    streetlife.updateLOD(camera);
   }
 
-  const treeGroup=new THREE.Group();treeGroup.name='Trees';
-  const trees=[...data.trees.map(t=>({x:t.point[0],z:t.point[1],h:Math.min(16,t.height)}))];
-  // Only park/green polygons receive inferred trees. Their placement is not an OSM observation.
-  for(const green of data.greens) {
-    const rng=stableRandom(green.id),n=Math.min(80,Math.floor(green.area/160));
-    const xs=green.outer.map(p=>p[0]),zs=green.outer.map(p=>p[1]);
-    for(let attempt=0,placed=0;attempt<n*8 && placed<n;attempt++){
-      const x=THREE.MathUtils.lerp(Math.min(...xs),Math.max(...xs),rng()),z=THREE.MathUtils.lerp(Math.min(...zs),Math.max(...zs),rng());
-      if(!inside([x,z],green.outer)||green.holes.some(h=>inside([x,z],h))||data.buildings.some(b=>inside([x,z],b.outer)))continue;
-      trees.push({x,z,h:5+rng()*5});placed++;
-    }
-  }
-  const trunks=new THREE.InstancedMesh(new THREE.CylinderGeometry(.22,.32,1,5),new THREE.MeshStandardMaterial({color:'#777568',roughness:1}),trees.length);
-  const leaves=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),new THREE.MeshStandardMaterial({color:'#87967c',roughness:1,flatShading:true}),trees.length*3);
-  trees.forEach((t,i)=>{
-    dummy.rotation.set(0,0,0);dummy.position.set(t.x,t.h*.33,t.z);dummy.scale.set(1,t.h*.66,1);dummy.updateMatrix();trunks.setMatrixAt(i,dummy.matrix);
-    for(let j=0;j<3;j++){
-      dummy.position.set(t.x+Math.cos(j*2.1)*t.h*.15,t.h*(.64+j*.085),t.z+Math.sin(j*2.1)*t.h*.14);dummy.scale.set(t.h*.29,t.h*.31,t.h*.28);dummy.rotation.set(.1*i,j,0);dummy.updateMatrix();leaves.setMatrixAt(i*3+j,dummy.matrix);
-    }
-  });
-  trunks.castShadow=leaves.castShadow=true;leaves.receiveShadow=true;treeGroup.add(trunks,leaves);group.add(treeGroup);
+  const streetlife=buildStreetLife(data);
+  const {treeGroup,streetGroup}=streetlife;group.add(treeGroup,streetGroup);
   function setProvenance(on) {
     shared.provenance.value=on?1:0;
     for(const mesh of buildings){const colors=mesh.geometry.attributes.color;if(on){const c=mesh.userData.sourceColor;for(let i=0;i<colors.count;i++)colors.setXYZ(i,c.r,c.g,c.b);}else colors.array.set(mesh.userData.originalColors);colors.needsUpdate=true;}
   }
-  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:trees.length,generatedTrees:trees.length-data.trees.length,sourceColors};
+  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,sourceColors,landmarks,familyCounts};
 }
