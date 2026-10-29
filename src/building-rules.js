@@ -1,4 +1,5 @@
 import { stableRandom, inside } from './osm.js';
+import { facadeGrammar } from './facade-layout.js';
 
 // These are repeatable design guesses, not recovered photographic facades.
 export function buildingStyle(building) {
@@ -10,8 +11,9 @@ export function buildingStyle(building) {
   else if (/commercial|retail|public|school|hospital|industrial/.test(type)||building.area>2200) family='ribbon';
   else family=building.height>19?'residential':'lowrise';
   const palette={curtain:['#aebfc3','#9eafb6','#bac7cc','#b6c4bd'],residential:['#dbd4c8','#d2c8b8','#d1d4cd','#d9cdc4'],ribbon:['#d6d6cd','#d7cbbb','#c9cecc'],lowrise:['#d9d0be','#d2c0ac','#c3c5bd']}[family];
-  return {family,code:{curtain:1,residential:2,ribbon:3,lowrise:4}[family],color:palette[Math.floor(random()*palette.length)],variant:random(),
-    bay:family==='curtain'?2.4:family==='residential'?3.4:3.9,
+  const color=palette[Math.floor(random()*palette.length)],variant=random(),grammar=facadeGrammar(family,variant);
+  return {family,code:{curtain:1,residential:2,ribbon:3,lowrise:4}[family],color,variant,
+    bay:grammar.bay,grammar:grammar.name,
     floor:Math.max(2.8,Math.min(5.5,(building.height-building.minHeight)/Math.max(1,building.levels))),
     balcony:family==='residential'&&building.height<80&&random()>.34,
     roof:tags['roof:shape']||'flat'};

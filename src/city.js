@@ -4,9 +4,10 @@ import { buildingStyle, landmarkKind, roofEquipment } from './building-rules.js'
 import { buildChinaZun, buildCctv } from './landmarks.js';
 import { buildStreetLife } from './streetlife.js';
 import { buildRoadSurface } from './road-surface.js';
+import { facadeLayout, facadeWindows } from './facade-layout.js';
 
 class MeshWriter {
-  constructor() { this.positions = []; this.normals = []; this.colors = []; this.facades = []; this.ids = []; this.styles=[]; this.style=0; this.variant=0; }
+  constructor() { this.positions = []; this.normals = []; this.colors = []; this.facades = []; this.ids = []; this.styles=[]; this.style=0; this.variant=0; this.layouts=[]; this.layout=[0,0,0,0]; }
   triangle(a, b, c, normal, color, id = 0, uv = null) {
     const ab = new THREE.Vector3().subVectors(new THREE.Vector3(...b), new THREE.Vector3(...a));
     const ac = new THREE.Vector3().subVectors(new THREE.Vector3(...c), new THREE.Vector3(...a));
@@ -17,6 +18,7 @@ class MeshWriter {
       this.positions.push(...p); this.normals.push(...normal); this.colors.push(col.r, col.g, col.b);
       this.ids.push(...code); this.facades.push(...(uv ? uv[i] : [0, 0, 0, 0]));
       this.styles.push(this.style,this.variant);
+      this.layouts.push(...this.layout);
     });
   }
   quad(points, normal, color, id = 0, uv = null) {
@@ -30,6 +32,7 @@ class MeshWriter {
     geo.setAttribute('aFacade', new THREE.Float32BufferAttribute(this.facades, 4));
     geo.setAttribute('objectId', new THREE.Float32BufferAttribute(this.ids, 3));
     geo.setAttribute('aStyle', new THREE.Float32BufferAttribute(this.styles, 2));
+    geo.setAttribute('aLayout', new THREE.Float32BufferAttribute(this.layouts, 4));
     geo.computeBoundingBox(); geo.computeBoundingSphere();
     return geo;
   }
@@ -72,11 +75,12 @@ function facadeMaterial(shared) {
     shader.uniforms.uWindows = shared.windows;
     shader.uniforms.uProvenance = shared.provenance;
     shader.uniforms.uFacadeDetail = shared.facadeDetail;
-    shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nattribute vec4 aFacade; varying vec4 vFacade; attribute vec2 aStyle; varying vec2 vStyle;');
-    shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvFacade = aFacade; vStyle=aStyle;');
+    shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nattribute vec4 aFacade; varying vec4 vFacade; attribute vec2 aStyle; varying vec2 vStyle; attribute vec4 aLayout; varying vec4 vLayout;');
+    shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvFacade = aFacade; vStyle=aStyle; vLayout=aLayout;');
     shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
       varying vec4 vFacade;
       varying vec2 vStyle;
+      varying vec4 vLayout;
       uniform float uWindows;
       uniform float uProvenance;
       uniform float uFacadeDetail;
@@ -96,13 +100,19 @@ function facadeMaterial(shared) {
         float zun=1.-step(.2,abs(family-6.));
         float isGlass=max(curtain,max(diagrid,zun));
         float bay=mix(3.5,2.4,isGlass);
-        float bays = max(1.0, floor(vFacade.z / bay));
+        float hasLayout=step(.5,vLayout.w);
+        float bays = mix(max(1.0, floor(vFacade.z / bay)),vLayout.x,hasLayout);
         float u = vFacade.x / vFacade.z * bays;
         float v = vFacade.y / max(2.8, vFacade.w);
-        float mask = stripe(u, mix(.30,.46,isGlass)) * stripe(v, mix(.30,.44,isGlass));
-        mask=mix(mask,stripe(u,.455)*stripe(v,.27),ribbon);
-        float lower=1.-smoothstep(.95,1.15,v);
-        mask=mix(mask,stripe(u*.5,.44)*stripe(v,.46),lower*(1.-residential));
+        float paneWidth=mix(mix(.30,.46,isGlass),vLayout.y,hasLayout);
+        float paneHeight=mix(mix(.30,.44,isGlass),vLayout.z,hasLayout);
+        float splitVertical=(1.-step(.2,abs(vLayout.w-2.)))*hasLayout;
+        float splitHorizontal=(1.-step(.2,abs(vLayout.w-3.)))*hasLayout;
+        // Integrate pane coverage minus the frame intervals. Multiplying two
+        // separately filtered masks would darken the shared subpixel footprint.
+        float horizontalPane=max(0.,stripe(u,paneWidth)-stripe(u,.018)*splitVertical);
+        float verticalPane=max(0.,stripe(v,paneHeight)-stripe(v-.16,.018)*splitHorizontal);
+        float mask=horizontalPane*verticalPane;
         // Stop drawing individual panes before their frames become subpixel.
         // Color keeps the average glass coverage; ink drops fine pane outlines.
         float fade = 1.0 - smoothstep(mix(.04,.12,uFacadeDetail),mix(.18,.42,uFacadeDetail),max(fwidth(u),fwidth(v)));
@@ -111,7 +121,7 @@ function facadeMaterial(shared) {
         vec3 glass = mix(vec3(.17,.24,.28),vec3(.31,.39,.44), cell*.06*fade+vStyle.y*.4);
         glass=mix(glass,vec3(.21,.31,.37),zun*.55);
         glass*=mix(.72,1.1,smoothstep(.08,.92,fract(u*.083+vStyle.y)));
-        float meanMask=mix(.36,.81,isGlass);meanMask=mix(meanMask,.49,ribbon);
+        float meanMask=(2.*paneWidth-.036*splitVertical)*(2.*paneHeight-.036*splitHorizontal);
         diffuseColor.rgb = mix(diffuseColor.rgb, glass, mix(meanMask,mask,fade)*.9);
         float seam = stripe(v+.47,.025) * mix(.12,.26,ribbon) * fade;
         diffuseColor.rgb *= 1.0-seam;
@@ -129,7 +139,7 @@ function facadeMaterial(shared) {
     `);
     shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>','#include <opaque_fragment>\ngl_FragColor.a=inkWindow;');
   };
-  material.customProgramCacheKey = () => 'city-ink-facade-v3-filtered';
+  material.customProgramCacheKey = () => 'city-ink-facade-v4-layout';
   return material;
 }
 
@@ -147,7 +157,7 @@ export function buildCity(data) {
   const landCover=groundWriter.mesh(baseMaterial,'Land cover');landCover.userData.inkClass=5;group.add(landCover);
   const roadSurface=buildRoadSurface(data);group.add(roadSurface.group);
 
-  const buildings=[],nearDetails=[],landmarks=[],familyCounts={};
+  const buildings=[],nearDetails=[],landmarks=[],familyCounts={},grammarCounts={};
   const sourceColors={height:'#60988e',levels:'#86a8c3',estimated:'#daab73'};
   const roofWriter=new MeshWriter();
   data.buildings.forEach((building,index)=>{
@@ -160,10 +170,11 @@ export function buildCity(data) {
     else if(landmark==='cctv')profile=buildCctv(writer,building,id,polygon,addBeam);
     else{
       const rings=[normalizedRing(building.outer),...building.holes.map(h=>normalizedRing(h,true))];
-      let longest=null;
+      let longest=null,grammarName=null;
       for(const [ringIndex,ring]of rings.entries())for(let i=0;i<ring.length;i++){
         const a=ring[i],b=ring[(i+1)%ring.length],dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz);if(len<.03)continue;
         const normal=[dz/len,0,-dx/len],angle=Math.atan2(-dz,dx),mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];
+        const layout=facadeLayout(len,topY-baseY,style);writer.layout=layout.attributes;grammarName=layout.name;
         writer.quad([[a[0],baseY,a[1]],[b[0],baseY,b[1]],[b[0],topY,b[1]],[a[0],topY,a[1]]],normal,wall,id,
           [[0,0,len,floorHeight],[len,0,len,floorHeight],[len,topY-baseY,len,floorHeight],[0,topY-baseY,len,floorHeight]]);
         if(!ringIndex&&(!longest||len>longest.len))longest={a,b,len,normal,angle,mid,dx,dz};
@@ -174,21 +185,23 @@ export function buildCity(data) {
           addBox(writer,[mid[0]-normal[0]*.35,topY+.32,mid[1]-normal[2]*.35],[len,.65,.5],trim,id,angle);
           if(style.family==='curtain'&&building.height>60){
             addBox(writer,[mid[0]+normal[0]*.22,topY-4,mid[1]+normal[2]*.22],[len,1.1,.7],trim,id,angle);
-            if(len>12)for(let distance=0;distance<len;distance+=Math.max(6,style.bay*3)){
-              const u=distance/len;addBox(writer,[a[0]+dx*u+normal[0]*.20,(baseY+topY)/2,a[1]+dz*u+normal[2]*.20],[.30,topY-baseY,.8],trim,id,angle);
+            if(len>12)for(let column=layout.group;column<layout.bays;column+=layout.group){
+              const u=column/layout.bays;addBox(writer,[a[0]+dx*u+normal[0]*.20,(baseY+topY)/2,a[1]+dz*u+normal[2]*.20],[.30,topY-baseY,.8],trim,id,angle);
             }
           }
           if(style.family==='ribbon')for(let y=baseY+floorHeight;y<topY-.5;y+=floorHeight){
             addBox(writer,[mid[0]+normal[0]*.22,y,mid[1]+normal[2]*.22],[len,.3,.7],trim,id,angle);
           }
         }
-        const bays=Math.floor(len/style.bay),levels=Math.min(12,Math.floor((topY-baseY)/floorHeight));
-        if(!ringIndex&&len>7&&bays&&nearDetails.length<42000){
-          for(let level=1;level<levels;level++)for(let bay=0;bay<bays;bay++){
-            const u=(bay+.5)/bays,y=baseY+(level+.5)*floorHeight,w=len/bays*(style.family==='curtain'?.88:.60),h=floorHeight*.60;
+        if(!ringIndex&&len>7&&nearDetails.length<42000){
+          for(const cell of facadeWindows(layout,12)){
+            // Keep a strict city-wide allocation bound, including split frames.
+            if(nearDetails.length+6>42000)break;
+            const {bay,level}=cell,u=cell.x/len,y=baseY+cell.y,w=cell.width,h=cell.height;
             const x=a[0]+dx*u+normal[0]*.10,z=a[1]+dz*u+normal[2]*.10;
-            if(y+h/2>=topY)continue;
             nearDetails.push({x,y:y-h/2,z,angle,w,h:.13,d:.35});
+            if(cell.split===1)nearDetails.push({x,y,z,angle,w:.036*layout.bayWidth,h,d:.20});
+            if(cell.split===2)nearDetails.push({x,y:y+.16*floorHeight,z,angle,w,h:.036*floorHeight,d:.20});
             if(style.family==='residential'){
               nearDetails.push({x:x-dx/len*w/2,y,z:z-dz/len*w/2,angle,w:.12,h,d:.24});
               nearDetails.push({x:x+dx/len*w/2,y,z:z+dz/len*w/2,angle,w:.12,h,d:.24});
@@ -201,6 +214,7 @@ export function buildCity(data) {
           }
         }
       }
+      grammarCounts[grammarName]=(grammarCounts[grammarName]||0)+1;
       writer.style=0;polygon(writer,building,topY,'#e1e3dd',id);
       if(building.minHeight>0){
         const start=writer.positions.length;polygon(writer,building,baseY,wall,id);
@@ -248,5 +262,5 @@ export function buildCity(data) {
     shared.provenance.value=on?1:0;
     for(const mesh of buildings){const colors=mesh.geometry.attributes.color;if(on){const c=mesh.userData.sourceColor;for(let i=0;i<colors.count;i++)colors.setXYZ(i,c.r,c.g,c.b);}else colors.array.set(mesh.userData.originalColors);colors.needsUpdate=true;}
   }
-  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,sourceColors,landmarks,familyCounts};
+  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,sourceColors,landmarks,familyCounts,grammarCounts};
 }
