@@ -67,9 +67,9 @@ function preset(name){
   positions.cctv=[cv[0]-320,150,cv[1]+400];targets.cctv=[cv[0],130,cv[1]];
   positions.roof=[-230,160,220];targets.roof=[-30,10,-80];
   positions.facade=[fc[0]+120,18,fc[1]+135];targets.facade=[fc[0],45,fc[1]];
-  // Jianwai street; coordinates are in the same WGS84 frame as the OSM extract.
-  const roadPoint=data.project.point({lat:39.90803,lon:116.46080});
-  positions.crossing=[roadPoint[0],2.1,roadPoint[1]];targets.crossing=[roadPoint[0]+180,8,roadPoint[1]-10];
+  // Face a documented OSM crossing rather than an empty point in a city block.
+  const roadPoint=data.streetNodes.find(n=>n.id===11322670965)?.point||[46.584,309.363];
+  positions.crossing=[roadPoint[0]+1.5,2.1,roadPoint[1]+20];targets.crossing=[roadPoint[0],4,roadPoint[1]-65];
   if(!positions[name])name='overview';
   camera.position.set(...positions[name]);controls.target.set(...targets[name]);
   camera.fov=['street','crossing'].includes(name)?65:name==='top'?43:name==='facade'?55:42;camera.updateProjectionMatrix();
