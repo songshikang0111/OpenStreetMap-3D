@@ -115,6 +115,8 @@ float windowAt(vec2 p){
   float capable=1.-step(.10,abs(id.a-1.25));
   return sample0(tColor,p).a*isClass(classAt(id),1.)*capable;
 }
+float pavingIntegral(float p,float width){return floor(p)*2.*width+clamp(fract(p)-(.5-width),0.,2.*width);}
+float pavingStripe(float p,float width){float footprint=max(fwidth(p),.001);return clamp((pavingIntegral(p+footprint*.5,width)-pavingIntegral(p-footprint*.5,width))/footprint,0.,1.);}
 void main(){
   float rawDepth=sample0(tDepth,vUv).r;
   if(rawDepth>.999999){gl_FragColor=vec4(paper,1.);}
@@ -127,6 +129,7 @@ void main(){
     // Do not use fract here: interpolation just below an integral class wraps
     // to nearly 1 and would misclassify whole road triangles as white paint.
     float roadPaint=1.-step(.12,abs(id.a-3.5));
+    float walkway=1.-step(.07,abs(id.a-3.2));
     float distanceFade=1.-smoothstep(850.,6500.,depth);
     float innerWidth=lineWidth*mix(.82,1.,distanceFade);
     float outerWidth=innerWidth*outlineWidth*mix(1.,1.25,tree);
@@ -156,6 +159,7 @@ void main(){
     // is below the facade tone threshold. Keep cast shadows and contact AO as
     // separate signals instead of spreading one gray tone across the street.
     float groundDensity=(castShadow*.46*shadowStrength+ao*.34)*inkDensity;
+    groundDensity*=mix(1.,.68,walkway);
     density=mix(density,groundDensity,ground);
     density*=1.-roadPaint;
     float solid=1.-smoothstep(blackPoint*.65,blackPoint*1.15+.015,lum);
@@ -165,6 +169,12 @@ void main(){
     vec3 worldNormal=normalize(mat3(inverseView)*normal);
     vec3 worldPoint=(inverseView*vec4(viewPosition(vUv,rawDepth),1.)).xyz;
     float worldPixel=length(fwidth(worldPoint));
+    // Illustrative metre-scale paver joints. Analytic coverage and a pixel-size
+    // fade prevent a far sidewalk becoming a noisy checkerboard. Asphalt and
+    // painted crossings never receive this pattern.
+    vec2 pavingUV=worldPoint.xz/vec2(1.2,.75);
+    float pavingInk=max(pavingStripe(pavingUV.x+.5,.012/1.2),pavingStripe(pavingUV.y+.5,.012/.75));
+    pavingInk*=walkway*.32*(1.-smoothstep(.025,.16,worldPixel));
     float leafLine=0.;
     if(tree>.5){
       float lower=1.-smoothstep(-.22,.35,worldNormal.y);
@@ -185,12 +195,12 @@ void main(){
     glassEdge=smoothstep(.17,.6,glassEdge)*(1.-air*.8);
     vec3 result;
     if(mode<.5){
-      float coverage=max(edge,max(screentone(density),max(solid,glassInk)));
+      float coverage=max(max(edge,pavingInk),max(screentone(density),max(solid,glassInk)));
       result=mix(paper,ink,coverage);
     }else if(mode<1.5){
-      result=mix(paper,ink,max(edge,max(leafLine,max(glassEdge,glassInk*.075))));
+      result=mix(paper,ink,max(max(edge,pavingInk),max(leafLine,max(glassEdge,glassInk*.075))));
     }else if(mode<2.5){
-      vec3 lit=color*(1.-ao*.48);
+      vec3 lit=color*(1.-ao*.48)*(1.-pavingInk*.5);
       float air=(1.-exp(-depth/2500.))*haze;
       lit=mix(lit,vec3(.84,.9,.94),air);
       result=mix(lit,ink,edge*.24);
