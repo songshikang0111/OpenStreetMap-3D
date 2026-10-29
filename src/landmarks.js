@@ -1,17 +1,6 @@
 import { chinaZunScale } from './building-rules.js';
+import { writeLoftSkin as skin } from './facade-loft.js';
 
-function faceNormal(a,b,c){const u=b.map((v,i)=>v-a[i]),v=c.map((n,i)=>n-a[i]),n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]],l=Math.hypot(...n)||1;return n.map(v=>v/l);}
-function skin(writer,lower,upper,y0,y1,color,id,floor=4){
-  let offset=0;const lengths=lower.map((p,i)=>Math.hypot(p[0]-lower[(i+1)%lower.length][0],p[1]-lower[(i+1)%lower.length][1])),perimeter=lengths.reduce((a,b)=>a+b,0);
-  const sign=lower.reduce((s,p,i)=>s+p[0]*lower[(i+1)%lower.length][1]-lower[(i+1)%lower.length][0]*p[1],0)>0?-1:1;
-  for(let i=0;i<lower.length;i++){
-    const j=(i+1)%lower.length,a=[...lower[i]],b=[...lower[j]],c=[...upper[j]],d=[...upper[i]],len=lengths[i];
-    const points=[[a[0],y0,a[1]],[b[0],y0,b[1]],[c[0],y1,c[1]],[d[0],y1,d[1]]];
-    const n=faceNormal(points[0],points[1],points[3]).map(v=>v*sign);
-    writer.quad(points,n,color,id,[[offset,y0,perimeter,floor],[offset+len,y0,perimeter,floor],[offset+len,y1,perimeter,floor],[offset,y1,perimeter,floor]]);
-    offset+=len;
-  }
-}
 function cap(writer,ring,y,color,id,up=true){
   const c=ring.reduce((a,p)=>[a[0]+p[0]/ring.length,a[1]+p[1]/ring.length],[0,0]);
   for(let i=0;i<ring.length;i++)writer.triangle([c[0],y,c[1]],[ring[i][0],y,ring[i][1]],[ring[(i+1)%ring.length][0],y,ring[(i+1)%ring.length][1]],[0,up?1:-1,0],color,id);
@@ -31,7 +20,7 @@ function roundedRing(building,scale){
 export function buildChinaZun(writer,b,id,addBeam){
   const oldStyle=writer.style;writer.style=6;
   const steps=44,levels=[];for(let i=0;i<=steps;i++)levels.push(roundedRing(b,chinaZunScale(i/steps)));
-  for(let i=0;i<steps;i++)skin(writer,levels[i],levels[i+1],.45+b.height*i/steps,.45+b.height*(i+1)/steps,'#a8bcc6',id,4.8);
+  for(let i=0;i<steps;i++)skin(writer,levels[i],levels[i+1],.45+b.height*i/steps,.45+b.height*(i+1)/steps,'#a8bcc6',id,4.8,levels[0]);
   // Continuous pale ribs follow the taper instead of becoming rectangular tower seams.
   for(let side=0;side<levels[0].length;side+=2)for(let i=0;i<steps;i++){
     const a=levels[i][side],c=levels[i+1][side];
