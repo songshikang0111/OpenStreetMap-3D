@@ -1,0 +1,290 @@
+[
+  {
+    "phase": "before",
+    "key": "01-overview-ink",
+    "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "01-overview-ink",
+    "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "03-mid-ink",
+    "camera": "机位 900.0, 670.0, 950.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "before",
+    "key": "03-mid-ink",
+    "camera": "机位 900.0, 670.0, 950.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "03-mid-ink",
+    "camera": "机位 900.0, 670.0, 950.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "before",
+    "key": "02-skyline-ink",
+    "camera": "机位 -157.3, 137.5, 1598.7 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "03-mid-ink",
+    "camera": "机位 900.0, 670.0, 950.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "02-skyline-ink",
+    "camera": "机位 -157.3, 137.5, 1598.7 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "before",
+    "key": "09-facade",
+    "camera": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+    "lens": "55",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "09-facade",
+    "camera": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+    "lens": "55",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "before",
+    "key": "04-far-ink",
+    "camera": "机位 2450.0, 2120.0, 2700.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "03-mid-ink",
+    "camera": "机位 900.0, 670.0, 950.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "02-skyline-ink",
+    "camera": "机位 -157.3, 137.5, 1598.7 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "03-mid-ink",
+    "camera": "机位 900.0, 670.0, 950.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "02-skyline-ink",
+    "camera": "机位 -157.3, 137.5, 1598.7 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "01-overview-ink",
+    "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "04-far-ink",
+    "camera": "机位 2450.0, 2120.0, 2700.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "before",
+    "key": "05-overview-color",
+    "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "2",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "01-overview-ink",
+    "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "03-mid-ink",
+    "camera": "机位 900.0, 670.0, 950.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "02-skyline-ink",
+    "camera": "机位 -157.3, 137.5, 1598.7 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "04-far-ink",
+    "camera": "机位 2450.0, 2120.0, 2700.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "09-facade",
+    "camera": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+    "lens": "55",
+    "mode": "0",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  },
+  {
+    "phase": "after",
+    "key": "05-overview-color",
+    "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "lens": "42",
+    "mode": "2",
+    "ready": true,
+    "size": [
+      1920,
+      889
+    ]
+  }
+]

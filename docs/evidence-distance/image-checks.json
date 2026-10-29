@@ -1,0 +1,80 @@
+[
+  {
+    "key": "03-mid-ink",
+    "dimensions": [
+      1920,
+      889
+    ],
+    "matched_camera": true,
+    "mean_absolute_rgb_difference": [
+      6.253944027181688,
+      6.251068490701002,
+      6.25155400572246
+    ]
+  },
+  {
+    "key": "02-skyline-ink",
+    "dimensions": [
+      1920,
+      889
+    ],
+    "matched_camera": true,
+    "mean_absolute_rgb_difference": [
+      5.632322961373391,
+      5.6322988197424895,
+      5.631413626609442
+    ]
+  },
+  {
+    "key": "01-overview-ink",
+    "dimensions": [
+      1920,
+      889
+    ],
+    "matched_camera": true,
+    "mean_absolute_rgb_difference": [
+      2.3529935622317595,
+      2.3431840128755366,
+      2.3477011802575105
+    ]
+  },
+  {
+    "key": "04-far-ink",
+    "dimensions": [
+      1920,
+      889
+    ],
+    "matched_camera": true,
+    "mean_absolute_rgb_difference": [
+      0.8345100143061517,
+      0.8328004291845493,
+      0.8336051502145922
+    ]
+  },
+  {
+    "key": "09-facade",
+    "dimensions": [
+      1920,
+      889
+    ],
+    "matched_camera": true,
+    "mean_absolute_rgb_difference": [
+      30.16773873390558,
+      29.875034871244637,
+      29.9543589055794
+    ]
+  },
+  {
+    "key": "05-overview-color",
+    "dimensions": [
+      1920,
+      889
+    ],
+    "matched_camera": true,
+    "mean_absolute_rgb_difference": [
+      0.27316613018597996,
+      0.25500178826895564,
+      0.26243919885550787
+    ]
+  }
+]

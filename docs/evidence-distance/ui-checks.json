@@ -1,0 +1,13 @@
+{
+  "camera": "机位 900.0, 670.0, 950.0 m · FOV 42.0°",
+  "canvas": [
+    2400,
+    1210
+  ],
+  "exportEnabled": true,
+  "exportMessage": "已导出 2400 × 1211 PNG，含地图来源标注。",
+  "seed": "重估缺失高度 种子 1",
+  "version": " 程序化城市 · v0.4.2",
+  "windows": true,
+  "logs": []
+}

@@ -1,0 +1,224 @@
+{
+  "01-overview-ink": {
+    "version": 2,
+    "view": "overview",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      1533.988,
+      1415.989,
+      1669.951
+    ],
+    "target": [
+      0,
+      60,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true
+    }
+  },
+  "02-skyline-ink": {
+    "version": 2,
+    "view": "skyline",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      -157.312,
+      137.547,
+      1598.738
+    ],
+    "target": [
+      70,
+      110,
+      -140
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true
+    }
+  },
+  "09-facade": {
+    "version": 2,
+    "view": "facade",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      237.785,
+      18,
+      -14.019
+    ],
+    "target": [
+      117.785,
+      45,
+      -149.019
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 55
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true
+    }
+  },
+  "05-overview-color": {
+    "version": 2,
+    "view": "overview",
+    "seed": 1,
+    "mode": 2,
+    "position": [
+      1533.988,
+      1415.989,
+      1669.951
+    ],
+    "target": [
+      0,
+      60,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true
+    }
+  },
+  "03-mid-ink": {
+    "version": 2,
+    "view": "overview",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      900,
+      670,
+      950
+    ],
+    "target": [
+      0,
+      70,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true
+    }
+  },
+  "04-far-ink": {
+    "version": 2,
+    "view": "overview",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      2450,
+      2120,
+      2700
+    ],
+    "target": [
+      0,
+      60,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true
+    }
+  }
+}
