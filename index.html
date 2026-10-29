@@ -5,7 +5,7 @@
   <header class="topbar">
     <a class="brand" href="/" aria-label="京城线境首页"><span class="brand-icon">京</span><span><strong>京城线境</strong><small>BEIJING CITY INK</small></span></a>
     <span class="top-description">从真实地图，到一页城市漫画</span>
-    <div class="header-actions"><span class="local-badge"><i></i> 本地原型</span><button id="export-png" class="button primary">导出 PNG <span>↗</span></button><button id="export-glb" class="button">3D 模型 ↓</button></div>
+    <div class="header-actions"><span class="local-badge"><i></i> 程序化城市 · v0.2</span><button id="save-view" class="button">保存视角</button><button id="export-png" class="button primary">导出 PNG <span>↗</span></button><button id="export-glb" class="button">3D 模型 ↓</button></div>
   </header>
   <main class="workspace">
     <aside class="sidebar">
@@ -26,22 +26,36 @@
         <label class="slider-label" for="line-width"><span>线条粗细</span><output id="line-output">1.0</output></label><input id="line-width" type="range" min=".5" max="2.5" step=".1" value="1"/>
         <label class="slider-label" for="tone-size"><span>网点间距</span><output id="tone-output">4.2</output></label><input id="tone-size" type="range" min="2" max="8" step=".2" value="4.2"/>
         <label class="slider-label" for="density"><span>墨色浓度</span><output id="density-output">85%</output></label><input id="density" type="range" min="20" max="150" value="85"/>
+        <details class="advanced"><summary>线条、留白与空气感</summary>
+          <label class="slider-label" for="outline-width"><span>外轮廓倍率</span><output id="outline-output">1.35</output></label><input id="outline-width" type="range" min="1" max="2.5" step=".05" value="1.35"/>
+          <label class="slider-label" for="tone-threshold"><span>亮面留白</span><output id="threshold-output">52%</output></label><input id="tone-threshold" type="range" min="25" max="85" value="52"/>
+          <label class="slider-label" for="ao-strength"><span>接触阴影</span><output id="ao-output">65%</output></label><input id="ao-strength" type="range" min="0" max="200" value="65"/>
+          <label class="slider-label" for="shadow-strength"><span>明暗层次</span><output id="shadow-output">100%</output></label><input id="shadow-strength" type="range" min="0" max="200" value="100"/>
+          <label class="slider-label" for="black-point"><span>实黑阈值</span><output id="black-output">10%</output></label><input id="black-point" type="range" min="2" max="35" value="10"/>
+          <label class="slider-label" for="haze"><span>远景淡化</span><output id="haze-output">30%</output></label><input id="haze" type="range" min="0" max="100" value="30"/>
+          <label class="slider-label" for="tree-ink"><span>树冠墨色</span><output id="tree-output">80%</output></label><input id="tree-ink" type="range" min="0" max="100" value="80"/>
+          <button id="reset-look" class="button full">重置画面参数</button>
+        </details>
       </section>
       <section>
         <div class="section-label"><h2>光照与细节</h2><span>03 / SCENE</span></div>
         <label class="slider-label" for="sun-angle"><span>太阳方位</span><output id="sun-output">135°</output></label><input id="sun-angle" type="range" min="0" max="360" value="135"/>
-        <div class="toggles"><label><input id="windows-toggle" type="checkbox" checked/> 程序化窗户</label><label><input id="trees-toggle" type="checkbox" checked/> 树木</label><label><input id="shadows-toggle" type="checkbox" checked/> 投射阴影</label><label><input id="rotate-toggle" type="checkbox"/> 自动环绕</label></div>
+        <label class="slider-label" for="sun-height"><span>太阳高度</span><output id="sun-height-output">45°</output></label><input id="sun-height" type="range" min="10" max="85" value="45"/>
+        <div class="toggles"><label><input id="windows-toggle" type="checkbox" checked/> 程序化窗户</label><label><input id="trees-toggle" type="checkbox" checked/> 树木</label><label><input id="shadows-toggle" type="checkbox" checked/> 投射阴影</label><label><input id="props-toggle" type="checkbox" checked/> 街道设施</label><label><input id="rotate-toggle" type="checkbox"/> 自动环绕</label></div>
       </section>
       <section class="data-section">
         <div class="section-label"><h2>真实与生成</h2><span>04 / DATA</span></div>
         <button class="button full" id="provenance" aria-pressed="false">查看高度来源 <span>◉</span></button>
         <div class="legend"><span><i class="height"></i>标注高度 <b id="count-height">—</b></span><span><i class="levels"></i>楼层换算 <b id="count-levels">—</b></span><span><i class="estimated"></i>规则估算 <b id="count-estimated">—</b></span></div>
-        <p class="data-note">轮廓与道路来自 OSM。窗户、屋顶设备与部分树木由程序生成。本原型使用平坦地面。</p>
+        <p class="data-note">位置、轮廓与道路来自 OSM。地标曲面是独立的形体近似；窗户、设备、行道树与车人是规则补充，非街景测绘。本原型使用平坦地面。</p>
+        <p class="data-note" id="generation-stats"></p>
+        <button id="reroll" class="button full">重估缺失高度 <span id="seed-label">种子 1</span></button>
+        <details class="advanced"><summary>复现当前视角</summary><p class="data-note">保存视角会把机位、光照、画风及随机种子写入链接，刷新或再次打开可还原。</p><label for="view-link" class="data-note">视角链接</label><textarea id="view-link" readonly rows="3"></textarea><button id="export-state" class="button full">导出参数 JSON</button><output id="camera-readout"></output></details>
       </section>
       <footer class="side-footer"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a><span>地图数据 ODbL · Three.js</span></footer>
     </aside>
     <section class="stage" aria-label="可交互三维城市">
-      <div class="stage-toolbar"><div class="camera-presets" role="group" aria-label="相机视角"><button class="active" data-camera="overview">街区俯瞰</button><button data-camera="skyline">城市天际线</button><button data-camera="street">街道视角</button><button data-camera="top">正上方</button></div><button id="reset-view" class="icon-button" aria-label="重置视角" title="重置视角">↺</button></div>
+      <div class="stage-toolbar"><div class="camera-presets" role="group" aria-label="相机视角"><button class="active" data-camera="overview">街区俯瞰</button><button data-camera="skyline">城市天际线</button><button data-camera="street">街道视角</button><button data-camera="top">正上方</button></div><select id="detail-view" aria-label="细节机位"><option value="">细节机位</option><option value="citic">中国尊轮廓</option><option value="cctv">央视空中连体</option><option value="facade">近看建筑立面</option><option value="roof">屋顶与街树</option><option value="crossing">道路与行人</option></select><label class="lens-control" for="lens">视野 <input id="lens" type="range" min="18" max="100" value="42"/><output id="lens-output">42°</output></label><button id="reset-view" class="icon-button" aria-label="重置视角" title="重置视角">↺</button></div>
       <div id="viewport"><div id="loading"><span class="loader"></span><strong>正在从地图构建北京…</strong><small>解析轮廓 · 生成立面 · 铺设街道</small></div></div>
       <div class="view-title"><span class="eyebrow">BEIJING / CHAOYANG</span><strong id="view-name">城市的另一种笔触。</strong><span class="view-subtitle" id="view-subtitle">真实街区，程序构建。</span></div>
       <div class="compass" title="北向"><span>N</span><svg viewBox="0 0 50 50" aria-hidden="true"><g id="compass-arrow"><path d="M25 6L18 33L25 28L32 33Z" fill="#485c57"/><path d="M25 28L18 33L25 44L32 33Z" fill="#bac5bb"/></g></svg></div>

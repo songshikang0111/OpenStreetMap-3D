@@ -3,13 +3,24 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { parseOSM } from './osm.js';
-import { buildCity } from './city.js';
-import { InkRenderer } from './ink-renderer.js';
+import { buildCity as buildEnhancedCity } from './city.js';
+import { InkRenderer as EnhancedInkRenderer } from './ink-renderer.js';
+import { decodeView,encodeView,parameterRanges } from './view-state.js';
 
 const $=id=>document.getElementById(id);
 const viewport=$('viewport');
 let renderer,scene,camera,controls,ink,city,data,sun,needsRender=true,mode=0,inspect=false,toastTimer;
 let mapState=null;
+const initialView=decodeView(location.hash);
+let rawData,seed=initialView?.seed||1,currentView='overview';
+let buildCity=buildEnhancedCity,InkRenderer=EnhancedInkRenderer;
+const baselineMode=new URLSearchParams(location.search).get('baseline')==='1';
+const rangeBindings=[
+  ['line-width','line-output','lineWidth',1,1],['tone-size','tone-output','toneSize',1,1],['density','density-output','inkDensity',100,0],
+  ['outline-width','outline-output','outlineWidth',1,2],['tone-threshold','threshold-output','toneThreshold',100,0],
+  ['ao-strength','ao-output','aoStrength',100,0],['shadow-strength','shadow-output','shadowStrength',100,0],
+  ['black-point','black-output','blackPoint',100,0],['haze','haze-output','haze',100,0],['tree-ink','tree-output','treeInk',100,0],
+];
 const modeNames=['城市的另一种笔触。','让建筑，留下线条。','光与城市的色温。','先看空间，再看细节。'];
 const sourceNames={height:'OSM 标注高度',levels:'由 OSM 层数换算',estimated:'程序估算'};
 
@@ -25,12 +36,18 @@ function setMode(next){
 
 function updateLight(){
   const angle=Number($('sun-angle').value)*Math.PI/180;
-  sun.position.set(Math.sin(angle)*1100,1350,Math.cos(angle)*1100);
+  const elevation=Number($('sun-height').value)*Math.PI/180;
+  sun.position.set(Math.sin(angle)*1100,Math.tan(elevation)*1100,Math.cos(angle)*1100);
+  sun.shadow.camera.far=Math.max(3600,sun.position.length()+1800);
+  sun.shadow.camera.updateProjectionMatrix();
   sun.shadow.needsUpdate=true;invalidate();
 }
 
 function preset(name){
-  document.querySelector('.stage').classList.toggle('street-view',name==='street');
+  // Clear any orbit inertia before assigning an exact, reproducible camera.
+  controls.autoRotate=false;controls.enableDamping=false;controls.update();
+  currentView=name;
+  document.querySelector('.stage').classList.toggle('street-view',!['overview','skyline','top'].includes(name));
   const [x0,z0,x1,z1]=data.bounds,width=x1-x0,depth=z1-z0;
   controls.autoRotate=false;$('rotate-toggle').checked=false;
   const positions={overview:[width*.78,Math.max(width,depth)*.72,depth*.94],skyline:[-width*.08,125,depth*.9],street:[-110,12,depth*.33],top:[0,Math.max(width,depth)*1.3,.01]};
@@ -44,10 +61,23 @@ function preset(name){
       targets.street=[positions.street[0]+dx/length*180,34,positions.street[2]+dz/length*180];
     }
   }
+  const citic=data.buildings.find(b=>b.osmId===599547918),cctv=data.buildings.find(b=>b.osmId===547523487),facade=data.buildings.find(b=>/正大集团/.test(b.tags.name||''));
+  const centerFor=b=>b?.center||[0,0],cz=centerFor(citic),cv=centerFor(cctv),fc=centerFor(facade);
+  positions.citic=[cz[0]+390,270,cz[1]+660];targets.citic=[cz[0],265,cz[1]];
+  positions.cctv=[cv[0]-320,150,cv[1]+400];targets.cctv=[cv[0],130,cv[1]];
+  positions.roof=[-230,160,220];targets.roof=[-30,10,-80];
+  positions.facade=[fc[0]+120,18,fc[1]+135];targets.facade=[fc[0],45,fc[1]];
+  // Jianwai street; coordinates are in the same WGS84 frame as the OSM extract.
+  const roadPoint=data.project.point({lat:39.90803,lon:116.46080});
+  positions.crossing=[roadPoint[0],2.1,roadPoint[1]];targets.crossing=[roadPoint[0]+180,8,roadPoint[1]-10];
+  if(!positions[name])name='overview';
   camera.position.set(...positions[name]);controls.target.set(...targets[name]);
-  camera.fov=name==='street'?65:name==='top'?43:42;camera.updateProjectionMatrix();
-  controls.maxPolarAngle=name==='street'?Math.PI*.75:Math.PI*.495;
+  camera.fov=['street','crossing'].includes(name)?65:name==='top'?43:name==='facade'?55:42;camera.updateProjectionMatrix();
+  $('lens').value=camera.fov;$('lens-output').value=`${camera.fov}°`;
+  $('detail-view').value=['citic','cctv','roof','crossing','facade'].includes(name)?name:'';
+  controls.maxPolarAngle=['street','crossing','facade','citic','cctv'].includes(name)?Math.PI*.75:Math.PI*.495;
   controls.update();
+  controls.enableDamping=true;
   for(const button of document.querySelectorAll('[data-camera]'))button.classList.toggle('active',button.dataset.camera===name);
   invalidate();
 }
@@ -83,11 +113,38 @@ function showBuilding(b){
     const term=document.createElement('dt'),description=document.createElement('dd');term.textContent=key;description.textContent=value;list.append(term,description);
   }
   details.append(list);
+  const family=city.buildings.find(m=>m.userData.feature===b)?.userData.facadeFamily;
+  if(b.generatedShape||family){const p=document.createElement('p');p.className='notice';p.textContent=b.generatedShape?`${b.generatedShape}：${b.generatedShapeNote||'地标形体为参数化近似，曲面不是 OSM 实测三维数据。'}`:`立面类型：${family}；门窗与设备由规则生成。`;details.append(p);}
   if(b.source!=='height'){const p=document.createElement('p');p.className='notice';p.textContent=b.source==='estimated'?'地图缺少高度和层数，当前高度由用途与面积估算。':'高度由楼层数与假定层高换算，非实测高度。';details.append(p);}
   $('osm-link').href=`https://www.openstreetmap.org/${b.osmType}/${b.osmId}`;$('building-info').hidden=false;
 }
 
 function download(blob,name){const link=document.createElement('a');const url=URL.createObjectURL(blob);link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}
+
+function captureState(){
+  const rounded=v=>v.toArray().map(x=>Math.round(x*1000)/1000);
+  return {version:2,view:currentView,seed,mode,position:rounded(camera.position),target:rounded(controls.target),parameters:Object.fromEntries(Object.keys(parameterRanges).map(id=>[id,Number($(id).value)])),toggles:Object.fromEntries(['windows-toggle','trees-toggle','props-toggle','shadows-toggle'].map(id=>[id,$(id).checked]))};
+}
+function applyParameters(){
+  for(const [id,output,uniform,divisor,precision]of rangeBindings){const value=Number($(id).value);$(output).value=divisor===100?`${value}%`:value.toFixed(precision);if(ink.material.uniforms[uniform])ink.material.uniforms[uniform].value=value/divisor;}
+  $('sun-output').value=`${$('sun-angle').value}°`;$('sun-height-output').value=`${$('sun-height').value}°`;updateLight();
+  camera.fov=Number($('lens').value);camera.updateProjectionMatrix();$('lens-output').value=`${camera.fov}°`;
+  city.shared.windows.value=$('windows-toggle').checked?1:0;city.detailGroup.visible=$('windows-toggle').checked;
+  city.treeGroup.visible=$('trees-toggle').checked;if(city.streetGroup)city.streetGroup.visible=$('props-toggle').checked;
+  sun.castShadow=$('shadows-toggle').checked;sun.shadow.needsUpdate=true;invalidate();
+}
+function updateGenerationStats(){
+  $('seed-label').textContent=`种子 ${seed}`;
+  const stats=city.streetStats||city.stats||{};
+  $('generation-stats').textContent=`树木 ${city.treeCount}（规则补充 ${city.generatedTrees}） · 街道标注 ${data.streetNodes.length} 个。刷新使用相同种子，布局保持一致。`;
+  $('render-status').textContent=`${data.buildings.length} 个体块 · ${city.treeCount} 棵树 · 规则生成细节`;
+}
+function regenerate(nextSeed){
+  const old=city;seed=nextSeed;data=parseOSM(rawData,seed);city=buildCity(data);scene.remove(old.group);scene.add(city.group);
+  const geometries=new Set(),materials=new Set();old.group.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);});
+  for(const g of geometries)g.dispose();for(const m of materials)m.dispose();
+  city.setProvenance(inspect);applyParameters();updateGenerationStats();$('building-info').hidden=true;drawMap();
+}
 
 async function exportPNG(){
   const button=$('export-png');button.disabled=true;toast('正在生成高分辨率画面…');
@@ -109,6 +166,8 @@ async function exportGLB(){
   try{
     if(wasInspect)city.setProvenance(false);
     const clone=city.group.clone(true);
+    // Keep provenance, without serializing per-vertex source-color backups.
+    clone.traverse(o=>{const b=o.userData.feature;o.userData=b?{osmId:b.osmId,osmType:b.osmType,heightSource:b.source,generatedShape:b.generatedShape||null}:{};});
     clone.userData={attribution:'© OpenStreetMap contributors',license:'ODbL-1.0',licenseUrl:'https://www.openstreetmap.org/copyright',center:data.metadata.center,description:'OSM geometry plus inferred procedural details. Screen-space ink and shader windows are not included.'};
     // GLTFExporter supports ordinary meshes; expand instances for portable geometry.
     const instances=[];clone.traverse(o=>{if(o.isInstancedMesh)instances.push(o);});
@@ -128,9 +187,13 @@ function connectUI(){
   for(const button of document.querySelectorAll('[data-mode]'))button.addEventListener('click',()=>setMode(Number(button.dataset.mode)));
   for(const button of document.querySelectorAll('[data-camera]'))button.addEventListener('click',()=>preset(button.dataset.camera));
   $('reset-view').onclick=()=>preset('overview');
-  const ranges=[['line-width','line-output','lineWidth',v=>v,v=>v.toFixed(1)],['tone-size','tone-output','toneSize',v=>v,v=>v.toFixed(1)],['density','density-output','inkDensity',v=>v/100,v=>`${v}%`]];
-  for(const [id,output,uniform,transform,format]of ranges)$(id).addEventListener('input',()=>{const value=Number($(id).value);$(output).value=format(value);ink.material.uniforms[uniform].value=transform(value);invalidate();});
-  $('sun-angle').oninput=()=>{$('sun-output').value=`${$('sun-angle').value}°`;updateLight();};
+  for(const id of Object.keys(parameterRanges))$(id).addEventListener('input',applyParameters);
+  $('detail-view').onchange=()=>{if($('detail-view').value)preset($('detail-view').value);};
+  $('props-toggle').onchange=applyParameters;
+  $('reset-look').onclick=()=>{for(const id of Object.keys(parameterRanges))if(id!=='lens')$(id).value=$(id).defaultValue;applyParameters();};
+  $('save-view').onclick=async()=>{const hash=encodeView(captureState());history.replaceState(null,'',hash);$('view-link').value=location.href;try{await navigator.clipboard.writeText(location.href);toast('视角链接已复制，包含机位、参数与种子。');}catch{toast('视角已写入地址栏，也可在侧栏复制链接。');}};
+  $('export-state').onclick=()=>download(new Blob([JSON.stringify(captureState(),null,2)],{type:'application/json'}),'beijing-city-ink-view.json');
+  $('reroll').onclick=()=>{regenerate(seed%100000+1);toast('只重估缺失高度；已标注高度与真实轮廓保持原值。');};
   $('windows-toggle').onchange=()=>{city.shared.windows.value=$('windows-toggle').checked?1:0;city.detailGroup.visible=$('windows-toggle').checked;invalidate();};
   $('trees-toggle').onchange=()=>{city.treeGroup.visible=$('trees-toggle').checked;sun.shadow.needsUpdate=true;invalidate();};
   $('shadows-toggle').onchange=()=>{sun.castShadow=$('shadows-toggle').checked;sun.shadow.needsUpdate=true;invalidate();};
@@ -151,14 +214,17 @@ function connectUI(){
     const rect=renderer.domElement.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1),camera);
     const hit=raycaster.intersectObjects(city.buildings,false)[0];if(hit)showBuilding(hit.object.userData.feature);
   });
-  window.addEventListener('keydown',event=>{if(event.key==='Escape')$('building-info').hidden=true;});
+  window.addEventListener('keydown',event=>{if(event.key==='Escape'){$('building-info').hidden=true;$('toast').hidden=true;}});
 }
 
 async function initialize(){
   try{
+    if(baselineMode){({buildCity}=await import('./baseline/city-v1.js'));({InkRenderer}=await import('./baseline/ink-v1.js'));document.querySelector('.local-badge').textContent='v0.1 几何 / 渲染对照';document.querySelector('.advanced').hidden=true;}
     const response=await fetch(`${import.meta.env.BASE_URL}data/beijing-cbd.json`);
     if(!response.ok)throw new Error(`地图数据读取失败 (${response.status})，请先运行 npm run data:fetch。`);
-    const raw=await response.json();data=parseOSM(raw);city=buildCity(data);
+    const raw=await response.json();
+    try{const extra=await fetch(`${import.meta.env.BASE_URL}data/street-details.json`);if(extra.ok){const overlay=await extra.json();raw.elements.push(...overlay.elements);raw.metadata.streetOverlay=overlay.metadata;}}catch{ /* Optional overlay; original data still works offline. */ }
+    rawData=raw;data=parseOSM(raw,seed);city=buildCity(data);
     scene=new THREE.Scene();scene.background=new THREE.Color('#f7f5ed');scene.add(city.group);
     renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:false,powerPreference:'high-performance'});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
@@ -176,12 +242,20 @@ async function initialize(){
     for(const [source,count]of Object.entries(counts))$(`count-${source}`).textContent=count;
     $('render-status').textContent=`${data.buildings.length} 个体块 · ${city.treeCount} 棵树 · 数据已缓存于项目`;
     $('scale-label').textContent=`${((data.bounds[2]-data.bounds[0])/1000).toFixed(1)} × ${((data.bounds[3]-data.bounds[1])/1000).toFixed(1)} km`;
-    connectUI();drawMap();$('loading').hidden=true;
+    connectUI();
+    if(initialView){preset(initialView.view||'overview');for(const[id,value]of Object.entries(initialView.parameters))$(id).value=value;for(const[id,value]of Object.entries(initialView.toggles))$(id).checked=value;controls.maxPolarAngle=Math.PI*.9;if(initialView.position)camera.position.fromArray(initialView.position);if(initialView.target)controls.target.fromArray(initialView.target);controls.update();setMode(initialView.mode);}
+    applyParameters();updateGenerationStats();drawMap();$('view-link').value=location.href;$('loading').hidden=true;
     new ResizeObserver(resize).observe(viewport);
     let previous=performance.now();
     function animate(now){
       requestAnimationFrame(animate);const delta=Math.min(.05,(now-previous)/1000);previous=now;controls.update(delta);
-      if(needsRender||controls.autoRotate){city.updateLOD(camera);ink.render();drawMap();
+      if(needsRender||controls.autoRotate){
+        // A tiny near plane wastes depth precision in district-wide views and
+        // makes metre-scale facade trims fight their backing walls.
+        const near=Math.max(.4,Math.min(12,camera.position.y*.012));
+        if(Math.abs(camera.near-near)>.01){camera.near=near;camera.updateProjectionMatrix();}
+        city.updateLOD(camera);ink.render();drawMap();
+        $('camera-readout').textContent=`机位 ${camera.position.toArray().map(n=>n.toFixed(1)).join(', ')} m · FOV ${camera.fov.toFixed(1)}°`;
         const d=camera.position.clone().sub(controls.target);$('compass-arrow').setAttribute('transform',`rotate(${-Math.atan2(d.x,d.z)*180/Math.PI} 25 25)`);needsRender=false;
       }
     }
