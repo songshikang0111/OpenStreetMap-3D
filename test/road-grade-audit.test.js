@@ -54,7 +54,7 @@ function crossingPoint(a, b) {
 }
 const sources = data.roads.flatMap(road => road.segments.map(([a, b], i) => ({ a, b, road, ids: road.segmentNodes[i] })));
 
-test('actual Guomao shared OSM nodes are continuous after resampling and segment coalescing', () => {
+test('actual Guomao shared OSM nodes are continuous and independent of source road order', () => {
   const nodes = new Map(), byRoad = new Map();
   for (const s of grades.segments) {
     if (!byRoad.has(s.road.id)) byRoad.set(s.road.id, []);
@@ -80,12 +80,20 @@ test('actual Guomao shared OSM nodes are continuous after resampling and segment
     audited++;
   }
   assert.equal(audited, 78);
+  const reversed = planRoadGrades({ ...data, roads: [...data.roads].reverse() });
+  assert.deepEqual(reversed.nodes, grades.nodes, 'source array order must not change shared-node heights');
+  assert.deepEqual(reversed.stats, grades.stats);
 });
 
 test('actual vehicle approaches do not introduce extreme slopes while joining bridge ends', () => {
   const failures = grades.segments.filter(s => !walk(s.road)).map(s => ({ id: s.road.id, slope: Math.abs(s.yB - s.yA) / dist(s.a, s.b) })).filter(s => s.slope > .15 + 1e-6);
   // 15% is an artifact regression ceiling, not a real road-design standard.
   assert.equal(failures.length, 0, JSON.stringify(failures.slice(0, 12)));
+  for(const s of grades.segments){
+    if(s.road.type==='steps')continue;
+    const limit=s.road.type==='cycleway'?.12:walk(s.road)?.35:.10;
+    assert(Math.abs(s.yB-s.yA)/dist(s.a,s.b)<=limit+1e-6,`grade cliff on ${s.road.id}`);
+  }
 });
 
 test('actual two-wing stairs reach both ground ends and the shared bridge platform', () => {
@@ -114,7 +122,7 @@ test('independent full-width intersections preserve layer order and actual deck-
     if (!lowSurfaces.has(band(s.roadId))) lowSurfaces.set(band(s.roadId), []);
     lowSurfaces.get(band(s.roadId)).push(s);
   }
-  let pairs = 0, vertices = 0, minimum = Infinity;
+  let pairs = 0, vertices = 0, minimum = Infinity, minimumDrive = Infinity, minimumWalk = Infinity;
   const failures = [];
   for (let i = 0; i < sources.length; i++) for (let j = i + 1; j < sources.length; j++) {
     const a = sources[i], b = sources[j];
@@ -136,7 +144,8 @@ test('independent full-width intersections preserve layer order and actual deck-
         for (const point of shared) {
           const gap = elevation(deck, point) - deck.thickness - elevation(lowerSurface, point);
           minimum = Math.min(minimum, gap); vertices++; checked++;
-          if (gap < 4.8 - 1e-5) failures.push({ upper: upper.road.id, lower: lower.road.id, gap, point });
+          if(walk(lower.road))minimumWalk=Math.min(minimumWalk,gap);else minimumDrive=Math.min(minimumDrive,gap);
+          if (gap < (walk(lower.road)?2.4:4.8) - 1e-5) failures.push({ upper: upper.road.id, lower: lower.road.id, gap, point });
         }
       }
     }
@@ -145,5 +154,5 @@ test('independent full-width intersections preserve layer order and actual deck-
   }
   assert(pairs > 150 && vertices > 500, 'audit must cover the whole extract');
   assert.equal(failures.length, 0, JSON.stringify(failures.slice(0, 10)));
-  console.log('Independent full-width clearance audit:', { pairs, vertices, minimum });
+  console.log('Independent full-width clearance audit:', { pairs, vertices, minimum,minimumDrive,minimumWalk });
 });

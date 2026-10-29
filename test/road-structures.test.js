@@ -68,7 +68,8 @@ test('Guomao supports pass independent whole-extract clearance checks and struct
   const raw=JSON.parse(readFileSync(new URL('../public/data/beijing-cbd.json',import.meta.url)));
   const input=parseOSM(raw),surface=planRoadSurface(input),built=buildRoadStructures(input,surface);
   assert(built.stats.bridgeWays>=71,'non-stair bridge ways plus newly elevated approaches');assert(built.stats.bridgeSegments>212);
-  assert(built.stats.bridgePiers>50);assert(built.stats.bridgeStructureTriangles<260000);
+  // Includes the newly elevated approach network, not only OSM bridge ways.
+  assert(built.stats.bridgePiers>50);assert(built.stats.bridgeStructureTriangles<300000);
   for(const p of built.plan.piers)for(const s of surface.segments)if(roadHeightAt(s,p.point)<p.top-.15){
     const d=segmentDistance(p.point,s.a,s.b);assert(d>=s.width/2+p.radius+.8-1e-7,`pier near lower way ${s.road.id}`);
   }

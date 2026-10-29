@@ -3,7 +3,7 @@ import { inside } from './osm.js';
 import { roadHeightAt } from './road-grade.js';
 
 // Structural illustrations inferred from OSM centre lines and relative layers.
-// No measured deck elevations, engineering spans or ramp gradients are implied.
+// Heights follow the connected grade solution; none are surveyed dimensions.
 const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 const at=(s,t,offset=0)=>[s.a[0]+s.direction[0]*t-s.direction[1]*offset,s.a[1]+s.direction[1]*t+s.direction[0]*offset];
 export function segmentDistance(p,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/(dx*dx+dz*dz||1)));return Math.hypot(p[0]-a[0]-dx*t,p[1]-a[1]-dz*t);}
@@ -66,8 +66,7 @@ export function planRoadStructures(data,roadPlan){
       pierRoads.add(s.road.id);
     }
   }
-  // Record shared endpoints at differing nominal heights; do not silently turn
-  // relative OSM layer tags into fabricated ramp engineering.
+  // Record actual endpoint continuity independently of nominal layer tags.
   const endpoints=new Map();
   for(const s of roadPlan.segments)for(const [p,key]of [[s.a,s.nodeA],[s.b,s.nodeB]]){if(!endpoints.has(key))endpoints.set(key,new Set());endpoints.get(key).add(roadHeightAt(s,p).toFixed(5));}
   stats.bridgeGradeConnectionsUnresolved=[...endpoints.values()].filter(v=>v.size>1).length;

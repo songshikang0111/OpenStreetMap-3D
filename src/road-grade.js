@@ -1,7 +1,7 @@
 // Illustrative longitudinal profiles, not surveyed engineering elevations.
 // Only shared OSM nodes connect roads. Geometric crossings constrain deck
 // clearance, but never introduce routing edges between separate roads.
-export const ROAD_GRADE = { spacing: 4, vehicleTransition: 90, walkingTransition: 28, warningGrade: .12 };
+export const ROAD_GRADE = { spacing: 4, vehicleTransition: 90, walkingTransition: 45, vehicleSlope:.10, walkingSlope:.35, cycleSlope:.12, warningGrade: .12 };
 const WALK = /^(footway|path|steps|pedestrian|cycleway)$/;
 const clamp = (x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const distance = (a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
@@ -92,11 +92,13 @@ export function planRoadGrades(data, options={}){
       const reach=(lower.road.width/2+s.road.width/2+2)/Math.max(.08,c.sine)+settings.spacing;
       samples.push(s.sample.filter((n,k)=>Math.abs(k/(s.sample.length-1)-t)*s.length<=reach));
       s.sample.forEach((n,k)=>{if(Math.abs(k/(s.sample.length-1)-t)*s.length<=reach){
-        if(s.nominal>lower.nominal)n.lowerBound=Math.max(n.lowerBound??0,s.nominal);
-        else n.upperBound=Math.min(n.upperBound??Infinity,lower.nominal-5.8);
+        const gap=WALK.test(lower.road.type)?3.6:5.95;
+        if(s.nominal>lower.nominal)n.lowerBound=Math.max(n.lowerBound??0,lower.nominal+gap);
+        else n.upperBound=Math.min(n.upperBound??Infinity,lower.nominal-(WALK.test(s.road.type)?3.6:5.95));
       }});
     }
-    crossingConstraints.push({aRoad:a.road.id,bRoad:b.road.id,point:pointAt(a.a,a.b,c.t),aY:a.nominal,bY:b.nominal,samples});
+    const lowerRoad=a.nominal<b.nominal?a.road:b.road;
+    crossingConstraints.push({aRoad:a.road.id,bRoad:b.road.id,point:pointAt(a.a,a.b,c.t),aY:a.nominal,bY:b.nominal,gap:WALK.test(lowerRoad.type)?3.6:5.95,samples});
   }
   stats.gradeCrossingConstraints=crossingConstraints.length;
   // Preserve a core in each connected same-height bridge component, including
@@ -139,8 +141,9 @@ export function planRoadGrades(data, options={}){
   // The least upward closure of these difference constraints simultaneously
   // bounds driving slopes and keeps decks above the complete crossing width.
   const constraints=[];
-  for(const e of edges)if(!WALK.test(e.road.type)||e.road.bridge&&e.road.type!=='steps'){
-    const fall=e.length*.10;constraints.push([e.a,e.b,-fall],[e.b,e.a,-fall]);
+  for(const e of edges)if(e.road.type!=='steps'){
+    const limit=e.road.type==='cycleway'?settings.cycleSlope:WALK.test(e.road.type)?settings.walkingSlope:settings.vehicleSlope;
+    const fall=e.length*limit;constraints.push([e.a,e.b,-fall],[e.b,e.a,-fall]);
   }
   let ambiguous=0;
   for(const c of crossingConstraints){
@@ -148,7 +151,7 @@ export function planRoadGrades(data, options={}){
     if(upper.some(n=>lower.includes(n))){ambiguous++;continue;}
     const proxy={y:Math.max(...lower.map(n=>n.y))};
     for(const n of lower)constraints.push([n,proxy,0]);
-    for(const n of upper)constraints.push([proxy,n,5.95]);
+    for(const n of upper)constraints.push([proxy,n,c.gap]);
   }
   let iterations=0,delta=0;
   for(;iterations<600;iterations++){
@@ -157,7 +160,8 @@ export function planRoadGrades(data, options={}){
     if(delta<1e-7)break;
     if(Math.max(...ordered.map(n=>n.y))>120)throw new Error('Road grade constraints conflict: check connected crossings before rendering.');
   }
-  stats.gradeConstraintIterations=iterations;stats.gradeConstraintConflicts=delta>=1e-7?1:0;stats.gradeAmbiguousCrossings=ambiguous;
+  if(delta>=1e-7)throw new Error('Road grade constraints did not converge; cannot construct continuous safe-clearance geometry.');
+  stats.gradeConstraintIterations=iterations;stats.gradeConstraintConflicts=0;stats.gradeAmbiguousCrossings=ambiguous;
   // Stair pitches use the final platform heights after clearance adjustment.
   for(const c of chains)if(c.stairs){c.y0=c.path[0].y;c.y1=c.path.at(-1).y;let run=0;for(let i=1;i<c.path.length-1;i++){run+=c.edges[i-1].length;c.path[i].y=c.y0+(c.y1-c.y0)*run/c.length;}}
   const stairs=[];
@@ -177,6 +181,9 @@ export function planRoadGrades(data, options={}){
   }
   stats.gradeSteepVehicleRuns=chains.filter(c=>!c.stairs&&c.edges.some(e=>!WALK.test(e.road.type))&&c.edges.some(e=>Math.abs(e.b.y-e.a.y)/e.length>settings.warningGrade)).length;
   stats.gradeChangedWays=changed.size;stats.gradeResolvedConnections=transitions.length;stats.stairFlights=stairs.length;
+  const steepWalk=segments.filter(s=>WALK.test(s.road.type)&&s.road.type!=='steps'&&Math.abs(s.yB-s.yA)/distance(s.a,s.b)>.12);
+  stats.gradeSteepWalkingWays=new Set(steepWalk.map(s=>s.road.id)).size;
+  stats.gradeMaxWalkingSlope=Math.max(0,...steepWalk.map(s=>Math.abs(s.yB-s.yA)/distance(s.a,s.b)));
   for(const s of segments)delete s.sourceSegment;
   return {segments,stairs,stats,crossingConstraints:crossingConstraints.map(({samples,...c})=>c),nodes:ordered.map(n=>({key:n.key,point:n.point,y:n.y,fixed:n.fixed,nominals:n.nominals})),settings};
 }
