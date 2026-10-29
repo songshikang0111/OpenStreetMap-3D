@@ -1,0 +1,178 @@
+[
+  {
+    "image": "before/01-overview-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 52.43
+  },
+  {
+    "image": "before/02-skyline-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 56.12
+  },
+  {
+    "image": "before/03-street-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 95.87
+  },
+  {
+    "image": "before/04-street-color.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 52.73
+  },
+  {
+    "image": "before/05-overview-color.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 36.35
+  },
+  {
+    "image": "before/06-top-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 50.73
+  },
+  {
+    "image": "before/07-citic.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 63.9
+  },
+  {
+    "image": "before/08-cctv.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 86.13
+  },
+  {
+    "image": "before/09-facade.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 63.14
+  },
+  {
+    "image": "before/10-roof.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 82.6
+  },
+  {
+    "image": "before/11-crossing.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 79.87
+  },
+  {
+    "image": "after/01-overview-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 42.05
+  },
+  {
+    "image": "after/02-skyline-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 46.6
+  },
+  {
+    "image": "after/03-street-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 89.18
+  },
+  {
+    "image": "after/04-street-color.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 47.99
+  },
+  {
+    "image": "after/05-overview-color.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 36.45
+  },
+  {
+    "image": "after/06-top-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 42.47
+  },
+  {
+    "image": "after/07-citic.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 51.46
+  },
+  {
+    "image": "after/08-cctv.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 77.77
+  },
+  {
+    "image": "after/09-facade.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 75.43
+  },
+  {
+    "image": "after/10-roof.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 72.3
+  },
+  {
+    "image": "after/11-crossing.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stage_grayscale_stddev": 73.55
+  }
+]

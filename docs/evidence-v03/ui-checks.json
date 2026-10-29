@@ -1,0 +1,5 @@
+{
+  "facadeDetail": "100",
+  "output": "100%",
+  "savedUrl": "http://127.0.0.1:5178/?qa=after-07-citic#v=%7B%22version%22%3A2%2C%22view%22%3A%22citic%22%2C%22seed%22%3A1%2C%22mode%22%3A0%2C%22position%22%3A%5B367.396%2C270%2C437.815%5D%2C%22target%22%3A%5B-22.604%2C265%2C-222.185%5D%2C%22parameters%22%3A%7B%22line-width%22%3A1%2C%22tone-size%22%3A4.2%2C%22density%22%3A85%2C%22outline-width%22%3A1.35%2C%22tone-threshold%22%3A52%2C%22ao-strength%22%3A65%2C%22shadow-strength%22%3A100%2C%22haze%22%3A30%2C%22tree-ink%22%3A80%2C%22black-point%22%3A10%2C%22sun-angle%22%3A135%2C%22sun-height%22%3A45%2C%22lens%22%3A42%2C%22facade-detail%22%3A100%7D%2C%22toggles%22%3A%7B%22windows-toggle%22%3Atrue%2C%22trees-toggle%22%3Atrue%2C%22props-toggle%22%3Atrue%2C%22shadows-toggle%22%3Atrue%7D%7D"
+}

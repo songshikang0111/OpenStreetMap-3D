@@ -1,0 +1,130 @@
+{
+  "scope": "Whole vegetation group before frustum culling; one scene pass; excludes shadows and screen passes; not GPU timing.",
+  "views": [
+    {
+      "key": "01-overview-ink",
+      "before": {
+        "nearTrees": 0,
+        "treeTriangles": 544060
+      },
+      "after": {
+        "nearTrees": 0,
+        "treeTriangles": 514384
+      }
+    },
+    {
+      "key": "02-skyline-ink",
+      "before": {
+        "nearTrees": 0,
+        "treeTriangles": 544060
+      },
+      "after": {
+        "nearTrees": 0,
+        "treeTriangles": 514384
+      }
+    },
+    {
+      "key": "03-street-ink",
+      "before": {
+        "nearTrees": 140,
+        "treeTriangles": 860460
+      },
+      "after": {
+        "nearTrees": 56,
+        "treeTriangles": 1042576
+      }
+    },
+    {
+      "key": "04-street-color",
+      "before": {
+        "nearTrees": 140,
+        "treeTriangles": 860460
+      },
+      "after": {
+        "nearTrees": 56,
+        "treeTriangles": 1042576
+      }
+    },
+    {
+      "key": "05-overview-color",
+      "before": {
+        "nearTrees": 0,
+        "treeTriangles": 544060
+      },
+      "after": {
+        "nearTrees": 0,
+        "treeTriangles": 514384
+      }
+    },
+    {
+      "key": "06-top-ink",
+      "before": {
+        "nearTrees": 0,
+        "treeTriangles": 544060
+      },
+      "after": {
+        "nearTrees": 0,
+        "treeTriangles": 514384
+      }
+    },
+    {
+      "key": "07-citic",
+      "before": {
+        "nearTrees": 0,
+        "treeTriangles": 544060
+      },
+      "after": {
+        "nearTrees": 0,
+        "treeTriangles": 514384
+      }
+    },
+    {
+      "key": "08-cctv",
+      "before": {
+        "nearTrees": 113,
+        "treeTriangles": 799440
+      },
+      "after": {
+        "nearTrees": 0,
+        "treeTriangles": 514384
+      }
+    },
+    {
+      "key": "09-facade",
+      "before": {
+        "nearTrees": 85,
+        "treeTriangles": 736160
+      },
+      "after": {
+        "nearTrees": 25,
+        "treeTriangles": 750184
+      }
+    },
+    {
+      "key": "10-roof",
+      "before": {
+        "nearTrees": 0,
+        "treeTriangles": 544060
+      },
+      "after": {
+        "nearTrees": 0,
+        "treeTriangles": 514384
+      }
+    },
+    {
+      "key": "11-crossing",
+      "before": {
+        "nearTrees": 66,
+        "treeTriangles": 693220
+      },
+      "after": {
+        "nearTrees": 28,
+        "treeTriangles": 778480
+      }
+    }
+  ],
+  "currentMaxNearTrees": 96,
+  "currentClustersPerNearTree": 19,
+  "currentClusterTriangles": 500,
+  "currentMaxNearCrownTriangles": 912000
+}

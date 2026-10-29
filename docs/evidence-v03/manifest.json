@@ -1,0 +1,137 @@
+[
+  {
+    "path": "before/01-overview-ink.png",
+    "bytes": 250386,
+    "sha256": "9e84e17fcdba1cf793d1af144e51118eadc98a4e0420d7b222593b01be4710da"
+  },
+  {
+    "path": "before/02-skyline-ink.png",
+    "bytes": 240304,
+    "sha256": "55220f3d5e4f07b091c0fd0a1b122d73d84e500dd393d37bba846eb7ddba6c86"
+  },
+  {
+    "path": "before/03-street-ink.png",
+    "bytes": 417928,
+    "sha256": "2579e8af0cd124b5485350af041c7ebab238370e5b13ba2c38a7ce9e140a702d"
+  },
+  {
+    "path": "before/04-street-color.png",
+    "bytes": 156671,
+    "sha256": "d32f39f5cae2010ded21bd42455599a99db3340409225ebd3cd1aba7e1efb493"
+  },
+  {
+    "path": "before/05-overview-color.png",
+    "bytes": 145238,
+    "sha256": "0a4cf667762ac807a2ef93bc5b190c2f3e190aa19b187d4ce63f1fbc282d13eb"
+  },
+  {
+    "path": "before/06-top-ink.png",
+    "bytes": 276026,
+    "sha256": "c8c5c3067961ae45e4777c9e93e44cb8155cb5090a210b137cf42308ba9dab44"
+  },
+  {
+    "path": "before/07-citic.png",
+    "bytes": 300294,
+    "sha256": "8e43275026bd7fdd6d49813e91f1fb6e2f8d6b1111f4312cc3005c9b48a83a9b"
+  },
+  {
+    "path": "before/08-cctv.png",
+    "bytes": 505449,
+    "sha256": "5f21dcd114f8dcd23331237dad74bdcc8a0aa4cfc0bf6767b25d3de90be96622"
+  },
+  {
+    "path": "before/09-facade.png",
+    "bytes": 542520,
+    "sha256": "e2e8ca3eaf1cfcc32e90620fb1cd9982799231847a11e24a7055ac69174112f9"
+  },
+  {
+    "path": "before/10-roof.png",
+    "bytes": 471379,
+    "sha256": "551832273fb0f67fd24e631b30dd0abfc77ffd4088e56992e101b7a3374f5251"
+  },
+  {
+    "path": "before/11-crossing.png",
+    "bytes": 266995,
+    "sha256": "73beef4076ae81ceb0358cb5dbfa96e1b05abc36dba5914330cb2ed66ef45887"
+  },
+  {
+    "path": "after/01-overview-ink.png",
+    "bytes": 244503,
+    "sha256": "527a56068606b484f8a1ec9004911ae0fe11af97be8b417c5e0ceaf20558e699"
+  },
+  {
+    "path": "after/02-skyline-ink.png",
+    "bytes": 250468,
+    "sha256": "495125912d11850d6af1c27ad096842d3f5b11ec2943172b0acd9514fce9e7fc"
+  },
+  {
+    "path": "after/03-street-ink.png",
+    "bytes": 512958,
+    "sha256": "358908a0d9d3b77a958d775acdfc57242c76cc2a98f8fec922644e6ce533c7b5"
+  },
+  {
+    "path": "after/04-street-color.png",
+    "bytes": 159670,
+    "sha256": "53646013fedd2650eff0344c5016767225e5b7fa9e1e4462959392fee62d56dc"
+  },
+  {
+    "path": "after/05-overview-color.png",
+    "bytes": 143255,
+    "sha256": "01db1ffb91b1773804fe86fb6b1c2a2aac01a817198194217a1429996cd13c71"
+  },
+  {
+    "path": "after/06-top-ink.png",
+    "bytes": 314345,
+    "sha256": "a99319453b4caa89c7316d2685e3d1624d5e06428107073557db2683b7ad5134"
+  },
+  {
+    "path": "after/07-citic.png",
+    "bytes": 295308,
+    "sha256": "dd0d56e5ca018a5ca55fe38c6e1dc56054776c5be9e7b645c88904ee6ba55258"
+  },
+  {
+    "path": "after/08-cctv.png",
+    "bytes": 531566,
+    "sha256": "d2455aa380a6c8009325f6634105d667d46e8bb29b9934c632283d6944ab2ee8"
+  },
+  {
+    "path": "after/09-facade.png",
+    "bytes": 452850,
+    "sha256": "2a0b29bc5106b51a688f417368e8c2bff38a41ad4686935b5a27df7ddbd7882c"
+  },
+  {
+    "path": "after/10-roof.png",
+    "bytes": 600261,
+    "sha256": "f3322d4850644f3bada25978f7dde6a81ff4222b2f310ed30e1b102c874eacc8"
+  },
+  {
+    "path": "after/11-crossing.png",
+    "bytes": 396966,
+    "sha256": "e81b4687168d9bdab5b33a73076cae5082c4f980e2809b75eb4a98ff19eeb09d"
+  },
+  {
+    "path": "extra/12-lines.png",
+    "bytes": 211146,
+    "sha256": "13b3abc4c41a3d6d560639dcc86b5f284af86d2ed9d09923f8d5109f035772a8"
+  },
+  {
+    "path": "extra/13-clay.png",
+    "bytes": 100908,
+    "sha256": "ada7378f79fcf944c1c867e3e7d39d9ac53481ca8f1fec99f2bb035cd19cd9b7"
+  },
+  {
+    "path": "extra/14-detail-control.png",
+    "bytes": 293849,
+    "sha256": "c6954c0da3d111489218f31f267a76b83e63938595f871bae7b3a4b6ba5b5cc3"
+  },
+  {
+    "path": "original/04-street-eye-ink.jpg",
+    "bytes": 278763,
+    "sha256": "6b7908d2658156edd362c214207ef5dc7f0a710cc7f635c4ebe4a09ea8bf7833"
+  },
+  {
+    "path": "exports/city-v03.png",
+    "bytes": 2311364,
+    "sha256": "dd020b12737e21dde29d9282d41ba787063de868d2c44e78e4454ec74405a3d5"
+  }
+]

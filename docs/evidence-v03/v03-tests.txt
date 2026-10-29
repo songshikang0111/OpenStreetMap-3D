@@ -1,0 +1,221 @@
+
+> beijing-city-ink@0.3.0 test
+> node --test test/*.test.js
+
+TAP version 13
+# Subtest: facade families respond to semantics and remain deterministic
+ok 1 - facade families respond to semantics and remain deterministic
+  ---
+  duration_ms: 1.6422
+  ...
+# Subtest: roof equipment uses footprint and courtyard clearance instead of bounding-box filling
+ok 2 - roof equipment uses footprint and courtyard clearance instead of bounding-box filling
+  ---
+  duration_ms: 7.3903
+  ...
+# Subtest: landmark rules select exact landmarks and preserve separate CCTV height records
+ok 3 - landmark rules select exact landmarks and preserve separate CCTV height records
+  ---
+  duration_ms: 0.5849
+  ...
+# Subtest: landmark mesh heights are finite, outward-facing and retain queryable OSM identity
+ok 4 - landmark mesh heights are finite, outward-facing and retain queryable OSM identity
+  ---
+  duration_ms: 77.7514
+  ...
+# Subtest: canopy surfaces have reproducible closed seams, unit normals and a bounded mesh budget
+ok 5 - canopy surfaces have reproducible closed seams, unit normals and a bounded mesh budget
+  ---
+  duration_ms: 21.6125
+  ...
+# Subtest: tree LOD changes appearance only, and rebuilding a near view repeats the leaf transforms
+ok 6 - tree LOD changes appearance only, and rebuilding a near view repeats the leaf transforms
+  ---
+  duration_ms: 11.7142
+  ...
+# Subtest: shared geometry keeps separate foliage, solid-building and procedural-window classifications
+ok 7 - shared geometry keeps separate foliage, solid-building and procedural-window classifications
+  ---
+  duration_ms: 4.5427
+  ...
+# Subtest: AO resolution follows odd export sizes and renderer restores scene state on failure
+ok 8 - AO resolution follows odd export sizes and renderer restores scene state on failure
+  ---
+  duration_ms: 2.368
+  ...
+# Subtest: comic pass isolates light, reuses shadows, and tracks a changed camera near plane
+ok 9 - comic pass isolates light, reuses shadows, and tracks a changed camera near plane
+  ---
+  duration_ms: 1.2712
+  ...
+# {"buildings":477,"roads":785,"trees":2473,"triangleVertices":314430,"heights":{"estimated":182,"height":28,"levels":267}}
+# Subtest: WGS84 projection preserves coordinates and east/north orientation
+ok 10 - WGS84 projection preserves coordinates and east/north orientation
+  ---
+  duration_ms: 1.2867
+  ...
+# Subtest: explicit height takes priority, feet convert, floors are inferred separately
+ok 11 - explicit height takes priority, feet convert, floors are inferred separately
+  ---
+  duration_ms: 2.0218
+  ...
+# Subtest: road clipping handles crossings, outside parallel segments, and degenerate points
+ok 12 - road clipping handles crossings, outside parallel segments, and degenerate points
+  ---
+  duration_ms: 0.3235
+  ...
+# Subtest: relation rings stitch reversed fragments without closing incomplete rings
+ok 13 - relation rings stitch reversed fragments without closing incomplete rings
+  ---
+  duration_ms: 0.3316
+  ...
+# Subtest: multipolygon courtyard survives parsing and tagged member ways are not duplicated
+ok 14 - multipolygon courtyard survives parsing and tagged member ways are not duplicated
+  ---
+  duration_ms: 1.2879
+  ...
+# Subtest: Beijing extract produces finite meshes, preserves real heights and elevated CCTV parts
+ok 15 - Beijing extract produces finite meshes, preserves real heights and elevated CCTV parts
+  ---
+  duration_ms: 801.5729
+  ...
+# R10 Guomao: {
+#   sourceRoads: 785,
+#   segments: 2830,
+#   driveSegments: 1541,
+#   walkSegments: 1289,
+#   miterJoins: 1570,
+#   bevelJoins: 10,
+#   duplicateSegments: 0,
+#   clippedOverlaps: 15129,
+#   junctions: 374,
+#   crossingExclusions: 85,
+#   dashes: 4071,
+#   stopLines: 13,
+#   drivePolygons: 4892,
+#   walkPolygons: 4502,
+#   pavingPolygons: 11564,
+#   surfaceTriangles: 41453,
+#   roadArea: 594863.5457480849,
+#   pavementArea: 231489.76768624835,
+#   discardedMicroTriangles: 1109,
+#   renderedTriangles: 48669,
+#   testedPolygonPairs: 58209,
+#   paintedArea: 2694,
+#   totalValidationMs: 616
+# }
+# Subtest: convex subtraction conserves area, handles containment, identical and touching edges
+ok 16 - convex subtraction conserves area, handles containment, identical and touching edges
+  ---
+  duration_ms: 1.5979
+  ...
+# Subtest: connected strips replace disc endpoints, stay gap-free and retain continuous dash phase
+ok 17 - connected strips replace disc endpoints, stay gap-free and retain continuous dash phase
+  ---
+  duration_ms: 7.2203
+  ...
+# Subtest: sharp bends use bounded bevels; duplicate reversed ways do not duplicate surfaces or paint
+ok 18 - sharp bends use bounded bevels; duplicate reversed ways do not duplicate surfaces or paint
+  ---
+  duration_ms: 12.2451
+  ...
+# Subtest: T/X junctions remove internal overlap, clip footways and suppress paint through crossings
+ok 19 - T/X junctions remove internal overlap, clip footways and suppress paint through crossings
+  ---
+  duration_ms: 4.8033
+  ...
+# Subtest: grade-separated roads never form junctions or erase pavement at the other elevation
+ok 20 - grade-separated roads never form junctions or erase pavement at the other elevation
+  ---
+  duration_ms: 1.2724
+  ...
+# Subtest: observed zebra exclusions and inferred controlled stop lines keep a geometric buffer
+ok 21 - observed zebra exclusions and inferred controlled stop lines keep a geometric buffer
+  ---
+  duration_ms: 2.7229
+  ...
+# Subtest: invalid/zero segments are ignored, clipping respects extraction bounds, output is deterministic
+ok 22 - invalid/zero segments are ignored, clipping respects extraction bounds, output is deterministic
+  ---
+  duration_ms: 2.639
+  ...
+# Subtest: actual Guomao extract: every surface is disjoint, paint avoids all same-level clear zones, mesh winding is up
+ok 23 - actual Guomao extract: every surface is disjoint, paint avoids all same-level clear zones, mesh winding is up
+  ---
+  duration_ms: 643.0154
+  ...
+# Street life: {
+#   observedTrees: 0,
+#   rejectedObservedTrees: 0,
+#   rowTrees: 0,
+#   streetTrees: 2059,
+#   greenTrees: 414,
+#   junctions: 154,
+#   placementSource: 'OSM trees / tree rows / street nodes + constrained inferred furnishings; no imagery',
+#   trees: 2473,
+#   generatedTrees: 2473,
+#   lamps: 301,
+#   cars: 110,
+#   people: 170,
+#   crosswalks: 85,
+#   signals: 29,
+#   curbs: 5718,
+#   observedCrossings: 85,
+#   observedSignals: 29,
+#   observedLamps: 0,
+#   nearTrees: 96
+# }
+# Subtest: generated planting is deterministic, avoids buildings, carriageways and green holes
+ok 24 - generated planting is deterministic, avoids buildings, carriageways and green holes
+  ---
+  duration_ms: 24.3282
+  ...
+# Subtest: parallel duplicate ways do not double tree rows; bridges and narrow paths do not seed street trees
+ok 25 - parallel duplicate ways do not double tree rows; bridges and narrow paths do not seed street trees
+  ---
+  duration_ms: 2.4055
+  ...
+# Subtest: junction-based crossings stay on connected approaches and remain stable
+ok 26 - junction-based crossings stay on connected approaches and remain stable
+  ---
+  duration_ms: 2.3825
+  ...
+# Subtest: kerb segments leave shallow-angle and wide connecting carriageways clear
+ok 27 - kerb segments leave shallow-angle and wide connecting carriageways clear
+  ---
+  duration_ms: 2.4945
+  ...
+# Subtest: OSM crossing observations suppress speculative junction crossings and tree rows remain attributed
+ok 28 - OSM crossing observations suppress speculative junction crossings and tree rows remain attributed
+  ---
+  duration_ms: 2.1824
+  ...
+# Subtest: Beijing furniture has finite instance transforms and foliage-only ink classification
+ok 29 - Beijing furniture has finite instance transforms and foliage-only ink classification
+  ---
+  duration_ms: 238.9483
+  ...
+# Subtest: saved view round-trips camera, seed, style and visibility
+ok 30 - saved view round-trips camera, seed, style and visibility
+  ---
+  duration_ms: 1.5538
+  ...
+# Subtest: view decoder rejects malformed payloads and strips unsupported or unsafe inputs
+ok 31 - view decoder rejects malformed payloads and strips unsupported or unsafe inputs
+  ---
+  duration_ms: 0.3701
+  ...
+# Subtest: reroll changes estimates while retaining every tagged height, floor and footprint
+ok 32 - reroll changes estimates while retaining every tagged height, floor and footprint
+  ---
+  duration_ms: 29.5445
+  ...
+1..32
+# tests 32
+# suites 0
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 957.0212

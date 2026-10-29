@@ -1,0 +1,457 @@
+{
+  "before": {
+    "01-overview-ink": {
+      "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "haze": "30",
+        "lens": "42",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "02-skyline-ink": {
+      "camera": "机位 -157.3, 137.5, 1598.7 m · FOV 42.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "haze": "30",
+        "lens": "42",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "03-street-ink": {
+      "camera": "机位 13.7, 2.1, -96.3 m · FOV 65.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "haze": "30",
+        "lens": "65",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "04-street-color": {
+      "camera": "机位 13.7, 2.1, -96.3 m · FOV 65.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "haze": "30",
+        "lens": "65",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "05-overview-color": {
+      "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "haze": "30",
+        "lens": "42",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "06-top-ink": {
+      "camera": "机位 0.0, 2556.6, 0.0 m · FOV 43.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "haze": "30",
+        "lens": "43",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "07-citic": {
+      "camera": "机位 367.4, 270.0, 437.8 m · FOV 42.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "haze": "30",
+        "lens": "42",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "08-cctv": {
+      "camera": "机位 -563.3, 150.0, -50.1 m · FOV 42.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "haze": "30",
+        "lens": "42",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "09-facade": {
+      "camera": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "haze": "30",
+        "lens": "55",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "10-roof": {
+      "camera": "机位 -230.0, 160.0, 220.0 m · FOV 42.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "haze": "30",
+        "lens": "42",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "11-crossing": {
+      "camera": "机位 48.1, 2.1, 329.4 m · FOV 65.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "haze": "30",
+        "lens": "65",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    }
+  },
+  "after": {
+    "11-crossing": {
+      "camera": "机位 48.1, 2.1, 329.4 m · FOV 65.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "facade-detail": "50",
+        "haze": "30",
+        "lens": "65",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "03-street-ink": {
+      "camera": "机位 13.7, 2.1, -96.3 m · FOV 65.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "facade-detail": "50",
+        "haze": "30",
+        "lens": "65",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "04-street-color": {
+      "camera": "机位 13.7, 2.1, -96.3 m · FOV 65.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "facade-detail": "50",
+        "haze": "30",
+        "lens": "65",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "07-citic": {
+      "camera": "机位 367.4, 270.0, 437.8 m · FOV 42.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "facade-detail": "50",
+        "haze": "30",
+        "lens": "42",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "01-overview-ink": {
+      "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "facade-detail": "50",
+        "haze": "30",
+        "lens": "42",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "02-skyline-ink": {
+      "camera": "机位 -157.3, 137.5, 1598.7 m · FOV 42.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "facade-detail": "50",
+        "haze": "30",
+        "lens": "42",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "05-overview-color": {
+      "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "facade-detail": "50",
+        "haze": "30",
+        "lens": "42",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "06-top-ink": {
+      "camera": "机位 0.0, 2556.6, 0.0 m · FOV 43.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "facade-detail": "50",
+        "haze": "30",
+        "lens": "43",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "08-cctv": {
+      "camera": "机位 -563.3, 150.0, -50.1 m · FOV 42.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "facade-detail": "50",
+        "haze": "30",
+        "lens": "42",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "09-facade": {
+      "camera": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "facade-detail": "50",
+        "haze": "30",
+        "lens": "55",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    },
+    "10-roof": {
+      "camera": "机位 -230.0, 160.0, 220.0 m · FOV 42.0°",
+      "height": 945,
+      "parameters": {
+        "ao-strength": "65",
+        "black-point": "10",
+        "density": "85",
+        "facade-detail": "50",
+        "haze": "30",
+        "lens": "42",
+        "line-width": "1",
+        "outline-width": "1.35",
+        "shadow-strength": "100",
+        "sun-angle": "135",
+        "sun-height": "45",
+        "tone-size": "4.2",
+        "tone-threshold": "52",
+        "tree-ink": "80"
+      },
+      "width": 1920
+    }
+  }
+}

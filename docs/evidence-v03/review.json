@@ -1,0 +1,130 @@
+{
+  "status": "reviewed",
+  "date": "2026-10-30",
+  "reviewer": "主代理，截图人工工程验收",
+  "render_commit": "b943650",
+  "baseline_commit": "e3efced",
+  "scope": "现有北京国贸样本；未扩展地图范围；人工量表不代表实景还原百分比",
+  "scores": [
+    {
+      "id": "R1",
+      "name": "地标形体",
+      "weight": 20,
+      "before": 7,
+      "after": 7,
+      "result": "中国尊和央视的轮廓、总高保持原规则。央视斜网格恢复清晰，但形体比例没有新增实测依据，不加分。"
+    },
+    {
+      "id": "R2",
+      "name": "立面类型",
+      "weight": 20,
+      "before": 6.5,
+      "after": 6.5,
+      "result": "近窗和远景层次更清楚，但普通建筑家族、店铺与住宅细节没有扩充，仍有重复感。"
+    },
+    {
+      "id": "R3",
+      "name": "实体细节",
+      "weight": 10,
+      "before": 6,
+      "after": 6,
+      "result": "屋顶与近景窗台保留；本轮没有扩充屋顶形状库或设备种类，不加分。"
+    },
+    {
+      "id": "R4",
+      "name": "道路与街道",
+      "weight": 15,
+      "before": 6.5,
+      "after": 7,
+      "result": "03/04/06/11：路面拼接连续、标线避让交口和横道，路缘不再伸入相接车道。桥梁仍缺少桥墩与可靠高差，停止线属于规则推断。"
+    },
+    {
+      "id": "R5",
+      "name": "树冠与植被",
+      "weight": 10,
+      "before": 5.5,
+      "after": 6.5,
+      "result": "03/04/11：更不规则的叶簇边缘、叶片明暗和近景线稿纹理，彩色不再重复乘绿。仍能看出实体叶团，远近层级会跳变，树种丰富度有限。"
+    },
+    {
+      "id": "R6",
+      "name": "漫画渲染",
+      "weight": 20,
+      "before": 6,
+      "after": 7,
+      "result": "01/02/07/08/09：亚像素窗格噪点减少，近窗、央视结构线和白色标线得到保留，光照与材质分开。代价是远景主动简化；部分竖肋仍有碎线，明暗设计与原版仍有差距。"
+    },
+    {
+      "id": "R7",
+      "name": "复现与真实性",
+      "weight": 5,
+      "before": 9,
+      "after": 9,
+      "result": "11组固定机位、1920×945画幅和共有参数全部一致；新增远景窗格参数保存/重载验证通过。原版仍只有同地段参考，无精确外参或多设备性能基准。"
+    }
+  ],
+  "checks": [
+    "32项自动测试通过，生产构建通过；最后白模修正另复跑3项渲染测试。Three.js分包仍有超过500kB的体积提示。",
+    "11组v0.2/v0.3截图，共22张；统一在同一浏览器页重拍，机位、画幅与全部共有参数匹配。旧验收文件未覆盖。",
+    "漫画、线稿、彩色、白模均实际查看；修复标线留白误分类和白模中实例颜色残留。",
+    "远景窗格滑杆设为100%，保存视角后重载，实际控件值与输出仍为100%；默认正式截图使用50%。",
+    "实际导出2400×1295 PNG，已打开检查并确认OSM署名；本轮未重新验收GLB导入。",
+    "国贸58,209对候选路面精确重叠检查通过；85处OSM横道避让区、13条推断停止线；路面与标线合计48,669三角形。",
+    "详细树冠限制为相机周围95米内、最多96棵。默认街景整组树木几何约86.0万→104.3万三角形/场景遍次；俯瞰54.4万→51.4万。不含视锥裁剪、阴影和后处理，不是FPS测量。",
+    "漫画模式新增一次中性光照渲染；其他模式跳过此遍次。当前未做多设备GPU帧率验证。"
+  ],
+  "commits": [
+    {
+      "hash": "67a3855",
+      "summary": "docs: define v0.3 rendering polish acceptance criteria"
+    },
+    {
+      "hash": "ddfe1c4",
+      "summary": "feat(render): filter distant panes and isolate comic illumination"
+    },
+    {
+      "hash": "5281e69",
+      "summary": "feat(trees): add bounded organic crowns and filtered leaf shading"
+    },
+    {
+      "hash": "6aa3990",
+      "summary": "fix(trees): preserve instance colors and add near leaf linework"
+    },
+    {
+      "hash": "315c65b",
+      "summary": "R10: join road surfaces and clip junction markings"
+    },
+    {
+      "hash": "40b6cc8",
+      "summary": "feat(roads): integrate joined surfaces and clear kerbs from junctions"
+    },
+    {
+      "hash": "0dcc89f",
+      "summary": "feat(ui): expose distant facade detail control in saved views"
+    },
+    {
+      "hash": "f28814d",
+      "summary": "perf(trees): bound detailed crowns by three-dimensional view distance"
+    },
+    {
+      "hash": "83f5016",
+      "summary": "fix(ink): preserve white traffic paint and consecutive object boundaries"
+    },
+    {
+      "hash": "420e2e0",
+      "summary": "fix(facades): retain landmark diagrid independently of window LOD"
+    },
+    {
+      "hash": "b8adb00",
+      "summary": "fix(ink): avoid density quantization patches on flat surfaces"
+    },
+    {
+      "hash": "2366500",
+      "summary": "fix(ink): tolerate interpolation around integral material classes"
+    },
+    {
+      "hash": "b943650",
+      "summary": "fix(render): keep instanced foliage neutral in white model mode"
+    }
+  ]
+}

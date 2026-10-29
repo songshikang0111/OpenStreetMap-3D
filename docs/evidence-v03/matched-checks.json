@@ -1,0 +1,46 @@
+[
+  {
+    "key": "01-overview-ink",
+    "match": true
+  },
+  {
+    "key": "02-skyline-ink",
+    "match": true
+  },
+  {
+    "key": "03-street-ink",
+    "match": true
+  },
+  {
+    "key": "04-street-color",
+    "match": true
+  },
+  {
+    "key": "05-overview-color",
+    "match": true
+  },
+  {
+    "key": "06-top-ink",
+    "match": true
+  },
+  {
+    "key": "07-citic",
+    "match": true
+  },
+  {
+    "key": "08-cctv",
+    "match": true
+  },
+  {
+    "key": "09-facade",
+    "match": true
+  },
+  {
+    "key": "10-roof",
+    "match": true
+  },
+  {
+    "key": "11-crossing",
+    "match": true
+  }
+]
