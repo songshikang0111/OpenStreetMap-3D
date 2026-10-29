@@ -1,0 +1,237 @@
+[
+  {
+    "path": "before/01-overview-ink.png",
+    "bytes": 244503,
+    "sha256": "527a56068606b484f8a1ec9004911ae0fe11af97be8b417c5e0ceaf20558e699"
+  },
+  {
+    "path": "before/02-skyline-ink.png",
+    "bytes": 250468,
+    "sha256": "495125912d11850d6af1c27ad096842d3f5b11ec2943172b0acd9514fce9e7fc"
+  },
+  {
+    "path": "before/03-street-ink.png",
+    "bytes": 512958,
+    "sha256": "358908a0d9d3b77a958d775acdfc57242c76cc2a98f8fec922644e6ce533c7b5"
+  },
+  {
+    "path": "before/04-street-color.png",
+    "bytes": 159670,
+    "sha256": "53646013fedd2650eff0344c5016767225e5b7fa9e1e4462959392fee62d56dc"
+  },
+  {
+    "path": "before/05-overview-color.png",
+    "bytes": 143255,
+    "sha256": "01db1ffb91b1773804fe86fb6b1c2a2aac01a817198194217a1429996cd13c71"
+  },
+  {
+    "path": "before/06-top-ink.png",
+    "bytes": 314345,
+    "sha256": "a99319453b4caa89c7316d2685e3d1624d5e06428107073557db2683b7ad5134"
+  },
+  {
+    "path": "before/07-citic.png",
+    "bytes": 295308,
+    "sha256": "dd0d56e5ca018a5ca55fe38c6e1dc56054776c5be9e7b645c88904ee6ba55258"
+  },
+  {
+    "path": "before/08-cctv.png",
+    "bytes": 531566,
+    "sha256": "d2455aa380a6c8009325f6634105d667d46e8bb29b9934c632283d6944ab2ee8"
+  },
+  {
+    "path": "before/09-facade.png",
+    "bytes": 452850,
+    "sha256": "2a0b29bc5106b51a688f417368e8c2bff38a41ad4686935b5a27df7ddbd7882c"
+  },
+  {
+    "path": "before/10-roof.png",
+    "bytes": 600261,
+    "sha256": "f3322d4850644f3bada25978f7dde6a81ff4222b2f310ed30e1b102c874eacc8"
+  },
+  {
+    "path": "before/11-crossing.png",
+    "bytes": 396966,
+    "sha256": "e81b4687168d9bdab5b33a73076cae5082c4f980e2809b75eb4a98ff19eeb09d"
+  },
+  {
+    "path": "before/12-bridge-oblique.png",
+    "bytes": 522619,
+    "sha256": "cdd444d9c12d946fc35df647b2c3406938191d18d679664d7db23554a72789be"
+  },
+  {
+    "path": "before/13-bridge-under.png",
+    "bytes": 145866,
+    "sha256": "5b990546805a108f144d06e874378649eb06d738d3bdbd4f2d7ab04f9089f7f0"
+  },
+  {
+    "path": "before/14-footbridge.png",
+    "bytes": 403401,
+    "sha256": "99c5acc47f5ded27381249ef453df2cac747a4af9b768817d6802c6a12b1db80"
+  },
+  {
+    "path": "before/15-sidewalk.png",
+    "bytes": 146411,
+    "sha256": "56ae685b0d4d5f8b01a4f5e32252be96d7cc1932dc7c90cc56080a9d041312dd"
+  },
+  {
+    "path": "after/01-overview-ink.png",
+    "bytes": 236958,
+    "sha256": "6255a75378825a896f0c484c74f688dca513571b648401a0b7faa1a1cd544fd6"
+  },
+  {
+    "path": "after/02-skyline-ink.png",
+    "bytes": 232731,
+    "sha256": "ef8448475231528873d6961d972c303c386bb2111acdb6e8db737f9c7cc620f0"
+  },
+  {
+    "path": "after/03-street-ink.png",
+    "bytes": 551334,
+    "sha256": "20a9e4202145a843ba7dd22ec81e3188885ee7167779fabba2a19c194a79974c"
+  },
+  {
+    "path": "after/04-street-color.png",
+    "bytes": 153614,
+    "sha256": "86cb21189b9e66762baef95895c82f82d757133f6badb328ecf1cf059fc57da0"
+  },
+  {
+    "path": "after/05-overview-color.png",
+    "bytes": 144739,
+    "sha256": "d832a19d8d14fe5fff7fa2ff3840737847e5fea49de783136f3f3b3d4316355f"
+  },
+  {
+    "path": "after/06-top-ink.png",
+    "bytes": 292701,
+    "sha256": "fc93cb6f1b90d5c32a207382aa9aa37c388be7c12a9f11a168204b9518ff00fa"
+  },
+  {
+    "path": "after/07-citic.png",
+    "bytes": 291909,
+    "sha256": "674eafb899ce645312a26a44517130999ab284c2f01501378c9b0eaadb9792eb"
+  },
+  {
+    "path": "after/08-cctv.png",
+    "bytes": 527182,
+    "sha256": "f594b339f7cc10db0279ffd65f0d11f66e7aa2a42b4b19b54272963bc9af2830"
+  },
+  {
+    "path": "after/09-facade.png",
+    "bytes": 495318,
+    "sha256": "f53d4e1aa00155231ec0d974bc148e6abda64072547d301d3bdd9ca14b620da5"
+  },
+  {
+    "path": "after/10-roof.png",
+    "bytes": 583179,
+    "sha256": "57c36940634a1caf50686b95493ec66b57ac300282af6f6c41a965a7bf3f388d"
+  },
+  {
+    "path": "after/11-crossing.png",
+    "bytes": 302753,
+    "sha256": "47d56ca1e327788abf1de9c2794b5b739a4101a644cc22ff000c8cedba6de966"
+  },
+  {
+    "path": "after/12-bridge-oblique.png",
+    "bytes": 508374,
+    "sha256": "64ce6201848936eba8059ce8fe8f388f2007c20123b51e3c3a9a00bed1d210db"
+  },
+  {
+    "path": "after/13-bridge-under.png",
+    "bytes": 139917,
+    "sha256": "33ee1159ca27a82cd9a2ecce6e241f874c4d40643ee7b092d82f8cef6364fafa"
+  },
+  {
+    "path": "after/14-footbridge.png",
+    "bytes": 346612,
+    "sha256": "59edd75ab74185a17028c9e59916addc1659c9a85c988cc7c053dc7207393568"
+  },
+  {
+    "path": "after/15-sidewalk.png",
+    "bytes": 139031,
+    "sha256": "dedf1447c798ad6c5ad822419c75bb39ee7727963e8553bdb0e1c5044f9cc916"
+  },
+  {
+    "path": "extra/clay.png",
+    "bytes": 116319,
+    "sha256": "88c1a97666d2e2c85b94d2db2729a8e3b0844ef4b723d8bda2d83c0f1a76da0a"
+  },
+  {
+    "path": "extra/export.png",
+    "bytes": 2074730,
+    "sha256": "43c3b2031c9cc7e624fb129ca811bc0052c0fe5807a680999f96684180b8f8ed"
+  },
+  {
+    "path": "extra/glass-control.png",
+    "bytes": 503784,
+    "sha256": "3625c3ed94023da14ca45e38b5bc8b72636d2a485818ad56cd2beb3aef3e39fe"
+  },
+  {
+    "path": "extra/lines.png",
+    "bytes": 253935,
+    "sha256": "0a877f0718d4df44933317a0a5128280ada2ccf643169b6b9b099acc26ab6938"
+  },
+  {
+    "path": "extra/shadow-off.png",
+    "bytes": 484487,
+    "sha256": "52229325b859d27be348d281b2b884aaef97a3263e0a9d6af352cefcc72f35c2"
+  },
+  {
+    "path": "extra/shadow-on.png",
+    "bytes": 583179,
+    "sha256": "57c36940634a1caf50686b95493ec66b57ac300282af6f6c41a965a7bf3f388d"
+  },
+  {
+    "path": "original/01-overview-ink.jpg",
+    "bytes": 470929,
+    "sha256": "50ab50e07d4a5e73c9972f03d4a0bac52564fbd0e90dd193211b6d12589aa88f"
+  },
+  {
+    "path": "original/02-wide-ink.jpg",
+    "bytes": 432066,
+    "sha256": "8368a20d004e85e31a6a553f670de5cb9e5cec530f9d6512c2f9cb03f8126422"
+  },
+  {
+    "path": "original/03-street-high-ink.jpg",
+    "bytes": 362222,
+    "sha256": "0a5fece7e4d68a158ed9b3ea53a9b2bab2afb60408df8fad2b322a893eff4d3e"
+  },
+  {
+    "path": "original/04-street-eye-ink.jpg",
+    "bytes": 278763,
+    "sha256": "6b7908d2658156edd362c214207ef5dc7f0a710cc7f635c4ebe4a09ea8bf7833"
+  },
+  {
+    "path": "original/05-street-eye-color.jpg",
+    "bytes": 222861,
+    "sha256": "5393bf11663887064702f589e982df785d8433d716cdd862808b68b823959ba3"
+  },
+  {
+    "path": "original/06-crossing-color.jpg",
+    "bytes": 229505,
+    "sha256": "d6935f85ff64768b5f14599e5efca5130b4998196186fd4fad9f910e266d20ef"
+  },
+  {
+    "path": "original/07-crossing-ink.jpg",
+    "bytes": 318444,
+    "sha256": "d2a1a97dee9cf0201cb38547fcd744dffb2c02284a3ee6ce1d07de184d00478c"
+  },
+  {
+    "path": "original/08-top-ink.jpg",
+    "bytes": 402924,
+    "sha256": "4030138eea7af9c94f13255f563c59e3383138a5e3aae5ce2b896dfa51decf06"
+  },
+  {
+    "path": "original/09-overview-color.jpg",
+    "bytes": 322772,
+    "sha256": "322ccc52b653eb39d32f845978108bb67c69b7ef73c5753a3c9974e4c22f0d01"
+  },
+  {
+    "path": "original/10-landmark-wide-20mm.jpg",
+    "bytes": 383404,
+    "sha256": "b7990962eab7d116644f4e8ada29deaf16838b2c92d1490bff54cd4bfec57252"
+  },
+  {
+    "path": "original/ui-controls.json",
+    "bytes": 103709,
+    "sha256": "af9861ba49801c3d61d89f7331b046eae3adf1511763a74cbf62ec3e995c00bc"
+  }
+]

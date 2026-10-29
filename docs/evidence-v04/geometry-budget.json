@@ -1,0 +1,193 @@
+{
+  "baseline": "f3a483e",
+  "scope": "Whole scene groups before frustum culling, one scene pass. Excludes shadow/post passes and renderer classification attributes. Not GPU timing.",
+  "trees": {
+    "before": 2473,
+    "after": 2473
+  },
+  "sceneGeometryBytes": {
+    "before": 36567968,
+    "after": 56387792
+  },
+  "grammars": {
+    "horizontal-ribbon": 21,
+    "deep-spandrel": 20,
+    "continuous-grid": 19,
+    "paired-ribbon": 30,
+    "paired-mullions": 9,
+    "transom-lowrise": 117,
+    "transom-windows": 16,
+    "spandrel-grid": 6,
+    "paired-lowrise": 101,
+    "small-punched": 107,
+    "punched-windows": 10,
+    "paired-casements": 16
+  },
+  "views": [
+    {
+      "key": "01-overview-ink",
+      "before": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 828233
+      },
+      "after": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 922676
+      }
+    },
+    {
+      "key": "02-skyline-ink",
+      "before": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 828233
+      },
+      "after": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 922676
+      }
+    },
+    {
+      "key": "03-street-ink",
+      "before": {
+        "treeTriangles": 1042576,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 1356425
+      },
+      "after": {
+        "treeTriangles": 935272,
+        "detailTriangles": 46536,
+        "detailInstances": 3878,
+        "sceneTriangles": 1390100
+      }
+    },
+    {
+      "key": "04-street-color",
+      "before": {
+        "treeTriangles": 1042576,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 1356425
+      },
+      "after": {
+        "treeTriangles": 935272,
+        "detailTriangles": 46536,
+        "detailInstances": 3878,
+        "sceneTriangles": 1390100
+      }
+    },
+    {
+      "key": "05-overview-color",
+      "before": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 828233
+      },
+      "after": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 922676
+      }
+    },
+    {
+      "key": "06-top-ink",
+      "before": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 828233
+      },
+      "after": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 922676
+      }
+    },
+    {
+      "key": "07-citic",
+      "before": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 828233
+      },
+      "after": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 922676
+      }
+    },
+    {
+      "key": "08-cctv",
+      "before": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 828233
+      },
+      "after": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 922676
+      }
+    },
+    {
+      "key": "09-facade",
+      "before": {
+        "treeTriangles": 750184,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 1064033
+      },
+      "after": {
+        "treeTriangles": 710008,
+        "detailTriangles": 68616,
+        "detailInstances": 5718,
+        "sceneTriangles": 1186916
+      }
+    },
+    {
+      "key": "10-roof",
+      "before": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 828233
+      },
+      "after": {
+        "treeTriangles": 514384,
+        "detailTriangles": 0,
+        "detailInstances": 0,
+        "sceneTriangles": 922676
+      }
+    },
+    {
+      "key": "11-crossing",
+      "before": {
+        "treeTriangles": 778480,
+        "detailTriangles": 49008,
+        "detailInstances": 4084,
+        "sceneTriangles": 1141337
+      },
+      "after": {
+        "treeTriangles": 739648,
+        "detailTriangles": 74808,
+        "detailInstances": 6234,
+        "sceneTriangles": 1222748
+      }
+    }
+  ]
+}

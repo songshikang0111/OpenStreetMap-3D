@@ -1,0 +1,78 @@
+TAP version 13
+# Subtest: crosswalk approaches cut both roadside kerbs while keeping remote sections and input intact
+ok 1 - crosswalk approaches cut both roadside kerbs while keeping remote sections and input intact
+  ---
+  duration_ms: 1.4262
+  ...
+# Subtest: kerb clearance follows rotated crossings and is stable under translated map coordinates
+ok 2 - kerb clearance follows rotated crossings and is stable under translated map coordinates
+  ---
+  duration_ms: 0.3663
+  ...
+# Street life: {
+#   observedTrees: 0,
+#   rejectedObservedTrees: 0,
+#   rowTrees: 0,
+#   streetTrees: 2059,
+#   greenTrees: 414,
+#   junctions: 154,
+#   placementSource: 'OSM trees / tree rows / street nodes + constrained inferred furnishings; no imagery',
+#   trees: 2473,
+#   generatedTrees: 2473,
+#   lamps: 301,
+#   cars: 110,
+#   people: 170,
+#   crosswalks: 85,
+#   signals: 29,
+#   curbs: 5694,
+#   observedCrossings: 85,
+#   observedSignals: 29,
+#   observedLamps: 0,
+#   curbCrossingCuts: 149,
+#   curbCrossingClearanceMetres: 326.61496582646777,
+#   nearTrees: 59,
+#   transitionTrees: 55,
+#   treeDetailRadius: 110,
+#   crownTriangles: 784980,
+#   treeTriangles: 864136,
+#   maxCrownTriangles: 998100
+# }
+# Subtest: generated planting is deterministic, avoids buildings, carriageways and green holes
+ok 3 - generated planting is deterministic, avoids buildings, carriageways and green holes
+  ---
+  duration_ms: 18.5982
+  ...
+# Subtest: parallel duplicate ways do not double tree rows; bridges and narrow paths do not seed street trees
+ok 4 - parallel duplicate ways do not double tree rows; bridges and narrow paths do not seed street trees
+  ---
+  duration_ms: 1.384
+  ...
+# Subtest: junction-based crossings stay on connected approaches and remain stable
+ok 5 - junction-based crossings stay on connected approaches and remain stable
+  ---
+  duration_ms: 1.5998
+  ...
+# Subtest: kerb segments leave shallow-angle and wide connecting carriageways clear
+ok 6 - kerb segments leave shallow-angle and wide connecting carriageways clear
+  ---
+  duration_ms: 2.1518
+  ...
+# Subtest: OSM crossing observations suppress speculative junction crossings and tree rows remain attributed
+ok 7 - OSM crossing observations suppress speculative junction crossings and tree rows remain attributed
+  ---
+  duration_ms: 1.405
+  ...
+# Subtest: Beijing furniture has finite instance transforms and foliage-only ink classification
+ok 8 - Beijing furniture has finite instance transforms and foliage-only ink classification
+  ---
+  duration_ms: 242.4928
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 376.8956

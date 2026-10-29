@@ -1,0 +1,77 @@
+[
+  {
+    "key": "01-overview-ink",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "02-skyline-ink",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "03-street-ink",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "04-street-color",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "05-overview-color",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "06-top-ink",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "07-citic",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "08-cctv",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "09-facade",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "10-roof",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "11-crossing",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "12-bridge-oblique",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "13-bridge-under",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "14-footbridge",
+    "match": true,
+    "differences": []
+  },
+  {
+    "key": "15-sidewalk",
+    "match": true,
+    "differences": []
+  }
+]

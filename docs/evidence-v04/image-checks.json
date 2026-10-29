@@ -1,0 +1,272 @@
+[
+  {
+    "file": "before\\01-overview-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 40.44,
+    "nonblank": true
+  },
+  {
+    "file": "before\\02-skyline-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 44.73,
+    "nonblank": true
+  },
+  {
+    "file": "before\\03-street-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 89.23,
+    "nonblank": true
+  },
+  {
+    "file": "before\\04-street-color.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 51.57,
+    "nonblank": true
+  },
+  {
+    "file": "before\\05-overview-color.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 35.37,
+    "nonblank": true
+  },
+  {
+    "file": "before\\06-top-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 41.42,
+    "nonblank": true
+  },
+  {
+    "file": "before\\07-citic.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 50.03,
+    "nonblank": true
+  },
+  {
+    "file": "before\\08-cctv.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 78.76,
+    "nonblank": true
+  },
+  {
+    "file": "before\\09-facade.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 76.58,
+    "nonblank": true
+  },
+  {
+    "file": "before\\10-roof.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 72.26,
+    "nonblank": true
+  },
+  {
+    "file": "before\\11-crossing.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 71.36,
+    "nonblank": true
+  },
+  {
+    "file": "before\\12-bridge-oblique.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 73.22,
+    "nonblank": true
+  },
+  {
+    "file": "before\\13-bridge-under.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 65.23,
+    "nonblank": true
+  },
+  {
+    "file": "before\\14-footbridge.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 71.1,
+    "nonblank": true
+  },
+  {
+    "file": "before\\15-sidewalk.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 60.26,
+    "nonblank": true
+  },
+  {
+    "file": "after\\01-overview-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 41.65,
+    "nonblank": true
+  },
+  {
+    "file": "after\\02-skyline-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 44.91,
+    "nonblank": true
+  },
+  {
+    "file": "after\\03-street-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 84.11,
+    "nonblank": true
+  },
+  {
+    "file": "after\\04-street-color.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 51.74,
+    "nonblank": true
+  },
+  {
+    "file": "after\\05-overview-color.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 36.75,
+    "nonblank": true
+  },
+  {
+    "file": "after\\06-top-ink.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 43.66,
+    "nonblank": true
+  },
+  {
+    "file": "after\\07-citic.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 50.31,
+    "nonblank": true
+  },
+  {
+    "file": "after\\08-cctv.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 75.94,
+    "nonblank": true
+  },
+  {
+    "file": "after\\09-facade.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 72.6,
+    "nonblank": true
+  },
+  {
+    "file": "after\\10-roof.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 72.38,
+    "nonblank": true
+  },
+  {
+    "file": "after\\11-crossing.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 72.64,
+    "nonblank": true
+  },
+  {
+    "file": "after\\12-bridge-oblique.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 75.12,
+    "nonblank": true
+  },
+  {
+    "file": "after\\13-bridge-under.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 66.6,
+    "nonblank": true
+  },
+  {
+    "file": "after\\14-footbridge.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 70.2,
+    "nonblank": true
+  },
+  {
+    "file": "after\\15-sidewalk.png",
+    "size": [
+      1920,
+      945
+    ],
+    "stageStd": 60.56,
+    "nonblank": true
+  }
+]

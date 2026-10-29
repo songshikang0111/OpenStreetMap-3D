@@ -1,0 +1,4753 @@
+[
+  {
+    "checked": false,
+    "id": "q",
+    "tag": "INPUT",
+    "text": "",
+    "title": "Enter a place name, an address or latitude/longitude, press Search and choose a place to recreate its terrain.",
+    "type": "search",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "findBtn",
+    "tag": "BUTTON",
+    "text": "Search",
+    "title": "",
+    "type": "submit",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "fileBtn",
+    "tag": "BUTTON",
+    "text": "📂",
+    "title": "Open a place file saved from Google Earth etc. (KML, KMZ, GeoJSON)",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "placeFile",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "file",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "size",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "100m",
+        "value": "100"
+      },
+      {
+        "text": "200m",
+        "value": "200"
+      },
+      {
+        "text": "300m",
+        "value": "300"
+      },
+      {
+        "text": "400m",
+        "value": "400"
+      },
+      {
+        "text": "600m",
+        "value": "600"
+      },
+      {
+        "text": "800m",
+        "value": "800"
+      },
+      {
+        "text": "1km",
+        "value": "1000"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "1000"
+  },
+  {
+    "checked": false,
+    "id": "far",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "None",
+        "value": "0"
+      },
+      {
+        "text": "1km",
+        "value": "1000"
+      },
+      {
+        "text": "2km",
+        "value": "2000"
+      },
+      {
+        "text": "4km",
+        "value": "4000"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "2000"
+  },
+  {
+    "checked": false,
+    "id": "hgfExport",
+    "tag": "BUTTON",
+    "text": "⇪ Export",
+    "title": "",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "hgfPng",
+    "tag": "BUTTON",
+    "text": "⇩ Export PNG",
+    "title": "",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "hgfHelpTitle",
+    "tag": "BUTTON",
+    "text": "Feature guide",
+    "title": "",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "hgfHelpMin",
+    "tag": "BUTTON",
+    "text": "－",
+    "title": "Minimize (keep the title only)",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "tod",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "Day",
+        "value": "day"
+      },
+      {
+        "text": "Dusk",
+        "value": "dusk"
+      },
+      {
+        "text": "Night",
+        "value": "night"
+      },
+      {
+        "text": "Late night",
+        "value": "late"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "day"
+  },
+  {
+    "checked": false,
+    "id": "todK",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "100"
+  },
+  {
+    "checked": false,
+    "id": "lw",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "1"
+  },
+  {
+    "checked": false,
+    "id": "olk",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "1.1"
+  },
+  {
+    "checked": false,
+    "id": "ltBtn",
+    "tag": "BUTTON",
+    "text": "☀ Light · Tone",
+    "title": "",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "fxBtn",
+    "tag": "BUTTON",
+    "text": "✦",
+    "title": "Post effects",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "cams",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "(free camera)",
+        "value": ""
+      },
+      {
+        "text": "Overview (whole area)",
+        "value": "overview"
+      },
+      {
+        "text": "Top",
+        "value": "top"
+      },
+      {
+        "text": "Wide view (with the surroundings)",
+        "value": "wide"
+      },
+      {
+        "text": "Crossing 1 建国路",
+        "value": "ix0"
+      },
+      {
+        "text": "Crossing 2 东三环中路 × 光华路",
+        "value": "ix1"
+      },
+      {
+        "text": "Crossing 3 针织路",
+        "value": "ix2"
+      },
+      {
+        "text": "Crossing 4 东三环中路",
+        "value": "ix3"
+      },
+      {
+        "text": "Central street · eye level",
+        "value": "center"
+      },
+      {
+        "text": "Central street · low angle",
+        "value": "centerLow"
+      },
+      {
+        "text": "Central street · looking down",
+        "value": "centerHigh"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "overview"
+  },
+  {
+    "checked": false,
+    "id": "lens",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "32"
+  },
+  {
+    "checked": false,
+    "id": "recenter",
+    "tag": "BUTTON",
+    "text": "📍 Make this the near area",
+    "title": "Rebuilds the near area (built in detail) around the current camera position (the ground right below it). The camera stays where it is",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "twopt",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": true,
+    "id": "shadow",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": true,
+    "id": "winFar",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": false,
+    "id": "rkBarMin",
+    "tag": "BUTTON",
+    "text": "－View settings",
+    "title": "Minimize (hide the controls above, and the navigation and full-screen buttons below)",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "hgfMore",
+    "tag": "BUTTON",
+    "text": "…",
+    "title": "More controls",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "nav",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "Standard",
+        "value": "std"
+      },
+      {
+        "text": "Middle-button orbit",
+        "value": "mmb"
+      },
+      {
+        "text": "Alt + buttons",
+        "value": "alt"
+      },
+      {
+        "text": "Pen",
+        "value": "pen"
+      },
+      {
+        "text": "Stand & look around",
+        "value": "look"
+      },
+      {
+        "text": "Trackpad",
+        "value": "pad"
+      },
+      {
+        "text": "Right button + WASD",
+        "value": "wasd"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "std"
+  },
+  {
+    "checked": false,
+    "id": "fsBtn",
+    "tag": "BUTTON",
+    "text": "Full screen",
+    "title": "Show the view full screen (press again or Esc to return)",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "eyeH",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "1.55"
+  },
+  {
+    "checked": false,
+    "id": "flySpd",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "160"
+  },
+  {
+    "checked": false,
+    "id": "flySpdN",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "number",
+    "value": "40"
+  },
+  {
+    "checked": false,
+    "id": "presets",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "Choose a candidate…",
+        "value": ""
+      },
+      {
+        "text": "Shibuya Crossing, Tokyo",
+        "value": "shibuya"
+      },
+      {
+        "text": "Kabukicho, Shinjuku",
+        "value": "kabukicho"
+      },
+      {
+        "text": "West Shinjuku skyscrapers",
+        "value": "shinjuku_west"
+      },
+      {
+        "text": "Omoide Yokocho, Shinjuku",
+        "value": "omoide"
+      },
+      {
+        "text": "Akihabara Electric Town",
+        "value": "akihabara"
+      },
+      {
+        "text": "Sunshine Street, Ikebukuro",
+        "value": "ikebukuro"
+      },
+      {
+        "text": "Takeshita Street, Harajuku",
+        "value": "harajuku"
+      },
+      {
+        "text": "Omotesando",
+        "value": "omotesando"
+      },
+      {
+        "text": "Ginza 4-chome",
+        "value": "ginza"
+      },
+      {
+        "text": "Tokyo Station, Marunouchi",
+        "value": "marunouchi"
+      },
+      {
+        "text": "Ameyoko, Ueno",
+        "value": "ameyoko"
+      },
+      {
+        "text": "Asakusa Kaminarimon, Tokyo",
+        "value": "asakusa"
+      },
+      {
+        "text": "Tokyo Skytree, Oshiage",
+        "value": "skytree"
+      },
+      {
+        "text": "Yanaka Ginza",
+        "value": "yanaka"
+      },
+      {
+        "text": "Kagurazaka",
+        "value": "kagurazaka"
+      },
+      {
+        "text": "Jimbocho book town",
+        "value": "jimbocho"
+      },
+      {
+        "text": "Hijiribashi Bridge, Ochanomizu",
+        "value": "ochanomizu"
+      },
+      {
+        "text": "Tsukishima Monja Street",
+        "value": "tsukishima"
+      },
+      {
+        "text": "Tsukiji Outer Market",
+        "value": "tsukiji"
+      },
+      {
+        "text": "Odaiba",
+        "value": "odaiba"
+      },
+      {
+        "text": "Tokyo Tower",
+        "value": "tokyotower"
+      },
+      {
+        "text": "Roppongi",
+        "value": "roppongi"
+      },
+      {
+        "text": "Shimokitazawa, Tokyo",
+        "value": "shimokita"
+      },
+      {
+        "text": "Sangenjaya",
+        "value": "sangenjaya"
+      },
+      {
+        "text": "Jiyugaoka",
+        "value": "jiyugaoka"
+      },
+      {
+        "text": "Daikanyama",
+        "value": "daikanyama"
+      },
+      {
+        "text": "Nakano Broadway",
+        "value": "nakano"
+      },
+      {
+        "text": "Koenji",
+        "value": "koenji"
+      },
+      {
+        "text": "Harmonica Yokocho, Kichijoji",
+        "value": "kichijoji"
+      },
+      {
+        "text": "Waseda",
+        "value": "waseda"
+      },
+      {
+        "text": "Yokohama Chinatown",
+        "value": "yokohama_chinatown"
+      },
+      {
+        "text": "Minato Mirai, Yokohama",
+        "value": "minatomirai"
+      },
+      {
+        "text": "Red Brick Warehouse, Yokohama",
+        "value": "redbrick"
+      },
+      {
+        "text": "Komachi-dori, Kamakura",
+        "value": "komachi"
+      },
+      {
+        "text": "Kamakurakokomae railroad crossing",
+        "value": "kamakurakoko"
+      },
+      {
+        "text": "Enoshima",
+        "value": "enoshima"
+      },
+      {
+        "text": "Great Buddha, Hase, Kamakura",
+        "value": "hase"
+      },
+      {
+        "text": "Kawagoe warehouse district",
+        "value": "kawagoe"
+      },
+      {
+        "text": "Sannenzaka, Kyoto",
+        "value": "sannenzaka"
+      },
+      {
+        "text": "Hanamikoji, Gion, Kyoto",
+        "value": "gion"
+      },
+      {
+        "text": "Fushimi Inari Taisha, Kyoto",
+        "value": "fushimiinari"
+      },
+      {
+        "text": "Togetsukyo Bridge, Arashiyama",
+        "value": "arashiyama"
+      },
+      {
+        "text": "Kyoto Station",
+        "value": "kyotostation"
+      },
+      {
+        "text": "Sanjo Bridge over the Kamo River, Kyoto",
+        "value": "kamogawa"
+      },
+      {
+        "text": "Kinkaku-ji, Kyoto",
+        "value": "kinkakuji"
+      },
+      {
+        "text": "Philosopher's Path, Kyoto",
+        "value": "tetsugaku"
+      },
+      {
+        "text": "Dotonbori, Osaka",
+        "value": "dotonbori"
+      },
+      {
+        "text": "Shinsekai (Tsutenkaku), Osaka",
+        "value": "shinsekai"
+      },
+      {
+        "text": "Umeda, Osaka",
+        "value": "umeda"
+      },
+      {
+        "text": "Osaka Castle",
+        "value": "osakajo"
+      },
+      {
+        "text": "Tenjinbashisuji Shopping Street, Osaka",
+        "value": "tenjinbashi"
+      },
+      {
+        "text": "Amerikamura, Osaka",
+        "value": "amemura"
+      },
+      {
+        "text": "Nankinmachi, Kobe",
+        "value": "nankinmachi"
+      },
+      {
+        "text": "Kitano Ijinkan, Kobe",
+        "value": "kitano"
+      },
+      {
+        "text": "Meriken Park, Kobe",
+        "value": "meriken"
+      },
+      {
+        "text": "Nara Park and Todai-ji",
+        "value": "narapark"
+      },
+      {
+        "text": "Onomichi hillside",
+        "value": "onomichi"
+      },
+      {
+        "text": "Odori Park, Sapporo",
+        "value": "odori"
+      },
+      {
+        "text": "Susukino, Sapporo",
+        "value": "susukino"
+      },
+      {
+        "text": "Otaru Canal",
+        "value": "otaru"
+      },
+      {
+        "text": "Hachimanzaka, Hakodate",
+        "value": "hakodate"
+      },
+      {
+        "text": "Jozenji-dori, Sendai",
+        "value": "sendai"
+      },
+      {
+        "text": "Sakae, Nagoya",
+        "value": "sakae"
+      },
+      {
+        "text": "Osu Shopping Street, Nagoya",
+        "value": "osu"
+      },
+      {
+        "text": "Higashi Chaya District, Kanazawa",
+        "value": "kanazawa"
+      },
+      {
+        "text": "Takayama Old Town",
+        "value": "takayama"
+      },
+      {
+        "text": "Atami",
+        "value": "atami"
+      },
+      {
+        "text": "Yubatake, Kusatsu Onsen",
+        "value": "kusatsu"
+      },
+      {
+        "text": "Atomic Bomb Dome, Hiroshima",
+        "value": "hiroshimadome"
+      },
+      {
+        "text": "Hondori Shopping Street, Hiroshima",
+        "value": "hondori"
+      },
+      {
+        "text": "Kurashiki Bikan Historical Quarter",
+        "value": "kurashiki"
+      },
+      {
+        "text": "Dogo Onsen",
+        "value": "dogo"
+      },
+      {
+        "text": "Nakasu food stalls, Fukuoka",
+        "value": "nakasu"
+      },
+      {
+        "text": "Tenjin, Fukuoka",
+        "value": "tenjin"
+      },
+      {
+        "text": "Meganebashi Bridge, Nagasaki",
+        "value": "nagasaki"
+      },
+      {
+        "text": "Kokusai-dori, Naha",
+        "value": "naha"
+      },
+      {
+        "text": "Times Square, New York",
+        "value": "timessq"
+      },
+      {
+        "text": "Brooklyn Bridge, New York",
+        "value": "brooklynbridge"
+      },
+      {
+        "text": "DUMBO, Brooklyn",
+        "value": "dumbo"
+      },
+      {
+        "text": "Wall Street, New York",
+        "value": "wallst"
+      },
+      {
+        "text": "Central Park South, New York",
+        "value": "centralpark"
+      },
+      {
+        "text": "Chinatown, Manhattan",
+        "value": "chinatownny"
+      },
+      {
+        "text": "Statue of Liberty, New York",
+        "value": "us_statue_of_liberty"
+      },
+      {
+        "text": "Empire State Building, New York",
+        "value": "us_empire_state"
+      },
+      {
+        "text": "One World Trade Center, New York",
+        "value": "us_one_wtc"
+      },
+      {
+        "text": "Chrysler Building, New York",
+        "value": "us_chrysler"
+      },
+      {
+        "text": "Grand Central Terminal, New York",
+        "value": "us_grand_central"
+      },
+      {
+        "text": "30 Rockefeller Plaza, New York",
+        "value": "us_30_rockefeller"
+      },
+      {
+        "text": "UN Secretariat Building, New York",
+        "value": "us_un_secretariat"
+      },
+      {
+        "text": "UN General Assembly Building, New York",
+        "value": "us_un_general_assembly"
+      },
+      {
+        "text": "Flatiron Building, New York",
+        "value": "us_flatiron"
+      },
+      {
+        "text": "St. Patrick's Cathedral, New York",
+        "value": "us_st_patricks"
+      },
+      {
+        "text": "New York Public Library, Manhattan",
+        "value": "us_nypl"
+      },
+      {
+        "text": "Metropolitan Opera House, New York",
+        "value": "us_met_opera"
+      },
+      {
+        "text": "Trinity Church, New York",
+        "value": "us_trinity_church_ny"
+      },
+      {
+        "text": "Woolworth Building, New York",
+        "value": "us_woolworth"
+      },
+      {
+        "text": "National Mall, Washington, D.C.",
+        "value": "nationalmall"
+      },
+      {
+        "text": "White House, Washington, D.C.",
+        "value": "us_white_house"
+      },
+      {
+        "text": "United States Capitol, Washington, D.C.",
+        "value": "us_capitol"
+      },
+      {
+        "text": "Washington Monument, Washington, D.C.",
+        "value": "us_washington_monument"
+      },
+      {
+        "text": "Lincoln Memorial, Washington, D.C.",
+        "value": "us_lincoln_memorial"
+      },
+      {
+        "text": "Jefferson Memorial, Washington, D.C.",
+        "value": "us_jefferson_memorial"
+      },
+      {
+        "text": "U.S. Supreme Court, Washington, D.C.",
+        "value": "us_supreme_court"
+      },
+      {
+        "text": "Smithsonian Castle, Washington, D.C.",
+        "value": "us_smithsonian_castle"
+      },
+      {
+        "text": "Library of Congress, Washington, D.C.",
+        "value": "us_library_of_congress"
+      },
+      {
+        "text": "National Cathedral, Washington, D.C.",
+        "value": "us_national_cathedral"
+      },
+      {
+        "text": "Union Station, Washington, D.C.",
+        "value": "us_union_station_dc"
+      },
+      {
+        "text": "The Pentagon, Arlington",
+        "value": "us_pentagon"
+      },
+      {
+        "text": "Mount Vernon, Virginia",
+        "value": "us_mount_vernon"
+      },
+      {
+        "text": "Hollywood Boulevard, Los Angeles",
+        "value": "hollywood"
+      },
+      {
+        "text": "Angels Flight, Los Angeles",
+        "value": "dtla"
+      },
+      {
+        "text": "Santa Monica, Los Angeles",
+        "value": "santamonica"
+      },
+      {
+        "text": "Griffith Observatory, Los Angeles",
+        "value": "us_griffith_observatory"
+      },
+      {
+        "text": "TCL Chinese Theatre, Los Angeles",
+        "value": "us_tcl_chinese_theatre"
+      },
+      {
+        "text": "Capitol Records Building, Los Angeles",
+        "value": "us_capitol_records"
+      },
+      {
+        "text": "City Hall, Los Angeles",
+        "value": "us_la_city_hall"
+      },
+      {
+        "text": "Union Station, Los Angeles",
+        "value": "us_la_union_station"
+      },
+      {
+        "text": "City Hall, Pasadena",
+        "value": "us_pasadena_city_hall"
+      },
+      {
+        "text": "Lombard Street, San Francisco",
+        "value": "lombard"
+      },
+      {
+        "text": "Chinatown, San Francisco",
+        "value": "chinatownsf"
+      },
+      {
+        "text": "Painted Ladies, San Francisco",
+        "value": "paintedladies"
+      },
+      {
+        "text": "Fisherman's Wharf, San Francisco",
+        "value": "wharf"
+      },
+      {
+        "text": "Alcatraz Main Prison, San Francisco",
+        "value": "us_alcatraz"
+      },
+      {
+        "text": "Transamerica Pyramid, San Francisco",
+        "value": "us_transamerica"
+      },
+      {
+        "text": "Coit Tower, San Francisco",
+        "value": "us_coit_tower"
+      },
+      {
+        "text": "Palace of Fine Arts, San Francisco",
+        "value": "us_palace_of_fine_arts"
+      },
+      {
+        "text": "Ferry Building, San Francisco",
+        "value": "us_ferry_building"
+      },
+      {
+        "text": "City Hall, San Francisco",
+        "value": "us_sf_city_hall"
+      },
+      {
+        "text": "The Loop, Chicago",
+        "value": "loop"
+      },
+      {
+        "text": "Willis Tower, Chicago",
+        "value": "us_willis_tower"
+      },
+      {
+        "text": "875 North Michigan Avenue, Chicago",
+        "value": "us_875_n_michigan"
+      },
+      {
+        "text": "Marina City, Chicago",
+        "value": "us_marina_city"
+      },
+      {
+        "text": "Wrigley Building, Chicago",
+        "value": "us_wrigley_building"
+      },
+      {
+        "text": "Tribune Tower, Chicago",
+        "value": "us_tribune_tower"
+      },
+      {
+        "text": "Water Tower, Chicago",
+        "value": "us_chicago_water_tower"
+      },
+      {
+        "text": "Las Vegas Strip",
+        "value": "strip"
+      },
+      {
+        "text": "Fremont Street, Las Vegas",
+        "value": "fremont"
+      },
+      {
+        "text": "Luxor, Las Vegas",
+        "value": "us_luxor"
+      },
+      {
+        "text": "El Tovar Hotel, Grand Canyon",
+        "value": "us_el_tovar"
+      },
+      {
+        "text": "Hopi House, Grand Canyon",
+        "value": "us_hopi_house"
+      },
+      {
+        "text": "Iolani Palace, Honolulu",
+        "value": "us_iolani_palace"
+      },
+      {
+        "text": "Aloha Tower, Honolulu",
+        "value": "us_aloha_tower"
+      },
+      {
+        "text": "Beacon Hill, Boston",
+        "value": "beaconhill"
+      },
+      {
+        "text": "Massachusetts State House, Boston",
+        "value": "us_mass_state_house"
+      },
+      {
+        "text": "Faneuil Hall, Boston",
+        "value": "us_faneuil_hall"
+      },
+      {
+        "text": "Old State House, Boston",
+        "value": "us_old_state_house"
+      },
+      {
+        "text": "Trinity Church, Boston",
+        "value": "us_trinity_church_boston"
+      },
+      {
+        "text": "Pike Place Market, Seattle",
+        "value": "pikeplace"
+      },
+      {
+        "text": "Space Needle, Seattle",
+        "value": "us_space_needle"
+      },
+      {
+        "text": "Smith Tower, Seattle",
+        "value": "us_smith_tower"
+      },
+      {
+        "text": "Freedom Tower, Miami",
+        "value": "us_freedom_tower"
+      },
+      {
+        "text": "Philadelphia",
+        "value": "philadelphia"
+      },
+      {
+        "text": "Independence Hall, Philadelphia",
+        "value": "us_independence_hall"
+      },
+      {
+        "text": "Museum of Art, Philadelphia",
+        "value": "us_philadelphia_museum_of_art"
+      },
+      {
+        "text": "City Hall, Philadelphia",
+        "value": "us_philadelphia_city_hall"
+      },
+      {
+        "text": "St. Louis Cathedral, New Orleans",
+        "value": "us_st_louis_cathedral"
+      },
+      {
+        "text": "Caesars Superdome, New Orleans",
+        "value": "us_superdome"
+      },
+      {
+        "text": "The Cabildo, New Orleans",
+        "value": "us_cabildo"
+      },
+      {
+        "text": "The Presbytère, New Orleans",
+        "value": "us_presbytere"
+      },
+      {
+        "text": "Hotel del Coronado, San Diego",
+        "value": "us_hotel_del_coronado"
+      },
+      {
+        "text": "Houston",
+        "value": "houston"
+      },
+      {
+        "text": "San Antonio",
+        "value": "sanantonio"
+      },
+      {
+        "text": "The Alamo, San Antonio",
+        "value": "us_alamo"
+      },
+      {
+        "text": "Tower of the Americas, San Antonio",
+        "value": "us_tower_of_the_americas"
+      },
+      {
+        "text": "Reunion Tower, Dallas",
+        "value": "us_reunion_tower"
+      },
+      {
+        "text": "Texas State Capitol, Austin",
+        "value": "us_texas_capitol"
+      },
+      {
+        "text": "Phoenix",
+        "value": "phoenix"
+      },
+      {
+        "text": "Mission San Xavier del Bac, Tucson",
+        "value": "us_san_xavier_del_bac"
+      },
+      {
+        "text": "The Parthenon, Nashville",
+        "value": "us_nashville_parthenon"
+      },
+      {
+        "text": "Cathedral of Learning, Pittsburgh",
+        "value": "us_cathedral_of_learning"
+      },
+      {
+        "text": "Monticello, Charlottesville",
+        "value": "us_monticello"
+      },
+      {
+        "text": "Biltmore House, Asheville",
+        "value": "us_biltmore"
+      },
+      {
+        "text": "Colosseum, Rome",
+        "value": "colosseo"
+      },
+      {
+        "text": "Trevi Fountain, Rome",
+        "value": "trevi"
+      },
+      {
+        "text": "Trastevere, Rome",
+        "value": "trastevere"
+      },
+      {
+        "text": "Pantheon, Rome",
+        "value": "it_pantheon"
+      },
+      {
+        "text": "Roman Forum, Rome",
+        "value": "it_roman_forum"
+      },
+      {
+        "text": "Spanish Steps, Rome",
+        "value": "it_spanish_steps"
+      },
+      {
+        "text": "Piazza Navona, Rome",
+        "value": "it_piazza_navona"
+      },
+      {
+        "text": "Castel Sant'Angelo, Rome",
+        "value": "it_castel_santangelo"
+      },
+      {
+        "text": "Victor Emmanuel II Monument, Rome",
+        "value": "it_vittoriano"
+      },
+      {
+        "text": "Piazza del Popolo, Rome",
+        "value": "it_piazza_del_popolo"
+      },
+      {
+        "text": "Piazza del Campidoglio, Rome",
+        "value": "it_campidoglio"
+      },
+      {
+        "text": "Santa Maria Maggiore, Rome",
+        "value": "it_santa_maria_maggiore"
+      },
+      {
+        "text": "Archbasilica of St. John Lateran, Rome",
+        "value": "it_lateran"
+      },
+      {
+        "text": "Church of the Gesù, Rome",
+        "value": "it_gesu"
+      },
+      {
+        "text": "Santa Maria sopra Minerva, Rome",
+        "value": "it_santa_maria_sopra_minerva"
+      },
+      {
+        "text": "Sant'Ignazio, Rome",
+        "value": "it_santignazio"
+      },
+      {
+        "text": "Sant'Andrea della Valle, Rome",
+        "value": "it_santandrea_della_valle"
+      },
+      {
+        "text": "St. Peter's Basilica, Vatican City",
+        "value": "it_st_peters"
+      },
+      {
+        "text": "Florence Cathedral",
+        "value": "duomofi"
+      },
+      {
+        "text": "Ponte Vecchio, Florence",
+        "value": "pontevecchio"
+      },
+      {
+        "text": "Uffizi Gallery, Florence",
+        "value": "it_uffizi"
+      },
+      {
+        "text": "Palazzo Vecchio, Florence",
+        "value": "it_palazzo_vecchio"
+      },
+      {
+        "text": "Piazzale Michelangelo, Florence",
+        "value": "it_piazzale_michelangelo"
+      },
+      {
+        "text": "Palazzo Pitti, Florence",
+        "value": "it_palazzo_pitti"
+      },
+      {
+        "text": "Basilica of Santa Croce, Florence",
+        "value": "it_santa_croce_florence"
+      },
+      {
+        "text": "Santa Maria Novella, Florence",
+        "value": "it_santa_maria_novella"
+      },
+      {
+        "text": "Basilica of San Lorenzo, Florence",
+        "value": "it_san_lorenzo_florence"
+      },
+      {
+        "text": "San Miniato al Monte, Florence",
+        "value": "it_san_miniato"
+      },
+      {
+        "text": "Basilica of Santo Spirito, Florence",
+        "value": "it_santo_spirito"
+      },
+      {
+        "text": "Rialto, Venice",
+        "value": "venice"
+      },
+      {
+        "text": "Piazza San Marco, Venice",
+        "value": "sanmarco"
+      },
+      {
+        "text": "Doge's Palace, Venice",
+        "value": "it_doges_palace"
+      },
+      {
+        "text": "Santa Maria della Salute, Venice",
+        "value": "it_salute"
+      },
+      {
+        "text": "Burano, Venice",
+        "value": "it_burano"
+      },
+      {
+        "text": "San Giorgio Maggiore, Venice",
+        "value": "it_san_giorgio_maggiore"
+      },
+      {
+        "text": "Ca' d'Oro, Venice",
+        "value": "it_ca_doro"
+      },
+      {
+        "text": "Frari Basilica, Venice",
+        "value": "it_frari"
+      },
+      {
+        "text": "Santi Giovanni e Paolo, Venice",
+        "value": "it_zanipolo"
+      },
+      {
+        "text": "Il Redentore, Venice",
+        "value": "it_redentore"
+      },
+      {
+        "text": "Milan Cathedral",
+        "value": "duomomi"
+      },
+      {
+        "text": "Navigli, Milan",
+        "value": "navigli"
+      },
+      {
+        "text": "Galleria Vittorio Emanuele II, Milan",
+        "value": "it_galleria_vittorio_emanuele"
+      },
+      {
+        "text": "Santa Maria delle Grazie, Milan",
+        "value": "it_santa_maria_delle_grazie"
+      },
+      {
+        "text": "La Scala, Milan",
+        "value": "it_la_scala"
+      },
+      {
+        "text": "Sforza Castle, Milan",
+        "value": "it_castello_sforzesco"
+      },
+      {
+        "text": "Basilica of Sant'Ambrogio, Milan",
+        "value": "it_santambrogio"
+      },
+      {
+        "text": "Spaccanapoli, Naples",
+        "value": "spaccanapoli"
+      },
+      {
+        "text": "Piazza del Plebiscito, Naples",
+        "value": "it_piazza_plebiscito"
+      },
+      {
+        "text": "Castel Nuovo, Naples",
+        "value": "it_castel_nuovo"
+      },
+      {
+        "text": "Galleria Umberto I, Naples",
+        "value": "it_galleria_umberto"
+      },
+      {
+        "text": "Cathedral, Naples",
+        "value": "it_naples_cathedral"
+      },
+      {
+        "text": "Leaning Tower, Pisa",
+        "value": "it_leaning_tower_pisa"
+      },
+      {
+        "text": "Cathedral, Pisa",
+        "value": "it_pisa_cathedral"
+      },
+      {
+        "text": "Arena, Verona",
+        "value": "it_verona_arena"
+      },
+      {
+        "text": "Juliet's House, Verona",
+        "value": "it_juliets_house"
+      },
+      {
+        "text": "Basilica of San Zeno, Verona",
+        "value": "it_san_zeno"
+      },
+      {
+        "text": "Piazza del Campo, Siena",
+        "value": "it_piazza_del_campo"
+      },
+      {
+        "text": "Cathedral, Siena",
+        "value": "it_siena_cathedral"
+      },
+      {
+        "text": "Two Towers, Bologna",
+        "value": "it_bologna_two_towers"
+      },
+      {
+        "text": "San Petronio Basilica, Bologna",
+        "value": "it_san_petronio"
+      },
+      {
+        "text": "Basilica of San Domenico, Bologna",
+        "value": "it_san_domenico_bologna"
+      },
+      {
+        "text": "Mole Antonelliana, Turin",
+        "value": "it_mole_antonelliana"
+      },
+      {
+        "text": "Cathedral, Turin",
+        "value": "it_turin_cathedral"
+      },
+      {
+        "text": "Piazza San Carlo, Turin",
+        "value": "it_piazza_san_carlo"
+      },
+      {
+        "text": "Positano, Amalfi Coast",
+        "value": "it_positano"
+      },
+      {
+        "text": "Cathedral, Amalfi",
+        "value": "it_amalfi_cathedral"
+      },
+      {
+        "text": "Piazza Umberto I, Capri",
+        "value": "it_capri_piazzetta"
+      },
+      {
+        "text": "Manarola, Cinque Terre",
+        "value": "it_manarola"
+      },
+      {
+        "text": "Vernazza, Cinque Terre",
+        "value": "it_vernazza"
+      },
+      {
+        "text": "Bellagio, Lake Como",
+        "value": "it_bellagio"
+      },
+      {
+        "text": "Cathedral of San Lorenzo, Genoa",
+        "value": "it_genoa_cathedral"
+      },
+      {
+        "text": "Via Garibaldi, Genoa",
+        "value": "it_via_garibaldi"
+      },
+      {
+        "text": "Basilica of St. Francis, Assisi",
+        "value": "it_assisi_basilica"
+      },
+      {
+        "text": "Cathedral, Palermo",
+        "value": "it_palermo_cathedral"
+      },
+      {
+        "text": "Quattro Canti, Palermo",
+        "value": "it_quattro_canti"
+      },
+      {
+        "text": "Sassi, Matera",
+        "value": "it_sassi_matera"
+      },
+      {
+        "text": "Piazza della Cisterna, San Gimignano",
+        "value": "it_piazza_cisterna"
+      },
+      {
+        "text": "Ancient Theatre, Taormina",
+        "value": "it_taormina_theatre"
+      },
+      {
+        "text": "Cathedral on Ortigia, Syracuse",
+        "value": "it_syracuse_cathedral"
+      },
+      {
+        "text": "Piazza dell'Anfiteatro, Lucca",
+        "value": "it_piazza_anfiteatro"
+      },
+      {
+        "text": "Cathedral, Orvieto",
+        "value": "it_orvieto_cathedral"
+      },
+      {
+        "text": "Civita di Bagnoregio, Lazio",
+        "value": "it_civita_bagnoregio"
+      },
+      {
+        "text": "Prato della Valle, Padua",
+        "value": "it_prato_della_valle"
+      },
+      {
+        "text": "Basilica of San Vitale, Ravenna",
+        "value": "it_san_vitale"
+      },
+      {
+        "text": "Piazza Vecchia, Bergamo",
+        "value": "it_piazza_vecchia_bergamo"
+      },
+      {
+        "text": "Piazza Unità d'Italia, Trieste",
+        "value": "it_piazza_unita"
+      },
+      {
+        "text": "Basilica Palladiana, Vicenza",
+        "value": "it_basilica_palladiana"
+      },
+      {
+        "text": "Cathedral, Modena",
+        "value": "it_modena_cathedral"
+      },
+      {
+        "text": "Castello Estense, Ferrara",
+        "value": "it_castello_estense"
+      },
+      {
+        "text": "Ducal Palace, Mantua",
+        "value": "it_mantua_ducal_palace"
+      },
+      {
+        "text": "Basilica of Santa Croce, Lecce",
+        "value": "it_santa_croce_lecce"
+      },
+      {
+        "text": "Ducal Palace, Urbino",
+        "value": "it_urbino_ducal_palace"
+      },
+      {
+        "text": "Piazza Grande, Montepulciano",
+        "value": "it_montepulciano_piazza_grande"
+      },
+      {
+        "text": "San Michele Maggiore, Pavia",
+        "value": "it_pavia_san_michele"
+      },
+      {
+        "text": "Cathedral, Pavia",
+        "value": "it_pavia_cathedral"
+      },
+      {
+        "text": "Santa Maria del Carmine, Pavia",
+        "value": "it_pavia_carmine"
+      },
+      {
+        "text": "Montmartre, Paris",
+        "value": "montmartre"
+      },
+      {
+        "text": "Eiffel Tower, Paris",
+        "value": "eiffel"
+      },
+      {
+        "text": "Île de la Cité, Paris",
+        "value": "notredame"
+      },
+      {
+        "text": "Notre-Dame Cathedral, Paris",
+        "value": "fr_notre_dame"
+      },
+      {
+        "text": "Louvre Palace, Paris",
+        "value": "fr_louvre"
+      },
+      {
+        "text": "Louvre Pyramid, Paris",
+        "value": "fr_louvre_pyramid"
+      },
+      {
+        "text": "Arc de Triomphe, Paris",
+        "value": "fr_arc_de_triomphe"
+      },
+      {
+        "text": "Sacré-Cœur, Paris",
+        "value": "fr_sacre_coeur"
+      },
+      {
+        "text": "Palais Garnier, Paris",
+        "value": "fr_palais_garnier"
+      },
+      {
+        "text": "Musée d'Orsay, Paris",
+        "value": "fr_orsay"
+      },
+      {
+        "text": "Centre Pompidou, Paris",
+        "value": "fr_pompidou"
+      },
+      {
+        "text": "Les Invalides, Paris",
+        "value": "fr_invalides"
+      },
+      {
+        "text": "Dôme des Invalides, Paris",
+        "value": "fr_dome_invalides"
+      },
+      {
+        "text": "Sainte-Chapelle, Paris",
+        "value": "fr_sainte_chapelle"
+      },
+      {
+        "text": "Panthéon, Paris",
+        "value": "fr_pantheon"
+      },
+      {
+        "text": "Grand Palais, Paris",
+        "value": "fr_grand_palais"
+      },
+      {
+        "text": "La Madeleine, Paris",
+        "value": "fr_madeleine"
+      },
+      {
+        "text": "Hôtel de Ville, Paris",
+        "value": "fr_hotel_de_ville"
+      },
+      {
+        "text": "Place des Vosges, Paris",
+        "value": "fr_place_des_vosges"
+      },
+      {
+        "text": "Rue de Rivoli, Paris",
+        "value": "fr_rue_de_rivoli"
+      },
+      {
+        "text": "Arc de Triomphe du Carrousel, Paris",
+        "value": "fr_arc_carrousel"
+      },
+      {
+        "text": "Saint-Sulpice, Paris",
+        "value": "fr_saint_sulpice"
+      },
+      {
+        "text": "Cathedral of Saint-Louis-des-Invalides, Paris",
+        "value": "fr_saint_louis_invalides"
+      },
+      {
+        "text": "Palace of Versailles, Versailles",
+        "value": "fr_versailles"
+      },
+      {
+        "text": "Royal Chapel, Versailles",
+        "value": "fr_versailles_chapel"
+      },
+      {
+        "text": "Grande Arche, La Défense",
+        "value": "fr_grande_arche"
+      },
+      {
+        "text": "Basilica of Saint-Denis, Saint-Denis",
+        "value": "fr_saint_denis"
+      },
+      {
+        "text": "Château de Vincennes, Vincennes",
+        "value": "fr_vincennes"
+      },
+      {
+        "text": "Château de Chantilly, Chantilly",
+        "value": "fr_chantilly"
+      },
+      {
+        "text": "Mont-Saint-Michel Abbey, Normandy",
+        "value": "fr_mont_saint_michel"
+      },
+      {
+        "text": "Notre-Dame de la Garde, Marseille",
+        "value": "fr_notre_dame_garde"
+      },
+      {
+        "text": "MuCEM, Marseille",
+        "value": "fr_mucem"
+      },
+      {
+        "text": "Marseille Cathedral, Marseille",
+        "value": "fr_marseille_major"
+      },
+      {
+        "text": "Basilica of Notre-Dame de Fourvière, Lyon",
+        "value": "fr_fourviere"
+      },
+      {
+        "text": "Lyon Cathedral, Lyon",
+        "value": "fr_lyon_cathedral"
+      },
+      {
+        "text": "Russian Orthodox Cathedral, Nice",
+        "value": "fr_nice_orthodox"
+      },
+      {
+        "text": "Strasbourg Cathedral, Strasbourg",
+        "value": "fr_strasbourg_cathedral"
+      },
+      {
+        "text": "Petite France, Strasbourg",
+        "value": "fr_petite_france"
+      },
+      {
+        "text": "Place de la Bourse, Bordeaux",
+        "value": "fr_place_bourse"
+      },
+      {
+        "text": "Grand Théâtre, Bordeaux",
+        "value": "fr_grand_theatre_bordeaux"
+      },
+      {
+        "text": "Bordeaux Cathedral, Bordeaux",
+        "value": "fr_bordeaux_cathedral"
+      },
+      {
+        "text": "Capitole, Toulouse",
+        "value": "fr_capitole_toulouse"
+      },
+      {
+        "text": "Basilica of Saint-Sernin, Toulouse",
+        "value": "fr_saint_sernin"
+      },
+      {
+        "text": "Château de Chambord, Loire Valley",
+        "value": "fr_chambord"
+      },
+      {
+        "text": "Château de Chenonceau, Loire Valley",
+        "value": "fr_chenonceau"
+      },
+      {
+        "text": "Château d'Amboise, Loire Valley",
+        "value": "fr_amboise"
+      },
+      {
+        "text": "Palais des Papes, Avignon",
+        "value": "fr_palais_des_papes"
+      },
+      {
+        "text": "Cité de Carcassonne, Carcassonne",
+        "value": "fr_carcassonne"
+      },
+      {
+        "text": "Reims Cathedral, Reims",
+        "value": "fr_reims_cathedral"
+      },
+      {
+        "text": "Chartres Cathedral, Chartres",
+        "value": "fr_chartres_cathedral"
+      },
+      {
+        "text": "Basilica of the Immaculate Conception, Lourdes",
+        "value": "fr_lourdes"
+      },
+      {
+        "text": "Rouen Cathedral, Rouen",
+        "value": "fr_rouen_cathedral"
+      },
+      {
+        "text": "Arena of Nîmes, Nîmes",
+        "value": "fr_nimes_arena"
+      },
+      {
+        "text": "Maison Carrée, Nîmes",
+        "value": "fr_maison_carree"
+      },
+      {
+        "text": "Arles Amphitheatre, Arles",
+        "value": "fr_arles_arena"
+      },
+      {
+        "text": "Château des ducs de Bretagne, Nantes",
+        "value": "fr_ducs_de_bretagne"
+      },
+      {
+        "text": "Gordes, Provence",
+        "value": "fr_gordes"
+      },
+      {
+        "text": "Place Stanislas, Nancy",
+        "value": "fr_place_stanislas"
+      },
+      {
+        "text": "Amiens Cathedral, Amiens",
+        "value": "fr_amiens_cathedral"
+      },
+      {
+        "text": "Metz Cathedral, Metz",
+        "value": "fr_metz_cathedral"
+      },
+      {
+        "text": "Bourges Cathedral, Bourges",
+        "value": "fr_bourges_cathedral"
+      },
+      {
+        "text": "Albi Cathedral, Albi",
+        "value": "fr_albi_cathedral"
+      },
+      {
+        "text": "Roman Theatre, Orange",
+        "value": "fr_orange_theatre"
+      },
+      {
+        "text": "Vézelay Abbey, Vézelay",
+        "value": "fr_vezelay"
+      },
+      {
+        "text": "Quimper Cathedral, Quimper",
+        "value": "fr_quimper_cathedral"
+      },
+      {
+        "text": "Beijing",
+        "value": "beijing"
+      },
+      {
+        "text": "Hall of Supreme Harmony, Forbidden City, Beijing",
+        "value": "cn_taihedian"
+      },
+      {
+        "text": "Meridian Gate, Forbidden City, Beijing",
+        "value": "cn_wumen"
+      },
+      {
+        "text": "Hall of Central Harmony, Forbidden City, Beijing",
+        "value": "cn_zhonghedian"
+      },
+      {
+        "text": "Hall of Preserving Harmony, Forbidden City, Beijing",
+        "value": "cn_baohedian"
+      },
+      {
+        "text": "Gate of Divine Prowess, Forbidden City, Beijing",
+        "value": "cn_shenwumen"
+      },
+      {
+        "text": "East Glorious Gate, Forbidden City, Beijing",
+        "value": "cn_donghuamen"
+      },
+      {
+        "text": "West Glorious Gate, Forbidden City, Beijing",
+        "value": "cn_xihuamen"
+      },
+      {
+        "text": "Tiananmen Gate, Beijing",
+        "value": "cn_tiananmen"
+      },
+      {
+        "text": "Duanmen Gate, Beijing",
+        "value": "cn_duanmen"
+      },
+      {
+        "text": "Monument to the People's Heroes, Beijing",
+        "value": "cn_peoples_heroes_monument"
+      },
+      {
+        "text": "Badaling Great Wall, Beijing",
+        "value": "cn_badaling"
+      },
+      {
+        "text": "Mutianyu Great Wall, Beijing",
+        "value": "cn_mutianyu"
+      },
+      {
+        "text": "Hall of Prayer for Good Harvests, Temple of Heaven, Beijing",
+        "value": "cn_qiniandian"
+      },
+      {
+        "text": "Imperial Vault of Heaven, Temple of Heaven, Beijing",
+        "value": "cn_huangqiongyu"
+      },
+      {
+        "text": "Tower of Buddhist Incense, Summer Palace, Beijing",
+        "value": "cn_foxiangge"
+      },
+      {
+        "text": "National Stadium (Bird's Nest), Beijing",
+        "value": "cn_birds_nest"
+      },
+      {
+        "text": "Water Cube, Beijing",
+        "value": "cn_water_cube"
+      },
+      {
+        "text": "Zhengyangmen (Qianmen), Beijing",
+        "value": "cn_zhengyangmen"
+      },
+      {
+        "text": "Zhengyangmen Archery Tower, Beijing",
+        "value": "cn_zhengyangmen_jianlou"
+      },
+      {
+        "text": "White Dagoba, Beihai Park, Beijing",
+        "value": "cn_beihai_white_dagoba"
+      },
+      {
+        "text": "Wanchun Pavilion, Jingshan Park, Beijing",
+        "value": "cn_jingshan_wanchunting"
+      },
+      {
+        "text": "Wanfu Pavilion, Yonghe Temple, Beijing",
+        "value": "cn_yonghegong_wanfuge"
+      },
+      {
+        "text": "CCTV Headquarters, Beijing",
+        "value": "cn_cctv_hq"
+      },
+      {
+        "text": "National Centre for the Performing Arts, Beijing",
+        "value": "cn_ncpa"
+      },
+      {
+        "text": "CITIC Tower, Beijing",
+        "value": "cn_citic_tower"
+      },
+      {
+        "text": "Drum Tower, Beijing",
+        "value": "cn_beijing_drum_tower"
+      },
+      {
+        "text": "Bell Tower, Beijing",
+        "value": "cn_beijing_bell_tower"
+      },
+      {
+        "text": "Deshengmen Archery Tower, Beijing",
+        "value": "cn_deshengmen_jianlou"
+      },
+      {
+        "text": "Boya Pagoda, Peking University, Beijing",
+        "value": "cn_boya_pagoda"
+      },
+      {
+        "text": "Tianning Temple Pagoda, Beijing",
+        "value": "cn_tianningsi_pagoda"
+      },
+      {
+        "text": "National Art Museum of China, Beijing",
+        "value": "cn_national_art_museum"
+      },
+      {
+        "text": "Beijing Exhibition Center, Beijing",
+        "value": "cn_beijing_exhibition_center"
+      },
+      {
+        "text": "Beijing Railway Station, Beijing",
+        "value": "cn_beijing_station"
+      },
+      {
+        "text": "Beijing West Railway Station, Beijing",
+        "value": "cn_beijing_west_station"
+      },
+      {
+        "text": "The Bund, Shanghai",
+        "value": "bund"
+      },
+      {
+        "text": "Oriental Pearl Tower, Shanghai",
+        "value": "cn_oriental_pearl"
+      },
+      {
+        "text": "Shanghai Tower, Shanghai",
+        "value": "cn_shanghai_tower"
+      },
+      {
+        "text": "Shanghai World Financial Center, Shanghai",
+        "value": "cn_swfc"
+      },
+      {
+        "text": "Jin Mao Tower, Shanghai",
+        "value": "cn_jinmao"
+      },
+      {
+        "text": "Peace Hotel, Shanghai",
+        "value": "cn_peace_hotel"
+      },
+      {
+        "text": "Custom House, Shanghai",
+        "value": "cn_custom_house"
+      },
+      {
+        "text": "Jing'an Temple, Shanghai",
+        "value": "cn_jingan_temple"
+      },
+      {
+        "text": "China Art Museum, Shanghai",
+        "value": "cn_china_art_museum"
+      },
+      {
+        "text": "Shanghai Exhibition Centre, Shanghai",
+        "value": "cn_shanghai_exhibition_centre"
+      },
+      {
+        "text": "Longhua Pagoda, Shanghai",
+        "value": "cn_longhua_pagoda"
+      },
+      {
+        "text": "Guangzhou",
+        "value": "guangzhou"
+      },
+      {
+        "text": "Canton Tower, Guangzhou",
+        "value": "cn_canton_tower"
+      },
+      {
+        "text": "Zhenhai Tower, Guangzhou",
+        "value": "cn_zhenhailou"
+      },
+      {
+        "text": "Shenzhen",
+        "value": "shenzhen"
+      },
+      {
+        "text": "Chongqing",
+        "value": "chongqing"
+      },
+      {
+        "text": "Hongyadong, Chongqing",
+        "value": "cn_hongyadong"
+      },
+      {
+        "text": "Liberation Monument, Chongqing",
+        "value": "cn_jiefangbei"
+      },
+      {
+        "text": "People's Auditorium, Chongqing",
+        "value": "cn_chongqing_great_hall"
+      },
+      {
+        "text": "Chengdu",
+        "value": "chengdu"
+      },
+      {
+        "text": "Tianjin",
+        "value": "tianjin"
+      },
+      {
+        "text": "Giant Wild Goose Pagoda, Xi'an",
+        "value": "cn_big_wild_goose_pagoda"
+      },
+      {
+        "text": "City Wall, Xi'an",
+        "value": "cn_xian_city_wall"
+      },
+      {
+        "text": "Bell Tower, Xi'an",
+        "value": "cn_xian_bell_tower"
+      },
+      {
+        "text": "Drum Tower, Xi'an",
+        "value": "cn_xian_drum_tower"
+      },
+      {
+        "text": "Small Wild Goose Pagoda, Xi'an",
+        "value": "cn_small_wild_goose_pagoda"
+      },
+      {
+        "text": "Leifeng Pagoda, Hangzhou",
+        "value": "cn_leifeng_pagoda"
+      },
+      {
+        "text": "Liuhe Pagoda, Hangzhou",
+        "value": "cn_liuhe_pagoda"
+      },
+      {
+        "text": "Chenghuang Pavilion, Hangzhou",
+        "value": "cn_chenghuangge"
+      },
+      {
+        "text": "Sun Yat-sen Mausoleum, Nanjing",
+        "value": "cn_sun_yatsen_mausoleum"
+      },
+      {
+        "text": "Zhonghua Gate, Nanjing",
+        "value": "cn_zhonghuamen"
+      },
+      {
+        "text": "Tiger Hill Pagoda, Suzhou",
+        "value": "cn_huqiu_pagoda"
+      },
+      {
+        "text": "Beisi Pagoda, Suzhou",
+        "value": "cn_beisi_pagoda"
+      },
+      {
+        "text": "Yellow Crane Tower, Wuhan",
+        "value": "cn_yellow_crane_tower"
+      },
+      {
+        "text": "Jiangsu Road Christian Church, Qingdao",
+        "value": "cn_qingdao_jiangsu_road_church"
+      },
+      {
+        "text": "Saint Sophia Cathedral, Harbin",
+        "value": "cn_harbin_st_sophia"
+      },
+      {
+        "text": "Potala Palace, Lhasa",
+        "value": "cn_potala"
+      },
+      {
+        "text": "Jokhang Temple, Lhasa",
+        "value": "cn_jokhang"
+      },
+      {
+        "text": "Sun Pagoda, Guilin",
+        "value": "cn_guilin_sun_pagoda"
+      },
+      {
+        "text": "Moon Pagoda, Guilin",
+        "value": "cn_guilin_moon_pagoda"
+      },
+      {
+        "text": "Nine-Story Building, Mogao Caves, Dunhuang",
+        "value": "cn_mogao_nine_storey"
+      },
+      {
+        "text": "Zhenguo Pagoda, Kaiyuan Temple, Quanzhou",
+        "value": "cn_quanzhou_zhenguo_pagoda"
+      },
+      {
+        "text": "Renshou Pagoda, Kaiyuan Temple, Quanzhou",
+        "value": "cn_quanzhou_renshou_pagoda"
+      },
+      {
+        "text": "Pavilion of Prince Teng, Nanchang",
+        "value": "cn_tengwangge"
+      },
+      {
+        "text": "Shanhai Pass, Qinhuangdao",
+        "value": "cn_shanhaiguan"
+      },
+      {
+        "text": "Pagoda of Fogong Temple, Ying County",
+        "value": "cn_yingxian_wooden_pagoda"
+      },
+      {
+        "text": "Mong Kok, Hong Kong",
+        "value": "mongkok"
+      },
+      {
+        "text": "Central, Hong Kong",
+        "value": "hkcentral"
+      },
+      {
+        "text": "Bank of China Tower, Hong Kong",
+        "value": "cn_hk_bank_of_china_tower"
+      },
+      {
+        "text": "Two International Finance Centre, Hong Kong",
+        "value": "cn_hk_ifc2"
+      },
+      {
+        "text": "Tsim Sha Tsui Clock Tower, Hong Kong",
+        "value": "cn_hk_clock_tower"
+      },
+      {
+        "text": "International Commerce Centre, Hong Kong",
+        "value": "cn_hk_icc"
+      },
+      {
+        "text": "Ruins of Saint Paul's, Macau",
+        "value": "cn_macau_st_pauls"
+      },
+      {
+        "text": "Macau Tower, Macau",
+        "value": "cn_macau_tower"
+      },
+      {
+        "text": "A-Ma Temple, Macau",
+        "value": "cn_macau_ama_temple"
+      },
+      {
+        "text": "Grand Lisboa, Macau",
+        "value": "cn_macau_grand_lisboa"
+      },
+      {
+        "text": "Myeongdong, Seoul",
+        "value": "myeongdong"
+      },
+      {
+        "text": "Bukchon Hanok Village, Seoul",
+        "value": "bukchon"
+      },
+      {
+        "text": "Gyeongbokgung Palace, Seoul",
+        "value": "kr_gyeongbokgung"
+      },
+      {
+        "text": "Gwanghwamun Gate, Seoul",
+        "value": "kr_gwanghwamun"
+      },
+      {
+        "text": "Geunjeongjeon Hall, Gyeongbokgung, Seoul",
+        "value": "kr_geunjeongjeon"
+      },
+      {
+        "text": "Gyeonghoeru Pavilion, Gyeongbokgung, Seoul",
+        "value": "kr_gyeonghoeru"
+      },
+      {
+        "text": "Hyangwonjeong Pavilion, Gyeongbokgung, Seoul",
+        "value": "kr_hyangwonjeong"
+      },
+      {
+        "text": "N Seoul Tower, Seoul",
+        "value": "kr_nseoultower"
+      },
+      {
+        "text": "Changdeokgung Palace, Seoul",
+        "value": "kr_changdeokgung"
+      },
+      {
+        "text": "Injeongjeon Hall, Changdeokgung, Seoul",
+        "value": "kr_injeongjeon"
+      },
+      {
+        "text": "Sungnyemun Gate (Namdaemun), Seoul",
+        "value": "kr_sungnyemun"
+      },
+      {
+        "text": "Dongdaemun Design Plaza, Seoul",
+        "value": "kr_ddp"
+      },
+      {
+        "text": "Heunginjimun Gate (Dongdaemun), Seoul",
+        "value": "kr_heunginjimun"
+      },
+      {
+        "text": "Lotte World Tower, Seoul",
+        "value": "kr_lotteworldtower"
+      },
+      {
+        "text": "Deoksugung Palace, Seoul",
+        "value": "kr_deoksugung"
+      },
+      {
+        "text": "Daehanmun Gate, Deoksugung, Seoul",
+        "value": "kr_daehanmun"
+      },
+      {
+        "text": "Seokjojeon Hall, Deoksugung, Seoul",
+        "value": "kr_seokjojeon"
+      },
+      {
+        "text": "Myeongdong Cathedral, Seoul",
+        "value": "kr_myeongdong_cathedral"
+      },
+      {
+        "text": "Cheong Wa Dae (Blue House), Seoul",
+        "value": "kr_cheongwadae"
+      },
+      {
+        "text": "Jongmyo Shrine, Seoul",
+        "value": "kr_jongmyo"
+      },
+      {
+        "text": "63 Building, Seoul",
+        "value": "kr_63building"
+      },
+      {
+        "text": "Changgyeonggung Palace, Seoul",
+        "value": "kr_changgyeonggung"
+      },
+      {
+        "text": "National Assembly Building, Seoul",
+        "value": "kr_national_assembly"
+      },
+      {
+        "text": "Jogyesa Temple, Seoul",
+        "value": "kr_jogyesa"
+      },
+      {
+        "text": "Bongeunsa Temple, Seoul",
+        "value": "kr_bongeunsa"
+      },
+      {
+        "text": "Ikseon-dong, Seoul",
+        "value": "kr_ikseondong"
+      },
+      {
+        "text": "Seochon, Seoul",
+        "value": "kr_seochon"
+      },
+      {
+        "text": "Ihwa Mural Village, Seoul",
+        "value": "kr_ihwa_mural"
+      },
+      {
+        "text": "Namsangol Hanok Village, Seoul",
+        "value": "kr_namsangol"
+      },
+      {
+        "text": "City Hall, Seoul",
+        "value": "kr_seoul_cityhall"
+      },
+      {
+        "text": "Seodaemun Prison, Seoul",
+        "value": "kr_seodaemun_prison"
+      },
+      {
+        "text": "Independence Gate, Seoul",
+        "value": "kr_dongnimmun"
+      },
+      {
+        "text": "Gyeonghuigung Palace, Seoul",
+        "value": "kr_gyeonghuigung"
+      },
+      {
+        "text": "Sejong Center, Seoul",
+        "value": "kr_sejong_center"
+      },
+      {
+        "text": "Myeongnyundang Hall, Seonggyungwan, Seoul",
+        "value": "kr_seonggyungwan"
+      },
+      {
+        "text": "Unhyeongung Palace, Seoul",
+        "value": "kr_unhyeongung"
+      },
+      {
+        "text": "Eunpyeong Hanok Village, Seoul",
+        "value": "kr_eunpyeong_hanok"
+      },
+      {
+        "text": "Yeouido IFC, Seoul",
+        "value": "kr_ifc_seoul"
+      },
+      {
+        "text": "Yeouido Parc1, Seoul",
+        "value": "kr_parc1"
+      },
+      {
+        "text": "Hwanggungu Shrine, Hwangudan, Seoul",
+        "value": "kr_hwangudan"
+      },
+      {
+        "text": "Anglican Cathedral, Seoul",
+        "value": "kr_seoul_anglican"
+      },
+      {
+        "text": "Central Mosque, Seoul",
+        "value": "kr_seoul_mosque"
+      },
+      {
+        "text": "Bank of Korea Money Museum, Seoul",
+        "value": "kr_money_museum"
+      },
+      {
+        "text": "Yakhyeon Catholic Church, Seoul",
+        "value": "kr_yakhyeon_church"
+      },
+      {
+        "text": "Busan",
+        "value": "busan"
+      },
+      {
+        "text": "Gamcheon Culture Village, Busan",
+        "value": "kr_gamcheon"
+      },
+      {
+        "text": "Haedong Yonggungsa Temple, Busan",
+        "value": "kr_haedong_yonggungsa"
+      },
+      {
+        "text": "Busan Tower, Busan",
+        "value": "kr_busan_tower"
+      },
+      {
+        "text": "Beomeosa Temple, Busan",
+        "value": "kr_beomeosa"
+      },
+      {
+        "text": "Haeundae LCT, Busan",
+        "value": "kr_haeundae_lct"
+      },
+      {
+        "text": "Incheon",
+        "value": "incheon"
+      },
+      {
+        "text": "Chinatown, Incheon",
+        "value": "kr_incheon_chinatown"
+      },
+      {
+        "text": "Daegu",
+        "value": "daegu"
+      },
+      {
+        "text": "83 Tower, Daegu",
+        "value": "kr_daegu_83tower"
+      },
+      {
+        "text": "Gyesan Cathedral, Daegu",
+        "value": "kr_gyesan_cathedral"
+      },
+      {
+        "text": "Jeil Church, Daegu",
+        "value": "kr_daegu_jeil_church"
+      },
+      {
+        "text": "Hanbit Tower, Daejeon",
+        "value": "kr_hanbit_tower"
+      },
+      {
+        "text": "Janganmun Gate, Hwaseong Fortress, Suwon",
+        "value": "kr_janganmun"
+      },
+      {
+        "text": "Paldalmun Gate, Hwaseong Fortress, Suwon",
+        "value": "kr_paldalmun"
+      },
+      {
+        "text": "Hwaseong Haenggung Palace, Suwon",
+        "value": "kr_hwaseong_haenggung"
+      },
+      {
+        "text": "Changnyongmun Gate, Hwaseong Fortress, Suwon",
+        "value": "kr_changnyongmun"
+      },
+      {
+        "text": "Bulguksa Temple, Gyeongju",
+        "value": "kr_bulguksa"
+      },
+      {
+        "text": "Seokguram Grotto, Gyeongju",
+        "value": "kr_seokguram"
+      },
+      {
+        "text": "Cheomseongdae Observatory, Gyeongju",
+        "value": "kr_cheomseongdae"
+      },
+      {
+        "text": "Donggung Palace and Wolji Pond, Gyeongju",
+        "value": "kr_donggung_wolji"
+      },
+      {
+        "text": "Yangdong Folk Village, Gyeongju",
+        "value": "kr_yangdong"
+      },
+      {
+        "text": "Gyochon Hanok Village, Gyeongju",
+        "value": "kr_gyochon"
+      },
+      {
+        "text": "Seongeup Folk Village, Jeju",
+        "value": "kr_seongeup"
+      },
+      {
+        "text": "Jejumok Gwana, Jeju",
+        "value": "kr_jejumok_gwana"
+      },
+      {
+        "text": "Hanok Village, Jeonju",
+        "value": "kr_jeonju_hanok"
+      },
+      {
+        "text": "Jeondong Catholic Church, Jeonju",
+        "value": "kr_jeondong_church"
+      },
+      {
+        "text": "Gyeonggijeon Shrine, Jeonju",
+        "value": "kr_gyeonggijeon"
+      },
+      {
+        "text": "Pungnammun Gate, Jeonju",
+        "value": "kr_pungnammun"
+      },
+      {
+        "text": "Omokdae Pavilion, Jeonju",
+        "value": "kr_omokdae"
+      },
+      {
+        "text": "Ojukheon House, Gangneung",
+        "value": "kr_ojukheon"
+      },
+      {
+        "text": "Gyeongpodae Pavilion, Gangneung",
+        "value": "kr_gyeongpodae"
+      },
+      {
+        "text": "Seongyojang House, Gangneung",
+        "value": "kr_seongyojang"
+      },
+      {
+        "text": "Hahoe Folk Village, Andong",
+        "value": "kr_hahoe"
+      },
+      {
+        "text": "Dosan Seowon, Andong",
+        "value": "kr_dosan_seowon"
+      },
+      {
+        "text": "Korean Folk Village, Yongin",
+        "value": "kr_korean_folk_village"
+      },
+      {
+        "text": "Haenggung Palace, Namhansanseong",
+        "value": "kr_namhansanseong"
+      },
+      {
+        "text": "Gongbungnu Pavilion, Gongsanseong Fortress, Gongju",
+        "value": "kr_gongbungnu"
+      },
+      {
+        "text": "Jeongnimsa Temple Site Pagoda, Buyeo",
+        "value": "kr_jeongnimsa"
+      },
+      {
+        "text": "Mireuksa Temple Site Pagodas, Iksan",
+        "value": "kr_mireuksa"
+      },
+      {
+        "text": "Chokseongmun Gate, Jinjuseong Fortress, Jinju",
+        "value": "kr_chokseongmun"
+      },
+      {
+        "text": "Dongpirang Mural Village, Tongyeong",
+        "value": "kr_dongpirang"
+      },
+      {
+        "text": "Naganeupseong Folk Village, Suncheon",
+        "value": "kr_naganeupseong"
+      },
+      {
+        "text": "Songgwangsa Temple, Suncheon",
+        "value": "kr_songgwangsa"
+      },
+      {
+        "text": "Seonamsa Temple, Suncheon",
+        "value": "kr_seonamsa"
+      },
+      {
+        "text": "Oeam Folk Village, Asan",
+        "value": "kr_oeam"
+      },
+      {
+        "text": "Haeinsa Temple, Hapcheon",
+        "value": "kr_haeinsa"
+      },
+      {
+        "text": "Tongdosa Temple, Yangsan",
+        "value": "kr_tongdosa"
+      },
+      {
+        "text": "Sinheungsa Temple, Seoraksan",
+        "value": "kr_sinheungsa"
+      },
+      {
+        "text": "Woljeongsa Temple, Pyeongchang",
+        "value": "kr_woljeongsa"
+      },
+      {
+        "text": "Buseoksa Temple, Yeongju",
+        "value": "kr_buseoksa"
+      },
+      {
+        "text": "Beopjusa Temple, Boeun",
+        "value": "kr_beopjusa"
+      },
+      {
+        "text": "Palsangjeon Hall, Beopjusa, Boeun",
+        "value": "kr_palsangjeon"
+      },
+      {
+        "text": "Hwaeomsa Temple, Gurye",
+        "value": "kr_hwaeomsa"
+      },
+      {
+        "text": "Daeheungsa Temple, Haenam",
+        "value": "kr_daeheungsa"
+      },
+      {
+        "text": "Geumsansa Temple, Gimje",
+        "value": "kr_geumsansa"
+      },
+      {
+        "text": "Naksansa Temple, Yangyang",
+        "value": "kr_naksansa"
+      },
+      {
+        "text": "Ximending, Taipei",
+        "value": "ximending"
+      },
+      {
+        "text": "Taipei 101, Taipei",
+        "value": "tw_taipei101"
+      },
+      {
+        "text": "National Palace Museum, Taipei",
+        "value": "tw_palace_museum"
+      },
+      {
+        "text": "Chiang Kai-shek Memorial Hall, Taipei",
+        "value": "tw_cks_memorial_hall"
+      },
+      {
+        "text": "Longshan Temple, Taipei",
+        "value": "tw_longshan_temple"
+      },
+      {
+        "text": "Presidential Office Building, Taipei",
+        "value": "tw_presidential_office"
+      },
+      {
+        "text": "Sun Yat-sen Memorial Hall, Taipei",
+        "value": "tw_sun_yatsen_memorial_hall"
+      },
+      {
+        "text": "Taipei Main Station, Taipei",
+        "value": "tw_taipei_station"
+      },
+      {
+        "text": "Dihua Street, Taipei",
+        "value": "tw_dihua_street"
+      },
+      {
+        "text": "Xingtian Temple, Taipei",
+        "value": "tw_xingtian_temple"
+      },
+      {
+        "text": "National Revolutionary Martyrs' Shrine, Taipei",
+        "value": "tw_martyrs_shrine"
+      },
+      {
+        "text": "Red House Theater, Taipei",
+        "value": "tw_ximen_red_house"
+      },
+      {
+        "text": "Grand Hotel, Taipei",
+        "value": "tw_grand_hotel"
+      },
+      {
+        "text": "Huashan 1914 Creative Park, Taipei",
+        "value": "tw_huashan_1914"
+      },
+      {
+        "text": "Songshan Cultural and Creative Park, Taipei",
+        "value": "tw_songshan_creative_park"
+      },
+      {
+        "text": "Beitou Hot Spring Museum, Taipei",
+        "value": "tw_beitou_hot_spring_museum"
+      },
+      {
+        "text": "Xinbeitou Historic Station, Taipei",
+        "value": "tw_xinbeitou_station"
+      },
+      {
+        "text": "National Theater, Taipei",
+        "value": "tw_national_theater"
+      },
+      {
+        "text": "National Concert Hall, Taipei",
+        "value": "tw_national_concert_hall"
+      },
+      {
+        "text": "North Gate, Taipei",
+        "value": "tw_north_gate"
+      },
+      {
+        "text": "South Gate, Taipei",
+        "value": "tw_south_gate"
+      },
+      {
+        "text": "Little South Gate, Taipei",
+        "value": "tw_little_south_gate"
+      },
+      {
+        "text": "Xiahai City God Temple, Taipei",
+        "value": "tw_xiahai_city_god_temple"
+      },
+      {
+        "text": "Bopiliao Historic Block, Taipei",
+        "value": "tw_bopiliao"
+      },
+      {
+        "text": "Dalongdong Baoan Temple, Taipei",
+        "value": "tw_baoan_temple"
+      },
+      {
+        "text": "Songshan Ciyou Temple, Taipei",
+        "value": "tw_ciyou_temple"
+      },
+      {
+        "text": "Taipei Guest House, Taipei",
+        "value": "tw_taipei_guest_house"
+      },
+      {
+        "text": "228 Memorial Museum, Taipei",
+        "value": "tw_228_memorial_museum"
+      },
+      {
+        "text": "Museum of Contemporary Art, Taipei",
+        "value": "tw_moca_taipei"
+      },
+      {
+        "text": "Zhongshan Hall, Taipei",
+        "value": "tw_zhongshan_hall"
+      },
+      {
+        "text": "Zhinan Temple Main Hall, Taipei",
+        "value": "tw_zhinan_temple"
+      },
+      {
+        "text": "National Museum of History, Taipei",
+        "value": "tw_history_museum"
+      },
+      {
+        "text": "Bank of Taiwan Headquarters, Taipei",
+        "value": "tw_bank_of_taiwan"
+      },
+      {
+        "text": "Judicial Yuan, Taipei",
+        "value": "tw_judicial_yuan"
+      },
+      {
+        "text": "Executive Yuan, Taipei",
+        "value": "tw_executive_yuan"
+      },
+      {
+        "text": "Control Yuan, Taipei",
+        "value": "tw_control_yuan"
+      },
+      {
+        "text": "NTU Hospital Old Building, Taipei",
+        "value": "tw_ntuh_old_building"
+      },
+      {
+        "text": "Taipei Post Office, Taipei",
+        "value": "tw_taipei_post_office"
+      },
+      {
+        "text": "Former Railway Department Building, Taipei",
+        "value": "tw_railway_department"
+      },
+      {
+        "text": "Former Nishi Honganji Bell Tower, Taipei",
+        "value": "tw_nishi_honganji"
+      },
+      {
+        "text": "Nanmending 323, Taipei",
+        "value": "tw_nanmending_323"
+      },
+      {
+        "text": "Chien Kuo High School Red House, Taipei",
+        "value": "tw_chienkuo_red_house"
+      },
+      {
+        "text": "First Girls' High School Guangfu Building, Taipei",
+        "value": "tw_fghs_guangfu"
+      },
+      {
+        "text": "NTNU Administration Building, Taipei",
+        "value": "tw_ntnu_admin_building"
+      },
+      {
+        "text": "University of Taipei Gongcheng Building, Taipei",
+        "value": "tw_utaipei_gongcheng"
+      },
+      {
+        "text": "Residential streets of Da'an, Taipei",
+        "value": "tw_daan_residential"
+      },
+      {
+        "text": "Jiufen, New Taipei",
+        "value": "jiufen"
+      },
+      {
+        "text": "Fort San Domingo, Tamsui",
+        "value": "tw_fort_san_domingo"
+      },
+      {
+        "text": "Former British Consular Residence, Tamsui",
+        "value": "tw_british_consular_residence"
+      },
+      {
+        "text": "Fuyou Temple, Tamsui",
+        "value": "tw_tamsui_fuyou_temple"
+      },
+      {
+        "text": "Qingshui Temple, Tamsui",
+        "value": "tw_tamsui_qingshui_temple"
+      },
+      {
+        "text": "Japanese Police Dormitory, Tamsui",
+        "value": "tw_tamsui_police_dormitory"
+      },
+      {
+        "text": "Crown Prince Chalet, Jinguashi",
+        "value": "tw_crown_prince_chalet"
+      },
+      {
+        "text": "Lin Family Mansion and Garden, Banqiao",
+        "value": "tw_lin_family_garden"
+      },
+      {
+        "text": "Sanxia Old Street, New Taipei",
+        "value": "tw_sanxia_old_street"
+      },
+      {
+        "text": "Taichung Prefectural Hall, Taichung",
+        "value": "tw_taichung_prefectural_hall"
+      },
+      {
+        "text": "Miyahara Ophthalmology, Taichung",
+        "value": "tw_miyahara"
+      },
+      {
+        "text": "Tainan",
+        "value": "tainan"
+      },
+      {
+        "text": "Chihkan Tower, Tainan",
+        "value": "tw_chihkan_tower"
+      },
+      {
+        "text": "Anping Old Fort, Tainan",
+        "value": "tw_anping_old_fort"
+      },
+      {
+        "text": "Confucius Temple, Tainan",
+        "value": "tw_tainan_confucius_temple"
+      },
+      {
+        "text": "Hayashi Department Store, Tainan",
+        "value": "tw_hayashi_department_store"
+      },
+      {
+        "text": "Shennong Street, Tainan",
+        "value": "tw_shennong_street"
+      },
+      {
+        "text": "Grand Matsu Temple, Tainan",
+        "value": "tw_grand_matsu_temple"
+      },
+      {
+        "text": "Sacrificial Rites Martial Temple, Tainan",
+        "value": "tw_tainan_martial_temple"
+      },
+      {
+        "text": "Eternal Golden Castle, Tainan",
+        "value": "tw_eternal_golden_castle"
+      },
+      {
+        "text": "Anping Old Street, Tainan",
+        "value": "tw_anping_old_street"
+      },
+      {
+        "text": "Streets of West Central District, Tainan",
+        "value": "tw_tainan_zhongxi"
+      },
+      {
+        "text": "Chimei Museum, Tainan",
+        "value": "tw_chimei_museum"
+      },
+      {
+        "text": "National Museum of Taiwan Literature, Tainan",
+        "value": "tw_taiwan_literature_museum"
+      },
+      {
+        "text": "Former Tait & Co. Merchant House, Tainan",
+        "value": "tw_tait_merchant_house"
+      },
+      {
+        "text": "Tainan Station, Tainan",
+        "value": "tw_tainan_station"
+      },
+      {
+        "text": "Martial Arts Hall, Tainan",
+        "value": "tw_tainan_butokuden"
+      },
+      {
+        "text": "Former Tainan Public Hall, Tainan",
+        "value": "tw_tainan_public_hall"
+      },
+      {
+        "text": "Former Tainan Weather Observatory, Tainan",
+        "value": "tw_tainan_observatory"
+      },
+      {
+        "text": "Tai Peng Keng Maxwell Memorial Church, Tainan",
+        "value": "tw_maxwell_memorial_church"
+      },
+      {
+        "text": "NCKU Former Barracks, Tainan",
+        "value": "tw_ncku_barracks"
+      },
+      {
+        "text": "Tainan Girls' High School Ziqiang Building, Tainan",
+        "value": "tw_tngs_ziqiang"
+      },
+      {
+        "text": "Nanmen Church, Tainan",
+        "value": "tw_tainan_nanmen_church"
+      },
+      {
+        "text": "Chenggong Elementary School Red House, Tainan",
+        "value": "tw_chenggong_red_house"
+      },
+      {
+        "text": "Xinhua Old Street, Tainan",
+        "value": "tw_xinhua_old_street"
+      },
+      {
+        "text": "Kaohsiung",
+        "value": "kaohsiung"
+      },
+      {
+        "text": "85 Sky Tower, Kaohsiung",
+        "value": "tw_85_sky_tower"
+      },
+      {
+        "text": "British Consulate at Takao, Kaohsiung",
+        "value": "tw_takao_british_consulate"
+      },
+      {
+        "text": "Fo Guang Shan Buddha Museum, Kaohsiung",
+        "value": "tw_fo_guang_shan"
+      },
+      {
+        "text": "Museum of History, Kaohsiung",
+        "value": "tw_kaohsiung_history_museum"
+      },
+      {
+        "text": "Cishan Old Street, Kaohsiung",
+        "value": "tw_cishan_old_street"
+      },
+      {
+        "text": "Daxi Old Street, Taoyuan",
+        "value": "tw_daxi_old_street"
+      },
+      {
+        "text": "East Gate, Hsinchu",
+        "value": "tw_hsinchu_east_gate"
+      },
+      {
+        "text": "Hsinchu Prefectural Hall, Hsinchu",
+        "value": "tw_hsinchu_prefectural_hall"
+      },
+      {
+        "text": "Beipu Old Street, Hsinchu",
+        "value": "tw_beipu_old_street"
+      },
+      {
+        "text": "Hukou Old Street, Hsinchu",
+        "value": "tw_hukou_old_street"
+      },
+      {
+        "text": "Lukang Old Street, Changhua",
+        "value": "tw_lukang_old_street"
+      },
+      {
+        "text": "Wenwu Temple, Sun Moon Lake",
+        "value": "tw_wenwu_temple"
+      },
+      {
+        "text": "Beigang Chaotian Temple, Yunlin",
+        "value": "tw_chaotian_temple"
+      },
+      {
+        "text": "Xiluo Yanping Old Street, Yunlin",
+        "value": "tw_xiluo_old_street"
+      },
+      {
+        "text": "Douliu Taiping Old Street, Yunlin",
+        "value": "tw_douliu_old_street"
+      },
+      {
+        "text": "Eluanbi Lighthouse, Kenting",
+        "value": "tw_eluanbi_lighthouse"
+      },
+      {
+        "text": "Streets of Magong, Penghu",
+        "value": "tw_penghu_magong"
+      },
+      {
+        "text": "Mofan Street, Kinmen",
+        "value": "tw_kinmen_mofan_street"
+      },
+      {
+        "text": "Minnan-style houses of Jincheng, Kinmen",
+        "value": "tw_kinmen_jincheng_houses"
+      },
+      {
+        "text": "Notting Hill, London",
+        "value": "nottinghill"
+      },
+      {
+        "text": "Piccadilly Circus, London",
+        "value": "piccadilly"
+      },
+      {
+        "text": "Tower Bridge, London",
+        "value": "towerbridge"
+      },
+      {
+        "text": "Gothic Quarter, Barcelona",
+        "value": "gothic"
+      },
+      {
+        "text": "Old Town Square, Prague",
+        "value": "prague"
+      },
+      {
+        "text": "Canal ring, Amsterdam",
+        "value": "amsterdam"
+      },
+      {
+        "text": "Vienna (Austria)",
+        "value": "vienna"
+      },
+      {
+        "text": "Minsk (Belarus)",
+        "value": "minsk"
+      },
+      {
+        "text": "Brussels (Belgium)",
+        "value": "brussels"
+      },
+      {
+        "text": "Sarajevo (Bosnia and Herzegovina)",
+        "value": "sarajevo"
+      },
+      {
+        "text": "Sofia (Bulgaria)",
+        "value": "sofia"
+      },
+      {
+        "text": "Zagreb (Croatia)",
+        "value": "zagreb"
+      },
+      {
+        "text": "Copenhagen (Denmark)",
+        "value": "copenhagen"
+      },
+      {
+        "text": "Helsinki (Finland)",
+        "value": "helsinki"
+      },
+      {
+        "text": "Berlin (Germany)",
+        "value": "berlin"
+      },
+      {
+        "text": "Hamburg (Germany)",
+        "value": "hamburg"
+      },
+      {
+        "text": "Munich (Germany)",
+        "value": "munich"
+      },
+      {
+        "text": "Athens (Greece)",
+        "value": "athens"
+      },
+      {
+        "text": "Budapest (Hungary)",
+        "value": "budapest"
+      },
+      {
+        "text": "Dublin (Ireland)",
+        "value": "dublin"
+      },
+      {
+        "text": "Chisinau (Moldova)",
+        "value": "chisinau"
+      },
+      {
+        "text": "Oslo (Norway)",
+        "value": "oslo"
+      },
+      {
+        "text": "Warsaw (Poland)",
+        "value": "warsaw"
+      },
+      {
+        "text": "Lisbon (Portugal)",
+        "value": "lisbon"
+      },
+      {
+        "text": "Bucharest (Romania)",
+        "value": "bucharest"
+      },
+      {
+        "text": "Moscow (Russia)",
+        "value": "moscow"
+      },
+      {
+        "text": "Saint Petersburg (Russia)",
+        "value": "saintpetersburg"
+      },
+      {
+        "text": "Belgrade (Serbia)",
+        "value": "belgrade"
+      },
+      {
+        "text": "Bratislava (Slovakia)",
+        "value": "bratislava"
+      },
+      {
+        "text": "Madrid (Spain)",
+        "value": "madrid"
+      },
+      {
+        "text": "Stockholm (Sweden)",
+        "value": "stockholm"
+      },
+      {
+        "text": "Bern (Switzerland)",
+        "value": "bern"
+      },
+      {
+        "text": "Kyiv (Ukraine)",
+        "value": "kyiv"
+      },
+      {
+        "text": "Toronto (Canada)",
+        "value": "toronto"
+      },
+      {
+        "text": "Montréal (Canada)",
+        "value": "montreal"
+      },
+      {
+        "text": "Ottawa (Canada)",
+        "value": "ottawa"
+      },
+      {
+        "text": "Buenos Aires (Argentina)",
+        "value": "buenosaires"
+      },
+      {
+        "text": "Córdoba (Argentina)",
+        "value": "cordoba"
+      },
+      {
+        "text": "La Paz (Bolivia)",
+        "value": "lapaz"
+      },
+      {
+        "text": "Santa Cruz de la Sierra (Bolivia)",
+        "value": "santacruzdelasierra"
+      },
+      {
+        "text": "Sucre (Bolivia)",
+        "value": "sucre"
+      },
+      {
+        "text": "São Paulo (Brazil)",
+        "value": "saopaulo"
+      },
+      {
+        "text": "Rio de Janeiro (Brazil)",
+        "value": "riodejaneiro"
+      },
+      {
+        "text": "Brasília (Brazil)",
+        "value": "brasilia"
+      },
+      {
+        "text": "Santiago (Chile)",
+        "value": "santiago"
+      },
+      {
+        "text": "Bogotá (Colombia)",
+        "value": "bogota"
+      },
+      {
+        "text": "Cali (Colombia)",
+        "value": "cali"
+      },
+      {
+        "text": "Medellín (Colombia)",
+        "value": "medellin"
+      },
+      {
+        "text": "San José (Costa Rica)",
+        "value": "sanjose"
+      },
+      {
+        "text": "Havana (Cuba)",
+        "value": "havana"
+      },
+      {
+        "text": "Santo Domingo (Dominican Republic)",
+        "value": "santodomingo"
+      },
+      {
+        "text": "Quito (Ecuador)",
+        "value": "quito"
+      },
+      {
+        "text": "Guayaquil (Ecuador)",
+        "value": "guayaquil"
+      },
+      {
+        "text": "San Salvador (El Salvador)",
+        "value": "sansalvador"
+      },
+      {
+        "text": "Guatemala City (Guatemala)",
+        "value": "guatemalacity"
+      },
+      {
+        "text": "Port-au-Prince (Haiti)",
+        "value": "portauprince"
+      },
+      {
+        "text": "Tegucigalpa (Honduras)",
+        "value": "tegucigalpa"
+      },
+      {
+        "text": "Mexico City (Mexico)",
+        "value": "mexicocity"
+      },
+      {
+        "text": "Tijuana (Mexico)",
+        "value": "tijuana"
+      },
+      {
+        "text": "Puebla (Mexico)",
+        "value": "puebla"
+      },
+      {
+        "text": "Managua (Nicaragua)",
+        "value": "managua"
+      },
+      {
+        "text": "Panama City (Panama)",
+        "value": "panamacity"
+      },
+      {
+        "text": "Asunción (Paraguay)",
+        "value": "asuncion"
+      },
+      {
+        "text": "Lima (Peru)",
+        "value": "lima"
+      },
+      {
+        "text": "San Juan (Puerto Rico)",
+        "value": "sanjuan"
+      },
+      {
+        "text": "Montevideo (Uruguay)",
+        "value": "montevideo"
+      },
+      {
+        "text": "Caracas (Venezuela)",
+        "value": "caracas"
+      },
+      {
+        "text": "Maracaibo (Venezuela)",
+        "value": "maracaibo"
+      },
+      {
+        "text": "Valencia (Venezuela)",
+        "value": "valencia"
+      },
+      {
+        "text": "Marina Bay, Singapore",
+        "value": "marinabay"
+      },
+      {
+        "text": "Khao San Road, Bangkok",
+        "value": "khaosan"
+      },
+      {
+        "text": "Kabul (Afghanistan)",
+        "value": "kabul"
+      },
+      {
+        "text": "Yerevan (Armenia)",
+        "value": "yerevan"
+      },
+      {
+        "text": "Baku (Azerbaijan)",
+        "value": "baku"
+      },
+      {
+        "text": "Dhaka (Bangladesh)",
+        "value": "dhaka"
+      },
+      {
+        "text": "Chattogram (Bangladesh)",
+        "value": "chattogram"
+      },
+      {
+        "text": "Gazipur (Bangladesh)",
+        "value": "gazipur"
+      },
+      {
+        "text": "Phnom Penh (Cambodia)",
+        "value": "phnompenh"
+      },
+      {
+        "text": "Tbilisi (Georgia)",
+        "value": "tbilisi"
+      },
+      {
+        "text": "Mumbai (India)",
+        "value": "mumbai"
+      },
+      {
+        "text": "Bengaluru (India)",
+        "value": "bengaluru"
+      },
+      {
+        "text": "Hyderabad (India)",
+        "value": "hyderabad"
+      },
+      {
+        "text": "Ahmedabad (India)",
+        "value": "ahmedabad"
+      },
+      {
+        "text": "New Delhi (India)",
+        "value": "newdelhi"
+      },
+      {
+        "text": "Jakarta (Indonesia)",
+        "value": "jakarta"
+      },
+      {
+        "text": "Surabaya (Indonesia)",
+        "value": "surabaya"
+      },
+      {
+        "text": "Bandung (Indonesia)",
+        "value": "bandung"
+      },
+      {
+        "text": "Almaty (Kazakhstan)",
+        "value": "almaty"
+      },
+      {
+        "text": "Astana (Kazakhstan)",
+        "value": "astana"
+      },
+      {
+        "text": "Bishkek (Kyrgyzstan)",
+        "value": "bishkek"
+      },
+      {
+        "text": "Vientiane (Laos)",
+        "value": "vientiane"
+      },
+      {
+        "text": "Kuala Lumpur (Malaysia)",
+        "value": "kualalumpur"
+      },
+      {
+        "text": "Ulan Bator (Mongolia)",
+        "value": "ulanbator"
+      },
+      {
+        "text": "Yangon (Myanmar)",
+        "value": "yangon"
+      },
+      {
+        "text": "Nay Pyi Taw (Myanmar)",
+        "value": "naypyitaw"
+      },
+      {
+        "text": "Kathmandu (Nepal)",
+        "value": "kathmandu"
+      },
+      {
+        "text": "Pyongyang (North Korea)",
+        "value": "pyongyang"
+      },
+      {
+        "text": "Lahore (Pakistan)",
+        "value": "lahore"
+      },
+      {
+        "text": "Karachi (Pakistan)",
+        "value": "karachi"
+      },
+      {
+        "text": "Islamabad (Pakistan)",
+        "value": "islamabad"
+      },
+      {
+        "text": "Davao (Philippines)",
+        "value": "davao"
+      },
+      {
+        "text": "Manila (Philippines)",
+        "value": "manila"
+      },
+      {
+        "text": "Novosibirsk (Russia)",
+        "value": "novosibirsk"
+      },
+      {
+        "text": "Colombo (Sri Lanka)",
+        "value": "colombo"
+      },
+      {
+        "text": "Dushanbe (Tajikistan)",
+        "value": "dushanbe"
+      },
+      {
+        "text": "Ashgabat (Turkmenistan)",
+        "value": "ashgabat"
+      },
+      {
+        "text": "Tashkent (Uzbekistan)",
+        "value": "tashkent"
+      },
+      {
+        "text": "Ho Chi Minh City (Vietnam)",
+        "value": "hochiminhcity"
+      },
+      {
+        "text": "Hanoi (Vietnam)",
+        "value": "hanoi"
+      },
+      {
+        "text": "Haiphong (Vietnam)",
+        "value": "haiphong"
+      },
+      {
+        "text": "Tehran (Iran)",
+        "value": "tehran"
+      },
+      {
+        "text": "Mashhad (Iran)",
+        "value": "mashhad"
+      },
+      {
+        "text": "Isfahan (Iran)",
+        "value": "isfahan"
+      },
+      {
+        "text": "Baghdad (Iraq)",
+        "value": "baghdad"
+      },
+      {
+        "text": "Mosul (Iraq)",
+        "value": "mosul"
+      },
+      {
+        "text": "Erbil (Iraq)",
+        "value": "erbil"
+      },
+      {
+        "text": "Jerusalem (Israel)",
+        "value": "jerusalem"
+      },
+      {
+        "text": "Tel Aviv (Israel)",
+        "value": "telaviv"
+      },
+      {
+        "text": "Amman (Jordan)",
+        "value": "amman"
+      },
+      {
+        "text": "Kuwait City (Kuwait)",
+        "value": "kuwaitcity"
+      },
+      {
+        "text": "Beirut (Lebanon)",
+        "value": "beirut"
+      },
+      {
+        "text": "Muscat (Oman)",
+        "value": "muscat"
+      },
+      {
+        "text": "Jeddah (Saudi Arabia)",
+        "value": "jeddah"
+      },
+      {
+        "text": "Riyadh (Saudi Arabia)",
+        "value": "riyadh"
+      },
+      {
+        "text": "Makkah (Saudi Arabia)",
+        "value": "makkah"
+      },
+      {
+        "text": "Aleppo (Syria)",
+        "value": "aleppo"
+      },
+      {
+        "text": "Damascus (Syria)",
+        "value": "damascus"
+      },
+      {
+        "text": "Istanbul (Turkey)",
+        "value": "istanbul"
+      },
+      {
+        "text": "Ankara (Turkey)",
+        "value": "ankara"
+      },
+      {
+        "text": "Bursa (Turkey)",
+        "value": "bursa"
+      },
+      {
+        "text": "Dubai (United Arab Emirates)",
+        "value": "dubai"
+      },
+      {
+        "text": "Abu Dhabi (United Arab Emirates)",
+        "value": "abudhabi"
+      },
+      {
+        "text": "Sharjah (United Arab Emirates)",
+        "value": "sharjah"
+      },
+      {
+        "text": "Sanaa (Yemen)",
+        "value": "sanaa"
+      },
+      {
+        "text": "Algiers (Algeria)",
+        "value": "algiers"
+      },
+      {
+        "text": "Luanda (Angola)",
+        "value": "luanda"
+      },
+      {
+        "text": "Porto-Novo (Benin)",
+        "value": "portonovo"
+      },
+      {
+        "text": "Ouagadougou (Burkina Faso)",
+        "value": "ouagadougou"
+      },
+      {
+        "text": "Gitega (Burundi)",
+        "value": "gitega"
+      },
+      {
+        "text": "Yaoundé (Cameroon)",
+        "value": "yaounde"
+      },
+      {
+        "text": "Bangui (Central African Republic)",
+        "value": "bangui"
+      },
+      {
+        "text": "N'Djamena (Chad)",
+        "value": "ndjamena"
+      },
+      {
+        "text": "Kinshasa (Democratic Republic of the Congo)",
+        "value": "kinshasa"
+      },
+      {
+        "text": "Lubumbashi (Democratic Republic of the Congo)",
+        "value": "lubumbashi"
+      },
+      {
+        "text": "Mbuji-Mayi (Democratic Republic of the Congo)",
+        "value": "mbujimayi"
+      },
+      {
+        "text": "Cairo (Egypt)",
+        "value": "cairo"
+      },
+      {
+        "text": "Alexandria (Egypt)",
+        "value": "alexandria"
+      },
+      {
+        "text": "Asmara (Eritrea)",
+        "value": "asmara"
+      },
+      {
+        "text": "Addis Ababa (Ethiopia)",
+        "value": "addisababa"
+      },
+      {
+        "text": "Kumasi (Ghana)",
+        "value": "kumasi"
+      },
+      {
+        "text": "Accra (Ghana)",
+        "value": "accra"
+      },
+      {
+        "text": "Conakry (Guinea)",
+        "value": "conakry"
+      },
+      {
+        "text": "Abidjan (Ivory Coast)",
+        "value": "abidjan"
+      },
+      {
+        "text": "Yamoussoukro (Ivory Coast)",
+        "value": "yamoussoukro"
+      },
+      {
+        "text": "Nairobi (Kenya)",
+        "value": "nairobi"
+      },
+      {
+        "text": "Monrovia (Liberia)",
+        "value": "monrovia"
+      },
+      {
+        "text": "Tripoli (Libya)",
+        "value": "tripoli"
+      },
+      {
+        "text": "Antananarivo (Madagascar)",
+        "value": "antananarivo"
+      },
+      {
+        "text": "Lilongwe (Malawi)",
+        "value": "lilongwe"
+      },
+      {
+        "text": "Bamako (Mali)",
+        "value": "bamako"
+      },
+      {
+        "text": "Nouakchott (Mauritania)",
+        "value": "nouakchott"
+      },
+      {
+        "text": "Casablanca (Morocco)",
+        "value": "casablanca"
+      },
+      {
+        "text": "Rabat (Morocco)",
+        "value": "rabat"
+      },
+      {
+        "text": "Maputo (Mozambique)",
+        "value": "maputo"
+      },
+      {
+        "text": "Niamey (Niger)",
+        "value": "niamey"
+      },
+      {
+        "text": "Lagos (Nigeria)",
+        "value": "lagos"
+      },
+      {
+        "text": "Kano (Nigeria)",
+        "value": "kano"
+      },
+      {
+        "text": "Abuja (Nigeria)",
+        "value": "abuja"
+      },
+      {
+        "text": "Brazzaville (Republic of the Congo)",
+        "value": "brazzaville"
+      },
+      {
+        "text": "Kigali (Rwanda)",
+        "value": "kigali"
+      },
+      {
+        "text": "Dakar (Senegal)",
+        "value": "dakar"
+      },
+      {
+        "text": "Freetown (Sierra Leone)",
+        "value": "freetown"
+      },
+      {
+        "text": "Mogadishu (Somalia)",
+        "value": "mogadishu"
+      },
+      {
+        "text": "Johannesburg (South Africa)",
+        "value": "johannesburg"
+      },
+      {
+        "text": "Cape Town (South Africa)",
+        "value": "capetown"
+      },
+      {
+        "text": "Pretoria (South Africa)",
+        "value": "pretoria"
+      },
+      {
+        "text": "Juba (South Sudan)",
+        "value": "juba"
+      },
+      {
+        "text": "Khartoum (Sudan)",
+        "value": "khartoum"
+      },
+      {
+        "text": "Dar es Salaam (Tanzania)",
+        "value": "daressalaam"
+      },
+      {
+        "text": "Dodoma (Tanzania)",
+        "value": "dodoma"
+      },
+      {
+        "text": "Lomé (Togo)",
+        "value": "lome"
+      },
+      {
+        "text": "Tunis (Tunisia)",
+        "value": "tunis"
+      },
+      {
+        "text": "Kampala (Uganda)",
+        "value": "kampala"
+      },
+      {
+        "text": "Lusaka (Zambia)",
+        "value": "lusaka"
+      },
+      {
+        "text": "Harare (Zimbabwe)",
+        "value": "harare"
+      },
+      {
+        "text": "Sydney (Australia)",
+        "value": "sydney"
+      },
+      {
+        "text": "Melbourne (Australia)",
+        "value": "melbourne"
+      },
+      {
+        "text": "Canberra (Australia)",
+        "value": "canberra"
+      },
+      {
+        "text": "Auckland (New Zealand)",
+        "value": "auckland"
+      },
+      {
+        "text": "Wellington (New Zealand)",
+        "value": "wellington"
+      },
+      {
+        "text": "Port Moresby (Papua New Guinea)",
+        "value": "portmoresby"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "camHere",
+    "tag": "BUTTON",
+    "text": "Move camera here (F)",
+    "title": "Moves the camera to the pin (height and direction stay the same). The F key does the same",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "czPick",
+    "tag": "BUTTON",
+    "text": "✎ Use this spot as the background",
+    "title": "The characters stand at the pin. The current camera direction becomes the direction that shows the two side by side in the panels",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "standHere",
+    "tag": "BUTTON",
+    "text": "Stand here",
+    "title": "Stands at the pin at eye level (direction stays the same)",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": true,
+    "id": "optTerrain",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": true,
+    "id": "optTrees",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": true,
+    "id": "optProps",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": false,
+    "id": "optSpec",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": false,
+    "id": "optLow",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": false,
+    "id": "optLod",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "100"
+  },
+  {
+    "checked": false,
+    "id": "optImp",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "100"
+  },
+  {
+    "checked": false,
+    "id": "optLite",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": false,
+    "id": "optSeason",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "Spring",
+        "value": "spring"
+      },
+      {
+        "text": "Summer",
+        "value": "summer"
+      },
+      {
+        "text": "Autumn",
+        "value": "autumn"
+      },
+      {
+        "text": "Winter",
+        "value": "winter"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "summer"
+  },
+  {
+    "checked": false,
+    "id": "optTreeSty",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "Tone & black",
+        "value": "tone"
+      },
+      {
+        "text": "Tone & black (no outline)",
+        "value": "soft"
+      },
+      {
+        "text": "Lines",
+        "value": "line"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "tone"
+  },
+  {
+    "checked": false,
+    "id": "optLeaf",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "Smooth",
+        "value": "smooth"
+      },
+      {
+        "text": "Bumpy",
+        "value": "boko"
+      },
+      {
+        "text": "Fluffy",
+        "value": "fusa"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "boko"
+  },
+  {
+    "checked": false,
+    "id": "optCrowd",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "None",
+        "value": "0"
+      },
+      {
+        "text": "A few",
+        "value": "1"
+      },
+      {
+        "text": "Many",
+        "value": "2"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "1"
+  },
+  {
+    "checked": false,
+    "id": "reroll",
+    "tag": "BUTTON",
+    "text": "🎲 Re-roll unknown heights",
+    "title": "Gives buildings without height data in the map a different guessed height and color",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "lightAz",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "330"
+  },
+  {
+    "checked": false,
+    "id": "lightEl",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "45"
+  },
+  {
+    "checked": false,
+    "id": "castSide",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "One-sided",
+        "value": "single"
+      },
+      {
+        "text": "Two-sided",
+        "value": "double"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "single"
+  },
+  {
+    "checked": false,
+    "id": "sunReal",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": false,
+    "id": "airAo",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "150"
+  },
+  {
+    "checked": false,
+    "id": "airHaze",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "70"
+  },
+  {
+    "checked": true,
+    "id": "airSky",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": false,
+    "id": "sunDate",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "date",
+    "value": "2026-10-29"
+  },
+  {
+    "checked": false,
+    "id": "sunHour",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "900"
+  },
+  {
+    "checked": false,
+    "id": "fogVis",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "350"
+  },
+  {
+    "checked": false,
+    "id": "fogFace",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "50"
+  },
+  {
+    "checked": false,
+    "id": "fogWin",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "50"
+  },
+  {
+    "checked": false,
+    "id": "fogWet",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "50"
+  },
+  {
+    "checked": false,
+    "id": "fogLt",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "100"
+  },
+  {
+    "checked": false,
+    "id": "fogFx",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "0"
+  },
+  {
+    "checked": false,
+    "id": "fogFxMode",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "Normal",
+        "value": "normal"
+      },
+      {
+        "text": "Darken",
+        "value": "darken"
+      },
+      {
+        "text": "Multiply",
+        "value": "multiply"
+      },
+      {
+        "text": "Color Burn",
+        "value": "burn"
+      },
+      {
+        "text": "Linear Burn",
+        "value": "linburn"
+      },
+      {
+        "text": "Darker Color",
+        "value": "darker"
+      },
+      {
+        "text": "Lighten",
+        "value": "lighten"
+      },
+      {
+        "text": "Screen",
+        "value": "screen"
+      },
+      {
+        "text": "Color Dodge",
+        "value": "dodge"
+      },
+      {
+        "text": "Linear Dodge (Add)",
+        "value": "add"
+      },
+      {
+        "text": "Lighter Color",
+        "value": "lighter"
+      },
+      {
+        "text": "Overlay",
+        "value": "overlay"
+      },
+      {
+        "text": "Soft Light",
+        "value": "soft"
+      },
+      {
+        "text": "Hard Light",
+        "value": "hard"
+      },
+      {
+        "text": "Vivid Light",
+        "value": "vivid"
+      },
+      {
+        "text": "Linear Light",
+        "value": "linear"
+      },
+      {
+        "text": "Pin Light",
+        "value": "pin"
+      },
+      {
+        "text": "Hard Mix",
+        "value": "hardmix"
+      },
+      {
+        "text": "Difference",
+        "value": "diff"
+      },
+      {
+        "text": "Exclusion",
+        "value": "excl"
+      },
+      {
+        "text": "Subtract",
+        "value": "sub"
+      },
+      {
+        "text": "Divide",
+        "value": "div"
+      },
+      {
+        "text": "Hue",
+        "value": "hue"
+      },
+      {
+        "text": "Saturation",
+        "value": "sat"
+      },
+      {
+        "text": "Color",
+        "value": "color"
+      },
+      {
+        "text": "Luminosity",
+        "value": "lum"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "normal"
+  },
+  {
+    "checked": false,
+    "id": "fogFxVis",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "350"
+  },
+  {
+    "checked": false,
+    "id": "fogFxFace",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "50"
+  },
+  {
+    "checked": false,
+    "id": "rfWin",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "0"
+  },
+  {
+    "checked": false,
+    "id": "rfWet",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "0"
+  },
+  {
+    "checked": false,
+    "id": "gmSel",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "白黒",
+        "value": "bw"
+      },
+      {
+        "text": "セピア",
+        "value": "sepia"
+      },
+      {
+        "text": "青写真",
+        "value": "cyanotype"
+      },
+      {
+        "text": "月夜",
+        "value": "moon"
+      },
+      {
+        "text": "夕焼け",
+        "value": "sunset"
+      },
+      {
+        "text": "朝焼け",
+        "value": "dawn"
+      },
+      {
+        "text": "森",
+        "value": "forest"
+      },
+      {
+        "text": "海",
+        "value": "sea"
+      },
+      {
+        "text": "色あせ",
+        "value": "faded"
+      },
+      {
+        "text": "すみれ",
+        "value": "violet"
+      },
+      {
+        "text": "サイバー",
+        "value": "cyber"
+      },
+      {
+        "text": "金色",
+        "value": "gold"
+      },
+      {
+        "text": "深紅",
+        "value": "crimson"
+      },
+      {
+        "text": "緑の画面",
+        "value": "phosphor"
+      },
+      {
+        "text": "琥珀",
+        "value": "amber"
+      },
+      {
+        "text": "冬",
+        "value": "winter"
+      },
+      {
+        "text": "桜",
+        "value": "sakura"
+      },
+      {
+        "text": "墨と和紙",
+        "value": "sumi"
+      },
+      {
+        "text": "藍",
+        "value": "indigo"
+      },
+      {
+        "text": "ノワール",
+        "value": "noir"
+      },
+      {
+        "text": "自分で（3 色）",
+        "value": "custom"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "bw"
+  },
+  {
+    "checked": false,
+    "id": "gmC0",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "color",
+    "value": "#1d2340"
+  },
+  {
+    "checked": false,
+    "id": "gmC1",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "color",
+    "value": "#8a7f8e"
+  },
+  {
+    "checked": false,
+    "id": "gmC2",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "color",
+    "value": "#f6efe2"
+  },
+  {
+    "checked": false,
+    "id": "nAmb",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "120"
+  },
+  {
+    "checked": false,
+    "id": "nWinL",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "100"
+  },
+  {
+    "checked": false,
+    "id": "nLocal",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "0"
+  },
+  {
+    "checked": false,
+    "id": "nWash",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "100"
+  },
+  {
+    "checked": false,
+    "id": "nEmit",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "120"
+  },
+  {
+    "checked": false,
+    "id": "nBloom",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "200"
+  },
+  {
+    "checked": false,
+    "id": "nWet",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "10"
+  },
+  {
+    "checked": false,
+    "id": "nStarE",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "100"
+  },
+  {
+    "checked": false,
+    "id": "nStarC",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "100"
+  },
+  {
+    "checked": false,
+    "id": "starDt",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "datetime-local",
+    "value": ""
+  },
+  {
+    "checked": true,
+    "id": "skyBody",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": false,
+    "id": "toneS",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "100"
+  },
+  {
+    "checked": false,
+    "id": "toneC",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "100"
+  },
+  {
+    "checked": false,
+    "id": "pat",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "Tone (dots)",
+        "value": "dots"
+      },
+      {
+        "text": "Focus lines",
+        "value": "focus"
+      },
+      {
+        "text": "Flash rays",
+        "value": "rays"
+      },
+      {
+        "text": "Black flash",
+        "value": "betaflash"
+      },
+      {
+        "text": "Urchin flash",
+        "value": "uniflash"
+      },
+      {
+        "text": "Speed lines",
+        "value": "speed"
+      },
+      {
+        "text": "Curved lines",
+        "value": "curve"
+      },
+      {
+        "text": "Wind",
+        "value": "wind"
+      },
+      {
+        "text": "Drop lines",
+        "value": "fall"
+      },
+      {
+        "text": "Rain",
+        "value": "rain"
+      },
+      {
+        "text": "Cross-hatch",
+        "value": "kakeami"
+      },
+      {
+        "text": "Hatch gradient",
+        "value": "kakegrad"
+      },
+      {
+        "text": "Black-edge hatch",
+        "value": "kakebeta"
+      },
+      {
+        "text": "Rope hatch",
+        "value": "nawaami"
+      },
+      {
+        "text": "Rope hatch gradient",
+        "value": "nawagradation"
+      },
+      {
+        "text": "Radial rope hatch",
+        "value": "nawaradial"
+      },
+      {
+        "text": "Line tone",
+        "value": "lines"
+      },
+      {
+        "text": "Gradient",
+        "value": "grad"
+      },
+      {
+        "text": "Patterns",
+        "value": "pattern"
+      },
+      {
+        "text": "Stipple",
+        "value": "stipple"
+      },
+      {
+        "text": "Sand grain",
+        "value": "sand"
+      },
+      {
+        "text": "Sparkles",
+        "value": "sparkle"
+      },
+      {
+        "text": "Flowers",
+        "value": "flowers"
+      },
+      {
+        "text": "Hearts",
+        "value": "hearts"
+      },
+      {
+        "text": "Petals",
+        "value": "petals"
+      },
+      {
+        "text": "Bubbles",
+        "value": "bubbles"
+      },
+      {
+        "text": "Snow",
+        "value": "snow"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "dots"
+  },
+  {
+    "checked": false,
+    "id": "patScale",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "0.4"
+  },
+  {
+    "checked": false,
+    "id": "patSeed",
+    "tag": "BUTTON",
+    "text": "🎲",
+    "title": "Another variation of the pattern",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "toneA",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "100"
+  },
+  {
+    "checked": false,
+    "id": "toneFill",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": false,
+    "id": "beta",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "range",
+    "value": "40"
+  },
+  {
+    "checked": false,
+    "id": "betaW",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": false,
+    "id": "ltReset",
+    "tag": "BUTTON",
+    "text": "Reset to defaults",
+    "title": "Resets the light, air and night values (tone and solid black stay as they are)",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "lang",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "日本語",
+        "value": "ja"
+      },
+      {
+        "text": "English",
+        "value": "en"
+      },
+      {
+        "text": "简体中文",
+        "value": "zh-Hans"
+      },
+      {
+        "text": "繁體中文",
+        "value": "zh-Hant"
+      },
+      {
+        "text": "한국어",
+        "value": "ko"
+      },
+      {
+        "text": "हिन्दी",
+        "value": "hi"
+      },
+      {
+        "text": "ไทย",
+        "value": "th"
+      },
+      {
+        "text": "Español",
+        "value": "es"
+      },
+      {
+        "text": "Français",
+        "value": "fr"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "en"
+  },
+  {
+    "checked": false,
+    "id": "hgfAboutBtn",
+    "tag": "BUTTON",
+    "text": "About this tool",
+    "title": "",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "png",
+    "tag": "BUTTON",
+    "text": "PNG (current view)",
+    "title": "",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "pngSize",
+    "tag": "SELECT",
+    "text": [
+      {
+        "text": "2400px",
+        "value": "2400"
+      },
+      {
+        "text": "3600px",
+        "value": "3600"
+      },
+      {
+        "text": "4800px",
+        "value": "4800"
+      }
+    ],
+    "title": "",
+    "type": "select-one",
+    "value": "2400"
+  },
+  {
+    "checked": false,
+    "id": "alpha",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": true,
+    "id": "credit",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": false,
+    "id": "svg",
+    "tag": "BUTTON",
+    "text": "SVG (line art · vector)",
+    "title": "Exports only the lines visible from the current camera, as vectors made from the edges of the 3D shapes (same size as the PNG long side, so they line up). No tone, solid black or color, and no window patterns on distant buildings. In CLIP STUDIO PAINT: [File] > [Import] > [Vector]",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "glb",
+    "tag": "BUTTON",
+    "text": "GLB (3D model)",
+    "title": "",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "fbx",
+    "tag": "BUTTON",
+    "text": "FBX (3D model)",
+    "title": "",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "obj",
+    "tag": "BUTTON",
+    "text": "OBJ (3D model · ZIP)",
+    "title": "",
+    "type": "button",
+    "value": ""
+  },
+  {
+    "checked": false,
+    "id": "glbFar",
+    "tag": "INPUT",
+    "text": "",
+    "title": "",
+    "type": "checkbox",
+    "value": "on"
+  },
+  {
+    "checked": false,
+    "id": "link",
+    "tag": "BUTTON",
+    "text": "🔗 Copy link",
+    "title": "",
+    "type": "button",
+    "value": ""
+  }
+]

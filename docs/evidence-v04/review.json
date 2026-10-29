@@ -1,0 +1,190 @@
+{
+  "status": "reviewed",
+  "date": "2026-10-30",
+  "baseline_commit": "f3a483e",
+  "render_commit": "ec70715",
+  "scope": "北京国贸现有样本；15组同机位截图；人工量表非实景还原率",
+  "scores": [
+    {
+      "id": "R1",
+      "name": "地标形体",
+      "weight": 20,
+      "before": 7,
+      "after": 7,
+      "result": "中国尊与央视形体沿用原规则，没有新增实测曲面，不加分。"
+    },
+    {
+      "id": "R2",
+      "name": "立面类型",
+      "weight": 20,
+      "before": 6.5,
+      "after": 7,
+      "result": "03/04/09：共享开间与12种稳定窗格语法，玻璃有连续示意亮区。临街语义、首层和屋顶用途化仍不足。"
+    },
+    {
+      "id": "R3",
+      "name": "实体细节",
+      "weight": 10,
+      "before": 6,
+      "after": 6.5,
+      "result": "03/09：实体窗台与玻璃对齐，修复输入顺序截断后，近立面机位真正生成5718个窗框实例。共墙避让和凹窗仍待做。"
+    },
+    {
+      "id": "R4",
+      "name": "道路与街道",
+      "weight": 15,
+      "before": 7,
+      "after": 7.5,
+      "result": "12–15：桥板侧底、护栏、232根避障支撑可见；人行面升高、过街面平齐、路缘开口和近铺装成立。78处名义高度不一致连接、天桥上下通道及过街缓坡仍未完成。"
+    },
+    {
+      "id": "R5",
+      "name": "树冠与植被",
+      "weight": 10,
+      "before": 6.5,
+      "after": 6.5,
+      "result": "03/04/09：修正中景叶簇埋入基础冠的回退；LOD连续且预算下降。静态叶缘和整冠黑白组织仍未明显接近原版，视觉分不加。"
+    },
+    {
+      "id": "R6",
+      "name": "漫画渲染",
+      "weight": 20,
+      "before": 7,
+      "after": 7.5,
+      "result": "09/11、阴影消融：玻璃明暗不再整片统一，无影地面留白、真实落影保留网点。03街道在楼影中，网点变深，不能概括为所有地面变白；细竖肋断续仍存在。"
+    },
+    {
+      "id": "R7",
+      "name": "复现与真实性",
+      "weight": 5,
+      "before": 9,
+      "after": 9,
+      "result": "15组固定机位与共有参数/画幅核对、四模式及参数保存验证。无原版精确外参、无GPU帧率基准，保持原分。"
+    }
+  ],
+  "checks": [
+    "49项完整自动测试通过；最后斑马线厚度修正另复跑8项街道测试，生产构建通过。Three.js仍有超过500kB分包提示。",
+    "15组1920×945版本对照，共30张；逐项匹配相机和共有参数。已重拍早期捕获的加载帧，并对全部图像检查尺寸、非空画面及联系表。",
+    "玻璃留白默认65%；设置100%并保存视角后重载，实际控件与输出恢复100%。",
+    "漫画、彩色、线稿、白模及投影开关实际检查；PNG实际导出检查另附。本轮未重新验证GLB外部导入。",
+    "道路平面38884对候选面的独立重叠检查通过。全部232根桥墩逐一检查下层道路净空；74个不安全候选跳过。",
+    "149段路缘为横道留出开口，合计约326.6m；这不是无障碍坡道的完整建模。新增桥结构约110156三角形、3个合并网格，不新增全场景渲染通道。",
+    "近树叶簇500→320三角面，最多96棵详细树，树冠上限1339860→998100。全部2473树位保持。几何内存与场景预算详见下表；无GPU帧率结论。"
+  ],
+  "audit": [
+    {
+      "name": "白地、网点与落影",
+      "status": "本轮覆盖核心分离",
+      "next": "进一步区分墙面朝光与投影；保持亮地留白。"
+    },
+    {
+      "name": "立面与实体细节",
+      "status": "共享布局、近框覆盖、玻璃层次",
+      "next": "临街/共墙识别、首层与冠部、用途化屋顶。"
+    },
+    {
+      "name": "树冠与叶缘",
+      "status": "连续LOD与预算，修正叶簇被遮挡",
+      "next": "整冠明暗分组、细叶缘疏密；不靠继续堆面数。"
+    },
+    {
+      "name": "主轮廓与细竖肋",
+      "status": "仍有断续条码",
+      "next": "按屏幕尺寸分别处理细构件和主体轮廓。"
+    },
+    {
+      "name": "近处接地阴影",
+      "status": "现有阴影域精度未提升",
+      "next": "近域/多域阴影，保留远处楼影并避免游动。"
+    },
+    {
+      "name": "临街与步行空间",
+      "status": "步道/车道分层、铺装与路缘开口",
+      "next": "入口可达性、降缘缓坡、共墙和设施净空。"
+    },
+    {
+      "name": "桥梁垂直关系",
+      "status": "桥板、护栏与避障支撑",
+      "next": "78处名义高程连接、桥头坡道、天桥上下通道。"
+    },
+    {
+      "name": "场景深度与彩色层次",
+      "status": "保持现有范围与风格",
+      "next": "地形和远城另行评估，不用虚构山体掩盖边界。"
+    }
+  ],
+  "commits": [
+    {
+      "hash": "0300485",
+      "summary": "docs: define v0.4 engine detail acceptance"
+    },
+    {
+      "hash": "5a96db5",
+      "summary": "feat(facades): share pane layouts with solid frames and vary building grammars"
+    },
+    {
+      "hash": "5a8f3a7",
+      "summary": "feat(ink): separate ground paper from cast shadow tone"
+    },
+    {
+      "hash": "21e4618",
+      "summary": "docs: audit remaining visual gaps against reference"
+    },
+    {
+      "hash": "62e8725",
+      "summary": "feat(glazing): add directional sky reflection and controlled ink highlights"
+    },
+    {
+      "hash": "179a7ab",
+      "summary": "v0.4: blend tree LOD through shared canopy geometry"
+    },
+    {
+      "hash": "0d0cc16",
+      "summary": "feat(ui): expose reproducible glazing highlights in v0.4"
+    },
+    {
+      "hash": "f927ae1",
+      "summary": "fix(facades): generate nearby frames by distance instead of extract order"
+    },
+    {
+      "hash": "6c70fd1",
+      "summary": "chore(qa): compare v0.4 geometry budgets with frozen v0.3"
+    },
+    {
+      "hash": "5576453",
+      "summary": "Fix hidden mid-distance canopy lobes during LOD morph"
+    },
+    {
+      "hash": "90dd28a",
+      "summary": "feat(ink): distinguish pedestrian paving from carriageways"
+    },
+    {
+      "hash": "2f39bb6",
+      "summary": "feat(roads): separate raised sidewalks from asphalt and constrain inferred paving"
+    },
+    {
+      "hash": "caf5e25",
+      "summary": "fix(roads): keep observed crossing approaches flush through sidewalks"
+    },
+    {
+      "hash": "5766ac1",
+      "summary": "fix(streets): open kerbs at pedestrian crossings"
+    },
+    {
+      "hash": "8a9ae14",
+      "summary": "feat(bridges): add deck thickness guards and clearance-checked piers"
+    },
+    {
+      "hash": "f653eb0",
+      "summary": "fix(bridges): leave clear openings at same-level bridge branches"
+    },
+    {
+      "hash": "ec70715",
+      "summary": "fix(streets): keep zebra paint close to the road surface"
+    },
+    {
+      "hash": "02749e2",
+      "summary": "docs: record independent v0.4 visual acceptance"
+    }
+  ]
+}
