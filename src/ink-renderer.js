@@ -112,7 +112,7 @@ float screentone(float density){
 }
 float windowAt(vec2 p){
   vec4 id=sample0(tId,p);
-  float capable=step(.1,fract(id.a));
+  float capable=1.-step(.10,abs(id.a-1.25));
   return sample0(tColor,p).a*isClass(classAt(id),1.)*capable;
 }
 void main(){
@@ -124,7 +124,9 @@ void main(){
     vec4 id=sample0(tId,vUv);
     float kind=classAt(id),depth=linearDepth(rawDepth);
     float tree=isClass(kind,2.),ground=max(isClass(kind,3.),isClass(kind,5.));
-    float roadPaint=isClass(kind,3.)*step(.4,fract(id.a));
+    // Do not use fract here: interpolation just below an integral class wraps
+    // to nearly 1 and would misclassify whole road triangles as white paint.
+    float roadPaint=1.-step(.12,abs(id.a-3.5));
     float distanceFade=1.-smoothstep(850.,6500.,depth);
     float innerWidth=lineWidth*mix(.82,1.,distanceFade);
     float outerWidth=innerWidth*outlineWidth*mix(1.,1.25,tree);
