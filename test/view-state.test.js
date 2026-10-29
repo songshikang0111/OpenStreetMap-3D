@@ -5,7 +5,7 @@ import {decodeView,encodeView} from '../src/view-state.js';
 import {parseOSM} from '../src/osm.js';
 
 test('saved view round-trips camera, seed, style and visibility',()=>{
-  const state={version:2,mode:1,seed:27,view:'citic',position:[390,270,660],target:[0,265,0],parameters:{lens:42,'ao-strength':80,'facade-detail':35},toggles:{'trees-toggle':false}};
+  const state={version:2,mode:1,seed:27,view:'citic',position:[390,270,660],target:[0,265,0],parameters:{lens:42,'ao-strength':80,'facade-detail':35,'glass-reflection':65},toggles:{'trees-toggle':false}};
   assert.deepEqual(decodeView(encodeView(state)),state);
 });
 test('view decoder rejects malformed payloads and strips unsupported or unsafe inputs',()=>{

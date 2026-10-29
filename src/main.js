@@ -132,6 +132,8 @@ function applyParameters(){
   city.shared.windows.value=$('windows-toggle').checked?1:0;city.detailGroup.visible=$('windows-toggle').checked;
   if(city.shared.facadeDetail)city.shared.facadeDetail.value=Number($('facade-detail').value)/100;
   $('facade-output').value=`${$('facade-detail').value}%`;
+  if(city.shared.glassReflection)city.shared.glassReflection.value=Number($('glass-reflection').value)/100;
+  $('glass-output').value=`${$('glass-reflection').value}%`;
   city.treeGroup.visible=$('trees-toggle').checked;if(city.streetGroup)city.streetGroup.visible=$('props-toggle').checked;
   sun.castShadow=$('shadows-toggle').checked;sun.shadow.needsUpdate=true;invalidate();
 }

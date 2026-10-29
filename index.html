@@ -5,7 +5,7 @@
   <header class="topbar">
     <a class="brand" href="/" aria-label="京城线境首页"><span class="brand-icon">京</span><span><strong>京城线境</strong><small>BEIJING CITY INK</small></span></a>
     <span class="top-description">从真实地图，到一页城市漫画</span>
-    <div class="header-actions"><span class="local-badge"><i></i> 程序化城市 · v0.3</span><button id="save-view" class="button">保存视角</button><button id="export-png" class="button primary">导出 PNG <span>↗</span></button><button id="export-glb" class="button">3D 模型 ↓</button></div>
+    <div class="header-actions"><span class="local-badge"><i></i> 程序化城市 · v0.4</span><button id="save-view" class="button">保存视角</button><button id="export-png" class="button primary">导出 PNG <span>↗</span></button><button id="export-glb" class="button">3D 模型 ↓</button></div>
   </header>
   <main class="workspace">
     <aside class="sidebar">
@@ -28,6 +28,7 @@
         <label class="slider-label" for="density"><span>墨色浓度</span><output id="density-output">85%</output></label><input id="density" type="range" min="20" max="150" value="85"/>
         <details class="advanced"><summary>线条、留白与空气感</summary>
           <label class="slider-label" for="facade-detail"><span>远景窗格保留</span><output id="facade-output">50%</output></label><input id="facade-detail" type="range" min="0" max="100" value="50"/><p class="data-note">低值更简洁，高值保留更多远处窗格。近处建筑细节始终保留。</p>
+          <label class="slider-label" for="glass-reflection"><span>玻璃留白</span><output id="glass-output">65%</output></label><input id="glass-reflection" type="range" min="0" max="100" value="65"/><p class="data-note">调节玻璃反光亮区的强弱，亮区随观察方向变化。</p>
           <label class="slider-label" for="outline-width"><span>外轮廓倍率</span><output id="outline-output">1.35</output></label><input id="outline-width" type="range" min="1" max="2.5" step=".05" value="1.35"/>
           <label class="slider-label" for="tone-threshold"><span>亮面留白</span><output id="threshold-output">52%</output></label><input id="tone-threshold" type="range" min="25" max="85" value="52"/>
           <label class="slider-label" for="ao-strength"><span>接触阴影</span><output id="ao-output">65%</output></label><input id="ao-strength" type="range" min="0" max="200" value="65"/>
