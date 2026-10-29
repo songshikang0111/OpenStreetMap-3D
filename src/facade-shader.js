@@ -42,32 +42,34 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
       float footprintU=fwidth(u),footprintV=fwidth(v);
       // Each axis resolves independently: a grazing wall may lose its columns
       // while its horizontal floor bands remain several pixels high.
-      float keepU=1.-smoothstep(.45,1.4,footprintU);
-      float keepV=1.-smoothstep(.45,1.4,footprintV);
+      float fineStart=mix(.12,.22,uFacadeDetail),fineEnd=mix(.36,.60,uFacadeDetail);
+      float keepU=1.-smoothstep(fineStart,fineEnd,footprintU);
+      float keepV=1.-smoothstep(fineStart,fineEnd,footprintV);
       float horizontalPane=mix(meanU,max(0.,stripe(u,paneWidth)-stripe(u,.018)*splitU),keepU);
       float verticalPane=mix(meanV,max(0.,stripe(v,paneHeight)-stripe(v-.16,.018)*splitV),keepV);
       float mask=horizontalPane*verticalPane;
       float resolved=max(keepU,keepV);
       // A stable bay-group rhythm is shared by the near and distant material.
       // It describes broad glazing strips, not a new camera-dependent texture.
-      float group=mix(3.,4.,step(2.5,vLayout.w));
-      float groupPane=stripe(u/group,.44);
-      float groupedGlass=mix(.28,1.,groupPane);
+      float group=mix(6.,8.,step(2.5,vLayout.w));
+      float groupPane=mix(stripe(u/group,.38),stripe(v/3.,.35),ribbon);
+      float groupedGlass=mix(.24,1.,groupPane);
       vec3 reflected=reflect(normalize(vGlassWorld-cameraPosition),normalize(vGlassNormal));
       float sky=smoothstep(-.16,.65,reflected.y);
       float cloud=.5+.5*sin(reflected.x*5.+reflected.z*3.+reflected.y*8.+vStyle.y*2.);
       float reflection=smoothstep(.14,.9,sky*.70+cloud*.30)*clamp(uGlassReflection,0.,1.);
       float glassDark=mix(.92,.36,reflection)*mix(.60,1.20,vStyle.y);
-      float opacity=mix(.91,glassDark*groupedGlass,isGlass);
-      // Threshold BEFORE the fade: post-processing must not erase a fading
-      // signal with a second threshold. The unresolved portion goes to tone.
-      float detail=1.-smoothstep(mix(.22,.36,uFacadeDetail),mix(.80,1.15,uFacadeDetail),min(footprintU,footprintV));
-      float windowInk=smoothstep(.32,.82,mask*opacity);
+      float opacity=mix(.91,glassDark,isGlass);
+      // Map broad material reflectance BEFORE multiplying filtered coverage.
+      // Thresholding an already filtered pane amplifies near-Nyquist weaving.
+      float materialInk=smoothstep(.32,.82,opacity)*mix(1.,groupedGlass,max(isGlass,ribbon));
+      float detail=resolved;
+      float windowInk=mask*materialInk;
       inkWindow=windowInk*detail;
       // Preserve average glass area and broad reflection once panes disappear.
       // The material signal is separate from lighting/AO, so white wall and
       // glazed curtain wall cannot collapse to the same neutral shade.
-      inkTone=mask*opacity*(1.-detail)*mix(.65,1.18,isGlass);
+      inkTone=meanU*meanV*materialInk*(1.-detail)*mix(.72,1.,isGlass);
       float d1=vFacade.x/14.+vFacade.y/20.,d2=vFacade.x/14.-vFacade.y/20.;
       float diagonalFade=1.-smoothstep(.22,.85,max(fwidth(d1),fwidth(d2)));
       float diagonals=max(stripe(d1,.035),stripe(d2,.035))*diagonalFade*diagrid;
@@ -77,14 +79,18 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
       vec3 glass=mix(vec3(.17,.24,.28),vec3(.31,.39,.44),cell*.06*resolved+vStyle.y*.4);
       glass=mix(glass,vec3(.21,.31,.37),zun*.55);
       glass=mix(glass,vec3(.55,.65,.70),reflection*isGlass*.70);
-      glass=mix(glass,vec3(.63,.67,.68),(1.-groupedGlass)*isGlass);
+      glass=mix(glass,vec3(.63,.67,.68),(1.-groupedGlass)*max(isGlass,ribbon));
       diffuseColor.rgb=mix(diffuseColor.rgb,glass,mask*.9);
       diffuseColor.rgb*=1.-stripe(v+.47,.025)*mix(.12,.26,ribbon)*keepV;
       diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.49,.55,.57),diagonals*.85);`}
     }
   `);
   shader.fragmentShader = shader.fragmentShader.replace('#include <opaque_fragment>', `#include <opaque_fragment>
-    gl_FragColor.a=${lightOnly ? '(vStyle.x>.5 ? inkTone : 1.-getShadowMask())' : 'inkWindow'};`);
+    gl_FragColor.a=${lightOnly ? '(abs(vFacadeClass-1.25)<.1 ? inkTone : 1.-getShadowMask())' : 'inkWindow'};`);
+  if(lightOnly){
+    shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nattribute float inkClass; varying float vFacadeClass;').replace('#include <begin_vertex>','#include <begin_vertex>\nvFacadeClass=inkClass;');
+    shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying float vFacadeClass;');
+  }
 }
 
-export const facadeAttributeDefaults = { aFacade:[0,0,0,0],aStyle:[0,0],aLayout:[0,0,0,0] };
+export const facadeAttributeDefaults = { aFacade:[0,0,0,0],aStyle:[0,0],aLayout:[0,0,0,0],inkClass:[4] };

@@ -52,7 +52,7 @@ test('comic pass isolates light, reuses shadows, and tracks a changed camera nea
   assert(!passes.some(p=>p.target===ink.light),'color view skips unnecessary illumination draw');
   const shader={uniforms:{},vertexShader:THREE.ShaderLib.standard.vertexShader,fragmentShader:THREE.ShaderLib.standard.fragmentShader};ink.lightMaterial.onBeforeCompile(shader);
   assert(!shader.fragmentShader.includes('#include <color_fragment>'),'instance tint cannot contaminate the neutral pass');
-  assert(shader.fragmentShader.includes('vStyle.x>.5 ? inkTone : 1.-getShadowMask()'),'facade roofs keep zero material ink; ground retains shadows');
+  assert(shader.fragmentShader.includes('abs(vFacadeClass-1.25)<.1 ? inkTone : 1.-getShadowMask()'),'facade roofs keep zero material ink; ground retains shadows');
   assert(!shader.fragmentShader.includes('diffuseColor.rgb=mix(diffuseColor.rgb,glass'),'facade tint must not change neutral illumination');
   const clayShader={fragmentShader:'#include <color_fragment>'};ink.clayMaterial.onBeforeCompile(clayShader);
   assert.equal(clayShader.fragmentShader,'','white model must also ignore per-instance green tint');
