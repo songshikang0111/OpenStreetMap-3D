@@ -75,7 +75,17 @@ test('facade controls remain live after seed regeneration without another scene 
   assert.equal(shader.uniforms.uGlassReflection.value,.12);
   assert.equal(shader.uniforms.uFacadeToneSize.value,7,'macro filtering follows the actual tone-cell size after regeneration');
   second.provenance.value=1;ink.render();assert.equal(shader.uniforms.uProvenance.value,1);
-  assert.equal(passes.length,12,'two frames still use the existing six passes');
+  assert.equal(passes.length,14,'each frame resolves illustration edges with one additional fullscreen pass');
   assert.deepEqual(ink.lightMaterial.defaultAttributeValues.aFacade,[0,0,0,0]);
+  ink.dispose();
+});
+
+test('edge resolve follows export dimensions while object IDs remain discrete',()=>{
+  const ink=new InkRenderer({},new THREE.Scene(),new THREE.PerspectiveCamera());
+  ink.resize(2401,1295);
+  assert.equal(ink.normal.samples,4);assert.equal(ink.ids.samples,0);
+  assert.equal(ink.composite.width,2401);assert.equal(ink.composite.height,1295);
+  assert.equal(ink.resolveMaterial.uniforms.resolution.value.x,1/2401);
+  assert.equal(ink.resolveMaterial.uniforms.resolution.value.y,1/1295);
   ink.dispose();
 });

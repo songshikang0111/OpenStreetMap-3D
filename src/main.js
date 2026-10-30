@@ -6,12 +6,13 @@ import { parseOSM, mergeOSMOverlay } from './osm.js';
 import { buildCity as buildEnhancedCity } from './city.js';
 import { InkRenderer as EnhancedInkRenderer } from './ink-renderer.js';
 import { decodeView,encodeView,parameterRanges } from './view-state.js';
+import {collectDepthBounds,stableNearPlane} from './depth-policy.js';
 import { LOCATIONS,resolveLocation,loadLocationData,coordinateLabel,genericViews } from './locations.js';
 
 const $=id=>document.getElementById(id);
 const viewport=$('viewport');
 let renderer,scene,camera,controls,ink,city,data,sun,needsRender=true,mode=0,inspect=false,toastTimer;
-let mapState=null;
+let mapState=null,depthBounds=[];
 const initialView=decodeView(location.hash);
 if(initialView?.toggles?.['landscape-toggle']===false)$('landscape-toggle').checked=false;
 let rawData,seed=initialView?.seed||1,currentView='overview';
@@ -159,7 +160,7 @@ function updateGenerationStats(){
   $('render-status').textContent=`${data.buildings.length} 个体块 · ${city.treeCount} 棵树 · 规则生成细节`;
 }
 function regenerate(nextSeed){
-  const old=city;seed=nextSeed;data=parseOSM(rawData,seed);city=buildCity(data);scene.remove(old.group);scene.add(city.group);
+  const old=city;seed=nextSeed;data=parseOSM(rawData,seed);city=buildCity(data);depthBounds=collectDepthBounds(city.group);scene.remove(old.group);scene.add(city.group);
   ink.setFacadeShared?.(city.shared);
   const geometries=new Set(),materials=new Set();old.group.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);});
   for(const g of geometries)g.dispose();for(const m of materials)m.dispose();
@@ -256,7 +257,7 @@ async function initialize(){
       if(!response.ok)throw new Error(`地图数据 ${name} 读取失败 (${response.status})。`);
       return response.json();
     },mergeOSMOverlay);
-    rawData=raw;data=parseOSM(raw,seed);city=buildCity(data);
+    rawData=raw;data=parseOSM(raw,seed);city=buildCity(data);depthBounds=collectDepthBounds(city.group);
     scene=new THREE.Scene();scene.background=new THREE.Color('#f7f5ed');scene.add(city.group);
     renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:false,powerPreference:'high-performance'});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
@@ -284,7 +285,7 @@ async function initialize(){
       if(needsRender||controls.autoRotate){
         // A tiny near plane wastes depth precision in district-wide views and
         // makes metre-scale facade trims fight their backing walls.
-        const near=Math.max(.4,Math.min(12,camera.position.y*.012));
+        const near=stableNearPlane(camera.position,depthBounds);
         if(Math.abs(camera.near-near)>.01){camera.near=near;camera.updateProjectionMatrix();}
         city.updateLOD(camera,viewport.clientHeight);ink.render();drawMap();
         $('camera-readout').textContent=`机位 ${camera.position.toArray().map(n=>n.toFixed(1)).join(', ')} m · FOV ${camera.fov.toFixed(1)}°`;

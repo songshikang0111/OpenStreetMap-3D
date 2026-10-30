@@ -178,7 +178,7 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
     mesh.userData.originalColors=mesh.geometry.attributes.color.array.slice();mesh.userData.sourceColor=new THREE.Color(sourceColors[building.source]);
     group.add(mesh);buildings.push(mesh);
   });
-  const equipment=roofWriter.mesh(baseMaterial,'Procedural roof equipment groups');equipment.userData.inkClass=4;group.add(equipment);
+  const equipment=roofWriter.mesh(baseMaterial,'Procedural roof equipment groups');equipment.userData.inkClass=4;equipment.userData.depthBoundsCoveredByBuildings=true;group.add(equipment);
   const roofOriginal=equipment.geometry.attributes.position.array.slice();equipment.userData.lod={total:roofDetails.length,visible:roofDetails.length};
   const dummy=new THREE.Object3D();
   const frameMesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({color:'#dadbd4',roughness:.83}),nearWalls.length?18000:0);

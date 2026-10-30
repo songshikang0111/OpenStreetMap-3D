@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { foliageGLSL } from './foliage.js';
 import { halftoneGLSL } from './halftone.js';
 import { installFacadeShader, facadeAttributeDefaults } from './facade-shader.js';
+import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
 // Independent screen-space illustration renderer. Render targets remain linear.
 export const INK_DEFAULTS = Object.freeze({
@@ -111,7 +112,7 @@ float pavingIntegral(float p,float width){return floor(p)*2.*width+clamp(fract(p
 float pavingStripe(float p,float width){float footprint=max(fwidth(p),.001);return clamp((pavingIntegral(p+footprint*.5,width)-pavingIntegral(p-footprint*.5,width))/footprint,0.,1.);}
 void main(){
   float rawDepth=sample0(tDepth,vUv).r;
-  if(rawDepth>.999999){gl_FragColor=vec4(paper,1.);}
+  if(rawDepth>.999999){gl_FragColor=vec4(paper,0.);}
   else{
     vec3 color=sample0(tColor,vUv).rgb;
     vec3 normal=normalAt(vUv);
@@ -217,7 +218,9 @@ void main(){
       result=mix(lit,ink,edge*.24);
     }else if(mode<3.5){result=color*(1.-ao*.5);}
     else{result=mix(color,ink,edge*.32);}
-    gl_FragColor=vec4(result,1.);
+    // Alpha is a structural-edge mask for the final AA resolve. It is not
+    // transparency: screentone and broad facade washes stay untouched.
+    gl_FragColor=vec4(result,clamp(edge,0.,1.));
   }
   #include <colorspace_fragment>
 }`;
@@ -244,11 +247,14 @@ export class InkRenderer {
     this.facadeSource=facadeShared;
     this.facadeUniforms=Object.fromEntries(Object.entries(facadeShared).map(([key,u])=>[key,{value:u.value}]));
     const makeTarget=(filter=THREE.LinearFilter)=>new THREE.WebGLRenderTarget(1,1,{minFilter:filter,magFilter:filter,type:THREE.HalfFloatType,depthBuffer:true});
-    this.color=makeTarget();this.light=makeTarget();this.normal=makeTarget(THREE.NearestFilter);this.ids=makeTarget(THREE.NearestFilter);this.ao=makeTarget();
+    this.color=makeTarget();this.light=makeTarget();this.normal=makeTarget(THREE.NearestFilter);this.ids=makeTarget(THREE.NearestFilter);this.ao=makeTarget();this.composite=makeTarget();
     // The renderer's canvas antialias flag does not cover offscreen targets.
     // Resolve subpixel facade ribs before the color buffer reaches post effects.
     this.color.samples=4;
     this.light.samples=4;
+    this.normal.samples=4;
+    // ID values are discrete labels. Never average IDs with MSAA: mixtures
+    // would fabricate building/road identities at an otherwise smooth edge.
     // A neutral reflectance pass separates lighting/cast shadows from glass,
     // asphalt and paint. These dark materials must not all become black ink.
     this.lightMaterial=new THREE.MeshStandardMaterial({color:new THREE.Color(.6,.6,.6),roughness:1,side:THREE.DoubleSide});
@@ -285,6 +291,26 @@ export class InkRenderer {
     }});
     this.screenGeometry=new THREE.PlaneGeometry(2,2);this.screenMesh=new THREE.Mesh(this.screenGeometry,this.material);
     this.screen=new THREE.Scene();this.screen.add(this.screenMesh);this.screenCamera=new THREE.Camera();
+    this.resolveMaterial=new THREE.ShaderMaterial({
+      depthTest:false,depthWrite:false,vertexShader,
+      uniforms:{tDiffuse:{value:this.composite.texture},resolution:{value:new THREE.Vector2(1,1)}},
+      fragmentShader:FXAAShader.fragmentShader
+      .replace('texture( tex2D, uv )','textureLod( tex2D, uv, 0. )')
+      // A single return avoids ANGLE's false uninitialized return warning on
+      // the vendor shader's early-return branch; the algorithm is unchanged.
+      .replace(/if \( ShouldSkipPixel\( luminance \) \) \{[\s\S]*?\n\s*\}/,'vec4 resolved=Sample(tex2D,uv);\n if (!ShouldSkipPixel(luminance)) {')
+      .replace('return Sample( tex2D, uv );\n\n\t\t}\n\n\t\tvoid main()', 'resolved=Sample(tex2D,uv);\n }\n return resolved;\n }\n void main()')
+      .replace('gl_FragColor = ApplyFXAA( tDiffuse, resolution.xy, vUv );',`
+        vec4 original=texture2D(tDiffuse,vUv);
+        float edge=original.a;
+        edge=max(edge,texture2D(tDiffuse,vUv+vec2(resolution.x,0.)).a);
+        edge=max(edge,texture2D(tDiffuse,vUv-vec2(resolution.x,0.)).a);
+        edge=max(edge,texture2D(tDiffuse,vUv+vec2(0.,resolution.y)).a);
+        edge=max(edge,texture2D(tDiffuse,vUv-vec2(0.,resolution.y)).a);
+        gl_FragColor=vec4(mix(original.rgb,ApplyFXAA(tDiffuse,resolution,vUv).rgb,smoothstep(.08,.7,edge)),1.);
+        #include <colorspace_fragment>
+      `),
+    });
     this.clayMaterial=new THREE.MeshStandardMaterial({color:'#e5e5df',roughness:1});
     this.clayMaterial.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','');};
     this.clayMaterial.customProgramCacheKey=()=> 'neutral-clay-no-instance-color-v1';
@@ -305,7 +331,8 @@ export class InkRenderer {
   }
 
   resize(width,height){
-    for(const target of [this.color,this.light,this.normal,this.ids])target.setSize(width,height);
+    for(const target of [this.color,this.light,this.normal,this.ids,this.composite])target.setSize(width,height);
+    this.resolveMaterial.uniforms.resolution.value.set(1/width,1/height);
     const aw=Math.max(1,Math.ceil(width/2)),ah=Math.max(1,Math.ceil(height/2));this.ao.setSize(aw,ah);
     this.material.uniforms.resolution.value.set(width,height);this.material.uniforms.aoResolution.value.set(aw,ah);
     this.aoMaterial.uniforms.resolution.value.set(width,height);
@@ -334,15 +361,16 @@ export class InkRenderer {
       s.overrideMaterial=this.normalMaterial;r.setRenderTarget(this.normal);r.clear();r.render(s,c);
       s.overrideMaterial=this.idMaterial;r.setRenderTarget(this.ids);r.clear();r.render(s,c);
       this.screenMesh.material=this.aoMaterial;r.setRenderTarget(this.ao);r.clear();r.render(this.screen,this.screenCamera);
-      this.screenMesh.material=this.material;r.setRenderTarget(null);r.render(this.screen,this.screenCamera);
+      this.screenMesh.material=this.material;r.setRenderTarget(this.composite);r.clear();r.render(this.screen,this.screenCamera);
+      this.screenMesh.material=this.resolveMaterial;r.setRenderTarget(null);r.render(this.screen,this.screenCamera);
     }finally{
       s.overrideMaterial=override;s.background=background;r.shadowMap.autoUpdate=autoUpdate;r.setClearColor(clear,alpha);r.setRenderTarget(null);this.screenMesh.material=this.material;
     }
   }
 
   dispose(){
-    for(const target of [this.color,this.light,this.normal,this.ids,this.ao])target.dispose();
-    for(const m of [this.normalMaterial,this.idMaterial,this.material,this.aoMaterial,this.clayMaterial,this.lightMaterial])m.dispose();
+    for(const target of [this.color,this.light,this.normal,this.ids,this.ao,this.composite])target.dispose();
+    for(const m of [this.normalMaterial,this.idMaterial,this.material,this.aoMaterial,this.clayMaterial,this.lightMaterial,this.resolveMaterial])m.dispose();
     this.screenGeometry.dispose();
   }
 }
