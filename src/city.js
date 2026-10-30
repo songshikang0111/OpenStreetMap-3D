@@ -10,7 +10,7 @@ import { installFacadeShader } from './facade-shader.js';
 import { buildLandscape } from './landscape.js';
 
 class MeshWriter {
-  constructor() { this.positions = []; this.normals = []; this.colors = []; this.facades = []; this.ids = []; this.styles=[]; this.style=0; this.variant=0; this.layouts=[]; this.layout=[0,0,0,0]; }
+  constructor() { this.positions = []; this.normals = []; this.colors = []; this.facades = []; this.ids = []; this.styles=[]; this.style=0; this.variant=0; this.layouts=[]; this.layout=[0,0,0,0]; this.surfaces=[];this.surface=[0,1]; }
   triangle(a, b, c, normal, color, id = 0, uv = null) {
     const ab = new THREE.Vector3().subVectors(new THREE.Vector3(...b), new THREE.Vector3(...a));
     const ac = new THREE.Vector3().subVectors(new THREE.Vector3(...c), new THREE.Vector3(...a));
@@ -22,6 +22,7 @@ class MeshWriter {
       this.ids.push(...code); this.facades.push(...(uv ? uv[i] : [0, 0, 0, 0]));
       this.styles.push(this.style,this.variant);
       this.layouts.push(...this.layout);
+      this.surfaces.push(...this.surface);
     });
   }
   quad(points, normal, color, id = 0, uv = null) {
@@ -36,6 +37,7 @@ class MeshWriter {
     geo.setAttribute('objectId', new THREE.Float32BufferAttribute(this.ids, 3));
     geo.setAttribute('aStyle', new THREE.Float32BufferAttribute(this.styles, 2));
     geo.setAttribute('aLayout', new THREE.Float32BufferAttribute(this.layouts, 4));
+    geo.setAttribute('aSurface', new THREE.Float32BufferAttribute(this.surfaces, 2));
     geo.computeBoundingBox(); geo.computeBoundingSphere();
     return geo;
   }
@@ -78,7 +80,7 @@ function addBeam(writer,a,b,width,color,id=0){
 function facadeMaterial(shared) {
   const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .76, metalness: .04 });
   material.onBeforeCompile = shader => installFacadeShader(shader,shared);
-  material.customProgramCacheKey = () => 'city-ink-facade-v5-multiscale';
+  material.customProgramCacheKey = () => 'city-ink-facade-v6-materials';
   return material;
 }
 
@@ -98,12 +100,13 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
   const landscape=buildLandscape(data,{roadPlan:roadSurface.plan,seed:data.seed||1,profile:{...data.metadata?.landscapeProfile,enabled:landscapeEnabled}});
   group.add(landscape.group);
 
-  const buildings=[],nearWalls=[],landmarks=[],familyCounts={},grammarCounts={};
+  const buildings=[],nearWalls=[],landmarks=[],familyCounts={},grammarCounts={},surfaceCounts={};
   const sourceColors={height:'#60988e',levels:'#86a8c3',estimated:'#daab73'};
   const roofWriter=new MeshWriter();
   data.buildings.forEach((building,index)=>{
-    const writer=new MeshWriter(),id=index+1,style=buildingStyle(building),landmark=landmarkKind(building);
+    const writer=new MeshWriter(),id=index+1,style=buildingStyle(building,data.seed||1),landmark=landmarkKind(building);
     writer.style=style.code;writer.variant=style.variant;familyCounts[style.family]=(familyCounts[style.family]||0)+1;
+    writer.surface=[style.surface,style.surfaceScale];surfaceCounts[style.surfaceName]=(surfaceCounts[style.surfaceName]||0)+1;
     const wall=new THREE.Color(style.color),floorHeight=style.floor,baseY=.45+building.minHeight,topY=.45+building.height;
     const trim=style.family==='curtain'?'#c9d5d7':'#e5e1d6';
     let profile=null;
@@ -125,8 +128,11 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
           // surfaces become unstable in a kilometre-wide perspective view.
           addBox(writer,[mid[0]-normal[0]*.35,topY+.32,mid[1]-normal[2]*.35],[len,.65,.5],trim,id,angle);
           if(style.family==='curtain'&&building.height>60){
-            addBox(writer,[mid[0]+normal[0]*.22,topY-4,mid[1]+normal[2]*.22],[len,1.1,.7],trim,id,angle);
+            addBox(writer,[mid[0]+normal[0]*.12,topY-4,mid[1]+normal[2]*.12],[len,.24,.25],trim,id,angle);
             if(len>12)for(let column=layout.group;column<layout.bays;column+=layout.group){
+              // Full-height structural fins need a real depth separation at
+              // kilometre-scale near/far ranges. Pane-level mullions remain
+              // thin in the nearby-detail LOD; these group several bays.
               const u=column/layout.bays;addBox(writer,[a[0]+dx*u+normal[0]*.20,(baseY+topY)/2,a[1]+dz*u+normal[2]*.20],[.30,topY-baseY,.8],trim,id,angle);
             }
           }
@@ -156,6 +162,7 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
     }
     const mesh=writer.mesh(material,building.tags.name||building.id);mesh.userData.feature=building;mesh.userData.generatedFacade=true;mesh.userData.inkClass=1;
     mesh.userData.facadeFamily=style.family;mesh.userData.landmark=profile;
+    mesh.userData.facadeSurface=style.surfaceName;mesh.userData.facadeGrammar=style.grammar;
     if(profile){landmarks.push({...profile,osmId:building.osmId});building.generatedShape=profile.name;building.generatedShapeNote=profile.note;}
     mesh.userData.originalColors=mesh.geometry.attributes.color.array.slice();mesh.userData.sourceColor=new THREE.Color(sourceColors[building.source]);
     group.add(mesh);buildings.push(mesh);
@@ -184,5 +191,5 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
     shared.provenance.value=on?1:0;
     for(const mesh of buildings){const colors=mesh.geometry.attributes.color;if(on){const c=mesh.userData.sourceColor;for(let i=0;i<colors.count;i++)colors.setXYZ(i,c.r,c.g,c.b);}else colors.array.set(mesh.userData.originalColors);colors.needsUpdate=true;}
   }
-  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,landscapeStats:landscape.stats,sourceColors,landmarks,familyCounts,grammarCounts,facadeStats:{candidateWalls:nearWalls.length,maxInstances:18000}};
+  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,landscapeStats:landscape.stats,sourceColors,landmarks,familyCounts,grammarCounts,surfaceCounts,facadeStats:{candidateWalls:nearWalls.length,maxInstances:18000}};
 }

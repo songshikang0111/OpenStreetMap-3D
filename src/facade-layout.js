@@ -2,24 +2,34 @@
 // A single layout drives both the shader's pane mask and nearby solid frames.
 const grammars = {
   curtain: [
-    { name: 'continuous-grid', bay: 2.4, width: .90, height: .86, split: 0, group: 3 },
-    { name: 'paired-mullions', bay: 3.0, width: .91, height: .84, split: 1, group: 3 },
-    { name: 'spandrel-grid', bay: 2.7, width: .88, height: .70, split: 2, group: 4 },
+    { name: 'continuous-grid', bay: 2.1, width: .975, height: .96, split: 0, group: 4 },
+    { name: 'paired-mullions', bay: 3.0, width: .975, height: .95, split: 1, group: 5 },
+    { name: 'slender-vertical', bay: 1.65, width: .95, height: .975, split: 0, group: 6 },
+    { name: 'glass-spandrel', bay: 2.8, width: .975, height: .90, split: 0, group: 4 },
   ],
   residential: [
     { name: 'punched-windows', bay: 3.4, width: .60, height: .62, split: 0, group: 3 },
     { name: 'paired-casements', bay: 3.8, width: .68, height: .64, split: 1, group: 3 },
     { name: 'transom-windows', bay: 3.5, width: .62, height: .70, split: 2, group: 4 },
+    { name: 'tall-stone-bays', bay: 3.0, width: .48, height: .80, split: 0, group: 4 },
+    { name: 'wide-recessed-pairs', bay: 4.6, width: .77, height: .59, split: 1, group: 3 },
+    { name: 'square-precast', bay: 3.6, width: .69, height: .69, split: 0, group: 3 },
   ],
   ribbon: [
     { name: 'horizontal-ribbon', bay: 3.9, width: .93, height: .52, split: 0, group: 4 },
     { name: 'paired-ribbon', bay: 4.2, width: .94, height: .56, split: 1, group: 4 },
     { name: 'deep-spandrel', bay: 3.8, width: .91, height: .46, split: 2, group: 3 },
+    { name: 'long-ribbon', bay: 5.6, width: .97, height: .65, split: 1, group: 5 },
+    { name: 'framed-office-bays', bay: 3.3, width: .72, height: .78, split: 0, group: 3 },
+    { name: 'twin-horizontal', bay: 4.8, width: .88, height: .72, split: 2, group: 4 },
   ],
   lowrise: [
     { name: 'small-punched', bay: 3.6, width: .54, height: .60, split: 0, group: 3 },
     { name: 'paired-lowrise', bay: 4.0, width: .66, height: .65, split: 1, group: 3 },
     { name: 'transom-lowrise', bay: 3.7, width: .60, height: .70, split: 2, group: 4 },
+    { name: 'narrow-masonry', bay: 2.8, width: .44, height: .76, split: 0, group: 3 },
+    { name: 'wide-shopfront', bay: 4.8, width: .81, height: .73, split: 1, group: 4 },
+    { name: 'square-rendered', bay: 3.3, width: .65, height: .56, split: 0, group: 3 },
   ],
 };
 
@@ -69,8 +79,10 @@ export function nearbyFacadeFrames(walls, position, limit=18000) {
       const {bay,level}=cell,u=cell.x/len,y=baseY+cell.y,w=cell.width,h=cell.height;
       const x=a[0]+dx*u+normal[0]*.10,z=a[1]+dz*u+normal[2]*.10;
       if(Math.hypot(x-position.x,z-position.z)>160||Math.abs(y-position.y)>90)continue;
-      const frames=[{x,y:y-h/2,z,angle,w,h:.13,d:.35}];
-      if(cell.split===1)frames.push({x,y,z,angle,w:.036*layout.bayWidth,h,d:.20});
+      // Curtain mullions sit almost flush; masonry keeps a projecting sill.
+      const glass=style.family==='curtain',splitWidth=glass?.016:.036;
+      const frames=[{x,y:y-h/2,z,angle,w,h:glass?.065:.13,d:glass?.12:.35}];
+      if(cell.split===1)frames.push({x,y,z,angle,w:splitWidth*layout.bayWidth,h,d:glass?.12:.20});
       if(cell.split===2)frames.push({x,y:y+.16*layout.floor,z,angle,w,h:.036*layout.floor,d:.20});
       if(style.family==='residential'){
         frames.push({x:x-dx/len*w/2,y,z:z-dz/len*w/2,angle,w:.12,h,d:.24});

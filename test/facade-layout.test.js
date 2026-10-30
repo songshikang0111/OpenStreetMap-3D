@@ -40,7 +40,7 @@ test('solid nearby sills follow GPU layout at arbitrary wall length', () => {
   const firstRow=[];
   for(let k=0;k<frames.count;k++){
     frames.getMatrixAt(k,matrix);matrix.decompose(position,rotation,scale);
-    if(Math.abs(position.z+.1)<1e-5&&Math.abs(scale.y-.13)<1e-5&&Math.abs(position.y-(.45+(1.5-halfHeight)*floor))<1e-4){
+    if(Math.abs(position.z+.1)<1e-5&&Math.abs(scale.y-.065)<1e-5&&Math.abs(position.y-(.45+(1.5-halfHeight)*floor))<1e-4){
       firstRow.push(position.x);assert(Math.abs(scale.x-(13.7/bays)*halfWidth*2)<1e-5);
     }
   }
