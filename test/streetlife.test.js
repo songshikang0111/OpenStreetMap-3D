@@ -71,9 +71,11 @@ test('Beijing furniture has finite instance transforms and foliage-only ink clas
   life.updateLOD({ position: { x: 0, y: 3, z: 0 } });
   assert(life.stats.nearTrees > 0);
   assert(life.stats.nearTrees<=TREE_LOD.maxTrees);
-  assert.equal(life.treeGroup.getObjectByName('Distant tree crowns').count,life.treeCount);
+  const farCrowns=life.treeGroup.children.filter(mesh=>/^Distant .*crowns$/.test(mesh.name));
+  assert.equal(farCrowns.reduce((sum,mesh)=>sum+mesh.count,0),life.treeCount);
   assert(life.stats.maxCrownTriangles<life.treeCount*180+96*(19*500-180),'bounded budget is lower than v0.3');
-  assert.equal(life.stats.crownTriangles,life.treeCount*180+life.stats.nearTrees*18*320);
+  const farTriangles=farCrowns.reduce((sum,mesh)=>sum+mesh.count*(mesh.geometry.index?.count||mesh.geometry.attributes.position.count)/3,0);
+  assert.equal(life.stats.crownTriangles,farTriangles+life.stats.nearTrees*18*320);
   for (const group of [life.treeGroup, life.streetGroup]) group.traverse(mesh => {
     if (!mesh.isInstancedMesh) return;
     assert([...mesh.instanceMatrix.array].every(Number.isFinite));

@@ -19,13 +19,14 @@ const hull=points=>{
   for(const p of [...points].reverse()){while(upper.length>=2&&cross(upper.at(-2),upper.at(-1),p)<=0)upper.pop();upper.push(p);}
   lower.pop();upper.pop();return lower.concat(upper);
 };
-const geometry=foliage.crownGeometry(),positions=geometry.attributes.position;
+const geometries=new Map(['spreading','cypress','conifer'].map(shape=>[shape,foliage.crownGeometry(false,shape)]));
+const positionsFor=tree=>geometries.get(foliage.isNeedleCrown?.(tree.shape)?tree.shape:'spreading').attributes.position;
 const silhouettes=trees.map(tree=>{
+  const positions=positionsFor(tree);
   const base=foliage.crownBase(tree),c=Math.cos(base.angle),s=Math.sin(base.angle),points=[];
   for(let i=0;i<positions.count;i++){const x=positions.getX(i)*base.scale[0],z=positions.getZ(i)*base.scale[2];points.push([base.position[0]+x*c+z*s,base.position[2]-x*s+z*c]);}
   return hull(points);
 });
-geometry.dispose();
 const overlap=(a,b)=>{
   for(const polygon of [a,b])for(let i=0;i<polygon.length;i++){
     const p=polygon[i],q=polygon[(i+1)%polygon.length],axis=[p[1]-q[1],q[0]-p[0]];
@@ -65,6 +66,7 @@ for(const t of trees.filter(t=>t.source!=='osm')){
   // the engine's conservative tree-clearance helper.
   const candidates=elevated.filter(s=>segmentDistance(p,s.a,s.b)<s.width/2+t.radius+.3);
   if(candidates.length){
+    const positions=positionsFor(t);
     const base=foliage.crownBase(t),c=Math.cos(base.angle),sine=Math.sin(base.angle),vertices=[];
     for(let i=0;i<positions.count;i++){const x=positions.getX(i)*base.scale[0],z=positions.getZ(i)*base.scale[2];vertices.push([base.position[0]+x*c+z*sine,base.position[1]+positions.getY(i)*base.scale[1],base.position[2]-x*sine+z*c]);}
     const lower=Math.min(...vertices.map(p=>p[1])),upper=Math.max(...vertices.map(p=>p[1])),found=new Set();
@@ -86,4 +88,5 @@ for(const t of trees.filter(t=>t.source!=='osm')){
   }
 }
 const shapes={};for(const t of trees)shapes[t.shape]=(shapes[t.shape]||0)+1;
+for(const geometry of geometries.values())geometry.dispose();
 console.log(JSON.stringify({generatedAt:new Date().toISOString(),sourceRoot:root,scope:'CPU planning and opaque full-size far-crown convex footprints projected onto the ground; contact is a geometry proxy, not leaf coverage, observed vegetation or GPU FPS.',generationMs,trees:trees.length,stats:plan.stats,shapes,landscapeCandidates:landscape.trees.length,connectivity:{touchingTrees:touching.size,touchFraction:touching.size/trees.length,overlappingPairs:pairs,largestGroup:Math.max(...components.values()),groupsOfAtLeastThree:[...components.values()].filter(n=>n>=3).length,minimumRootSpacing:Math.min(...nearest),bySource:counts},conflicts},null,2));

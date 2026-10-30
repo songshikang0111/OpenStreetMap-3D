@@ -3,7 +3,8 @@ import { inside, stableRandom } from './osm.js';
 import { clipPaintSegment } from './road-surface.js';
 import { roadHeightAt } from './road-grade.js';
 import { treeStructureClearance } from './tree-clearance.js';
-import { crownGeometry, foliageMaterial, crownBase, crownEnvelope, crownProfile, crownMorphWeight, treeLODWeights, TREE_LOD } from './foliage.js';
+import { chooseTreeHabit } from './vegetation-rules.js';
+import { crownGeometry, foliageMaterial, crownBase, crownEnvelope, crownProfile, crownMorphWeight, treeLODWeights, TREE_LOD, isNeedleCrown } from './foliage.js';
 export { TREE_LOD } from './foliage.js';
 
 // These additions are spatially constrained illustrations, not surveyed street assets.
@@ -131,7 +132,7 @@ function crossing(a, b, c, d) {
 }
 
 /** Pure deterministic placement. Kept independent of Three.js rendering for clearance tests. */
-export function planStreetLife(data, { seed = 1, maxTrees = null, plantingProfile = {}, maxCars = 110, maxPeople = 170, roadPlan = null, landscapeTrees = [] } = {}) {
+export function planStreetLife(data, { seed = 1, maxTrees = null, plantingProfile = {}, vegetationMix = {}, maxCars = 110, maxPeople = 170, roadPlan = null, landscapeTrees = [] } = {}) {
   const planting = { ...TREE_PLANTING_PROFILE };
   for (const key of Object.keys(planting)) if (Number.isFinite(plantingProfile[key])) planting[key] = Math.max(.5, plantingProfile[key]);
   planting.streetSpacingMin = Math.max(6, planting.streetSpacingMin);
@@ -195,18 +196,19 @@ export function planStreetLife(data, { seed = 1, maxTrees = null, plantingProfil
     if (trees.length >= maxTrees || !isClear(point, source === 'osm' ? .5 : 2.1) || treeNear(point, source === 'osm' ? 2.6 : planting.minimumSpacing)) return false;
     const rng = stableRandom(`crown:${key}:${seed}`), h = clamp(height || 8.2 + rng() * 3, 3.8, 19);
     const choice = rng(), family = shape || (choice < .12 ? 'columnar' : choice < .37 ? 'round' : choice < .67 ? 'vase' : 'spreading');
-    const tree = { x: point[0], z: point[1], h, radius: 0, shape: family, key, source, seed, rotation: rng() * Math.PI * 2, variation: rng(), ...extra };
+    const habit=chooseTreeHabit({tags:extra.treeTags,context:extra.plantingContext,group:extra.vegetationGroup||extra.siteKey||key,patch:extra.vegetationPatch||'',key,seed,fallback:family,mix:vegetationMix});
+    const tree = { x: point[0], z: point[1], h, radius: 0, key, source, seed, rotation: rng() * Math.PI * 2, variation: rng(), ...extra, ...habit };
     const envelope = crownEnvelope(tree); tree.radius = envelope.radius; tree.crownBottom = envelope.bottom; tree.crownTop = envelope.top;
     // Broad mature crowns may overhang a road above their clear stems. They
     // must not pass through buildings. A confined frontage gets a narrow tree.
     if (source !== 'osm' && atBuilding(point, tree.radius)) {
-      tree.shape = 'columnar'; const narrow = crownEnvelope(tree); tree.radius = narrow.radius; tree.crownBottom = narrow.bottom; tree.crownTop = narrow.top;
+      tree.shape = isNeedleCrown(tree.shape)?'cypress':'columnar'; const narrow = crownEnvelope(tree); tree.radius = narrow.radius; tree.crownBottom = narrow.bottom; tree.crownTop = narrow.top;
       if (atBuilding(point, tree.radius)) return false;
     }
     trees.push(tree); occupiedTrees.add(tree, [tree.x, tree.z, tree.x, tree.z]); return true;
   }
   for (const tree of data.trees || []) {
-    if (addTree(tree.point, `osm:${tree.id}`, tree.height, 'osm')) stats.observedTrees++;
+    if (addTree(tree.point, `osm:${tree.id}`, tree.height, 'osm', undefined, {treeTags:tree.tags})) stats.observedTrees++;
     else stats.rejectedObservedTrees++;
   }
   // Queue inferred planting by source AND site. A long first road must not
@@ -222,7 +224,7 @@ export function planStreetLife(data, { seed = 1, maxTrees = null, plantingProfil
     const rng = stableRandom(`tree-row:${row.id}:${seed}`), points = row.points || [];
     const line = { segments: points.slice(1).map((p, i) => [points[i], p]) };
     sampleRoad(line, planting.rowSpacing, 2, (point, dx, dz, i) => {
-      offer('inferred-osm-row', String(row.id), { point, key: `row:${row.id}:${i}`, height: parseFloat(row.tags?.height) || 8.5 + rng() * 2.5 });
+      offer('inferred-osm-row', String(row.id), { point, key: `row:${row.id}:${i}`, height: parseFloat(row.tags?.height) || 8.5 + rng() * 2.5, treeTags:row.tags, vegetationGroup:`row:${row.id}`,vegetationPatch:Math.floor(i/4) });
     });
   }
   const plantedRoads = driveRoads.filter(r => r.width >= 7 && /^(primary|secondary|tertiary|residential|unclassified)$/.test(r.type)).sort((a, b) => String(a.id).localeCompare(String(b.id)));
@@ -252,7 +254,7 @@ export function planStreetLife(data, { seed = 1, maxTrees = null, plantingProfil
       for (let z = Math.max(bounds[1] + 3, box[1]) + step / 2; z < Math.min(bounds[3] - 3, box[3]); z += step, row++)
         for (let x = Math.max(bounds[0] + 3, box[0]) + step / 2 + (row % 2) * step / 2; x < Math.min(bounds[2] - 3, box[2]); x += step) {
           const p = [x + (rng() - .5) * 1.6, z + (rng() - .5) * 1.6];
-          if (suitable(p)) offer('inferred-green', String(green.id), { point: p, key: `green:${green.id}:${row}:${x}`, height: 9 + rng() * 4, shape: rng()<.25?'round':'spreading', plantingContext: 'woodland' });
+          if (suitable(p)) offer('inferred-green', String(green.id), { point: p, key: `green:${green.id}:${row}:${x}`, height: 9 + rng() * 4, shape: rng()<.25?'round':'spreading', plantingContext: 'woodland', treeTags:green.tags,vegetationGroup:`green:${green.id}`,vegetationPatch:`${Math.floor((x-box[0])/22)}:${Math.floor((z-box[1])/22)}` });
         }
     } else {
       // Follow actual polygon edges in staggered, locally continuous belts.
@@ -273,13 +275,13 @@ export function planStreetLife(data, { seed = 1, maxTrees = null, plantingProfil
             // farther into the lawn; enforce distance to the closest edge.
             const edge = Math.min(...green.outer.map((a,i)=>segmentDistance(q,a,green.outer[(i+1)%green.outer.length])));
             if (edge > (lawn ? planting.lawnEdgeDepth : planting.parkEdgeDepth)) continue;
-            offer('inferred-green', String(green.id), { point: q, key: `green:${green.id}:${index}:${row}:${side}`, height: (lawn ? 7.8 : 8.6) + rng() * 2.5, shape: rng()<.28?'round':'spreading', plantingContext: lawn ? 'lawn-edge' : 'park-belt' });
+            offer('inferred-green', String(green.id), { point: q, key: `green:${green.id}:${index}:${row}:${side}`, height: (lawn ? 7.8 : 8.6) + rng() * 2.5, shape: rng()<.28?'round':'spreading', plantingContext: lawn ? 'lawn-edge' : 'park-belt',treeTags:green.tags,vegetationGroup:`green:${green.id}`,vegetationPatch:Math.floor(index/3) });
           }
         }
       });
     }
   }
-  for (const tree of landscapeTrees) offer('inferred-landscape', tree.siteKey || tree.template || String(tree.key), tree);
+  for (const tree of landscapeTrees) offer('inferred-landscape', tree.siteKey || tree.template || String(tree.key), {...tree,plantingContext:tree.template||'',vegetationGroup:tree.siteKey||tree.key,vegetationPatch:Math.floor((Number(String(tree.key).split(':').at(-1))||0)/3)});
   const queues = new Map();
   for (const [source, groups] of candidates) {
     const sites = [...groups.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([,items])=>items), queue=[];
@@ -430,18 +432,28 @@ export function buildStreetLife(data, options = {}) {
     dummy.position.copy(start).add(end).multiplyScalar(.5); dummy.quaternion.setFromUnitVectors(up, direction.clone().normalize()); dummy.scale.set(radius, direction.length(), radius); dummy.updateMatrix(); target.setMatrixAt(i, dummy.matrix);
   }
   const trunks = mesh(treeGroup, 'Trunks', cylinder, plan.trees.length, '#756650', 4);
-  const far = mesh(treeGroup, 'Distant tree crowns', crown, plan.trees.length, '#81916b', 2);
+  const far = mesh(treeGroup, 'Distant tree crowns', crown, plan.trees.filter(t=>!isNeedleCrown(t.shape)).length, '#81916b', 2);
+  const crownBatches = new Map([['broad', far]]);
+  for (const shape of ['cypress','conifer']) {
+    const count = plan.trees.filter(t=>t.shape===shape).length;
+    if(count) crownBatches.set(shape, mesh(treeGroup, `Distant ${shape} crowns`, crownGeometry(false,shape), count, '#567463', 2));
+  }
+  const packed = new Map(), farInstances = plan.trees.map(t=>{
+    const family = isNeedleCrown(t.shape)?t.shape:'broad', index=packed.get(family)||0; packed.set(family,index+1);
+    return {mesh:crownBatches.get(family),index};
+  });
   const maxDetailedTrees=TREE_LOD.maxTrees,clusters=TREE_LOD.clusters;
   const near = mesh(treeGroup, 'Nearby crown clusters', detailedCrown, Math.min(plan.trees.length, maxDetailedTrees) * clusters, '#81916b', 2);
   const branches = mesh(treeGroup, 'Nearby branching', cylinder, Math.min(plan.trees.length, maxDetailedTrees) * TREE_LOD.branches, '#756650', 4);
-  near.instanceMatrix.setUsage(THREE.DynamicDrawUsage); far.instanceMatrix.setUsage(THREE.DynamicDrawUsage); branches.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  near.instanceMatrix.setUsage(THREE.DynamicDrawUsage); for(const target of crownBatches.values())target.instanceMatrix.setUsage(THREE.DynamicDrawUsage); branches.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   plan.trees.forEach((tree, i) => transform(trunks, i, [tree.x, tree.h * .28 + .35, tree.z], [tree.h * .016, tree.h * .56, tree.h * .016]));
   const colors = ['#778865', '#8b9975', '#738568', '#94a079'];
-  const baseShapes = plan.trees.map(crownBase), baseColors = plan.trees.map(tree => new THREE.Color(colors[Math.floor(tree.variation * colors.length)]));
-  baseShapes.forEach((base, i) => transform(far, i, base.position, base.scale, base.angle, baseColors[i]));
+  const needleColors = ['#486b59','#57735d','#607a64','#506957'];
+  const baseShapes = plan.trees.map(crownBase), baseColors = plan.trees.map(tree => new THREE.Color((isNeedleCrown(tree.shape)?needleColors:colors)[Math.floor(tree.variation * colors.length)]));
+  baseShapes.forEach((base, i) => transform(farInstances[i].mesh, farInstances[i].index, base.position, base.scale, base.angle, baseColors[i]));
   // This base remains present in every pass and at every distance. Its initial
   // bounding sphere is valid throughout LOD because it only shrinks in place.
-  far.computeBoundingSphere();
+  for(const target of crownBatches.values())target.computeBoundingSphere();
   const profiles = new Map(), tint = new THREE.Color();
   const lodState = { weights: new Float32Array(plan.trees.length), active: [], radius: TREE_LOD.distance, fullDistance: TREE_LOD.nearDistance };
   let lastPosition = null, previousActive = new Set();
@@ -452,9 +464,10 @@ export function buildStreetLife(data, options = {}) {
     const next = treeLODWeights(plan.trees, camera.position), activeSet = new Set(next.active.map(item => item.index));
     for (const index of new Set([...previousActive, ...activeSet])) {
       const base = baseShapes[index], weight = crownMorphWeight(next.weights[index]);
-      transform(far, index, base.position, [base.scale[0] * (1 - .26 * weight), base.scale[1] * (1 - .18 * weight), base.scale[2] * (1 - .26 * weight)], base.angle);
+      const target = farInstances[index], shrink = isNeedleCrown(plan.trees[index].shape)?0:weight;
+      transform(target.mesh, target.index, base.position, [base.scale[0] * (1 - .26 * shrink), base.scale[1] * (1 - .18 * shrink), base.scale[2] * (1 - .26 * shrink)], base.angle);
     }
-    if (previousActive.size || activeSet.size) far.instanceMatrix.needsUpdate = true;
+    if (previousActive.size || activeSet.size) for(const target of crownBatches.values())target.instanceMatrix.needsUpdate = true;
     let n = 0, b = 0;
     for (const { index, weight: selectionWeight } of next.active) {
       const weight = crownMorphWeight(selectionWeight);
@@ -474,10 +487,11 @@ export function buildStreetLife(data, options = {}) {
     if (profiles.size > maxDetailedTrees * 2) for (const index of profiles.keys()) { if (!activeSet.has(index)) profiles.delete(index); if (profiles.size <= maxDetailedTrees * 2) break; }
     previousActive = activeSet; Object.assign(lodState, next);
     const triangles = geometry => (geometry.index?.count || geometry.attributes.position.count) / 3;
+    const farTriangles = [...crownBatches.values()].reduce((sum,target)=>sum+target.count*triangles(target.geometry),0);
     Object.assign(plan.stats, { nearTrees: next.active.length, transitionTrees: next.active.filter(item => item.weight < .999).length, treeDetailRadius: next.radius,
-      crownTriangles: far.count * triangles(crown) + near.count * triangles(detailedCrown),
-      treeTriangles: far.count * triangles(crown) + near.count * triangles(detailedCrown) + (trunks.count + branches.count) * triangles(cylinder),
-      maxCrownTriangles: plan.trees.length * triangles(crown) + Math.min(plan.trees.length, maxDetailedTrees) * clusters * triangles(detailedCrown) });
+      crownTriangles: farTriangles + near.count * triangles(detailedCrown),
+      treeTriangles: farTriangles + near.count * triangles(detailedCrown) + (trunks.count + branches.count) * triangles(cylinder),
+      maxCrownTriangles: farTriangles + Math.min(plan.trees.length, maxDetailedTrees) * clusters * triangles(detailedCrown) });
   }
   updateLOD({ position: new THREE.Vector3(0, 1000, 0) });
   const poles = mesh(streetGroup, 'Roadside lamp poles', cylinder, plan.lamps.length, '#718080', 4);
