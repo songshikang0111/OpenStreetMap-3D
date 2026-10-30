@@ -8,7 +8,13 @@ const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 const at=(s,t,offset=0)=>[s.a[0]+s.direction[0]*t-s.direction[1]*offset,s.a[1]+s.direction[1]*t+s.direction[0]*offset];
 export function segmentDistance(p,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/(dx*dx+dz*dz||1)));return Math.hypot(p[0]-a[0]-dx*t,p[1]-a[1]-dz*t);}
 const inBounds=(p,b,padding=0)=>p[0]>=b[0]+padding&&p[1]>=b[1]+padding&&p[0]<=b[2]-padding&&p[1]<=b[3]-padding;
-const thickness=s=>s.walk?.38:Math.max(.65,Math.min(1.1,s.width*.065));
+// Shared with vegetation clearance; these match the generated slab and the
+// top faces of the pedestrian handrail / vehicle parapet, in metres.
+export const roadStructureDimensions = s => ({
+  thickness: s.stairFlight ? .24 : s.walk ? .38 : Math.max(.65,Math.min(1.1,s.width*.065)),
+  railTop: s.walk ? 1.1125 : .825,
+});
+const thickness=s=>roadStructureDimensions(s).thickness;
 const crosses=(a,b,c,d)=>{const dx=b[0]-a[0],dz=b[1]-a[1],ex=d[0]-c[0],ez=d[1]-c[1],den=dx*ez-dz*ex;if(Math.abs(den)<1e-9)return false;const x=c[0]-a[0],z=c[1]-a[1],t=(x*ez-z*ex)/den,u=(x*dz-z*dx)/den;return t>=0&&t<=1&&u>=0&&u<=1;};
 function entersDeck(a,b,deck){
   const box=deck.bounds;

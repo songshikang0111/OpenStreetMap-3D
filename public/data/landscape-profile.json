@@ -1,5 +1,5 @@
 {
-  "name": "商务区：开放前场、草坪与疏树",
+  "name": "商务区：开放前场、草坪与连续树带",
   "reference": "https://news.bjd.com.cn/2024/10/23/10944711.shtml",
   "interpretation": "照片只用于模板比例参考，不是遥感分类或真实场地边界。",
   "buildingSetback": 3,
@@ -7,7 +7,7 @@
   "frontDepth": 29,
   "maxFrontDepth": 43,
   "vergeDepth": 18,
-  "treeSpacing": 14,
+  "treeSpacing": 8.8,
   "plantingInset": 2.6,
   "forecourtApron": 4.2,
   "gardenApron": 2.4,
@@ -17,7 +17,7 @@
   "commonMaxRadius": 65,
   "commonSampling": 24,
   "maxSites": 640,
-  "maxTrees": 600,
+  "maxTrees": 1200,
   "maxProps": 260,
   "maxSurfaces": 5200
 }

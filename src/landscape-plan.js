@@ -5,8 +5,8 @@ import { area, inside, stableRandom } from './osm.js';
 // proportions, but neither imagery nor a city's coordinates enter the planner.
 export const LANDSCAPE_PROFILE = Object.freeze({
   buildingSetback: 3, accessWidth: 7, frontDepth: 29, maxFrontDepth: 43,
-  roadSetback: 1.1, vergeDepth: 18, treeSpacing: 14,
-  minSiteArea: 85, minPlantingArea: 22, maxSites: 540, maxTrees: 600,
+  roadSetback: 1.1, vergeDepth: 18, treeSpacing: 8.8,
+  minSiteArea: 85, minPlantingArea: 22, maxSites: 540, maxTrees: 1200,
   maxProps: 260, maxSurfaces: 5200, maxCommons: 36, commonMinRadius: 20,
   commonMaxRadius: 65, commonSampling: 24, plantingInset: 2.6,
   forecourtApron: 4.2, gardenApron: 2.4, shrubWidth: 1.6,
@@ -278,17 +278,17 @@ export function planLandscape(data, { roadPlan = null, seed = 1, profile = {} } 
     stats.layouts[layout]=(stats.layouts[layout]||0)+1;
     sites.push({ key, template, layout, origin, u, v, width, start, depth, accessWidth: access * 2, area: available });
 
-    // Rows follow each court's own axes, not a global world grid. Alternate
-    // heights and a few omissions keep an orderly CBD planting palette alive.
-    const spacing = settings.treeSpacing, height = template === 'verge' ? 5.8 : 6.4;
-    for (let a = -width / 2 + 5; a < width / 2 - 3; a += spacing) {
-      if (Math.abs(a) < access + 4 || rng() < .13) continue;
-      const b = first + Math.min(5, (last - first) * .5), across=a+(rng()-.5)*1.4;
-      let q = point(across, b + (rng() - .5) * 1.2);
-      if(!clearsBoundary(q,planting,2.35))q=point(across,last-4.2);
-      if (!clearsBoundary(q, planting, 2.35)) continue;
-      const h = height + rng() * 2;
-      trees.push({ point: q, key: `${key}:tree:${trees.length}`, siteKey: key, template, height: h, shape: template === 'verge' ? 'columnar' : 'spreading', source: 'inferred-landscape' });
+    // Mature crowns share an avenue-like rhythm. Wider panels receive a
+    // staggered second rank, keeping their middle access axis entirely clear.
+    const spacing = settings.treeSpacing, rowDepths = [first + Math.min(4.4, (last-first)*.5)];
+    if (last-first >= 12.5) rowDepths.push(Math.min(last-3.1, rowDepths[0]+6.7));
+    let localSerial=0;
+    for (const [row,b] of rowDepths.entries()) for (let a=-width/2+5+(row%2)*spacing*.5; a<width/2-3; a+=spacing) {
+      if (Math.abs(a)<access+3.8) continue;
+      const across=a+(rng()-.5)*.8, q=point(across,b+(rng()-.5)*.8);
+      if(!clearsBoundary(q,planting,2.35))continue;
+      const h=(template==='verge'?8.1:8.5)+rng()*2,choice=rng();
+      trees.push({point:q,key:`${key}:tree:${localSerial++}`,siteKey:key,template,height:h,shape:choice<.25?'round':choice<.6?'vase':'spreading',source:'inferred-landscape'});
     }
     if (width > 30 && planting.length) {
       const along = Math.min(depth - 3.5, start + 9), across = access + .55;
@@ -400,14 +400,19 @@ export function planLandscape(data, { roadPlan = null, seed = 1, profile = {} } 
     stats.templates['pocket-common']=(stats.templates['pocket-common']||0)+1;
     sites.push({key,template:'pocket-common',origin,u,v,width:halfW*2,start:-halfD,depth:halfD,accessWidth:access,area:available,radius,openEdgeMargin:3});commonCount++;
     const rng=stableRandom(`site:${key}:${seed}`),localTrees=[];
-    const target=Math.min(10,Math.max(5,Math.round(available/900)));
-    for(let i=0;i<120&&localTrees.length<target;i++) {
-      const q=point((rng()*2-1)*halfW*.78,(rng()*2-1)*halfD*.77);
-      if(!clearsBoundary(q,planting,2.8)||localTrees.some(t=>dist(q,t.point)<10))continue;
-      // Keep open lawn centres and place small clumps around their margins.
-      if(Math.min(...planting.filter(p=>inPolygon(q,p)).flatMap(p=>p.map(r=>edgeDistance(q,open(r)))))>9)continue;
-      const tree={point:q,key:`${key}:tree:${localTrees.length}`,siteKey:key,template:'pocket-common',height:6.2+rng()*2.2,shape:'spreading',source:'inferred-landscape'};
-      localTrees.push(tree);trees.push(tree);
+    const target=Math.min(24,Math.max(8,Math.round(available/400)));
+    for(let i=0;i<160&&localTrees.length<target;i++) {
+      const a=(rng()*2-1)*halfW*.78,b=(rng()*2-1)*halfD*.77,angle=rng()*Math.PI*2;
+      // Plant little 2–3 tree groups along the open lawn's margins. A random
+      // anchor alone produces isolated dots; companions create linked crowns.
+      for(let member=0;member<3&&localTrees.length<target;member++) {
+        const offset=member===0?0:6.6,azimuth=angle+(member-1)*2.1;
+        const q=point(a+Math.cos(azimuth)*offset,b+Math.sin(azimuth)*offset);
+        if(!clearsBoundary(q,planting,2.8)||localTrees.some(t=>dist(q,t.point)<6.1))continue;
+        if(Math.min(...planting.filter(p=>inPolygon(q,p)).flatMap(p=>p.map(r=>edgeDistance(q,open(r)))))>11)continue;
+        const tree={point:q,key:`${key}:tree:${localTrees.length}`,siteKey:key,template:'pocket-common',height:8.2+rng()*2.6,shape:rng()<.3?'round':'spreading',source:'inferred-landscape'};
+        localTrees.push(tree);trees.push(tree);
+      }
     }
     for(const side of [-1,1]) {
       const across=side*(access/2+.55),along=side*3,q=point(across,along);

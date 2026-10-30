@@ -2,10 +2,18 @@ import * as THREE from 'three';
 import { inside, stableRandom } from './osm.js';
 import { clipPaintSegment } from './road-surface.js';
 import { roadHeightAt } from './road-grade.js';
-import { crownGeometry, foliageMaterial, crownBase, crownProfile, crownMorphWeight, treeLODWeights, TREE_LOD } from './foliage.js';
+import { treeStructureClearance } from './tree-clearance.js';
+import { crownGeometry, foliageMaterial, crownBase, crownEnvelope, crownProfile, crownMorphWeight, treeLODWeights, TREE_LOD } from './foliage.js';
 export { TREE_LOD } from './foliage.js';
 
 // These additions are spatially constrained illustrations, not surveyed street assets.
+// Metres, counts and contextual planting rules; no city-specific coordinates.
+export const TREE_PLANTING_PROFILE = Object.freeze({
+  maxTrees: 6000, streetSpacingMin: 8.8, streetSpacingMax: 10.4,
+  streetHeightMin: 9.7, streetHeightMax: 11.7, rowSpacing: 8.2,
+  woodlandSpacing: 7.4, parkSpacing: 8.2, lawnEdgeDepth: 6.5,
+  parkEdgeDepth: 19, minimumSpacing: 6,
+});
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 const inPoly = (p, poly) => inside(p, poly.outer) && !(poly.holes || []).some(h => inside(p, h));
 const boundsOf = ring => ring.reduce((b, p) => [Math.min(b[0], p[0]), Math.min(b[1], p[1]), Math.max(b[2], p[0]), Math.max(b[3], p[1])], [Infinity, Infinity, -Infinity, -Infinity]);
@@ -82,21 +90,21 @@ export function gradeStreetLife(plan, roadPlan) {
   });
   // Trees inferred on a raised approach cannot be rooted in its thin side
   // paving. Remove only that speculative planting; actual OSM trees stay put.
-  const removed=[],structureRemoved=[];
-  const elevatedPaths=roadPlan.segments.filter(s=>s.walk&&(s.road.bridge||s.stairFlight||s.ramp)&&Math.max(s.yA,s.yB)>.8);
+  const removed=[],structureRemoved=[],structureTypes={vehicle:0,pedestrian:0};
+  const structuralConflict=treeStructureClearance(roadPlan);
   const trees=plan.trees.filter(tree=>{
-    // Inferred planting must leave room for new stairs and elevated walkways.
-    // Preserve observed OSM trees; their real conflict requires source review.
-    if(tree.source!=='osm'&&elevatedPaths.some(s=>segmentDistance([tree.x,tree.z],s.a,s.b)<s.width/2+tree.radius*.75+.25&&roadHeightAt(s,[tree.x,tree.z])<tree.h+.5)){
-      structureRemoved.push(tree);return false;
-    }
+    // Vehicle viaducts need the same clearance as footbridges and stairs.
+    // Use actual joined deck footprints and vertical slab/rail intervals;
+    // observed OSM trees stay unchanged and require source review if in conflict.
+    const conflict=tree.source!=='osm'&&structuralConflict(tree);
+    if(conflict){structureTypes[conflict.kind]++;structureRemoved.push(tree);return false;}
     if(tree.source!=='inferred-street')return true;
     const support=sample([tree.x,tree.z]);
     const suppress=support&&support.baseY>.62&&support.distance<=support.width/2+2;
     if(suppress)removed.push(tree);return !suppress;
   });
   const result={...plan,trees,curbs:attach(plan.curbs),crosswalks:attach(plan.crosswalks),cars:attach(plan.cars),people:attach(plan.people,true),lamps:attach(plan.lamps,true),signals:attach(plan.signals,true)};
-  result.stats={...plan.stats,trees:trees.length,streetTrees:plan.stats.streetTrees-removed.length-structureRemoved.filter(t=>t.source==='inferred-street').length,generatedTrees:plan.stats.generatedTrees-removed.length-structureRemoved.length,gradeAdjustedFurnishings:elevated,gradeSuppressedTrees:removed.length,structureSuppressedTrees:structureRemoved.length};
+  result.stats={...plan.stats,trees:trees.length,streetTrees:plan.stats.streetTrees-removed.length-structureRemoved.filter(t=>t.source==='inferred-street').length,generatedTrees:plan.stats.generatedTrees-removed.length-structureRemoved.length,gradeAdjustedFurnishings:elevated,gradeSuppressedTrees:removed.length,structureSuppressedTrees:structureRemoved.length,vehicleStructureSuppressedTrees:structureTypes.vehicle,pedestrianStructureSuppressedTrees:structureTypes.pedestrian};
   for(const [counter,source]of [['landscapeTrees','inferred-landscape'],['greenTrees','inferred-green'],['rowTrees','inferred-osm-row']]) result.stats[counter]=(plan.stats[counter]||0)-structureRemoved.filter(t=>t.source===source).length;
   return result;
 }
@@ -123,7 +131,13 @@ function crossing(a, b, c, d) {
 }
 
 /** Pure deterministic placement. Kept independent of Three.js rendering for clearance tests. */
-export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110, maxPeople = 170, roadPlan = null, landscapeTrees = [] } = {}) {
+export function planStreetLife(data, { seed = 1, maxTrees = null, plantingProfile = {}, maxCars = 110, maxPeople = 170, roadPlan = null, landscapeTrees = [] } = {}) {
+  const planting = { ...TREE_PLANTING_PROFILE };
+  for (const key of Object.keys(planting)) if (Number.isFinite(plantingProfile[key])) planting[key] = Math.max(.5, plantingProfile[key]);
+  planting.streetSpacingMin = Math.max(6, planting.streetSpacingMin);
+  planting.streetSpacingMax = Math.max(planting.streetSpacingMin, planting.streetSpacingMax);
+  planting.minimumSpacing = Math.max(4, planting.minimumSpacing);
+  maxTrees = Math.max(0, Math.floor(Number.isFinite(maxTrees) ? maxTrees : planting.maxTrees));
   const bounds = data.bounds, buildings = new Grid(), roads = new Grid(), occupiedTrees = new Grid(12);
   const validBounds = (p, margin = 1) => p[0] > bounds[0] + margin && p[0] < bounds[2] - margin && p[1] > bounds[1] + margin && p[1] < bounds[3] - margin;
   for (const building of data.buildings) buildings.add(building, boundsOf(building.outer));
@@ -176,51 +190,114 @@ export function planStreetLife(data, { seed = 1, maxTrees = 3600, maxCars = 110,
   }
   const treeSiteClear = p => ![...forbiddenTrees.near(p)].some(poly=>inPoly(p,poly)) && ![...paths.near(p)].some(s=>segmentDistance(p,s.a,s.b)<s.width/2+1);
   const treeNear = (p, distance) => [...occupiedTrees.near(p, distance)].some(t => Math.hypot(t.x - p[0], t.z - p[1]) < distance);
-  function addTree(point, key, height, source, shape) {
+  function addTree(point, key, height, source, shape, extra = {}) {
     if (source !== 'osm' && !treeSiteClear(point)) return false;
-    if (trees.length >= maxTrees || !isClear(point, source === 'osm' ? .5 : 2.1) || treeNear(point, source === 'osm' ? 2.6 : source === 'inferred-street' ? 9 : 6)) return false;
-    const rng = stableRandom(`crown:${key}:${seed}`), h = clamp(height || 6.8 + rng() * 3, 3.8, 19);
-    const tree = { x: point[0], z: point[1], h, radius: h * (shape === 'columnar' ? .17 : .29), shape: shape || (rng() < .22 ? 'columnar' : 'spreading'), key, source, rotation: rng() * Math.PI * 2, variation: rng() };
+    if (trees.length >= maxTrees || !isClear(point, source === 'osm' ? .5 : 2.1) || treeNear(point, source === 'osm' ? 2.6 : planting.minimumSpacing)) return false;
+    const rng = stableRandom(`crown:${key}:${seed}`), h = clamp(height || 8.2 + rng() * 3, 3.8, 19);
+    const choice = rng(), family = shape || (choice < .12 ? 'columnar' : choice < .37 ? 'round' : choice < .67 ? 'vase' : 'spreading');
+    const tree = { x: point[0], z: point[1], h, radius: 0, shape: family, key, source, seed, rotation: rng() * Math.PI * 2, variation: rng(), ...extra };
+    const envelope = crownEnvelope(tree); tree.radius = envelope.radius; tree.crownBottom = envelope.bottom; tree.crownTop = envelope.top;
+    // Broad mature crowns may overhang a road above their clear stems. They
+    // must not pass through buildings. A confined frontage gets a narrow tree.
+    if (source !== 'osm' && atBuilding(point, tree.radius)) {
+      tree.shape = 'columnar'; const narrow = crownEnvelope(tree); tree.radius = narrow.radius; tree.crownBottom = narrow.bottom; tree.crownTop = narrow.top;
+      if (atBuilding(point, tree.radius)) return false;
+    }
     trees.push(tree); occupiedTrees.add(tree, [tree.x, tree.z, tree.x, tree.z]); return true;
   }
   for (const tree of data.trees || []) {
     if (addTree(tree.point, `osm:${tree.id}`, tree.height, 'osm')) stats.observedTrees++;
     else stats.rejectedObservedTrees++;
   }
+  // Queue inferred planting by source AND site. A long first road must not
+  // spend the whole budget before parks and courtyards receive any trees.
+  const candidates = new Map();
+  const offer = (source, group, tree) => {
+    if (!candidates.has(source)) candidates.set(source, new Map());
+    const groups = candidates.get(source);
+    if (!groups.has(group)) groups.set(group, []);
+    groups.get(group).push({ ...tree, source, group });
+  };
   for (const row of data.treeRows || []) {
     const rng = stableRandom(`tree-row:${row.id}:${seed}`), points = row.points || [];
     const line = { segments: points.slice(1).map((p, i) => [points[i], p]) };
-    sampleRoad(line, 9, 2, (point, dx, dz, i) => {
-      if (addTree(point, `row:${row.id}:${i}`, parseFloat(row.tags?.height) || 7 + rng() * 2.5, 'inferred-osm-row')) stats.rowTrees++;
+    sampleRoad(line, planting.rowSpacing, 2, (point, dx, dz, i) => {
+      offer('inferred-osm-row', String(row.id), { point, key: `row:${row.id}:${i}`, height: parseFloat(row.tags?.height) || 8.5 + rng() * 2.5 });
     });
   }
   const plantedRoads = driveRoads.filter(r => r.width >= 7 && /^(primary|secondary|tertiary|residential|unclassified)$/.test(r.type)).sort((a, b) => String(a.id).localeCompare(String(b.id)));
   for (const road of plantedRoads) {
-    const rng = stableRandom(`avenue:${road.name || road.id}:${seed}`), step = 16 + rng() * 4;
-    const shape = rng() < .23 ? 'columnar' : 'spreading';
-    sampleRoad(road, step, 4 + rng() * 8, (p, dx, dz, index) => {
+    const rng = stableRandom(`avenue:${road.name || road.id}:${seed}`), step = planting.streetSpacingMin + rng() * (planting.streetSpacingMax - planting.streetSpacingMin);
+    const family = rng(), shape = family < .07 ? 'columnar' : family < .29 ? 'round' : family < .62 ? 'vase' : 'spreading';
+    const roadHeight = planting.streetHeightMin + rng() * (planting.streetHeightMax - planting.streetHeightMin);
+    sampleRoad(road, step, 3 + rng() * 5, (p, dx, dz, index) => {
       for (const side of [-1, 1]) {
-        const offset = road.width / 2 + 1.15;
-        const q = [p[0] - dz * side * offset, p[1] + dx * side * offset];
-        if (!nearJunction(q, Math.max(14, road.width)) && addTree(q, `street:${road.id}:${index}:${side}`, 6.3 + rng() * 2.1, 'inferred-street', shape)) stats.streetTrees++;
+        const offset = road.width / 2 + 1.25;
+        // A little longitudinal drift preserves a planted avenue's rhythm;
+        // arbitrary sideways jitter would push roots into its carriageway.
+        const drift = (rng() - .5) * .75;
+        const q = [p[0] - dz * side * offset + dx * drift, p[1] + dx * side * offset + dz * drift];
+        if (!nearJunction(q, Math.max(14, road.width))) offer('inferred-street', `${road.id}:${side}`, { point: q, key: `street:${road.id}:${index}:${side}`, height: roadHeight * (.93 + rng() * .14), shape, roadId: road.id });
       }
     });
   }
-  for (const green of data.greens || []) {
+  for (const green of [...(data.greens || [])].sort((a,b)=>String(a.id).localeCompare(String(b.id)))) {
     const rng = stableRandom(`green:${green.id}:${seed}`), box = boundsOf(green.outer);
-    const dense = /forest|wood|trees/.test([green.tags?.landuse,green.tags?.natural,green.tags?.landcover].join(' ')), step = dense ? 8.5 : 16;
+    const dense = /forest|wood|trees/.test([green.tags?.landuse, green.tags?.natural, green.tags?.landcover].join(' '));
     const lawn = /^(grass|meadow)$/.test(green.tags?.landuse || green.tags?.landcover || green.tags?.natural || '');
-    for (let x = Math.max(bounds[0] + 3, box[0]) + step / 2; x < Math.min(bounds[2] - 3, box[2]); x += step)
-      for (let z = Math.max(bounds[1] + 3, box[1]) + step / 2; z < Math.min(bounds[3] - 3, box[3]); z += step) {
-        if (!dense && rng() < .28) continue;
-        const p = [x + (rng() - .5) * step * .6, z + (rng() - .5) * step * .6];
-        const edge = Math.min(...green.outer.map((a,i)=>segmentDistance(p,a,green.outer[(i+1)%green.outer.length])));
-        // A lawn is an open surface, not a forest. Parks retain open centres.
-        if (!dense && (lawn ? edge>7 : edge>18 && rng()<.88)) continue;
-        if (inPoly(p, green) && addTree(p, `green:${green.id}:${x}:${z}`, 6 + rng() * 5, 'inferred-green')) stats.greenTrees++;
-      }
+    const suitable = p => inPoly(p, green) && [green.outer, ...(green.holes || [])].every(ring => ring.every((a,i)=>segmentDistance(p,a,ring[(i+1)%ring.length]) >= 1.8));
+    if (dense) {
+      const step = Math.max(6, planting.woodlandSpacing);
+      let row = 0;
+      for (let z = Math.max(bounds[1] + 3, box[1]) + step / 2; z < Math.min(bounds[3] - 3, box[3]); z += step, row++)
+        for (let x = Math.max(bounds[0] + 3, box[0]) + step / 2 + (row % 2) * step / 2; x < Math.min(bounds[2] - 3, box[2]); x += step) {
+          const p = [x + (rng() - .5) * 1.6, z + (rng() - .5) * 1.6];
+          if (suitable(p)) offer('inferred-green', String(green.id), { point: p, key: `green:${green.id}:${row}:${x}`, height: 9 + rng() * 4, shape: rng()<.25?'round':'spreading', plantingContext: 'woodland' });
+        }
+    } else {
+      // Follow actual polygon edges in staggered, locally continuous belts.
+      // Grass keeps a single edge row; parks get two staggered rows and an open centre.
+      const line = { segments: green.outer.map((p,i)=>[p,green.outer[(i+1)%green.outer.length]]) }, step = Math.max(6.5, planting.parkSpacing);
+      const rows = lawn ? [3.5] : [4.2, 10.9].filter(d=>d<=planting.parkEdgeDepth);
+      sampleRoad(line, step, 2.5, (p,dx,dz,index) => {
+        const patch = Math.floor(index / 5), patchRng = stableRandom(`green-patch:${green.id}:${patch}:${seed}`);
+        // Leave an occasional broad opening, not random single-tree holes.
+        if (patchRng() < (lawn ? .26 : .12)) return;
+        for (const [row, depth] of rows.entries()) {
+          if (lawn && depth > planting.lawnEdgeDepth) continue;
+          const along = (row % 2 ? step * .48 : 0) + (rng() - .5) * .8, inset = depth + (rng() - .5) * 1.1;
+          for (const side of [-1,1]) {
+            const q = [p[0] + dx * along - dz * inset * side, p[1] + dz * along + dx * inset * side];
+            if (!suitable(q)) continue;
+            // In concave polygons the row from a neighbouring edge can pass
+            // farther into the lawn; enforce distance to the closest edge.
+            const edge = Math.min(...green.outer.map((a,i)=>segmentDistance(q,a,green.outer[(i+1)%green.outer.length])));
+            if (edge > (lawn ? planting.lawnEdgeDepth : planting.parkEdgeDepth)) continue;
+            offer('inferred-green', String(green.id), { point: q, key: `green:${green.id}:${index}:${row}:${side}`, height: (lawn ? 7.8 : 8.6) + rng() * 2.5, shape: rng()<.28?'round':'spreading', plantingContext: lawn ? 'lawn-edge' : 'park-belt' });
+          }
+        }
+      });
+    }
   }
-  for (const tree of landscapeTrees) if (addTree(tree.point, tree.key, tree.height, 'inferred-landscape', tree.shape)) stats.landscapeTrees++;
+  for (const tree of landscapeTrees) offer('inferred-landscape', tree.siteKey || tree.template || String(tree.key), tree);
+  const queues = new Map();
+  for (const [source, groups] of candidates) {
+    const sites = [...groups.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([,items])=>items), queue=[];
+    for (let rank=0;sites.some(items=>rank<items.length);rank++) for (const items of sites) if(items[rank]) queue.push(items[rank]);
+    queues.set(source,{items:queue,index:0});
+  }
+  const counters = { 'inferred-osm-row':'rowTrees', 'inferred-street':'streetTrees', 'inferred-green':'greenTrees', 'inferred-landscape':'landscapeTrees' };
+  const cycle = ['inferred-osm-row','inferred-street','inferred-street','inferred-green','inferred-landscape'];
+  stats.treeCandidates = Object.fromEntries([...queues].map(([source,q])=>[source,q.items.length]));
+  while (trees.length < maxTrees && [...queues.values()].some(q=>q.index<q.items.length)) {
+    for (const source of cycle) {
+      const queue=queues.get(source); if (!queue || queue.index>=queue.items.length || trees.length>=maxTrees) continue;
+      const item=queue.items[queue.index++],{point,key,height,shape,group,...extra}=item;
+      if(addTree(point,key,height,source,shape,extra)) stats[counters[source]]++;
+    }
+  }
+  stats.treeBudget = maxTrees;
+  stats.treeBudgetLimited = [...queues.values()].some(q=>q.index<q.items.length);
   const facilityGrid = new Grid(20), reserveFacility = (p, distance = 12) => {
     if ([...facilityGrid.near(p, distance)].some(q => Math.hypot(q[0] - p[0], q[1] - p[1]) < distance)) return false;
     facilityGrid.add(p, [p[0], p[1], p[0], p[1]]); return true;
