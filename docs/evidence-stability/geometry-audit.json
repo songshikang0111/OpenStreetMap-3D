@@ -1,0 +1,34 @@
+[
+  {
+    "site": "beijing",
+    "bodies": 477,
+    "meshes": 524,
+    "bad": 0,
+    "buildMs": 5957,
+    "positionVertices": 1645903
+  },
+  {
+    "site": "shanghai",
+    "bodies": 719,
+    "meshes": 766,
+    "bad": 0,
+    "buildMs": 14736,
+    "positionVertices": 1881976
+  },
+  {
+    "site": "kyoto",
+    "bodies": 4460,
+    "meshes": 4508,
+    "bad": 0,
+    "buildMs": 25561,
+    "positionVertices": 2785720
+  },
+  {
+    "site": "amsterdam",
+    "bodies": 1950,
+    "meshes": 1992,
+    "bad": 0,
+    "buildMs": 22866,
+    "positionVertices": 1745830
+  }
+]

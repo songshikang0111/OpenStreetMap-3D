@@ -1,0 +1,16 @@
+
+> beijing-city-ink@0.8.1 build
+> vite build
+
+vite v6.4.5 building for production...
+transforming...
+✓ 47 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   10.54 kB │ gzip:   3.86 kB
+dist/assets/index-BPbkEoRY.css    11.44 kB │ gzip:   3.41 kB
+dist/assets/ink-v1-u8_0JqfT.js     5.49 kB │ gzip:   2.13 kB
+dist/assets/city-v1-DIqnv2DG.js    9.05 kB │ gzip:   3.97 kB
+dist/assets/index-0vrcxmfd.js    271.36 kB │ gzip:  94.82 kB
+dist/assets/three-DzI0ZAtl.js    546.36 kB │ gzip: 138.78 kB
+✓ built in 1.20s
