@@ -1,0 +1,45 @@
+TAP version 13
+# Subtest: roof detail follows projected pixel size continuously, including zoom and resolution changes
+ok 1 - roof detail follows projected pixel size continuously, including zoom and resolution changes
+  ---
+  duration_ms: 0.5332
+  ...
+# Subtest: roof geometry collapses to its roof anchor in every render pass and restores exactly near the camera
+ok 2 - roof geometry collapses to its roof anchor in every render pass and restores exactly near the camera
+  ---
+  duration_ms: 2.3658
+  ...
+# Subtest: facade reflection and neutral ink bind the actual sun and projection uniforms
+ok 3 - facade reflection and neutral ink bind the actual sun and projection uniforms
+  ---
+  duration_ms: 0.6708
+  ...
+# Subtest: shared geometry keeps separate foliage, solid-building and procedural-window classifications
+ok 4 - shared geometry keeps separate foliage, solid-building and procedural-window classifications
+  ---
+  duration_ms: 3.4116
+  ...
+# Subtest: AO resolution follows odd export sizes and renderer restores scene state on failure
+ok 5 - AO resolution follows odd export sizes and renderer restores scene state on failure
+  ---
+  duration_ms: 1.5681
+  ...
+# Subtest: comic pass isolates light, reuses shadows, and tracks a changed camera near plane
+ok 6 - comic pass isolates light, reuses shadows, and tracks a changed camera near plane
+  ---
+  duration_ms: 1.0511
+  ...
+# Subtest: facade controls remain live after seed regeneration without another scene pass
+ok 7 - facade controls remain live after seed regeneration without another scene pass
+  ---
+  duration_ms: 1.0486
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 104.4233

@@ -1,0 +1,42 @@
+{
+  "scope": "CPU audit of retained projected roof equipment groups; not screen visibility or GPU FPS",
+  "cssViewportHeight": 767,
+  "views": {
+    "overview-ink": {
+      "retainedGroups": 0,
+      "totalGroups": 525
+    },
+    "overview-color": {
+      "retainedGroups": 0,
+      "totalGroups": 525
+    },
+    "city-ink": {
+      "retainedGroups": 3,
+      "totalGroups": 525
+    },
+    "city-color": {
+      "retainedGroups": 3,
+      "totalGroups": 525
+    },
+    "near-ink": {
+      "retainedGroups": 268,
+      "totalGroups": 525
+    },
+    "near-color": {
+      "retainedGroups": 268,
+      "totalGroups": 525
+    },
+    "city-sun-270": {
+      "retainedGroups": 3,
+      "totalGroups": 525
+    },
+    "district-ink": {
+      "retainedGroups": 75,
+      "totalGroups": 525
+    },
+    "district-color": {
+      "retainedGroups": 75,
+      "totalGroups": 525
+    }
+  }
+}

@@ -1,0 +1,146 @@
+[
+  {
+    "file": "before/overview-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "3fee7c7f1ae2b5de7218ff7256aa6372a49834b3bc535a8c02cb632ff01903b6"
+  },
+  {
+    "file": "before/overview-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "9af1e68e578ccef627a4b0bd56bc5393b00c97e26e78e0dba73723ef7778d707"
+  },
+  {
+    "file": "before/city-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "97e8e22eaa7444a966669f5452acb618da1b522c0c4f8a90633ab778f8ca4d57"
+  },
+  {
+    "file": "before/city-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "6d40be3157e0e5dcc55cef3f52741a9b5ec0053f0be25f7649664f1d4f9464a5"
+  },
+  {
+    "file": "before/near-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "c5586ed3ea93bde4823735d7a0d7e49ccdcd5c461bb816e58c656f0f34861b7b"
+  },
+  {
+    "file": "before/near-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "7894cf4776135c952a56bcd24da3fdd3832558790fa9b4051ceef26537133990"
+  },
+  {
+    "file": "before/city-sun-270.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "bfb4a91e3eab48bf7af84b5bb0d8eea5ddea53d6240e05b86de03e5434e0acac"
+  },
+  {
+    "file": "before/district-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "e4774733974f043f6f963ca824ea3ee0285e9cd720a9d129aa4fdc0740206a39"
+  },
+  {
+    "file": "before/district-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "5dd48caf1fda705725a2db1c464f5c8d734dd94d9f588cd8d10ce185e1c347ef"
+  },
+  {
+    "file": "after/overview-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "54f96a41fee4f31682fd8214f72467fa69da41746ed4c4d31d319571b724e700"
+  },
+  {
+    "file": "after/overview-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "42a4efdce2f45505cb825dff8cceda0e99f0ad1d029cc7d1541814d26c85a161"
+  },
+  {
+    "file": "after/city-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "1832ba0317781dbcce2c6a8b209e94ad6c0e94cae641f0a50a3d9ba789d532d1"
+  },
+  {
+    "file": "after/city-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "48fc84a1d09e70878026dd606a0de20401504a31fb5825daf4e18cfb8af869dd"
+  },
+  {
+    "file": "after/near-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "52fb2f420f8a9a57b5c1d121e809399b22f4d75efe64d21c7f541bf84f1ca3d9"
+  },
+  {
+    "file": "after/near-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "5d3ab7c57b28e60a20a8663c776a1804f5e877973e5bcca6d4bcfb0a33ee866d"
+  },
+  {
+    "file": "after/city-sun-270.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "aeb002207449492fa9ab92cc4dc0fe92b3e23745d08dc67f2b03b066d6f0f73b"
+  },
+  {
+    "file": "after/district-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "aaab14d7b0a6075e0701bc5dd32ef49b5e09a85f79f455ad365987e4848f757c"
+  },
+  {
+    "file": "after/district-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "0256cd352553a1b681abcf5d5e7fd9bd1fc1f65f6f94c2cc9feefe9062b8a41f"
+  }
+]

@@ -1,0 +1,164 @@
+[
+  {
+    "id": "overview-ink",
+    "phase": "before",
+    "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "0",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "overview-color",
+    "phase": "before",
+    "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "2",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "city-ink",
+    "phase": "before",
+    "camera": "机位 1100.0, 650.0, 1750.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "0",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "city-color",
+    "phase": "before",
+    "camera": "机位 1100.0, 650.0, 1750.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "2",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "city-sun-270",
+    "phase": "before",
+    "camera": "机位 1100.0, 650.0, 1750.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "2",
+    "sun": "270",
+    "width": 1920
+  },
+  {
+    "id": "near-ink",
+    "phase": "before",
+    "camera": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+    "height": 889,
+    "mode": "0",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "near-color",
+    "phase": "before",
+    "camera": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+    "height": 889,
+    "mode": "2",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "district-ink",
+    "phase": "before",
+    "camera": "机位 650.0, 500.0, 1100.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "0",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "district-color",
+    "phase": "before",
+    "camera": "机位 650.0, 500.0, 1100.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "2",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "district-ink",
+    "phase": "after",
+    "camera": "机位 650.0, 500.0, 1100.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "0",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "district-color",
+    "phase": "after",
+    "camera": "机位 650.0, 500.0, 1100.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "2",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "city-ink",
+    "phase": "after",
+    "camera": "机位 1100.0, 650.0, 1750.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "0",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "city-color",
+    "phase": "after",
+    "camera": "机位 1100.0, 650.0, 1750.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "2",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "city-sun-270",
+    "phase": "after",
+    "camera": "机位 1100.0, 650.0, 1750.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "2",
+    "sun": "270",
+    "width": 1920
+  },
+  {
+    "id": "overview-ink",
+    "phase": "after",
+    "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "0",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "overview-color",
+    "phase": "after",
+    "camera": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "height": 889,
+    "mode": "2",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "near-ink",
+    "phase": "after",
+    "camera": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+    "height": 889,
+    "mode": "0",
+    "sun": "135",
+    "width": 1920
+  },
+  {
+    "id": "near-color",
+    "phase": "after",
+    "camera": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+    "height": 889,
+    "mode": "2",
+    "sun": "135",
+    "width": 1920
+  }
+]
