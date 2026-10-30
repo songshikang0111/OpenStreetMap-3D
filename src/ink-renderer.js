@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { foliageGLSL } from './foliage.js';
+import { halftoneGLSL } from './halftone.js';
 import { installFacadeShader, facadeAttributeDefaults } from './facade-shader.js';
 
 // Independent screen-space illustration renderer. Render targets remain linear.
@@ -99,18 +100,7 @@ vec2 boundary(vec2 offset,float depth,vec3 normal,vec4 id){
   inner*=1.-tree;
   return vec2(silhouette,inner);
 }
-float screentone(float density){
-  density=clamp(density,0.,.88);
-  vec2 grid=mat2(.866025,-.5,.5,.866025)*gl_FragCoord.xy/max(toneSize,1.7);
-  vec2 cell=fract(grid)-.5;
-  float inverseTone=step(.5,density),coverage=mix(density,1.-density,inverseTone);
-  float radius=sqrt(coverage/3.14159265);
-  float distanceToCenter=length(cell);
-  // Analytic pixel footprint avoids derivatives under varying control flow.
-  float aa=clamp(.45/max(toneSize,1.7),.018,.20);
-  float dotMask=1.-smoothstep(radius-aa,radius+aa,distanceToCenter);
-  return mix(dotMask,1.-dotMask,inverseTone)*step(.025,density);
-}
+${halftoneGLSL}
 float windowAt(vec2 p){
   vec4 id=sample0(tId,p);
   float capable=1.-step(.10,abs(id.a-1.25));
