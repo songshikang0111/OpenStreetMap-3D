@@ -106,9 +106,10 @@ export function buildRoadStructures(data,roadPlan){
   const material=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.94});
   const deckWriter=new StructureWriter(),railWriter=new StructureWriter(),pierWriter=new StructureWriter();
   for(const d of plan.decks){
-    const top=q=>roadHeightAt(d,q)-.018,bottom=q=>Math.max(.18,roadHeightAt(d,q)-d.thickness),p=d.polygon;
+    const top=q=>roadHeightAt(d,q),bottom=q=>Math.max(.18,roadHeightAt(d,q)-d.thickness),p=d.polygon;
     for(let i=1;i<p.length-1;i++){
-      deckWriter.triangle([p[0][0],top(p[0]),p[0][1]],[p[i+1][0],top(p[i+1]),p[i+1][1]],[p[i][0],top(p[i]),p[i][1]],'#a9aaa3');
+      // The carriageway owns the deck top. A second cap 18 mm below it was
+      // z-fighting at distance; keep only the structural sides and underside.
       deckWriter.triangle([p[0][0],bottom(p[0]),p[0][1]],[p[i][0],bottom(p[i]),p[i][1]],[p[i+1][0],bottom(p[i+1]),p[i+1][1]],'#969c97');
     }
     for(let i=0;i<p.length;i++){const a=p[i],c=p[(i+1)%p.length];deckWriter.quad([a[0],bottom(a),a[1]],[a[0],top(a),a[1]],[c[0],top(c),c[1]],[c[0],bottom(c),c[1]],'#b8b8ac');}

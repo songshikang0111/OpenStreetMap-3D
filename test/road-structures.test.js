@@ -9,20 +9,21 @@ import {roadHeightAt} from '../src/road-grade.js';
 const road=(id,a,b,width=10,extra={})=>({id,type:'primary',width,bridge:false,layer:0,tags:{},segments:[[a,b]],...extra});
 const data=roads=>({roads,bounds:[-160,-160,160,160],buildings:[],water:[],streetNodes:[]});
 
-test('bridge decks have closed thickness, outward normals, guardrails and no mutation of road surfaces',()=>{
+test('bridge soffits meet the sole road-owned top with outward sides and underside',()=>{
   const input=data([road(1,[-120,0],[120,0],10,{bridge:true,layer:1})]);
   const surface=planRoadSurface(input),snapshot=JSON.stringify(surface),built=buildRoadStructures(input,surface);
   assert.equal(JSON.stringify(surface),snapshot);
   assert.equal(built.stats.bridgeWays,1);assert(built.stats.bridgePiers>3);assert(built.stats.bridgeGuardrailSegments>20);
   const deck=built.group.children.find(m=>m.name.includes('soffits')),p=deck.geometry.attributes.position,n=deck.geometry.attributes.normal;
-  assert(deck.geometry.boundingBox.min.y<6.4&&deck.geometry.boundingBox.max.y<7);
+  assert(deck.geometry.boundingBox.min.y<6.4&&deck.geometry.boundingBox.max.y===7);
   let top=0,bottom=0,sides=0;
   for(let i=0;i<p.count;i++){
     assert(Number.isFinite(p.getX(i)+p.getY(i)+p.getZ(i)));
     if(n.getY(i)>.9)top++;else if(n.getY(i)<-.9)bottom++;
     else{assert(p.getX(i)*n.getX(i)+p.getZ(i)*n.getZ(i)>0,'deck sides point away from the centre');sides++;}
   }
-  assert(top&&bottom&&sides);assert(deck.castShadow);
+  assert.equal(top,0,'carriageway owns the top; no second near-coplanar cap');
+  assert(bottom&&sides);assert(deck.castShadow);
   built.dispose();
 });
 

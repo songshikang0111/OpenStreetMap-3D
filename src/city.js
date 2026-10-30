@@ -9,6 +9,7 @@ import { facadeLayout, nearbyFacadeFrames } from './facade-layout.js';
 import { installFacadeShader } from './facade-shader.js';
 import { buildLandscape } from './landscape.js';
 import { updateRoofDetails } from './distance-style.js';
+import { planBuildingEnvelopes } from './building-envelope.js';
 
 class MeshWriter {
   constructor() { this.positions = []; this.normals = []; this.colors = []; this.facades = []; this.ids = []; this.styles=[]; this.style=0; this.variant=0; this.layouts=[]; this.layout=[0,0,0,0]; this.surfaces=[];this.surface=[0,1]; }
@@ -104,6 +105,7 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
   const buildings=[],nearWalls=[],landmarks=[],familyCounts={},grammarCounts={},surfaceCounts={};
   const sourceColors={height:'#60988e',levels:'#86a8c3',estimated:'#daab73'};
   const roofWriter=new MeshWriter(),roofDetails=[];
+  const envelopes=planBuildingEnvelopes(data.buildings,{exclude:landmarkKind});
   data.buildings.forEach((building,index)=>{
     const writer=new MeshWriter(),id=index+1,style=buildingStyle(building,data.seed||1),landmark=landmarkKind(building);
     writer.style=style.code;writer.variant=style.variant;familyCounts[style.family]=(familyCounts[style.family]||0)+1;
@@ -114,39 +116,44 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
     if(landmark==='china-zun')profile=buildChinaZun(writer,building,id,addBeam);
     else if(landmark==='cctv')profile=buildCctv(writer,building,id,polygon,addBeam);
     else{
+      const envelope=envelopes.get(building.id);
       const rings=[normalizedRing(building.outer),...building.holes.map(h=>normalizedRing(h,true))];
       let longest=null,grammarName=null;
       for(const [ringIndex,ring]of rings.entries())for(let i=0;i<ring.length;i++){
         const a=ring[i],b=ring[(i+1)%ring.length],dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz);if(len<.03)continue;
         const normal=[dz/len,0,-dx/len],angle=Math.atan2(-dz,dx),mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];
         const layout=facadeLayout(len,topY-baseY,style);writer.layout=layout.attributes;grammarName=layout.name;
-        writer.quad([[a[0],baseY,a[1]],[b[0],baseY,b[1]],[b[0],topY,b[1]],[a[0],topY,a[1]]],normal,wall,id,
-          [[0,0,len,floorHeight],[len,0,len,floorHeight],[len,topY-baseY,len,floorHeight],[0,topY-baseY,len,floorHeight]]);
-        if(!ringIndex&&(!longest||len>longest.len))longest={a,b,len,normal,angle,mid,dx,dz};
-        // Each wall ends with a parapet, not a featureless white cap.
-        if(len>2&&building.height>6){
-          // Recess the outer parapet face from the wall plane. Exactly coplanar
-          // surfaces become unstable in a kilometre-wide perspective view.
-          addBox(writer,[mid[0]-normal[0]*.35,topY+.32,mid[1]-normal[2]*.35],[len,.65,.5],trim,id,angle);
-          if(style.family==='curtain'&&building.height>60){
-            addBox(writer,[mid[0]+normal[0]*.12,topY-4,mid[1]+normal[2]*.12],[len,.24,.25],trim,id,angle);
-            if(len>12)for(let column=layout.group;column<layout.bays;column+=layout.group){
-              // Full-height structural fins need a real depth separation at
-              // kilometre-scale near/far ranges. Pane-level mullions remain
-              // thin in the nearby-detail LOD; these group several bays.
-              const u=column/layout.bays;addBox(writer,[a[0]+dx*u+normal[0]*.20,(baseY+topY)/2,a[1]+dz*u+normal[2]*.20],[.30,topY-baseY,.8],trim,id,angle);
+        const spans=envelope.wall(a,b,normal);
+        for(const span of spans){
+          const sa=[a[0]+dx*span.t0,a[1]+dz*span.t0],sb=[a[0]+dx*span.t1,a[1]+dz*span.t1];
+          const low=.45+span.lo,high=.45+span.hi,spanLen=len*(span.t1-span.t0),sm=[(sa[0]+sb[0])/2,(sa[1]+sb[1])/2];
+          writer.quad([[sa[0],low,sa[1]],[sb[0],low,sb[1]],[sb[0],high,sb[1]],[sa[0],high,sa[1]]],normal,wall,id,
+            [[len*span.t0,low-baseY,len,floorHeight],[len*span.t1,low-baseY,len,floorHeight],[len*span.t1,high-baseY,len,floorHeight],[len*span.t0,high-baseY,len,floorHeight]]);
+          if(!ringIndex&&span.lo===0&&(!longest||spanLen>longest.len))longest={a:sa,b:sb,len:spanLen,normal,angle,mid:sm,dx:sb[0]-sa[0],dz:sb[1]-sa[1]};
+          // Trim follows the exposed wall, never a buried podium/tower seam.
+          if(spanLen>2&&building.height>6){
+            if(span.hi===building.height){
+              addBox(writer,[sm[0]-normal[0]*.35,topY+.32,sm[1]-normal[2]*.35],[spanLen,.65,.5],trim,id,angle);
+              if(style.family==='curtain'&&building.height>60&&topY-4>low)addBox(writer,[sm[0]+normal[0]*.12,topY-4,sm[1]+normal[2]*.12],[spanLen,.24,.25],trim,id,angle);
+            }
+            if(style.family==='curtain'&&building.height>60&&len>12)for(let column=layout.group;column<layout.bays;column+=layout.group){
+              const u=column/layout.bays;if(u<=span.t0||u>=span.t1)continue;
+              addBox(writer,[a[0]+dx*u+normal[0]*.20,(low+high)/2,a[1]+dz*u+normal[2]*.20],[.30,high-low,.8],trim,id,angle);
+            }
+            if(style.family==='ribbon')for(let y=baseY+floorHeight;y<high-.5;y+=floorHeight)if(y>low+.2){
+              addBox(writer,[sm[0]+normal[0]*.22,y,sm[1]+normal[2]*.22],[spanLen,.3,.7],trim,id,angle);
             }
           }
-          if(style.family==='ribbon')for(let y=baseY+floorHeight;y<topY-.5;y+=floorHeight){
-            addBox(writer,[mid[0]+normal[0]*.22,y,mid[1]+normal[2]*.22],[len,.3,.7],trim,id,angle);
-          }
         }
-        if(!ringIndex&&len>7)nearWalls.push({key:`${building.id}:${i}`,a,dx,dz,len,normal,angle,layout,baseY,style});
+        // Fine frame grammar is valid on a complete original wall only.
+        // Clipped partial walls keep the same shader panes without stray frames.
+        if(!ringIndex&&len>7&&spans.length===1&&spans[0].t0===0&&spans[0].t1===1&&spans[0].lo===building.minHeight&&spans[0].hi===building.height)nearWalls.push({key:`${building.id}:${i}`,a,dx,dz,len,normal,angle,layout,baseY,style});
       }
       grammarCounts[grammarName]=(grammarCounts[grammarName]||0)+1;
-      writer.style=0;polygon(writer,building,topY,'#e1e3dd',id);
+      writer.style=0;
+      for(const [outer,...holes]of envelope.roof)polygon(writer,{outer,holes},topY,'#e1e3dd',id);
       if(building.minHeight>0){
-        const start=writer.positions.length;polygon(writer,building,baseY,wall,id);
+        const start=writer.positions.length;for(const [outer,...holes]of envelope.bottom)polygon(writer,{outer,holes},baseY,wall,id);
         for(let i=start;i<writer.positions.length;i+=9){for(let c=0;c<3;c++)[writer.positions[i+3+c],writer.positions[i+6+c]]=[writer.positions[i+6+c],writer.positions[i+3+c]];for(let c=0;c<3;c++)writer.normals[i+c*3+1]=-1;}
       }
       if(longest&&building.minHeight===0&&building.height>10&&longest.len>12){
@@ -156,6 +163,7 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
         addBox(writer,[x,baseY+2.15,z],[.16,4.3,.48],trim,id,angle);
       }
       for(const box of roofEquipment(building)){
+        if(!envelope.roof.some(([outer,...holes])=>inside([box.x,box.z],outer)&&!holes.some(h=>inside([box.x,box.z],h))))continue;
         const start=roofWriter.positions.length;
         addBox(roofWriter,[box.x,topY+box.h/2,box.z],[box.w,box.h,box.d],'#aeb7b4',id);
         addBox(roofWriter,[box.x,topY+box.h+.1,box.z],[box.w+.3,.2,box.d+.3],'#d6dbd8',id);

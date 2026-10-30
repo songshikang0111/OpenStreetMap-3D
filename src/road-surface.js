@@ -356,9 +356,39 @@ export function planRoadSurface(data, { pavementWidth = 1.75, miterLimit = 2.5, 
   return { surfaces, markings, junctions, exclusionZones, stopZones, segments, stats, grades };
 }
 
+/** Paint replaces asphalt area instead of floating centimetres above it.
+ * Every fragment inherits its actual host's grade, including junction joins.
+ * This also makes neutral-light, normal and ID passes agree without offsets.
+ */
+export function inlayRoadPaint(plan){
+  const grid=new Grid(),surfaces=[],markings=[];
+  for(const m of plan.markings){const polygon=m.polygon||strip(m.a,m.b,m.width),box=bounds(polygon);grid.add({...m,polygon,bounds:box},box);}
+  for(const surface of plan.surfaces){
+    if(surface.kind!=='drive'){surfaces.push(surface);continue;}
+    let fragments=[surface.polygon];
+    for(const paint of grid.query(surface.bounds||bounds(surface.polygon))){
+      if(paint.level!==surface.level)continue;
+      // Grade-separated crossings can share a logical layer. Test actual
+      // elevation too, with allowance for the legacy 18–20 mm paint offset.
+      const center=paint.polygon.reduce((s,p)=>[s[0]+p[0]/paint.polygon.length,s[1]+p[1]/paint.polygon.length],[0,0]);
+      if(Math.abs(roadHeightAt(paint,center)-roadHeightAt(surface,center))>.06)continue;
+      const next=[];
+      for(const fragment of fragments){
+        const overlap=intersectConvex(fragment,paint.polygon);
+        if(overlap.length){markings.push({...surface,kind:paint.kind,polygon:overlap});next.push(...subtractConvex(fragment,paint.polygon));}
+        else next.push(fragment);
+      }
+      fragments=next;if(!fragments.length)break;
+    }
+    for(const polygon of fragments)surfaces.push({...surface,polygon});
+  }
+  return {surfaces,markings};
+}
+
 /** Minimal integration: replace old road/paving/paint meshes with this group. */
 export function buildRoadSurface(data, options = {}) {
   const plan = planRoadSurface(data, options), group = new THREE.Group();
+  const inlay=inlayRoadPaint(plan);
   group.name = 'Joined road surfaces and junction-aware markings';
   const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .98 });
   function mesh(items, name, color, objectId) {
@@ -391,10 +421,10 @@ export function buildRoadSurface(data, options = {}) {
     result.userData.inkClass = objectId===60004?3.5:objectId===60002?3.2:3; result.userData.procedural = true; result.userData.roadSurface=true; result.receiveShadow = true; result.castShadow = false;
     group.add(result);
   }
-  mesh(plan.surfaces.filter(p => p.kind === 'drive'), 'Continuous carriageways', '#777e7c', 60003);
+  mesh(inlay.surfaces.filter(p => p.kind === 'drive'), 'Continuous carriageways', '#777e7c', 60003);
   mesh(plan.surfaces.filter(p => p.kind === 'walk'), 'OSM pedestrian paths and at-grade crossings', '#d0c9b9', 60002);
   mesh(plan.surfaces.filter(p => p.kind === 'paving'), 'Inferred roadside margins clipped at buildings', '#ddd7c8', 60002);
-  mesh(plan.markings, 'Junction-aware lane paint and inferred stop lines', '#f9f6e9', 60004);
+  mesh(inlay.markings, 'Junction-aware lane paint and inferred stop lines', '#f9f6e9', 60004);
   plan.stats.renderedTriangles = group.children.reduce((n, mesh) => n + mesh.geometry.attributes.position.count / 3, 0);
   const structures=buildRoadStructures(data,plan);group.add(structures.group);Object.assign(plan.stats,structures.stats);
   const stairs=buildRoadStairs(plan.grades.stairs);group.add(stairs.group);Object.assign(plan.stats,stairs.stats);
