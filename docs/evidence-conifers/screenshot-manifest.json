@@ -1,0 +1,50 @@
+[
+  {
+    "path": "before/09-tree-close.jpg",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "e1c737ad4b47af0aa862d06966a95572d4318fa73cf18581c27577b604a5e8dd"
+  },
+  {
+    "path": "after/09-tree-close.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "72e12a97ac2a34c45e4472ec7504e8e6adb4657de8ce02014147528abaf6f00a"
+  },
+  {
+    "path": "before/02-grove-color.jpg",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "10b2809f6e8f946de75cdfcd3e10c54d8366743ea8bb383e94ff8860741abeb2"
+  },
+  {
+    "path": "after/02-grove-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "844c04eb403765d102af002dfa0141d239272974d518898c9f7880a5ed18f4c1"
+  },
+  {
+    "path": "before/05-overview-color.jpg",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "bd51a3342bd79980a1ba513a54d81c7b751ea56e22fc64daa46ca179dfe97b9d"
+  },
+  {
+    "path": "after/05-overview-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "22a29333a63cec0a6abdb81f1f9cbc7a002a0291f1e7842d4de664ded25d6654"
+  }
+]

@@ -1,0 +1,84 @@
+{
+  "generatedAt": "2026-10-30T09:51:57.471Z",
+  "sourceRoot": "C:\\myGit\\beijing-city-ink",
+  "scope": "CPU planning and opaque full-size far-crown convex footprints projected onto the ground; contact is a geometry proxy, not leaf coverage, observed vegetation or GPU FPS.",
+  "generationMs": 5053,
+  "trees": 5075,
+  "stats": {
+    "observedTrees": 0,
+    "rejectedObservedTrees": 0,
+    "rowTrees": 0,
+    "streetTrees": 3072,
+    "greenTrees": 807,
+    "landscapeTrees": 1196,
+    "junctions": 154,
+    "placementSource": "OSM observations + constrained inferred furnishings and landscape templates; no image-derived geometry",
+    "treeCandidates": {
+      "inferred-street": 5794,
+      "inferred-green": 1354,
+      "inferred-landscape": 1200
+    },
+    "treeBudget": 6000,
+    "treeBudgetLimited": false,
+    "trees": 5075,
+    "generatedTrees": 5075,
+    "lamps": 255,
+    "cars": 110,
+    "people": 170,
+    "crosswalks": 85,
+    "signals": 26,
+    "curbs": 5694,
+    "observedCrossings": 85,
+    "observedSignals": 26,
+    "observedLamps": 0,
+    "curbCrossingCuts": 149,
+    "curbCrossingClearanceMetres": 326.61496582646777,
+    "gradeAdjustedFurnishings": 254,
+    "gradeSuppressedTrees": 19,
+    "structureSuppressedTrees": 563,
+    "vehicleStructureSuppressedTrees": 484,
+    "pedestrianStructureSuppressedTrees": 79
+  },
+  "shapes": {
+    "round": 1672,
+    "conifer": 228,
+    "spreading": 1845,
+    "cypress": 235,
+    "vase": 940,
+    "columnar": 155
+  },
+  "landscapeCandidates": 1200,
+  "connectivity": {
+    "touchingTrees": 1432,
+    "touchFraction": 0.28216748768472905,
+    "overlappingPairs": 1064,
+    "largestGroup": 25,
+    "groupsOfAtLeastThree": 170,
+    "minimumRootSpacing": 6.006258957442851,
+    "bySource": {
+      "inferred-street": {
+        "trees": 3072,
+        "withTouchingCrown": 718,
+        "touchFraction": 0.23372395833333334
+      },
+      "inferred-green": {
+        "trees": 807,
+        "withTouchingCrown": 422,
+        "touchFraction": 0.5229244114002478
+      },
+      "inferred-landscape": {
+        "trees": 1196,
+        "withTouchingCrown": 292,
+        "touchFraction": 0.24414715719063546
+      }
+    }
+  },
+  "conflicts": {
+    "blockedGroundRoots": 0,
+    "footpathRoots": 0,
+    "carriagewayRoots": 0,
+    "buildingCanopyEnvelope": 0,
+    "farCrownVehicleDeckCrossings": 0,
+    "farCrownPedestrianDeckCrossings": 0
+  }
+}

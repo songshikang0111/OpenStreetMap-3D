@@ -1,0 +1,13 @@
+{
+  "matchedViews": 3,
+  "additionalCloseups": 1,
+  "dimensions": [
+    1920,
+    889
+  ],
+  "localLinks": "passed",
+  "browserErrors": [],
+  "testPass": 112,
+  "testFail": 0,
+  "build": "passed"
+}

@@ -1,0 +1,162 @@
+{
+  "09-tree-close": {
+    "version": 2,
+    "view": "street",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      50,
+      18,
+      115
+    ],
+    "target": [
+      -20,
+      8,
+      20
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 60,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "02-grove-color": {
+    "version": 2,
+    "view": "street",
+    "seed": 1,
+    "mode": 2,
+    "position": [
+      120,
+      32,
+      135
+    ],
+    "target": [
+      -15,
+      4,
+      35
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 55,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "05-overview-color": {
+    "version": 2,
+    "view": "overview",
+    "seed": 1,
+    "mode": 2,
+    "position": [
+      1533.988,
+      1415.989,
+      1669.951
+    ],
+    "target": [
+      0,
+      60,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "needle-detail": {
+    "version": 2,
+    "view": "street",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      53,
+      11,
+      57
+    ],
+    "target": [
+      25,
+      6,
+      26
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 55,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "trees": 5075,
+  "needleTrees": 463,
+  "byContext": {
+    "inferred-street": {
+      "trees": 3072,
+      "cypress": 0,
+      "conifer": 0
+    },
+    "park-belt": {
+      "trees": 734,
+      "cypress": 100,
+      "conifer": 104
+    },
+    "pocket-common": {
+      "trees": 240,
+      "cypress": 29,
+      "conifer": 27
+    },
+    "lawn-edge": {
+      "trees": 72,
+      "cypress": 2,
+      "conifer": 2
+    },
+    "forecourt": {
+      "trees": 240,
+      "cypress": 12,
+      "conifer": 27
+    },
+    "garden-court": {
+      "trees": 480,
+      "cypress": 86,
+      "conifer": 61
+    },
+    "woodland": {
+      "trees": 1,
+      "cypress": 0,
+      "conifer": 0
+    },
+    "verge": {
+      "trees": 236,
+      "cypress": 6,
+      "conifer": 7
+    }
+  },
+  "byEvidence": {
+    "context-illustration": 5075
+  },
+  "taggedAreas": [],
+  "defaultMix": {
+    "woodland": 0.38,
+    "park-belt": 0.3,
+    "lawn-edge": 0.12,
+    "garden-court": 0.26,
+    "pocket-common": 0.32,
+    "forecourt": 0.14,
+    "verge": 0.08
+  },
+  "geometryTriangles": {
+    "spreading": 180,
+    "cypress": 756,
+    "conifer": 756
+  },
+  "farCrownTriangles": 1180188,
+  "nearTreeBudget": 96,
+  "examples": {
+    "cypress": [
+      {
+        "key": "green:w1559046200:9:1:-1",
+        "x": -14.433141332619854,
+        "z": 92.00616699540643,
+        "h": 10.227544864895753,
+        "plantingContext": "park-belt",
+        "habitSource": "context-illustration"
+      },
+      {
+        "key": "green:w1559046200:10:1:-1",
+        "x": -6.141246803154542,
+        "z": 91.36083649063016,
+        "h": 8.675608273618854,
+        "plantingContext": "park-belt",
+        "habitSource": "context-illustration"
+      },
+      {
+        "key": "green:w1559046200:11:1:-1",
+        "x": 1.9899468885426996,
+        "z": 91.70919162666061,
+        "h": 10.098747702571563,
+        "plantingContext": "park-belt",
+        "habitSource": "context-illustration"
+      },
+      {
+        "key": "green:w1559046200:9:0:-1",
+        "x": -18.428091718053334,
+        "z": 98.1710944279308,
+        "h": 9.891853848961182,
+        "plantingContext": "park-belt",
+        "habitSource": "context-illustration"
+      }
+    ],
+    "conifer": [
+      {
+        "key": "green:w1559046200:24:1:-1",
+        "x": 25.09381870282771,
+        "z": 30.066827745209697,
+        "h": 9.523227450693957,
+        "plantingContext": "park-belt",
+        "habitSource": "context-illustration"
+      },
+      {
+        "key": "green:w1559046200:25:1:-1",
+        "x": 24.581142803858707,
+        "z": 21.778107577851085,
+        "h": 9.61017125416547,
+        "plantingContext": "park-belt",
+        "habitSource": "context-illustration"
+      },
+      {
+        "key": "green:w1559046200:26:1:-1",
+        "x": 24.64311686688354,
+        "z": 13.389658666255775,
+        "h": 9.798681807145476,
+        "plantingContext": "park-belt",
+        "habitSource": "context-illustration"
+      },
+      {
+        "key": "green:w1559046200:24:0:-1",
+        "x": 31.585183033407844,
+        "z": 33.89095740465411,
+        "h": 9.864566180179827,
+        "plantingContext": "park-belt",
+        "habitSource": "context-illustration"
+      }
+    ]
+  }
+}
