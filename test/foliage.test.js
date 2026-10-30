@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { crownGeometry, crownBase, crownProfile, crownMorphWeight, treeLODWeights, TREE_LOD } from '../src/foliage.js';
+import { crownGeometry, crownBase, crownProfile, crownEnvelope, crownMorphWeight, treeLODWeights, TREE_LOD } from '../src/foliage.js';
 import { buildStreetLife } from '../src/streetlife.js';
 
 test('canopy surfaces have reproducible closed seams, unit normals and a bounded mesh budget',()=>{
@@ -38,11 +38,50 @@ test('branch-associated canopy profiles are seeded, bounded and lower in triangl
   assert.equal(a.clusters.length,18);assert.equal(a.branches.length,6);
   assert.equal(a.clusters.length+1,19,'persistent base belongs to the 19-mass near crown');
   assert(new Set(a.clusters.map(c=>c.scale.join(','))).size>12,'lobes have different proportions');
-  for(const c of a.clusters){assert(c.position.every(Number.isFinite));assert(c.scale.every(v=>v>0));assert(c.position[1]>tree.h*.5);assert(c.position[1]+c.scale[1]*1.3<tree.h*1.2+.35);assert(Math.hypot(c.position[0],c.position[2])+Math.max(c.scale[0],c.scale[2])*1.3<tree.h*.38);}
+  const envelope=crownEnvelope(tree);
+  for(const c of a.clusters){assert(c.position.every(Number.isFinite));assert(c.scale.every(v=>v>0));assert(c.position[1]-c.scale[1]*1.17>=envelope.bottom);assert(c.position[1]+c.scale[1]*1.17<=envelope.top);assert(Math.hypot(c.position[0],c.position[2])+Math.max(c.scale[0],c.scale[2])*1.17<=envelope.radius);}
   a.branches.forEach((branch,i)=>assert.deepEqual(branch.b,a.clusters[i*3+1].position));
   const far=crownGeometry(),near=crownGeometry(true),perTree=far.attributes.position.count/3+near.attributes.position.count/3*TREE_LOD.clusters;
   assert.equal(far.attributes.position.count/3,180);assert.equal(near.attributes.position.count/3,320);assert(perTree<19*500);
   far.dispose();near.dispose();
+});
+
+test('broad crowns have a varied horizontal silhouette without repeated vertical tiers',()=>{
+  const widths=[],depths=[],heights=[],centers=[];
+  for(let i=0;i<40;i++){
+    const tree={...illustrativeTree(`form-${i}`),seed:7},profile=crownProfile(tree),base=profile.base;
+    assert(base.scale[0]>base.scale[1]*1.08,'mature spreading trees retain their broad canopy');
+    assert(base.scale[1]/base.scale[0]>.57,'far trees must keep leafy volume instead of flattening to umbrellas');
+    const groups=Array.from({length:3},(_,leaf)=>profile.clusters.filter((_,j)=>j%3===leaf).map(c=>c.position[1]));
+    const means=groups.map(group=>group.reduce((s,y)=>s+y,0)/group.length);
+    assert(Math.max(...means)-Math.min(...means)<tree.h*.12,'three branch leaves must not become three separate floors');
+    widths.push(base.scale[0]);depths.push(base.scale[2]/base.scale[0]);heights.push(base.scale[1]);centers.push(base.position[0]);
+  }
+  assert(Math.max(...widths)-Math.min(...widths)>.25);
+  assert(Math.max(...depths)-Math.min(...depths)>.13);
+  assert(Math.max(...heights)-Math.min(...heights)>.6,'far envelopes must preserve tree-level vertical variety');
+  assert(Math.max(...centers)-Math.min(...centers)>.35,'asymmetric crown centres must vary independently');
+  const tree=illustrativeTree('seed');
+  assert.notDeepEqual(crownProfile({...tree,seed:1}),crownProfile({...tree,seed:2}));
+  assert(crownBase({...tree,shape:'columnar'}).scale[0]<crownBase({...tree,shape:'spreading'}).scale[0]*.65);
+});
+
+test('placement envelope encloses actual shared geometry for all crown habits and seed variations',()=>{
+  const geometries=[crownGeometry(),crownGeometry(true)];
+  for(const shape of ['spreading','round','vase','columnar'])for(let i=0;i<12;i++){
+    const tree={...illustrativeTree(`envelope-${i}`,731,-429),shape,seed:i%3,rotation:i*.41};
+    const profile=crownProfile(tree),envelope=crownEnvelope(tree);
+    for(const [index,part] of [profile.base,...profile.clusters].entries()){
+      const p=geometries[index===0?0:1].attributes.position,cos=Math.cos(part.angle),sin=Math.sin(part.angle);
+      for(let vertex=0;vertex<p.count;vertex++){
+        const x=p.getX(vertex)*part.scale[0],z=p.getZ(vertex)*part.scale[2];
+        const wx=part.position[0]+x*cos+z*sin,wz=part.position[2]-x*sin+z*cos,y=part.position[1]+p.getY(vertex)*part.scale[1];
+        assert(Math.hypot(wx-tree.x,wz-tree.z)<=envelope.radius+1e-6);
+        assert(y>=envelope.bottom-1e-6 && y<=envelope.top+1e-6);
+      }
+    }
+  }
+  geometries.forEach(g=>g.dispose());
 });
 
 test('distance transitions are continuous at near, former hard cutoff and far boundaries',()=>{
