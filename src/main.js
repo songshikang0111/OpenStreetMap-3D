@@ -6,6 +6,7 @@ import { parseOSM, mergeOSMOverlay } from './osm.js';
 import { buildCity as buildEnhancedCity } from './city.js';
 import { InkRenderer as EnhancedInkRenderer } from './ink-renderer.js';
 import { decodeView,encodeView,parameterRanges } from './view-state.js';
+import { LOCATIONS,resolveLocation,loadLocationData,coordinateLabel,genericViews } from './locations.js';
 
 const $=id=>document.getElementById(id);
 const viewport=$('viewport');
@@ -14,6 +15,7 @@ let mapState=null;
 const initialView=decodeView(location.hash);
 if(initialView?.toggles?.['landscape-toggle']===false)$('landscape-toggle').checked=false;
 let rawData,seed=initialView?.seed||1,currentView='overview';
+let activeLocation=LOCATIONS[0];
 let buildCity=data=>buildEnhancedCity(data,{landscapeEnabled:$('landscape-toggle').checked}),InkRenderer=EnhancedInkRenderer;
 const baselineMode=new URLSearchParams(location.search).get('baseline')==='1';
 const rangeBindings=[
@@ -72,6 +74,13 @@ function preset(name){
   // Face a documented OSM crossing rather than an empty point in a city block.
   const roadPoint=data.streetNodes.find(n=>n.id===11322670965)?.point||[46.584,309.363];
   positions.crossing=[roadPoint[0]+1.5,2.1,roadPoint[1]+20];targets.crossing=[roadPoint[0],4,roadPoint[1]-65];
+  if(activeLocation.id!=='beijing') {
+    for(const [key,value]of Object.entries(genericViews(data))){positions[key]=value.position;targets[key]=value.target;}
+    const crossing=data.streetNodes.filter(n=>n.kind==='crossing').sort((a,b)=>Math.hypot(...a.point)-Math.hypot(...b.point))[0];
+    positions.crossing=crossing?[crossing.point[0]+12,8,crossing.point[1]+18]:positions.street;
+    targets.crossing=crossing?[crossing.point[0],2,crossing.point[1]]:targets.street;
+    if(name==='citic'||name==='cctv')name='overview';
+  }
   if(!positions[name])name='overview';
   camera.position.set(...positions[name]);controls.target.set(...targets[name]);
   camera.fov=['street','crossing'].includes(name)?65:name==='top'?43:name==='facade'?55:42;camera.updateProjectionMatrix();
@@ -231,22 +240,28 @@ function connectUI(){
 
 async function initialize(){
   try{
+    activeLocation=resolveLocation(location.search);
+    for(const item of LOCATIONS){const option=document.createElement('option');option.value=item.id;option.textContent=item.name;$('location-select').append(option);}
+    $('location-select').value=activeLocation.id;
+    $('location-select').onchange=()=>{const url=new URL(location.href);url.searchParams.set('site',$('location-select').value);url.hash='';location.assign(url);};
+    $('location-name').textContent=activeLocation.name;$('location-subtitle').textContent=activeLocation.subtitle;
+    $('location-label').textContent=activeLocation.label;
+    $('loading').querySelector('strong').textContent=`正在构建${activeLocation.name}…`;
+    $('map').setAttribute('aria-label',`${activeLocation.name}俯视地图，可点击移动相机`);
+    document.title=`${activeLocation.name} · 城市线境`;
+    for(const value of ['citic','cctv']){const option=$('detail-view').querySelector(`option[value="${value}"]`);option.hidden=activeLocation.id!=='beijing';option.disabled=option.hidden;}
     if(baselineMode){({buildCity}=await import('./baseline/city-v1.js'));({InkRenderer}=await import('./baseline/ink-v1.js'));document.querySelector('.local-badge').textContent='v0.1 几何 / 渲染对照';document.querySelector('.advanced').hidden=true;}
-    const response=await fetch(`${import.meta.env.BASE_URL}data/beijing-cbd.json`);
-    if(!response.ok)throw new Error(`地图数据读取失败 (${response.status})，请先运行 npm run data:fetch。`);
-    const raw=await response.json();
-    const overlays=await Promise.allSettled(['street-details','landscape-details'].map(async name=>{
+    const raw=await loadLocationData(activeLocation,async name=>{
       const response=await fetch(`${import.meta.env.BASE_URL}data/${name}.json`);
-      return response.ok?{name,overlay:await response.json()}:null;
-    }));
-    for(const result of overlays)if(result.status==='fulfilled'&&result.value)mergeOSMOverlay(raw,result.value.overlay,result.value.name);
-    try{const response=await fetch(`${import.meta.env.BASE_URL}data/landscape-profile.json`);if(response.ok)raw.metadata.landscapeProfile=await response.json();}catch{/* Default profile also works without a regional configuration. */}
+      if(!response.ok)throw new Error(`地图数据 ${name} 读取失败 (${response.status})。`);
+      return response.json();
+    },mergeOSMOverlay);
     rawData=raw;data=parseOSM(raw,seed);city=buildCity(data);
     scene=new THREE.Scene();scene.background=new THREE.Color('#f7f5ed');scene.add(city.group);
     renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:false,powerPreference:'high-performance'});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
     renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.NoToneMapping;
-    viewport.append(renderer.domElement);renderer.domElement.setAttribute('aria-label','北京国贸三维城市视图');
+    viewport.append(renderer.domElement);renderer.domElement.setAttribute('aria-label',`${activeLocation.name}三维城市视图`);
     camera=new THREE.PerspectiveCamera(42,1,.8,7000);
     controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.085;controls.minDistance=6;controls.maxDistance=4800;controls.autoRotateSpeed=.35;controls.screenSpacePanning=true;controls.addEventListener('change',invalidate);
     scene.add(new THREE.HemisphereLight('#f4f3e8','#a8b4a2',1.7));
@@ -254,8 +269,8 @@ async function initialize(){
     Object.assign(sun.shadow.camera,{left:-1400,right:1400,top:1400,bottom:-1400,near:10,far:3600});sun.shadow.bias=-.00025;sun.shadow.normalBias=.5;sun.shadow.radius=2;scene.add(sun);scene.add(sun.target);updateLight();
     ink=new InkRenderer(renderer,scene,camera,city.shared);preset('overview');resize();
     const counts={height:0,levels:0,estimated:0};for(const b of data.buildings)counts[b.source]++;
-    $('stat-buildings').textContent=data.buildings.length;$('stat-roads').textContent=data.roads.length;$('stat-known').textContent=`${Math.round((counts.height+counts.levels)/data.buildings.length*100)}%`;
-    const center=data.metadata.center;$('coordinate').textContent=`${center[0].toFixed(5)}° N · ${center[1].toFixed(5)}° E`;
+    $('stat-buildings').textContent=data.buildings.length;$('stat-roads').textContent=data.roads.length;$('stat-known').textContent=data.buildings.length?`${Math.round((counts.height+counts.levels)/data.buildings.length*100)}%`:'—';
+    $('coordinate').textContent=coordinateLabel(data.metadata.center);
     for(const [source,count]of Object.entries(counts))$(`count-${source}`).textContent=count;
     $('render-status').textContent=`${data.buildings.length} 个体块 · ${city.treeCount} 棵树 · 数据已缓存于项目`;
     $('scale-label').textContent=`${((data.bounds[2]-data.bounds[0])/1000).toFixed(1)} × ${((data.bounds[3]-data.bounds[1])/1000).toFixed(1)} km`;

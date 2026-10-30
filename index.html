@@ -5,12 +5,12 @@
   <header class="topbar">
     <a class="brand" href="/" aria-label="京城线境首页"><span class="brand-icon">京</span><span><strong>京城线境</strong><small>BEIJING CITY INK</small></span></a>
     <span class="top-description">从真实地图，到一页城市漫画</span>
-    <div class="header-actions"><span class="local-badge"><i></i> 程序化城市 · v0.7.0</span><button id="save-view" class="button">保存视角</button><button id="export-png" class="button primary">导出 PNG <span>↗</span></button><button id="export-glb" class="button">3D 模型 ↓</button></div>
+    <div class="header-actions"><span class="local-badge"><i></i> 程序化城市 · v0.8.0</span><button id="save-view" class="button">保存视角</button><button id="export-png" class="button primary">导出 PNG <span>↗</span></button><button id="export-glb" class="button">3D 模型 ↓</button></div>
   </header>
   <main class="workspace">
     <aside class="sidebar">
       <section class="location-card">
-        <div class="eyebrow">01 / LOCATION</div><h1>北京 · 国贸 CBD</h1><p class="muted">国贸中心 · 央视总部 · 中国尊</p>
+        <div class="eyebrow">01 / LOCATION</div><label class="data-note" for="location-select">切换地点</label><select id="location-select" aria-label="切换地点"></select><h1 id="location-name">北京 · 国贸 CBD</h1><p id="location-subtitle" class="muted">国贸中心 · 央视总部 · 中国尊</p>
         <canvas id="map" width="520" height="320" aria-label="北京国贸街区俯视地图，可点击移动相机"></canvas>
         <div class="map-caption"><span id="coordinate">39.90950° N · 116.45825° E</span><span>WGS84</span></div>
         <div class="stats"><div><strong id="stat-buildings">—</strong><span>建筑体块</span></div><div><strong id="stat-roads">—</strong><span>道路对象</span></div><div><strong id="stat-known">—</strong><span>有高度 / 层数</span></div></div>
@@ -59,7 +59,7 @@
     <section class="stage" aria-label="可交互三维城市">
       <div class="stage-toolbar"><div class="camera-presets" role="group" aria-label="相机视角"><button class="active" data-camera="overview">街区俯瞰</button><button data-camera="skyline">城市天际线</button><button data-camera="street">街道视角</button><button data-camera="top">正上方</button></div><select id="detail-view" aria-label="细节机位"><option value="">细节机位</option><option value="citic">中国尊轮廓</option><option value="cctv">央视空中连体</option><option value="facade">近看建筑立面</option><option value="roof">屋顶与街树</option><option value="crossing">道路与行人</option></select><label class="lens-control" for="lens">视野 <input id="lens" type="range" min="18" max="100" value="42"/><output id="lens-output">42°</output></label><button id="reset-view" class="icon-button" aria-label="重置视角" title="重置视角">↺</button></div>
       <div id="viewport"><div id="loading"><span class="loader"></span><strong>正在从地图构建北京…</strong><small>解析轮廓 · 生成立面 · 铺设街道</small></div></div>
-      <div class="view-title"><span class="eyebrow">BEIJING / CHAOYANG</span><strong id="view-name">城市的另一种笔触。</strong><span class="view-subtitle" id="view-subtitle">真实街区，程序构建。</span></div>
+      <div class="view-title"><span class="eyebrow" id="location-label">BEIJING / CHAOYANG</span><strong id="view-name">城市的另一种笔触。</strong><span class="view-subtitle" id="view-subtitle">真实街区，程序构建。</span></div>
       <div class="compass" title="北向"><span>N</span><svg viewBox="0 0 50 50" aria-hidden="true"><g id="compass-arrow"><path d="M25 6L18 33L25 28L32 33Z" fill="#485c57"/><path d="M25 28L18 33L25 44L32 33Z" fill="#bac5bb"/></g></svg></div>
       <div id="building-info" class="building-info" hidden><button id="close-info" aria-label="关闭建筑信息">×</button><span class="eyebrow">BUILDING RECORD</span><strong id="building-name"></strong><div id="building-details"></div><a id="osm-link" target="_blank" rel="noopener">在 OpenStreetMap 查看 ↗</a></div>
       <div class="stage-bottom"><span><i class="status-dot"></i><span id="render-status">准备数据中</span></span><span class="interaction-hint">拖动旋转 · 右键平移 · 滚轮缩放 · 点击建筑查看来源</span><span id="scale-label">1.6 × 1.8 km</span></div>
