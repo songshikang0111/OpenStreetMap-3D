@@ -1,0 +1,86 @@
+{
+  "known": {
+    "count": 1759,
+    "p50": 15.7,
+    "p90": 20.3
+  },
+  "estimated": {
+    "count": 191,
+    "p50": 12.4,
+    "p90": 37.2
+  },
+  "estimatedOverTwiceLocalMedian": 24,
+  "examples": [
+    {
+      "id": "w266695079",
+      "height": 83.6,
+      "type": "commercial",
+      "neighbors": 97,
+      "nearbyKnownMedian": 16.2
+    },
+    {
+      "id": "w266670278",
+      "height": 79.8,
+      "type": "commercial",
+      "neighbors": 194,
+      "nearbyKnownMedian": 15.9
+    },
+    {
+      "id": "w266908006",
+      "height": 76,
+      "type": "commercial",
+      "neighbors": 146,
+      "nearbyKnownMedian": 15.3
+    },
+    {
+      "id": "w266932398",
+      "height": 76,
+      "type": "commercial",
+      "neighbors": 114,
+      "nearbyKnownMedian": 16.2
+    },
+    {
+      "id": "r3581115-0",
+      "height": 72.2,
+      "type": "commercial",
+      "neighbors": 185,
+      "nearbyKnownMedian": 16.3
+    },
+    {
+      "id": "w266678972",
+      "height": 72.2,
+      "type": "commercial",
+      "neighbors": 205,
+      "nearbyKnownMedian": 16
+    },
+    {
+      "id": "w266670274",
+      "height": 68.39999999999999,
+      "type": "commercial",
+      "neighbors": 121,
+      "nearbyKnownMedian": 15.4
+    },
+    {
+      "id": "w266907991",
+      "height": 49.4,
+      "type": "commercial",
+      "neighbors": 102,
+      "nearbyKnownMedian": 15.4
+    },
+    {
+      "id": "w267123293",
+      "height": 49.4,
+      "type": "commercial",
+      "neighbors": 177,
+      "nearbyKnownMedian": 16.3
+    },
+    {
+      "id": "w267123453",
+      "height": 49.4,
+      "type": "commercial",
+      "neighbors": 177,
+      "nearbyKnownMedian": 16.1
+    }
+  ],
+  "interpretation": "Outlier heuristic against known-height neighbors within 150m, not proof of factual height error."
+}

@@ -1,0 +1,482 @@
+{
+  "shanghai-overview": {
+    "version": 2,
+    "view": "overview",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      1560.466,
+      1440.43,
+      1700.507
+    ],
+    "target": [
+      0,
+      14.88,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "shanghai-skyline": {
+    "version": 2,
+    "view": "skyline",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      -160.048,
+      29.76,
+      1900.567
+    ],
+    "target": [
+      0,
+      14.88,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "shanghai-roof": {
+    "version": 2,
+    "view": "roof",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      -440.131,
+      60,
+      500.149
+    ],
+    "target": [
+      0,
+      14.88,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "shanghai-facade": {
+    "version": 2,
+    "view": "facade",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      -12.671,
+      9.5,
+      95.859
+    ],
+    "target": [
+      -47.671,
+      4.5,
+      60.859
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "kyoto-overview": {
+    "version": 2,
+    "view": "overview",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      882.901,
+      814.985,
+      962.135
+    ],
+    "target": [
+      0,
+      8,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "kyoto-skyline": {
+    "version": 2,
+    "view": "skyline",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      -90.554,
+      25,
+      1075.328
+    ],
+    "target": [
+      0,
+      8,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "kyoto-roof": {
+    "version": 2,
+    "view": "roof",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      -249.023,
+      60,
+      282.981
+    ],
+    "target": [
+      0,
+      8,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "kyoto-facade": {
+    "version": 2,
+    "view": "facade",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      30.418,
+      7.79,
+      31.883
+    ],
+    "target": [
+      -4.582,
+      2.79,
+      -3.117
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "amsterdam-overview": {
+    "version": 2,
+    "view": "overview",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      650.961,
+      600.887,
+      709.38
+    ],
+    "target": [
+      0,
+      8,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "amsterdam-skyline": {
+    "version": 2,
+    "view": "skyline",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      -66.765,
+      25,
+      792.837
+    ],
+    "target": [
+      0,
+      8,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "amsterdam-roof": {
+    "version": 2,
+    "view": "roof",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      -183.604,
+      60,
+      208.641
+    ],
+    "target": [
+      0,
+      8,
+      0
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  },
+  "amsterdam-facade": {
+    "version": 2,
+    "view": "facade",
+    "seed": 1,
+    "mode": 0,
+    "position": [
+      57.896,
+      10.58,
+      42.5
+    ],
+    "target": [
+      22.896,
+      5.58,
+      7.5
+    ],
+    "parameters": {
+      "line-width": 1,
+      "tone-size": 4.2,
+      "density": 85,
+      "outline-width": 1.35,
+      "tone-threshold": 52,
+      "ao-strength": 65,
+      "shadow-strength": 100,
+      "haze": 30,
+      "tree-ink": 80,
+      "black-point": 10,
+      "sun-angle": 135,
+      "sun-height": 45,
+      "lens": 42,
+      "facade-detail": 50,
+      "glass-reflection": 65
+    },
+    "toggles": {
+      "windows-toggle": true,
+      "trees-toggle": true,
+      "props-toggle": true,
+      "shadows-toggle": true,
+      "landscape-toggle": true
+    }
+  }
+}

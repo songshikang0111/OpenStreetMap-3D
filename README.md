@@ -1,4 +1,4 @@
-# 京城线境 / Beijing City Ink · v0.7.0
+# 京城线境 / Beijing City Ink · v0.8.0
 
 使用真实北京 OSM 数据、Three.js 与独立编写的程序化建模/漫画渲染代码，在浏览器中构建国贸 CBD 街区。
 
@@ -20,6 +20,8 @@ v0.6.1 增加细高柏形与宽底层叠针叶冠，公园/庭院按小片混植
 
 v0.7.0 改进远景构图：建筑网点随屏幕尺度连续转为灰阶块面，窗格过滤与大面积玻璃反射分离；玻璃反射读取真实太阳方位/高度，保留冷暖面、方向性亮部和宽反光带。屋顶小设备按投影尺寸收起，近景与高分辨率导出恢复细节。没有新增按坐标定制规则。[9组同机位对照、太阳转向与近景验收](docs/evidence-distance-v07/README.md)记录效果及局限。
 
+v0.8.0 增加上海陆家嘴、京都祇园与阿姆斯特丹运河街区的独立OSM样本，左上角可切换地点；新地点使用相同渲染参数与默认生成规则。修复京都场地标线切割的精度异常。121项测试通过，[三地泛化报告与12张截图](docs/evidence-generalization/README.md)记录数据覆盖率、效果评分及高度估算/屋顶/性能边界。能够跨地区生成可审阅原型，历史街区风貌仍未达到直接成品标准。
+
 ## 运行
 
 要求：Node.js 20.19+ 或 Node.js 22（本机验证版本 22.11.0）；重新下载数据时需要 Python 3。
@@ -40,7 +42,7 @@ npm run build     # 生成 dist/
 npm run preview   # 预览生产构建；请先停止同端口的 dev 服务
 ```
 
-当前通过116项完整自动测试与生产构建。v0.2的历史截图和评分见 [对比验收报告](docs/comparison-report.md)；依据见 [需求与评分约定](docs/comparison-requirements.md)及[原项目证据研究](docs/research-evidence.md)。构建仍会提示 Three.js 分包超过500kB，这是体积提示，不是失败。
+当前通过121项完整自动测试与生产构建。v0.2的历史截图和评分见 [对比验收报告](docs/comparison-report.md)；依据见 [需求与评分约定](docs/comparison-requirements.md)及[原项目证据研究](docs/research-evidence.md)。构建仍会提示 Three.js 分包超过500kB，这是体积提示，不是失败。
 
 ## v0.2 已实现
 

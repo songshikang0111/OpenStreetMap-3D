@@ -1,0 +1,265 @@
+{
+  "name": "上海 · 陆家嘴",
+  "bbox": [
+    31.2298,
+    121.4918,
+    31.2458,
+    121.5128
+  ],
+  "retrievedAt": "2026-10-30T13:20:41.306210+00:00",
+  "rawElements": 2686,
+  "buildings": 719,
+  "roads": 1202,
+  "heights": {
+    "height": 140,
+    "levels": 93,
+    "estimated": 486
+  },
+  "knownHeightFraction": 0.3240611961057024,
+  "osmTrees": 72,
+  "treeCount": 5913,
+  "waterPolygons": 18,
+  "landscapePolygons": 184,
+  "inputTags": {
+    "building:material": 93,
+    "building:colour": 42,
+    "roof:shape": 33,
+    "roof:height": 20
+  },
+  "parseStats": {
+    "invalidRings": 0,
+    "suppressed": 28,
+    "landscapePolygons": 184
+  },
+  "buildMs": 11042,
+  "meshObjects": 766,
+  "triangles": 2438102,
+  "nonFinite": 0,
+  "outsidePlanarVertices": 5434,
+  "roadStats": {
+    "sourceRoads": 1202,
+    "segments": 7376,
+    "driveSegments": 3460,
+    "walkSegments": 3916,
+    "miterJoins": 4452,
+    "bevelJoins": 12,
+    "duplicateSegments": 0,
+    "clippedOverlaps": 16379,
+    "junctions": 598,
+    "crossingExclusions": 126,
+    "dashes": 2282,
+    "stopLines": 20,
+    "drivePolygons": 12164,
+    "walkPolygons": 12930,
+    "pavingPolygons": 15591,
+    "surfaceTriangles": 80797,
+    "roadArea": 462337.89959503914,
+    "pavementArea": 184968.5995574788,
+    "observedSidewalkWays": 64,
+    "observedCrossingWays": 44,
+    "inferredMarginWays": 267,
+    "pavementBuildingBlockers": 4866,
+    "gradeSource": "OSM connectivity + inferred layer heights",
+    "gradeOriginalDiscontinuities": 63,
+    "gradeResolvedConnections": 63,
+    "gradeChangedWays": 307,
+    "gradeMaxVehicleSlope": 0.005327319726194684,
+    "gradeSteepVehicleRuns": 0,
+    "gradeCrossingConstraints": 81,
+    "gradeRemainingDiscontinuities": 0,
+    "gradeConstraintIterations": 10,
+    "gradeConstraintConflicts": 0,
+    "gradeAmbiguousCrossings": 0,
+    "stairFlights": 22,
+    "gradeSteepWalkingWays": 40,
+    "gradeMaxWalkingSlope": 0.3500000000000032,
+    "discardedMicroTriangles": 1185,
+    "renderedTriangles": 84075,
+    "bridgeWays": 84,
+    "bridgeSegments": 972,
+    "bridgeDecks": 1844,
+    "bridgePiers": 104,
+    "bridgeSupportCandidates": 143,
+    "bridgeGuardrailSegments": 4077,
+    "bridgeRailInteriorSkipped": 263,
+    "bridgeRejectedSupports": {
+      "pedestrian-clearance": 8,
+      "traffic-clearance": 23,
+      "building-clearance": 8
+    },
+    "unsupportedBridgeWays": 44,
+    "bridgeHeightSource": "inferred-layer-times-7m",
+    "bridgeGradeConnectionsUnresolved": 0,
+    "bridgeStructureTriangles": 220232,
+    "stairTreads": 1382,
+    "stairPosts": 1142,
+    "stairTriangles": 55420,
+    "stairSkippedFlights": 0,
+    "stairSteepFlights": 5,
+    "stairHeightSource": "shared-road-grade-inference"
+  },
+  "landscapeStats": {
+    "observedFeatures": 178,
+    "observedSurfaceArea": 383648.4198706069,
+    "inferredSites": 491,
+    "inferredPavedArea": 172557.2169280326,
+    "inferredPlantedArea": 135669.1934631655,
+    "rejectedCandidates": 377,
+    "rejectedGeometry": 5,
+    "templates": {
+      "garden-court": 249,
+      "forecourt": 129,
+      "verge": 108,
+      "pocket-common": 5
+    },
+    "layouts": {
+      "single": 76,
+      "paired": 298,
+      "offset": 112
+    },
+    "kindAreas": {
+      "parking": 28201.938569406673,
+      "sport": 16828.123722745135,
+      "construction": 50350.936918116655,
+      "plaza": 62170.01235802708,
+      "lawn": 138038.85351584925,
+      "wood": 67165.05001386873,
+      "park": 119350.99266778759,
+      "paving": 172557.21692803278,
+      "shrub": 7602.436124188158,
+      "garden": 29607.28342008648
+    },
+    "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+    "availableTreeCandidates": 740,
+    "availablePropCandidates": 160,
+    "treesByTemplate": {
+      "forecourt": 132,
+      "garden-court": 271,
+      "verge": 283,
+      "pocket-common": 54
+    },
+    "commonCandidates": 9,
+    "treeCandidates": 740,
+    "props": 160,
+    "surfaces": 2639,
+    "inferredArea": 308226.4103911981,
+    "inferredFraction": 0.08684798022629495,
+    "knownGroundFraction": 0.10809940115281974,
+    "unfilledBeforeFraction": 0.32370278123702784,
+    "unfilledAfterFraction": 0.2361145703611457,
+    "coverageSampleSpacing": 12.160444277492319,
+    "coverageSamples": 24090,
+    "markingStrips": 1128,
+    "markingPrecisionRetries": 0,
+    "omittedMarkingStrips": 0,
+    "renderedTriangles": 36140,
+    "drawMeshes": 13
+  },
+  "facadeFamilies": {
+    "ribbon": 62,
+    "lowrise": 202,
+    "residential": 341,
+    "curtain": 114
+  },
+  "landmarks": [],
+  "tallest": [
+    {
+      "id": "w1573423826",
+      "height": 630,
+      "source": "height",
+      "part": true
+    },
+    {
+      "id": "w1573423825",
+      "height": 617,
+      "source": "height",
+      "part": true
+    },
+    {
+      "id": "w1573425009",
+      "height": 617,
+      "source": "height",
+      "part": true
+    },
+    {
+      "id": "w1573423824",
+      "height": 603,
+      "source": "height",
+      "part": true
+    },
+    {
+      "id": "w1573425008",
+      "height": 603,
+      "source": "height",
+      "part": true
+    },
+    {
+      "id": "r21824349-0",
+      "height": 590,
+      "source": "height",
+      "part": true
+    },
+    {
+      "id": "w1573412411",
+      "height": 587.4,
+      "source": "height",
+      "part": true
+    },
+    {
+      "id": "w1573432465",
+      "height": 565,
+      "source": "height",
+      "part": true
+    }
+  ],
+  "views": {
+    "overview": {
+      "position": [
+        1560.4655948593547,
+        1440.4297798701737,
+        1700.5073790133995
+      ],
+      "target": [
+        0,
+        14.880000000000003,
+        0
+      ]
+    },
+    "skyline": {
+      "position": [
+        -160.04775331890818,
+        29.760000000000005,
+        1900.5670706620347
+      ],
+      "target": [
+        0,
+        14.880000000000003,
+        0
+      ]
+    },
+    "roof": {
+      "position": [
+        -440.1313216269975,
+        60,
+        500.14922912158806
+      ],
+      "target": [
+        0,
+        14.880000000000003,
+        0
+      ]
+    },
+    "facade": {
+      "position": [
+        -12.671366522915015,
+        9.5,
+        95.85885521208341
+      ],
+      "target": [
+        -47.671366522915015,
+        4.5,
+        60.85885521208341
+      ]
+    }
+  }
+}

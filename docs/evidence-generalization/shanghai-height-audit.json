@@ -1,0 +1,23 @@
+{
+  "known": {
+    "count": 233,
+    "p50": 91.7,
+    "p90": 420
+  },
+  "estimated": {
+    "count": 486,
+    "p50": 18.6,
+    "p90": 37.2
+  },
+  "estimatedOverTwiceLocalMedian": 1,
+  "examples": [
+    {
+      "id": "w957019622",
+      "height": 40.300000000000004,
+      "type": "residential",
+      "neighbors": 9,
+      "nearbyKnownMedian": 18.6
+    }
+  ],
+  "interpretation": "Outlier heuristic against known-height neighbors within 150m, not proof of factual height error."
+}

@@ -1,0 +1,265 @@
+{
+  "name": "京都 · 祇园",
+  "bbox": [
+    34.9995,
+    135.7688,
+    35.0078,
+    135.7812
+  ],
+  "retrievedAt": "2026-10-30T13:21:24.674210+00:00",
+  "rawElements": 7014,
+  "buildings": 4460,
+  "roads": 1016,
+  "heights": {
+    "height": 66,
+    "levels": 83,
+    "estimated": 4311
+  },
+  "knownHeightFraction": 0.03340807174887892,
+  "osmTrees": 642,
+  "treeCount": 1474,
+  "waterPolygons": 17,
+  "landscapePolygons": 336,
+  "inputTags": {
+    "roof:shape": 6,
+    "building:colour": 4,
+    "roof:height": 1
+  },
+  "parseStats": {
+    "invalidRings": 0,
+    "suppressed": 2,
+    "landscapePolygons": 336
+  },
+  "buildMs": 29072,
+  "meshObjects": 4508,
+  "triangles": 1419269,
+  "nonFinite": 0,
+  "outsidePlanarVertices": 710,
+  "roadStats": {
+    "sourceRoads": 1016,
+    "segments": 6343,
+    "driveSegments": 2409,
+    "walkSegments": 3934,
+    "miterJoins": 1979,
+    "bevelJoins": 19,
+    "duplicateSegments": 0,
+    "clippedOverlaps": 19318,
+    "junctions": 281,
+    "crossingExclusions": 103,
+    "dashes": 197,
+    "stopLines": 4,
+    "drivePolygons": 5367,
+    "walkPolygons": 9994,
+    "pavingPolygons": 18666,
+    "surfaceTriangles": 67233,
+    "roadArea": 146592.53818086378,
+    "pavementArea": 73883.45452055839,
+    "observedSidewalkWays": 114,
+    "observedCrossingWays": 64,
+    "inferredMarginWays": 133,
+    "pavementBuildingBlockers": 15784,
+    "gradeSource": "OSM connectivity + inferred layer heights",
+    "gradeOriginalDiscontinuities": 100,
+    "gradeResolvedConnections": 100,
+    "gradeChangedWays": 598,
+    "gradeMaxVehicleSlope": 0.10000000000000044,
+    "gradeSteepVehicleRuns": 1,
+    "gradeCrossingConstraints": 6,
+    "gradeRemainingDiscontinuities": 0,
+    "gradeConstraintIterations": 19,
+    "gradeConstraintConflicts": 0,
+    "gradeAmbiguousCrossings": 0,
+    "stairFlights": 8,
+    "gradeSteepWalkingWays": 148,
+    "gradeMaxWalkingSlope": 0.35000000000000464,
+    "discardedMicroTriangles": 972,
+    "renderedTriangles": 66639,
+    "bridgeWays": 398,
+    "bridgeSegments": 3137,
+    "bridgeDecks": 6086,
+    "bridgePiers": 122,
+    "bridgeSupportCandidates": 234,
+    "bridgeGuardrailSegments": 8933,
+    "bridgeRailInteriorSkipped": 1548,
+    "bridgeRejectedSupports": {
+      "water": 10,
+      "pedestrian-clearance": 29,
+      "near-existing-support": 7,
+      "building-clearance": 39,
+      "outside-deck": 22,
+      "traffic-clearance": 5
+    },
+    "unsupportedBridgeWays": 326,
+    "bridgeHeightSource": "inferred-layer-times-7m",
+    "bridgeGradeConnectionsUnresolved": 0,
+    "bridgeStructureTriangles": 444660,
+    "stairTreads": 94,
+    "stairPosts": 176,
+    "stairTriangles": 7164,
+    "stairSkippedFlights": 0,
+    "stairSteepFlights": 3,
+    "stairHeightSource": "shared-road-grade-inference"
+  },
+  "landscapeStats": {
+    "observedFeatures": 327,
+    "observedSurfaceArea": 110052.58024079003,
+    "inferredSites": 82,
+    "inferredPavedArea": 14148.720320802731,
+    "inferredPlantedArea": 5842.0305571896815,
+    "rejectedCandidates": 1158,
+    "rejectedGeometry": 0,
+    "templates": {
+      "garden-court": 62,
+      "verge": 20
+    },
+    "layouts": {
+      "single": 15,
+      "paired": 56,
+      "offset": 11
+    },
+    "kindAreas": {
+      "parking": 31180.454867670862,
+      "sport": 6909.311285896703,
+      "construction": 228.21921356081293,
+      "plaza": 1646.9347667454651,
+      "lawn": 6647.534240517914,
+      "garden": 21628.258668941296,
+      "wood": 34404.33837533706,
+      "park": 12930.900016441741,
+      "paving": 14148.720320802731,
+      "shrub": 318.6034384953673
+    },
+    "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+    "availableTreeCandidates": 26,
+    "availablePropCandidates": 7,
+    "treesByTemplate": {
+      "garden-court": 15,
+      "verge": 11
+    },
+    "commonCandidates": 0,
+    "treeCandidates": 26,
+    "props": 7,
+    "surfaces": 648,
+    "inferredArea": 19990.750877992414,
+    "inferredFraction": 0.01917960276203257,
+    "knownGroundFraction": 0.10558706798146257,
+    "unfilledBeforeFraction": 0.20447637468914065,
+    "unfilledAfterFraction": 0.18485769549599337,
+    "coverageSampleSpacing": 12,
+    "coverageSamples": 7238,
+    "markingStrips": 999,
+    "markingPrecisionRetries": 1,
+    "omittedMarkingStrips": 0,
+    "renderedTriangles": 13303,
+    "drawMeshes": 14
+  },
+  "facadeFamilies": {
+    "residential": 35,
+    "lowrise": 4308,
+    "ribbon": 117
+  },
+  "landmarks": [],
+  "tallest": [
+    {
+      "id": "w291412177",
+      "name": "祇園ファーストビル",
+      "height": 72.2,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w548364073",
+      "height": 60.8,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w205748707",
+      "name": "河原町ニュートーキョービル",
+      "height": 41.8,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w205863193",
+      "height": 40.6,
+      "source": "height",
+      "part": false
+    },
+    {
+      "id": "w548364075",
+      "height": 40.300000000000004,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w205748967",
+      "height": 38.4,
+      "source": "height",
+      "part": false
+    },
+    {
+      "id": "w585105542",
+      "name": "京都あじびる河原町",
+      "height": 38,
+      "source": "levels",
+      "part": false
+    },
+    {
+      "id": "r3820616-0",
+      "height": 37.2,
+      "source": "estimated",
+      "part": false
+    }
+  ],
+  "views": {
+    "overview": {
+      "position": [
+        882.9007953799144,
+        814.9853495814594,
+        962.1354821447785
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "skyline": {
+      "position": [
+        -90.55392773127328,
+        25,
+        1075.32789180887
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "roof": {
+      "position": [
+        -249.0233012610015,
+        60,
+        282.98102416022897
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "facade": {
+      "position": [
+        30.417533092271338,
+        7.79,
+        31.882543363826034
+      ],
+      "target": [
+        -4.582466907728662,
+        2.79,
+        -3.1174566361739657
+      ]
+    }
+  }
+}

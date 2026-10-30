@@ -1,0 +1,260 @@
+{
+  "name": "阿姆斯特丹 · 运河街区",
+  "bbox": [
+    52.3655,
+    4.882,
+    52.373,
+    4.894
+  ],
+  "retrievedAt": "2026-10-30T13:22:09.679232+00:00",
+  "rawElements": 3571,
+  "buildings": 1950,
+  "roads": 503,
+  "heights": {
+    "height": 1698,
+    "levels": 61,
+    "estimated": 191
+  },
+  "knownHeightFraction": 0.902051282051282,
+  "osmTrees": 443,
+  "treeCount": 543,
+  "waterPolygons": 26,
+  "landscapePolygons": 45,
+  "inputTags": {
+    "roof:shape": 82,
+    "building:material": 20,
+    "building:colour": 5,
+    "roof:height": 21
+  },
+  "parseStats": {
+    "invalidRings": 1,
+    "suppressed": 7,
+    "landscapePolygons": 45
+  },
+  "buildMs": 35411,
+  "meshObjects": 1992,
+  "triangles": 860718,
+  "nonFinite": 0,
+  "outsidePlanarVertices": 1195,
+  "roadStats": {
+    "sourceRoads": 503,
+    "segments": 4000,
+    "driveSegments": 2537,
+    "walkSegments": 1463,
+    "miterJoins": 1115,
+    "bevelJoins": 17,
+    "duplicateSegments": 0,
+    "clippedOverlaps": 8424,
+    "junctions": 88,
+    "crossingExclusions": 21,
+    "dashes": 65,
+    "stopLines": 0,
+    "drivePolygons": 4354,
+    "walkPolygons": 4509,
+    "pavingPolygons": 8811,
+    "surfaceTriangles": 34631,
+    "roadArea": 83672.25364493058,
+    "pavementArea": 55365.086593182095,
+    "observedSidewalkWays": 10,
+    "observedCrossingWays": 10,
+    "inferredMarginWays": 165,
+    "pavementBuildingBlockers": 16447,
+    "gradeSource": "OSM connectivity + inferred layer heights",
+    "gradeOriginalDiscontinuities": 78,
+    "gradeResolvedConnections": 78,
+    "gradeChangedWays": 339,
+    "gradeMaxVehicleSlope": 0.10000000000000019,
+    "gradeSteepVehicleRuns": 0,
+    "gradeCrossingConstraints": 0,
+    "gradeRemainingDiscontinuities": 0,
+    "gradeConstraintIterations": 15,
+    "gradeConstraintConflicts": 0,
+    "gradeAmbiguousCrossings": 0,
+    "stairFlights": 3,
+    "gradeSteepWalkingWays": 24,
+    "gradeMaxWalkingSlope": 0.35000000000000053,
+    "discardedMicroTriangles": 360,
+    "renderedTriangles": 34392,
+    "bridgeWays": 264,
+    "bridgeSegments": 2630,
+    "bridgeDecks": 4341,
+    "bridgePiers": 187,
+    "bridgeSupportCandidates": 207,
+    "bridgeGuardrailSegments": 5777,
+    "bridgeRailInteriorSkipped": 995,
+    "bridgeRejectedSupports": {
+      "traffic-clearance": 1,
+      "water": 8,
+      "pedestrian-clearance": 1,
+      "building-clearance": 5,
+      "outside-deck": 4,
+      "near-existing-support": 1
+    },
+    "unsupportedBridgeWays": 170,
+    "bridgeHeightSource": "inferred-layer-times-7m",
+    "bridgeGradeConnectionsUnresolved": 0,
+    "bridgeStructureTriangles": 237490,
+    "stairTreads": 65,
+    "stairPosts": 48,
+    "stairTriangles": 2302,
+    "stairSkippedFlights": 0,
+    "stairSteepFlights": 2,
+    "stairHeightSource": "shared-road-grade-inference"
+  },
+  "landscapeStats": {
+    "observedFeatures": 36,
+    "observedSurfaceArea": 21265.447634631015,
+    "inferredSites": 31,
+    "inferredPavedArea": 6447.5941976757495,
+    "inferredPlantedArea": 3674.387097927519,
+    "rejectedCandidates": 1231,
+    "rejectedGeometry": 3,
+    "templates": {
+      "garden-court": 25,
+      "forecourt": 1,
+      "verge": 5
+    },
+    "layouts": {
+      "paired": 17,
+      "offset": 8,
+      "single": 6
+    },
+    "kindAreas": {
+      "plaza": 8003.893238367651,
+      "lawn": 4116.152117827432,
+      "garden": 12636.804091128479,
+      "paving": 6447.5941976757495,
+      "shrub": 183.00837035124823
+    },
+    "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+    "availableTreeCandidates": 18,
+    "availablePropCandidates": 4,
+    "treesByTemplate": {
+      "garden-court": 10,
+      "verge": 8
+    },
+    "commonCandidates": 0,
+    "treeCandidates": 18,
+    "props": 4,
+    "surfaces": 155,
+    "inferredArea": 10121.98129560327,
+    "inferredFraction": 0.014838964643847171,
+    "knownGroundFraction": 0.03117544049631302,
+    "unfilledBeforeFraction": 0.11029411764705882,
+    "unfilledAfterFraction": 0.0949579831932773,
+    "coverageSampleSpacing": 12,
+    "coverageSamples": 4760,
+    "markingStrips": 0,
+    "markingPrecisionRetries": 0,
+    "omittedMarkingStrips": 0,
+    "renderedTriangles": 2397,
+    "drawMeshes": 8
+  },
+  "facadeFamilies": {
+    "lowrise": 888,
+    "residential": 724,
+    "ribbon": 330,
+    "curtain": 8
+  },
+  "landmarks": [],
+  "tallest": [
+    {
+      "id": "w266695079",
+      "height": 83.6,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w266670278",
+      "height": 79.8,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w266908006",
+      "height": 76,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w266932398",
+      "height": 76,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "r3581115-0",
+      "height": 72.2,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w266678972",
+      "height": 72.2,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w266670274",
+      "height": 68.39999999999999,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w751905304",
+      "height": 50,
+      "source": "height",
+      "part": true
+    }
+  ],
+  "views": {
+    "overview": {
+      "position": [
+        650.9607542072067,
+        600.8868500374216,
+        709.380309071956
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "skyline": {
+      "position": [
+        -66.76520555971351,
+        25,
+        792.8368160215979
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "roof": {
+      "position": [
+        -183.60431528921217,
+        60,
+        208.64126737410473
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "facade": {
+      "position": [
+        57.89568262990146,
+        10.58,
+        42.49995809029898
+      ],
+      "target": [
+        22.895682629901458,
+        5.58,
+        7.499958090298982
+      ]
+    }
+  }
+}

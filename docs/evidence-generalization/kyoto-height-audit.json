@@ -1,0 +1,89 @@
+{
+  "known": {
+    "count": 149,
+    "p50": 12.4,
+    "p90": 30.7
+  },
+  "estimated": {
+    "count": 4311,
+    "p50": 12.4,
+    "p90": 18.6
+  },
+  "estimatedOverTwiceLocalMedian": 202,
+  "examples": [
+    {
+      "id": "w205748707",
+      "name": "河原町ニュートーキョービル",
+      "height": 41.8,
+      "type": "commercial",
+      "neighbors": 37,
+      "nearbyKnownMedian": 15.2
+    },
+    {
+      "id": "r3820616-0",
+      "height": 37.2,
+      "type": "yes",
+      "neighbors": 8,
+      "nearbyKnownMedian": 9.3
+    },
+    {
+      "id": "w292303604",
+      "height": 22.799999999999997,
+      "type": "retail",
+      "neighbors": 20,
+      "nearbyKnownMedian": 9.9
+    },
+    {
+      "id": "w548667386",
+      "height": 19,
+      "type": "retail",
+      "neighbors": 14,
+      "nearbyKnownMedian": 9.3
+    },
+    {
+      "id": "w328903231",
+      "name": "相撲茶屋 いころ",
+      "height": 18.6,
+      "type": "yes",
+      "neighbors": 6,
+      "nearbyKnownMedian": 6.2
+    },
+    {
+      "id": "w328903301",
+      "height": 18.6,
+      "type": "yes",
+      "neighbors": 5,
+      "nearbyKnownMedian": 6.2
+    },
+    {
+      "id": "w328903321",
+      "height": 18.6,
+      "type": "yes",
+      "neighbors": 6,
+      "nearbyKnownMedian": 6.2
+    },
+    {
+      "id": "w328903335",
+      "name": "日吉社",
+      "height": 18.6,
+      "type": "shrine",
+      "neighbors": 6,
+      "nearbyKnownMedian": 6.2
+    },
+    {
+      "id": "w356061813",
+      "height": 18.6,
+      "type": "yes",
+      "neighbors": 7,
+      "nearbyKnownMedian": 6.2
+    },
+    {
+      "id": "w356061817",
+      "height": 18.6,
+      "type": "yes",
+      "neighbors": 8,
+      "nearbyKnownMedian": 6.2
+    }
+  ],
+  "interpretation": "Outlier heuristic against known-height neighbors within 150m, not proof of factual height error."
+}

@@ -1,0 +1,98 @@
+[
+  {
+    "file": "screenshots/shanghai-overview-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "b93677ec4c7b28f9ab518da535c3998cba03ea72f3c88a1476d5e168d945c4ad"
+  },
+  {
+    "file": "screenshots/shanghai-overview-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "cec578a2ab94e62a6908178751bd2f4c14cbbdd73055d9f5ff67ae170cd2c7d3"
+  },
+  {
+    "file": "screenshots/kyoto-overview-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "4b5fe95c62f54db2cf421bd6f4b10de31b82f0bab961e4defedd8949994dd3a7"
+  },
+  {
+    "file": "screenshots/kyoto-overview-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "41b75b32890ba022d5613d3ae04d0a2bc3872f0678e83880906609ffcb9f986c"
+  },
+  {
+    "file": "screenshots/amsterdam-overview-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "3f3b0e792db11b789b1290c3bf6917ced9b9a9c03621acdc7ecad05db7891aae"
+  },
+  {
+    "file": "screenshots/amsterdam-overview-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "dcc93b888ace229357b6e9b98e0fe0a90d35a2cbe0ed228ae78288589a5abe52"
+  },
+  {
+    "file": "screenshots/shanghai-roof-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "86fba6824205a7dd9b686755a020b79559650becf86c8e7284463efdaef47348"
+  },
+  {
+    "file": "screenshots/shanghai-roof-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "eb548bb49cc8f270ad1cb67e72c97c0cd655f955fc1b5a3783ba85e3b7909938"
+  },
+  {
+    "file": "screenshots/kyoto-roof-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "24bdbf7f01927154344aaa55a37a87ece6323339cf8149617c55f70575025d5a"
+  },
+  {
+    "file": "screenshots/kyoto-roof-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "fb4354bfdc99c866126fde28a4152a432ffe4c358920bd2bb0d25eda196af7a2"
+  },
+  {
+    "file": "screenshots/amsterdam-roof-ink.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "fcfa22a19d1971c783d5d8a4d6ad79074d617104260c13b9a12c9d62f9dee537"
+  },
+  {
+    "file": "screenshots/amsterdam-roof-color.png",
+    "size": [
+      1920,
+      889
+    ],
+    "sha256": "273d5e19486f8b5efa81a628187edae3d6fcbc97d6b8a1c4b59b26544563d2ce"
+  }
+]

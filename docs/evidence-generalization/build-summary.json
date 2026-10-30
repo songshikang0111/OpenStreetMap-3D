@@ -1,0 +1,14 @@
+{
+  "shanghai": {
+    "buildMs": 11042,
+    "buildings": 719,
+    "triangles": 2438102,
+    "nonFinite": 0
+  },
+  "amsterdam": {
+    "buildMs": 35411,
+    "buildings": 1950,
+    "triangles": 860718,
+    "nonFinite": 0
+  }
+}
