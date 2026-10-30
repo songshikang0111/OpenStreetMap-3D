@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import clipping from 'polygon-clipping';
+import { inlayPaint } from './paint-inlay.js';
 import { planLandscape } from './landscape-plan.js';
 import { planLandscapeMarkings } from './landscape-markings.js';
 
@@ -54,6 +54,7 @@ export function buildLandscape(data,options={}) {
   const markings=options.profile?.enabled===false?[]:planLandscapeMarkings(data,plan);
   const paintByFeature=new Map();
   for(const mark of markings){if(!paintByFeature.has(mark.featureId))paintByFeature.set(mark.featureId,[]);paintByFeature.get(mark.featureId).push([mark.outer,...mark.holes]);}
+  const paintedFeatures=new Map();let precisionRetries=0,omittedPaint=0;
   const batches=new Map();
   for(const surface of plan.surfaces) {
     const key=`${surface.source}:${surface.kind}`;
@@ -62,7 +63,8 @@ export function buildLandscape(data,options={}) {
     // Inlay paint into its support instead of stacking nearly coplanar planes.
     // This keeps every colour/depth/normal/ID pass identical at distant views.
     const paint=paintByFeature.get(surface.id);
-    const pieces=paint?clipping.difference([surface.outer,...(surface.holes||[])],...paint):[[surface.outer,...(surface.holes||[])]];
+    const inlay=inlayPaint([surface.outer,...(surface.holes||[])],paint||[]),pieces=inlay.pieces;
+    if(paint){paintedFeatures.set(surface.id,{kind:surface.kind,polygons:inlay.paint});if(inlay.precision)precisionRetries++;omittedPaint+=inlay.omitted;}
     for(const [outer,...holes]of pieces)batches.get(key).writer.polygon({outer,holes},y,new THREE.Color(hex),61000+Object.keys(styles).indexOf(surface.kind));
   }
   for(const [name,{writer,kind,source}]of batches) {
@@ -71,10 +73,11 @@ export function buildLandscape(data,options={}) {
   if(markings.length){
     // Paint shares its host's object identity: thin stripes are surface colour,
     // not tiny standalone objects that need two black outline borders.
-    const writer=new Writer();for(const mark of markings)writer.polygon(mark,styles[mark.kind][1],new THREE.Color('#e9e6d7'),61000+Object.keys(styles).indexOf(mark.kind));
+    const writer=new Writer();for(const {kind,polygons}of paintedFeatures.values())for(const [outer,...holes]of polygons)writer.polygon({outer,holes},styles[kind][1],new THREE.Color('#e9e6d7'),61000+Object.keys(styles).indexOf(kind));
     const mesh=writer.mesh(material,'Illustrative parking bays and court lines',3.5);mesh.userData.source='inferred-layout';group.add(mesh);
   }
-  plan.stats.markingStrips=markings.length;
+  plan.stats.markingStrips=[...paintedFeatures.values()].reduce((n,f)=>n+f.polygons.length,0);
+  plan.stats.markingPrecisionRetries=precisionRetries;plan.stats.omittedMarkingStrips=omittedPaint;
   const benches=plan.props.filter(p=>p.kind==='bench');
   if(benches.length) {
     const geometry=new THREE.BoxGeometry(1,1,1),dummy=new THREE.Object3D();
