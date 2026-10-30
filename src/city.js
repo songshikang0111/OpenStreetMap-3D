@@ -8,6 +8,7 @@ import { buildRoadSurface } from './road-surface.js';
 import { facadeLayout, nearbyFacadeFrames } from './facade-layout.js';
 import { installFacadeShader } from './facade-shader.js';
 import { buildLandscape } from './landscape.js';
+import { updateRoofDetails } from './distance-style.js';
 
 class MeshWriter {
   constructor() { this.positions = []; this.normals = []; this.colors = []; this.facades = []; this.ids = []; this.styles=[]; this.style=0; this.variant=0; this.layouts=[]; this.layout=[0,0,0,0]; this.surfaces=[];this.surface=[0,1]; }
@@ -86,7 +87,7 @@ function facadeMaterial(shared) {
 
 export function buildCity(data, { landscapeEnabled = true } = {}) {
   const group = new THREE.Group(); group.name = 'Beijing CBD — OpenStreetMap';
-  const shared = { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: {value:.5}, glassReflection: {value:.65}, toneSize:{value:4.2} };
+  const shared = { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: {value:.5}, glassReflection: {value:.65}, toneSize:{value:4.2}, sunDirection:{value:new THREE.Vector3(.5,.707,-.5)}, projectionScale:{value:1000} };
   const material = facadeMaterial(shared);
   const baseMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .98 });
   const [x0,z0,x1,z1] = data.bounds;
@@ -102,7 +103,7 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
 
   const buildings=[],nearWalls=[],landmarks=[],familyCounts={},grammarCounts={},surfaceCounts={};
   const sourceColors={height:'#60988e',levels:'#86a8c3',estimated:'#daab73'};
-  const roofWriter=new MeshWriter();
+  const roofWriter=new MeshWriter(),roofDetails=[];
   data.buildings.forEach((building,index)=>{
     const writer=new MeshWriter(),id=index+1,style=buildingStyle(building,data.seed||1),landmark=landmarkKind(building);
     writer.style=style.code;writer.variant=style.variant;familyCounts[style.family]=(familyCounts[style.family]||0)+1;
@@ -155,9 +156,11 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
         addBox(writer,[x,baseY+2.15,z],[.16,4.3,.48],trim,id,angle);
       }
       for(const box of roofEquipment(building)){
+        const start=roofWriter.positions.length;
         addBox(roofWriter,[box.x,topY+box.h/2,box.z],[box.w,box.h,box.d],'#aeb7b4',id);
         addBox(roofWriter,[box.x,topY+box.h+.1,box.z],[box.w+.3,.2,box.d+.3],'#d6dbd8',id);
         for(let j=0;j<3;j++)addBox(roofWriter,[box.x-box.w*.3+j*box.w*.3,topY+box.h+.23,box.z],[.18,.14,box.d*.8],'#6b7e7c',id);
+        roofDetails.push({start,end:roofWriter.positions.length,anchor:[box.x,topY,box.z],size:Math.max(box.w,box.d),weight:1});
       }
     }
     const mesh=writer.mesh(material,building.tags.name||building.id);mesh.userData.feature=building;mesh.userData.generatedFacade=true;mesh.userData.inkClass=1;
@@ -168,12 +171,14 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
     group.add(mesh);buildings.push(mesh);
   });
   const equipment=roofWriter.mesh(baseMaterial,'Procedural roof equipment groups');equipment.userData.inkClass=4;group.add(equipment);
+  const roofOriginal=equipment.geometry.attributes.position.array.slice();equipment.userData.lod={total:roofDetails.length,visible:roofDetails.length};
   const dummy=new THREE.Object3D();
   const frameMesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({color:'#dadbd4',roughness:.83}),nearWalls.length?18000:0);
   frameMesh.name='Nearby frames, sills and balconies (inferred)';frameMesh.userData.inkClass=4;frameMesh.castShadow=true;frameMesh.receiveShadow=true;frameMesh.count=0;
   const detailGroup=new THREE.Group();detailGroup.name='Near building details';detailGroup.add(frameMesh);group.add(detailGroup);
   let lodKey='';
-  function updateLOD(camera){
+  function updateLOD(camera,viewportHeight=900){
+    if(camera.isCamera)equipment.userData.lod=updateRoofDetails(equipment.geometry,roofDetails,roofOriginal,camera,viewportHeight);
     const key=`${Math.round(camera.position.x/25)},${Math.round(camera.position.z/25)},${Math.round(camera.position.y/25)}`;
     if(key!==lodKey){lodKey=key;let count=0;
       for(const d of nearbyFacadeFrames(nearWalls,camera.position)){

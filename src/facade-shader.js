@@ -6,6 +6,8 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
     uWindows: shared.windows, uProvenance: shared.provenance,
     uFacadeDetail: shared.facadeDetail, uGlassReflection: shared.glassReflection,
     uFacadeToneSize: shared.toneSize || {value:4.2},
+    uFacadeSunDirection: shared.sunDirection || {value:{x:.5,y:.707,z:-.5}},
+    uFacadeProjection: shared.projectionScale || {value:1000},
   });
   shader.vertexShader = shader.vertexShader
     .replace('#include <common>', `#include <common>
@@ -21,7 +23,8 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
   shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
     varying vec4 vFacade; varying vec2 vStyle; varying vec4 vLayout; varying vec2 vSurface;
     varying vec3 vGlassWorld; varying vec3 vGlassNormal;
-    uniform float uWindows,uProvenance,uFacadeDetail,uGlassReflection,uFacadeToneSize;
+    uniform float uWindows,uProvenance,uFacadeDetail,uGlassReflection,uFacadeToneSize,uFacadeProjection;
+    uniform vec3 uFacadeSunDirection;
     float inkWindow=0.,inkTone=0.;
     float glassCoverage=0.;vec3 glassEnvironment=vec3(0.);
     // Exact box integration, including footprints spanning multiple periods.
@@ -75,17 +78,28 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
       float groupedGlass=mix(.24,1.,mix(mix(.76,.70,ribbon),groupPane,macroKeep));
       vec3 incident=normalize(vGlassWorld-cameraPosition),wallNormal=normalize(vGlassNormal);
       vec3 reflected=reflect(incident,wallNormal);
+      float metrePixel=length(vGlassWorld-cameraPosition)/max(uFacadeProjection,1.);
+      float distanceRead=smoothstep(.35,1.25,metrePixel);
       // Analytic environment, not a photograph or a reflection of nearby OSM
       // buildings: bright sky, dark horizon masses, broad directional light.
-      // Only reflected direction controls its image, so camera orbit changes
-      // it continuously and opposite faces can carry different tonal masses.
+      // Reflected direction, wall orientation and the live sun vary these
+      // masses continuously as the camera or lighting changes.
       float azimuth=atan(reflected.z,reflected.x);
       float skyline=.055+.075*sin(azimuth*5.+.7)+.035*sin(azimuth*11.-.4);
       float sky=smoothstep(skyline-.08,skyline+.23,reflected.y);
       float cloud=.5+.5*sin(reflected.x*3.2+reflected.z*2.1+reflected.y*4.8);
-      float lightSector=.5+.5*dot(normalize(reflected.xz+vec2(.0001)),normalize(vec2(-.72,.69)));
+      vec3 sunDirection=normalize(uFacadeSunDirection);
+      float lightSector=.5+.5*dot(normalize(reflected.xz+vec2(.0001)),normalize(sunDirection.xz+vec2(.0001)));
+      float sunFacing=max(0.,dot(wallNormal,sunDirection));
+      float sunGlint=pow(max(0.,dot(reflected,sunDirection)),24.);
       float fresnel=pow(1.-clamp(dot(-incident,wallNormal),0.,1.),3.);
-      float environment=clamp(.09+sky*.48+lightSector*.30+cloud*.08+fresnel*.12,0.,1.);
+      // An aerial camera sees ground reflected in vertical glass. A single
+      // constant ground color made every distant tower pale blue. Use broad
+      // angular masses plus a sun-facing response; these are art-directed
+      // environment values, not reflections of actual neighboring buildings.
+      float groundMass=.5+.5*sin(azimuth*2.4+vStyle.y*1.7+reflected.y*2.);
+      float horizonGlow=exp(-pow((reflected.y+.10)/.16,2.))*(.35+.65*lightSector);
+      float environment=clamp(.045+sky*.45+lightSector*.12+sunFacing*.34+groundMass*(1.-sky)*.17+cloud*.035+fresnel*.12+sunGlint*.30+horizonGlow*.20,0.,1.);
       float reflection=mix(.28,environment,clamp(uGlassReflection,0.,1.));
       float glassShade=clamp(1.-reflection+(vStyle.y-.5)*.10,0.,1.);
       float opacity=.91;
@@ -101,6 +115,7 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
       float glassTone=smoothstep(.10,.88,glassShade)*.78;
       float brightMullions=(1.-mask)*smoothstep(.28,.62,reflection)*.58;
       inkWindow=mix(windowInk,max(mask*glassBlack,brightMullions),isGlass)*detail;
+      inkWindow=mix(inkWindow,meanU*meanV*glassBlack,isGlass*distanceRead);
       // Preserve average glass area and broad reflection once panes disappear.
       // The material signal is separate from lighting/AO, so white wall and
       // glazed curtain wall cannot collapse to the same neutral shade.
@@ -131,7 +146,10 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
       float cell=fract(sin(dot(floor(vec2(u,v)),vec2(17.21,59.17)))*12345.31);
       vec3 glass=mix(vec3(.17,.24,.28),vec3(.31,.39,.44),cell*.06*resolved+vStyle.y*.4);
       glass=mix(glass,vec3(.21,.31,.37),zun*.55);
-      glassEnvironment=mix(vec3(.085,.13,.16),vec3(.77,.85,.87),reflection);
+      vec3 darkGlass=mix(vec3(.045,.085,.12),vec3(.075,.115,.12),vStyle.y);
+      vec3 brightGlass=mix(vec3(.64,.75,.83),vec3(.86,.81,.67),sunFacing*.72+sunGlint*.25);
+      float reflectedValue=mix(smoothstep(.08,.86,reflection),smoothstep(.16,.62,reflection),smoothstep(.4,1.4,metrePixel));
+      glassEnvironment=mix(darkGlass,brightGlass,reflectedValue);
       glassEnvironment=mix(glassEnvironment,vec3(.79,.86,.88),fresnel*.28);
       glass=mix(glass,glassEnvironment,isGlass);
       glass=mix(glass,vec3(.63,.67,.68),(1.-mix(.24,1.,mix(.70,groupPane,macroKeep)))*ribbon);

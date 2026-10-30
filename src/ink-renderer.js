@@ -59,6 +59,7 @@ uniform vec2 resolution,aoResolution;
 uniform mat4 inverseProjection,inverseView;
 uniform float nearPlane,farPlane,lineWidth,outlineWidth,toneSize,inkDensity,blackPoint,mode;
 uniform float aoStrength,toneThreshold,shadowStrength,haze,treeInk;
+uniform float projectionScale;
 uniform vec3 paper,ink;
 ${depthFunctions}
 ${foliageGLSL}
@@ -198,7 +199,14 @@ void main(){
     glassEdge=smoothstep(.17,.6,glassEdge)*(1.-air*.8);
     vec3 result;
     if(mode<.5){
-      float coverage=max(max(edge,pavingInk),max(screentone(density),max(solid,glassInk)));
+      // District views are read as silhouettes and large value masses. A wall
+      // covered in a handful of fixed-size dots looks like mosaic even if its
+      // windows are correctly filtered. Transfer facade tone to a quiet wash
+      // continuously by projected metre size, leaving nearby screentone intact.
+      float farFacade=facade*smoothstep(.35,1.25,depth/max(projectionScale,1.));
+      float wash=smoothstep(.035,.72,density)*.62;
+      float facadeTone=mix(screentone(density),wash,farFacade);
+      float coverage=max(max(edge,pavingInk),max(facadeTone,max(solid,glassInk)));
       result=mix(paper,ink,coverage);
     }else if(mode<1.5){
       result=mix(paper,ink,max(max(edge,pavingInk),max(leafLine,max(glassEdge,glassInk*.075))));
@@ -268,7 +276,7 @@ export class InkRenderer {
     const common={tNormal:{value:this.normal.texture},tDepth:{value:this.normal.depthTexture},nearPlane:{value:camera.near},farPlane:{value:camera.far},inverseProjection:{value:this.inverseProjection}};
     this.material=new THREE.ShaderMaterial({vertexShader,fragmentShader,depthTest:false,depthWrite:false,uniforms:{
       ...common,tColor:{value:this.color.texture},tLight:{value:this.light.texture},tId:{value:this.ids.texture},tAO:{value:this.ao.texture},
-      resolution:{value:new THREE.Vector2(1,1)},aoResolution:{value:new THREE.Vector2(1,1)},inverseView:{value:this.inverseView},
+      resolution:{value:new THREE.Vector2(1,1)},aoResolution:{value:new THREE.Vector2(1,1)},inverseView:{value:this.inverseView},projectionScale:{value:1000},
       ...Object.fromEntries(Object.entries(INK_DEFAULTS).map(([key,value])=>[key,{value}])),mode:{value:0},
       paper:{value:new THREE.Color('#ffffff')},ink:{value:new THREE.Color('#17191b')},
     }});
@@ -306,6 +314,11 @@ export class InkRenderer {
   setFacadeShared(shared){this.facadeSource=shared;}
 
   render(){
+    // Use displayed pixels for the illustration LOD: devicePixelRatio must
+    // not turn a distant facade back into a dense dot texture on a HiDPI screen.
+    const scale=this.color.height*this.camera.projectionMatrix.elements[5]*.5/(this.renderer.getPixelRatio?.()||1);
+    if(this.facadeSource.projectionScale)this.facadeSource.projectionScale.value=scale;
+    this.material.uniforms.projectionScale.value=scale;
     for(const [key,u] of Object.entries(this.facadeUniforms))u.value=this.facadeSource[key].value;
     const r=this.renderer,s=this.scene,c=this.camera,background=s.background,override=s.overrideMaterial,autoUpdate=r.shadowMap.autoUpdate;
     const clear=r.getClearColor(new THREE.Color()),alpha=r.getClearAlpha();

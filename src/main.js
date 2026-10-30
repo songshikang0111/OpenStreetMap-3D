@@ -39,6 +39,7 @@ function updateLight(){
   const angle=Number($('sun-angle').value)*Math.PI/180;
   const elevation=Number($('sun-height').value)*Math.PI/180;
   sun.position.set(Math.sin(angle)*1100,Math.tan(elevation)*1100,Math.cos(angle)*1100);
+  if(city?.shared.sunDirection)city.shared.sunDirection.value.copy(sun.position).sub(sun.target.position).normalize();
   sun.shadow.camera.far=Math.max(3600,sun.position.length()+1800);
   sun.shadow.camera.updateProjectionMatrix();
   sun.shadow.needsUpdate=true;invalidate();
@@ -161,13 +162,13 @@ async function exportPNG(){
   const size=renderer.getSize(new THREE.Vector2()),ratio=renderer.getPixelRatio();
   try{
     const scale=2400/Math.max(size.x,size.y),w=Math.round(size.x*scale),h=Math.round(size.y*scale);
-    renderer.setPixelRatio(1);renderer.setSize(w,h,false);ink.resize(w,h);ink.render();
+    renderer.setPixelRatio(1);renderer.setSize(w,h,false);ink.resize(w,h);city.updateLOD(camera,h);ink.render();
     const output=document.createElement('canvas');output.width=w;output.height=h;const context=output.getContext('2d');context.drawImage(renderer.domElement,0,0);
     const font=Math.max(13,Math.round(w/140));context.font=`${font}px sans-serif`;const credit='© OpenStreetMap contributors · openstreetmap.org/copyright | Beijing City Ink';
     const textWidth=context.measureText(credit).width;context.fillStyle='rgba(247,245,237,.92)';context.fillRect(w-textWidth-28,h-font-24,textWidth+24,font+17);context.fillStyle='#52614d';context.fillText(credit,w-textWidth-16,h-13);
     const blob=await new Promise(resolve=>output.toBlob(resolve,'image/png'));if(!blob)throw new Error('浏览器无法编码 PNG');download(blob,'beijing-city-ink.png');toast(`已导出 ${w} × ${h} PNG，含地图来源标注。`);
   }catch(error){toast(`导出失败：${error.message}`);console.error(error);}
-  finally{renderer.setPixelRatio(ratio);renderer.setSize(size.x,size.y,false);const buffer=renderer.getDrawingBufferSize(new THREE.Vector2());ink.resize(buffer.x,buffer.y);button.disabled=false;invalidate();}
+  finally{renderer.setPixelRatio(ratio);renderer.setSize(size.x,size.y,false);const buffer=renderer.getDrawingBufferSize(new THREE.Vector2());ink.resize(buffer.x,buffer.y);city.updateLOD(camera,viewport.clientHeight);button.disabled=false;invalidate();}
 }
 
 async function exportGLB(){
@@ -270,7 +271,7 @@ async function initialize(){
         // makes metre-scale facade trims fight their backing walls.
         const near=Math.max(.4,Math.min(12,camera.position.y*.012));
         if(Math.abs(camera.near-near)>.01){camera.near=near;camera.updateProjectionMatrix();}
-        city.updateLOD(camera);ink.render();drawMap();
+        city.updateLOD(camera,viewport.clientHeight);ink.render();drawMap();
         $('camera-readout').textContent=`机位 ${camera.position.toArray().map(n=>n.toFixed(1)).join(', ')} m · FOV ${camera.fov.toFixed(1)}°`;
         const d=camera.position.clone().sub(controls.target);$('compass-arrow').setAttribute('transform',`rotate(${-Math.atan2(d.x,d.z)*180/Math.PI} 25 25)`);needsRender=false;
       }
