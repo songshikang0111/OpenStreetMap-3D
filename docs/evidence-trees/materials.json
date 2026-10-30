@@ -1,0 +1,136 @@
+{
+  "buildings": 477,
+  "seed": 1,
+  "counts": {
+    "cut-stone": 71,
+    "smooth-render": 78,
+    "reflective-glass": 39,
+    "warm-brick": 79,
+    "precast-panels": 70,
+    "vertical-piers": 69,
+    "ceramic-tile": 71
+  },
+  "grammars": {
+    "long-ribbon": 10,
+    "paired-ribbon": 11,
+    "paired-mullions": 13,
+    "deep-spandrel": 17,
+    "glass-spandrel": 7,
+    "horizontal-ribbon": 12,
+    "framed-office-bays": 11,
+    "continuous-grid": 14,
+    "narrow-masonry": 53,
+    "punched-windows": 6,
+    "slender-vertical": 5,
+    "twin-horizontal": 10,
+    "tall-stone-bays": 8,
+    "square-rendered": 63,
+    "transom-lowrise": 64,
+    "square-precast": 9,
+    "wide-shopfront": 40,
+    "paired-lowrise": 54,
+    "wide-recessed-pairs": 7,
+    "transom-windows": 6,
+    "paired-casements": 6,
+    "small-punched": 51
+  },
+  "families": {
+    "ribbon": 71,
+    "curtain": 39,
+    "lowrise": 325,
+    "residential": 42
+  },
+  "examples": [
+    {
+      "surface": "warm-brick",
+      "osmId": 13613472,
+      "grammar": "paired-ribbon",
+      "position": [
+        -562.041,
+        17,
+        540.487
+      ],
+      "target": [
+        -579.906,
+        15,
+        519.972
+      ]
+    },
+    {
+      "surface": "cut-stone",
+      "osmId": 33459437,
+      "grammar": "narrow-masonry",
+      "position": [
+        -282.081,
+        8.51,
+        427.594
+      ],
+      "target": [
+        -290.453,
+        6.51,
+        398.59
+      ]
+    },
+    {
+      "surface": "precast-panels",
+      "osmId": 13613471,
+      "grammar": "deep-spandrel",
+      "position": [
+        -665.218,
+        16.364,
+        448.2
+      ],
+      "target": [
+        -656.041,
+        14.364,
+        487.389
+      ]
+    },
+    {
+      "surface": "smooth-render",
+      "osmId": 116939989,
+      "grammar": "long-ribbon",
+      "position": [
+        -527.032,
+        16.322,
+        -527.136
+      ],
+      "target": [
+        -537.092,
+        14.322,
+        -552.411
+      ]
+    },
+    {
+      "surface": "vertical-piers",
+      "osmId": 13613474,
+      "grammar": "horizontal-ribbon",
+      "position": [
+        -646.823,
+        17,
+        706.545
+      ],
+      "target": [
+        -655.656,
+        15,
+        669.69
+      ]
+    },
+    {
+      "surface": "ceramic-tile",
+      "osmId": 156061546,
+      "grammar": "paired-ribbon",
+      "position": [
+        -567.272,
+        15.02,
+        -258.436
+      ],
+      "target": [
+        -613.095,
+        13.02,
+        -249.477
+      ]
+    }
+  ],
+  "scope": "Illustrative inferred styles; explicit OSM material tags take precedence."
+}

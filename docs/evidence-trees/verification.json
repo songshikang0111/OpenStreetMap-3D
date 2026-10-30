@@ -1,0 +1,14 @@
+{
+  "matchingViews": 15,
+  "screenshots": 30,
+  "dimensions": [
+    1920,
+    889
+  ],
+  "localLinksChecked": 15,
+  "inlineJavaScriptSyntax": "passed",
+  "cameraRecords": "complete",
+  "browserErrors": [],
+  "reportBrowserPreview": "Not completed: browser security policy disallows file:// navigation. Report image assets and inline JavaScript syntax checked on disk.",
+  "diagnostics": "diagnostics/ contains intermediate debugging images, not the accepted final output."
+}

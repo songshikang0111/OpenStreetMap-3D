@@ -5,7 +5,7 @@
   <header class="topbar">
     <a class="brand" href="/" aria-label="京城线境首页"><span class="brand-icon">京</span><span><strong>京城线境</strong><small>BEIJING CITY INK</small></span></a>
     <span class="top-description">从真实地图，到一页城市漫画</span>
-    <div class="header-actions"><span class="local-badge"><i></i> 程序化城市 · v0.5.0</span><button id="save-view" class="button">保存视角</button><button id="export-png" class="button primary">导出 PNG <span>↗</span></button><button id="export-glb" class="button">3D 模型 ↓</button></div>
+    <div class="header-actions"><span class="local-badge"><i></i> 程序化城市 · v0.6.0</span><button id="save-view" class="button">保存视角</button><button id="export-png" class="button primary">导出 PNG <span>↗</span></button><button id="export-glb" class="button">3D 模型 ↓</button></div>
   </header>
   <main class="workspace">
     <aside class="sidebar">
@@ -51,7 +51,7 @@
         <div class="legend"><span><i class="height"></i>标注高度 <b id="count-height">—</b></span><span><i class="levels"></i>楼层换算 <b id="count-levels">—</b></span><span><i class="estimated"></i>规则估算 <b id="count-estimated">—</b></span></div>
         <p class="data-note">位置、轮廓与道路来自 OSM。地标曲面是独立的形体近似；窗户、设备、行道树与车人是规则补充，非街景测绘。本原型使用平坦地面。</p>
         <p class="data-note" id="generation-stats"></p>
-        <button id="reroll" class="button full">重估缺失高度 <span id="seed-label">种子 1</span></button>
+        <button id="reroll" class="button full">重新生成细节 <span id="seed-label">种子 1</span></button>
         <details class="advanced"><summary>复现当前视角</summary><p class="data-note">保存视角会把机位、光照、画风及随机种子写入链接，刷新或再次打开可还原。</p><label for="view-link" class="data-note">视角链接</label><textarea id="view-link" readonly rows="3"></textarea><button id="export-state" class="button full">导出参数 JSON</button><output id="camera-readout"></output></details>
       </section>
       <footer class="side-footer"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a><span>地图数据 ODbL · Three.js</span></footer>

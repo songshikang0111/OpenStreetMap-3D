@@ -1,0 +1,71 @@
+{
+  "generatedAt": "2026-10-30T08:57:19.140Z",
+  "sourceRoot": "C:\\myGit\\beijing-city-ink\\work\\v050-tree-source",
+  "scope": "CPU planning and opaque full-size far-crown convex footprints projected onto the ground; contact is a geometry proxy, not leaf coverage, observed vegetation or GPU FPS.",
+  "generationMs": 4083,
+  "trees": 2692,
+  "stats": {
+    "observedTrees": 0,
+    "rejectedObservedTrees": 0,
+    "rowTrees": 0,
+    "streetTrees": 1899,
+    "greenTrees": 202,
+    "landscapeTrees": 591,
+    "junctions": 154,
+    "placementSource": "OSM observations + constrained inferred furnishings and landscape templates; no image-derived geometry",
+    "trees": 2692,
+    "generatedTrees": 2692,
+    "lamps": 311,
+    "cars": 110,
+    "people": 170,
+    "crosswalks": 85,
+    "signals": 29,
+    "curbs": 5694,
+    "observedCrossings": 85,
+    "observedSignals": 29,
+    "observedLamps": 0,
+    "curbCrossingCuts": 149,
+    "curbCrossingClearanceMetres": 326.61496582646777,
+    "gradeAdjustedFurnishings": 257,
+    "gradeSuppressedTrees": 34,
+    "structureSuppressedTrees": 25
+  },
+  "shapes": {
+    "spreading": 2119,
+    "columnar": 573
+  },
+  "landscapeCandidates": 600,
+  "connectivity": {
+    "touchingTrees": 0,
+    "touchFraction": 0,
+    "overlappingPairs": 0,
+    "largestGroup": 1,
+    "groupsOfAtLeastThree": 0,
+    "minimumRootSpacing": 6.068354097277493,
+    "bySource": {
+      "inferred-street": {
+        "trees": 1899,
+        "withTouchingCrown": 0,
+        "touchFraction": 0
+      },
+      "inferred-green": {
+        "trees": 202,
+        "withTouchingCrown": 0,
+        "touchFraction": 0
+      },
+      "inferred-landscape": {
+        "trees": 591,
+        "withTouchingCrown": 0,
+        "touchFraction": 0
+      }
+    }
+  },
+  "conflicts": {
+    "blockedGroundRoots": 0,
+    "footpathRoots": 0,
+    "carriagewayRoots": 0,
+    "buildingCanopyEnvelope": 0,
+    "farCrownVehicleDeckCrossings": 96,
+    "farCrownPedestrianDeckCrossings": 0
+  }
+}

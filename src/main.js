@@ -114,8 +114,10 @@ function showBuilding(b){
     const term=document.createElement('dt'),description=document.createElement('dd');term.textContent=key;description.textContent=value;list.append(term,description);
   }
   details.append(list);
-  const family=city.buildings.find(m=>m.userData.feature===b)?.userData.facadeFamily;
+  const skin=city.buildings.find(m=>m.userData.feature===b)?.userData, family=skin?.facadeFamily;
   if(b.generatedShape||family){const p=document.createElement('p');p.className='notice';p.textContent=b.generatedShape?`${b.generatedShape}：${b.generatedShapeNote||'地标形体为参数化近似，曲面不是 OSM 实测三维数据。'}`:`立面类型：${family}；门窗与设备由规则生成。`;details.append(p);}
+  const finishes={'reflective-glass':'反射玻璃','smooth-render':'浅色抹灰','cut-stone':'石材分缝','warm-brick':'暖色砌砖','precast-panels':'预制板墙','vertical-piers':'竖向壁柱','ceramic-tile':'面砖饰面'};
+  if(skin?.facadeSurface){const p=document.createElement('p');p.className='notice';p.textContent=`示意饰面：${finishes[skin.facadeSurface]||skin.facadeSurface}。材质标签优先；缺失时按种子生成，玻璃反射为程序化环境。`;details.append(p);}
   if(b.source!=='height'){const p=document.createElement('p');p.className='notice';p.textContent=b.source==='estimated'?'地图缺少高度和层数，当前高度由用途与面积估算。':'高度由楼层数与假定层高换算，非实测高度。';details.append(p);}
   $('osm-link').href=`https://www.openstreetmap.org/${b.osmType}/${b.osmId}`;$('building-info').hidden=false;
 }
@@ -186,7 +188,7 @@ async function exportGLB(){
     }
     const result=await new GLTFExporter().parseAsync(clone,{binary:true,onlyVisible:true});
     download(new Blob([result],{type:'model/gltf-binary'}),'beijing-city-ink.glb');
-    toast('GLB 已导出；漫画网点和着色器窗格属于屏幕效果。');
+    toast('GLB 已导出几何；网点、程序窗格、玻璃反射与墙面纹理仅保留在本渲染器中。');
   }catch(error){toast(`导出失败：${error.message}`);console.error(error);}
   finally{if(wasInspect)city.setProvenance(true);button.disabled=false;invalidate();}
 }

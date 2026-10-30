@@ -1,0 +1,442 @@
+[
+  {
+    "id": "06-facade-ink",
+    "phase": "before",
+    "pose": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+    "requested": [
+      237.785,
+      18,
+      -14.019
+    ]
+  },
+  {
+    "id": "07-facade-color",
+    "phase": "before",
+    "pose": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+    "requested": [
+      237.785,
+      18,
+      -14.019
+    ]
+  },
+  {
+    "id": "01-grove-ink",
+    "phase": "before",
+    "pose": "机位 120.0, 32.0, 135.0 m · FOV 55.0°",
+    "requested": [
+      120,
+      32,
+      135
+    ]
+  },
+  {
+    "id": "01-grove-ink",
+    "phase": "after",
+    "pose": "机位 120.0, 32.0, 135.0 m · FOV 55.0°",
+    "requested": [
+      120,
+      32,
+      135
+    ]
+  },
+  {
+    "id": "02-grove-color",
+    "phase": "before",
+    "pose": "机位 120.0, 32.0, 135.0 m · FOV 55.0°",
+    "requested": [
+      120,
+      32,
+      135
+    ]
+  },
+  {
+    "id": "05-overview-color",
+    "phase": "before",
+    "pose": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "requested": [
+      1533.988,
+      1415.989,
+      1669.951
+    ]
+  },
+  {
+    "id": "08-facade-side",
+    "phase": "before",
+    "pose": "机位 -15.0, 70.0, -10.0 m · FOV 55.0°",
+    "requested": [
+      -15,
+      70,
+      -10
+    ]
+  },
+  {
+    "id": "01-grove-ink",
+    "phase": "after",
+    "pose": "机位 120.0, 32.0, 135.0 m · FOV 55.0°",
+    "requested": [
+      120,
+      32,
+      135
+    ]
+  },
+  {
+    "id": "material-warm-brick",
+    "phase": "before",
+    "pose": "机位 -562.0, 17.0, 540.5 m · FOV 50.0°",
+    "requested": [
+      -562.041,
+      17,
+      540.487
+    ]
+  },
+  {
+    "id": "02-grove-color",
+    "phase": "after",
+    "pose": "机位 120.0, 32.0, 135.0 m · FOV 55.0°",
+    "requested": [
+      120,
+      32,
+      135
+    ]
+  },
+  {
+    "id": "material-cut-stone",
+    "phase": "before",
+    "pose": "机位 -282.1, 8.5, 427.6 m · FOV 50.0°",
+    "requested": [
+      -282.081,
+      8.51,
+      427.594
+    ]
+  },
+  {
+    "id": "material-precast-panels",
+    "phase": "before",
+    "pose": "机位 -665.2, 16.4, 448.2 m · FOV 50.0°",
+    "requested": [
+      -665.218,
+      16.364,
+      448.2
+    ]
+  },
+  {
+    "id": "material-smooth-render",
+    "phase": "before",
+    "pose": "机位 -527.0, 16.3, -527.1 m · FOV 50.0°",
+    "requested": [
+      -527.032,
+      16.322,
+      -527.136
+    ]
+  },
+  {
+    "id": "01-grove-ink",
+    "phase": "after",
+    "pose": "机位 120.0, 32.0, 135.0 m · FOV 55.0°",
+    "requested": [
+      120,
+      32,
+      135
+    ]
+  },
+  {
+    "id": "material-vertical-piers",
+    "phase": "before",
+    "pose": "机位 -646.8, 17.0, 706.5 m · FOV 50.0°",
+    "requested": [
+      -646.823,
+      17,
+      706.545
+    ]
+  },
+  {
+    "id": "02-grove-color",
+    "phase": "after",
+    "pose": "机位 120.0, 32.0, 135.0 m · FOV 55.0°",
+    "requested": [
+      120,
+      32,
+      135
+    ]
+  },
+  {
+    "id": "material-ceramic-tile",
+    "phase": "before",
+    "pose": "机位 -567.3, 15.0, -258.4 m · FOV 50.0°",
+    "requested": [
+      -567.272,
+      15.02,
+      -258.436
+    ]
+  },
+  {
+    "id": "09-tree-close",
+    "phase": "before",
+    "pose": "机位 50.0, 18.0, 115.0 m · FOV 60.0°",
+    "requested": [
+      50,
+      18,
+      115
+    ]
+  },
+  {
+    "id": "03-street-ink",
+    "phase": "after",
+    "pose": "机位 13.7, 2.1, -96.3 m · FOV 65.0°",
+    "requested": [
+      13.716,
+      2.1,
+      -96.332
+    ]
+  },
+  {
+    "id": "04-street-color",
+    "phase": "after",
+    "pose": "机位 13.7, 2.1, -96.3 m · FOV 65.0°",
+    "requested": [
+      13.716,
+      2.1,
+      -96.332
+    ]
+  },
+  {
+    "id": "01-grove-ink",
+    "phase": "before",
+    "pose": "机位 120.0, 32.0, 135.0 m · FOV 55.0°",
+    "requested": [
+      120,
+      32,
+      135
+    ]
+  },
+  {
+    "id": "03-street-ink",
+    "phase": "before",
+    "pose": "机位 13.7, 2.1, -96.3 m · FOV 65.0°",
+    "requested": [
+      13.716,
+      2.1,
+      -96.332
+    ]
+  },
+  {
+    "id": "01-grove-ink",
+    "phase": "after",
+    "pose": "机位 120.0, 32.0, 135.0 m · FOV 55.0°",
+    "requested": [
+      120,
+      32,
+      135
+    ]
+  },
+  {
+    "id": "02-grove-color",
+    "phase": "after",
+    "pose": "机位 120.0, 32.0, 135.0 m · FOV 55.0°",
+    "requested": [
+      120,
+      32,
+      135
+    ]
+  },
+  {
+    "id": "03-street-ink",
+    "phase": "after",
+    "pose": "机位 13.7, 2.1, -96.3 m · FOV 65.0°",
+    "requested": [
+      13.716,
+      2.1,
+      -96.332
+    ]
+  },
+  {
+    "id": "04-street-color",
+    "phase": "after",
+    "pose": "机位 13.7, 2.1, -96.3 m · FOV 65.0°",
+    "requested": [
+      13.716,
+      2.1,
+      -96.332
+    ]
+  },
+  {
+    "id": "05-overview-color",
+    "phase": "after",
+    "height": 889,
+    "mode": "2",
+    "pose": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+    "seed": "种子 1",
+    "status": "477 个体块 · 5079 棵树 · 规则生成细节",
+    "width": 1920,
+    "requested": [
+      1533.988,
+      1415.989,
+      1669.951
+    ]
+  },
+  {
+    "id": "06-facade-ink",
+    "phase": "after",
+    "height": 889,
+    "mode": "0",
+    "pose": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+    "seed": "种子 1",
+    "status": "477 个体块 · 5079 棵树 · 规则生成细节",
+    "width": 1920,
+    "requested": [
+      237.785,
+      18,
+      -14.019
+    ]
+  },
+  {
+    "id": "07-facade-color",
+    "phase": "after",
+    "height": 889,
+    "mode": "2",
+    "pose": "机位 237.8, 18.0, -14.0 m · FOV 55.0°",
+    "seed": "种子 1",
+    "status": "477 个体块 · 5079 棵树 · 规则生成细节",
+    "width": 1920,
+    "requested": [
+      237.785,
+      18,
+      -14.019
+    ]
+  },
+  {
+    "id": "08-facade-side",
+    "phase": "after",
+    "height": 889,
+    "mode": "0",
+    "pose": "机位 -15.0, 70.0, -10.0 m · FOV 55.0°",
+    "seed": "种子 1",
+    "status": "477 个体块 · 5079 棵树 · 规则生成细节",
+    "width": 1920,
+    "requested": [
+      -15,
+      70,
+      -10
+    ]
+  },
+  {
+    "id": "material-warm-brick",
+    "phase": "after",
+    "height": 889,
+    "mode": "2",
+    "pose": "机位 -562.0, 17.0, 540.5 m · FOV 50.0°",
+    "seed": "种子 1",
+    "status": "477 个体块 · 5079 棵树 · 规则生成细节",
+    "width": 1920,
+    "requested": [
+      -562.041,
+      17,
+      540.487
+    ]
+  },
+  {
+    "id": "material-cut-stone",
+    "phase": "after",
+    "height": 889,
+    "mode": "2",
+    "pose": "机位 -282.1, 8.5, 427.6 m · FOV 50.0°",
+    "seed": "种子 1",
+    "status": "477 个体块 · 5079 棵树 · 规则生成细节",
+    "width": 1920,
+    "requested": [
+      -282.081,
+      8.51,
+      427.594
+    ]
+  },
+  {
+    "id": "04-street-color",
+    "phase": "before",
+    "height": 889,
+    "mode": "2",
+    "pose": "机位 13.7, 2.1, -96.3 m · FOV 65.0°",
+    "seed": "种子 1",
+    "status": "477 个体块 · 2692 棵树 · 规则生成细节",
+    "width": 1920,
+    "requested": [
+      13.716,
+      2.1,
+      -96.332
+    ]
+  },
+  {
+    "id": "material-precast-panels",
+    "phase": "after",
+    "height": 889,
+    "mode": "2",
+    "pose": "机位 -665.2, 16.4, 448.2 m · FOV 50.0°",
+    "seed": "种子 1",
+    "status": "477 个体块 · 5079 棵树 · 规则生成细节",
+    "width": 1920,
+    "requested": [
+      -665.218,
+      16.364,
+      448.2
+    ]
+  },
+  {
+    "id": "material-smooth-render",
+    "phase": "after",
+    "height": 889,
+    "mode": "2",
+    "pose": "机位 -527.0, 16.3, -527.1 m · FOV 50.0°",
+    "seed": "种子 1",
+    "status": "477 个体块 · 5079 棵树 · 规则生成细节",
+    "width": 1920,
+    "requested": [
+      -527.032,
+      16.322,
+      -527.136
+    ]
+  },
+  {
+    "id": "material-vertical-piers",
+    "phase": "after",
+    "height": 889,
+    "mode": "2",
+    "pose": "机位 -646.8, 17.0, 706.5 m · FOV 50.0°",
+    "seed": "种子 1",
+    "status": "477 个体块 · 5079 棵树 · 规则生成细节",
+    "width": 1920,
+    "requested": [
+      -646.823,
+      17,
+      706.545
+    ]
+  },
+  {
+    "id": "material-ceramic-tile",
+    "phase": "after",
+    "height": 889,
+    "mode": "2",
+    "pose": "机位 -567.3, 15.0, -258.4 m · FOV 50.0°",
+    "seed": "种子 1",
+    "status": "477 个体块 · 5079 棵树 · 规则生成细节",
+    "width": 1920,
+    "requested": [
+      -567.272,
+      15.02,
+      -258.436
+    ]
+  },
+  {
+    "id": "09-tree-close",
+    "phase": "after",
+    "height": 889,
+    "mode": "0",
+    "pose": "机位 50.0, 18.0, 115.0 m · FOV 60.0°",
+    "seed": "种子 1",
+    "status": "477 个体块 · 5079 棵树 · 规则生成细节",
+    "width": 1920,
+    "requested": [
+      50,
+      18,
+      115
+    ]
+  }
+]

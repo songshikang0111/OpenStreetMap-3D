@@ -1,0 +1,182 @@
+[
+  {
+    "path": "before/01-grove-ink.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "b71ead52814b697c52b718fca41306c11cff74bcdca13e8012affe5e2359f17a"
+  },
+  {
+    "path": "before/02-grove-color.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "9e1d5d174e6c3d857d76e909a4e67b9b9909d5e6b7580f794cbd203851f25c5c"
+  },
+  {
+    "path": "before/03-street-ink.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "f9f388be3fd50eee1f9b1728b156f8882a6db620f0858daf05cdfb9b71846609"
+  },
+  {
+    "path": "before/04-street-color.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "142a3384a4b59db8486c8eec0ccc031e2ad08e50d8c6d1996d202dfdd2b2c3d2"
+  },
+  {
+    "path": "before/05-overview-color.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "d93c35fabfbda1c7433697863ac6bad1598bc0ec9e2a7135d717604ce004ce67"
+  },
+  {
+    "path": "before/06-facade-ink.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "287b87d3708177ead64c4683af3dae87e6c9bc10392a0b282082727af9d8b3a1"
+  },
+  {
+    "path": "before/07-facade-color.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "7aa3ea27ae359d13c7f94694678b7b1e86d6247db8f87a0c0da826da5b915a9e"
+  },
+  {
+    "path": "before/08-facade-side.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "4ab302a6646273806ff8853b166470b3e85461b9183906fa834abbc16538ae29"
+  },
+  {
+    "path": "before/09-tree-close.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "9e1e3bccedc838f95480cd3016c4562c9d3258d6c994944deaf33e70be17dede"
+  },
+  {
+    "path": "before/material-warm-brick.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "62019b0f5e71d480967a60b3f3d054cce24e28c187cfc4d36806dc15845af22c"
+  },
+  {
+    "path": "before/material-cut-stone.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "c5319b4db6cc1b0084f1ba4f16a4a99f889cc7ac3e9c43bc369ac04a23861dcb"
+  },
+  {
+    "path": "before/material-precast-panels.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "578e6359709a9e2476fd1f5a6a8577147d12e65c64dc03915c98d10ab375044b"
+  },
+  {
+    "path": "before/material-smooth-render.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "9c42abcf1e2160eadceae71dbb11c972919900eab1008c3f7b7b2d6d913be5f5"
+  },
+  {
+    "path": "before/material-vertical-piers.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "de39f6a683fee9564ccfc24bae7f3f8a2b058bc15381af4e9fcf459ac677542d"
+  },
+  {
+    "path": "before/material-ceramic-tile.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "9270e85c86fd8de036145829ace7a9fe4545587f2d4579ddec993af7e34eb3b5"
+  },
+  {
+    "path": "after/01-grove-ink.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "7794f03ea757207465cd850631e252d24382e7569826f5ff7d70bdd10f70769f"
+  },
+  {
+    "path": "after/02-grove-color.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "10b2809f6e8f946de75cdfcd3e10c54d8366743ea8bb383e94ff8860741abeb2"
+  },
+  {
+    "path": "after/03-street-ink.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "a1276aeb022bedd1f7c4ba196a966a3bfff30720a8785af35c58b7c43a345c9c"
+  },
+  {
+    "path": "after/04-street-color.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "8fe5ff2cb75b3cad2ce05e4aaa7dd9c084a75f352f94f751fe2f03ae902903a5"
+  },
+  {
+    "path": "after/05-overview-color.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "bd51a3342bd79980a1ba513a54d81c7b751ea56e22fc64daa46ca179dfe97b9d"
+  },
+  {
+    "path": "after/06-facade-ink.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "97a623bbe6215393ed2c1c5a11c7f7230307076e68c66cffdb81066490d4613f"
+  },
+  {
+    "path": "after/07-facade-color.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "bdc5079ec558af65fe87930269782daaa521c6fb384a577752311be24bd3a576"
+  },
+  {
+    "path": "after/08-facade-side.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "d18931c39c0d83e79e85c4a0e2147dba959347e7f0e45f2229ce551a2d19b0fd"
+  },
+  {
+    "path": "after/09-tree-close.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "e1c737ad4b47af0aa862d06966a95572d4318fa73cf18581c27577b604a5e8dd"
+  },
+  {
+    "path": "after/material-warm-brick.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "c52d74e9c2465e5bd124e473932d2de6007d0d30227ac38e8a71271806731d44"
+  },
+  {
+    "path": "after/material-cut-stone.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "3be010922191582220c4649bb2e70f29bc1a19799e88e91b256509bf660b164a"
+  },
+  {
+    "path": "after/material-precast-panels.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "1e3ea7d93890f0b9e1f3dc1873fe8bd51c5bbcc13fe92ea2dd20bb378fc07582"
+  },
+  {
+    "path": "after/material-smooth-render.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "8636aab786ac41faaa140187d38952bed5b4bcc7980fdf1de2402040973d0558"
+  },
+  {
+    "path": "after/material-vertical-piers.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "818a35ee1ee3a7660002bb56afcd4f767dc9cb631c9c242745f00d044c45f4bf"
+  },
+  {
+    "path": "after/material-ceramic-tile.jpg",
+    "width": 1920,
+    "height": 889,
+    "sha256": "5063dc84e8fce3071b329db8f9bc2c57e4f2591d6a992c154c0bd7428b510a2f"
+  }
+]
