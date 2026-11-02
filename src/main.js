@@ -108,7 +108,11 @@ function drawMap(){
   const point=p=>[(p[0]-x0)*scale+offsetX,(p[1]-z0)*scale+offsetY];
   mapState={scale,offsetX,offsetY,x0,z0};
   ctx.fillStyle='#eceee4';ctx.fillRect(0,0,canvas.width,canvas.height);
-  for(const b of data.greens){ctx.fillStyle='#d3dfc8';ctx.beginPath();b.outer.forEach((p,i)=>ctx[i?'lineTo':'moveTo'](...point(p)));ctx.closePath();ctx.fill();}
+  const fillArea=(b,color)=>{ctx.fillStyle=color;ctx.beginPath();for(const ring of [b.outer,...(b.holes||[])]){ring.forEach((p,i)=>ctx[i?'lineTo':'moveTo'](...point(p)));ctx.closePath();}ctx.fill('evenodd');};
+  const groundColors={wood:'#6f9b72',park:'#c4d7ac',garden:'#abc58f',lawn:'#c7dbaf',parking:'#b4b7b4',plaza:'#ded4bf',sport:'#b7cbb7',soil:'#cdbfa6',construction:'#c8b99f'};
+  for(const b of data.landscapes)fillArea(b,groundColors[b.kind]||'#d9d2bf');
+  for(const b of data.water)fillArea(b,'#83b5d6');
+  ctx.fillStyle='#428257';for(const tree of data.trees){const p=point(tree.point);ctx.beginPath();ctx.arc(...p,Math.max(.8,scale*2),0,Math.PI*2);ctx.fill();}
   for(const road of data.roads){ctx.strokeStyle='#faf9f1';ctx.lineWidth=Math.max(1.5,road.width*scale);ctx.lineCap='round';for(const [a,b]of road.segments){ctx.beginPath();ctx.moveTo(...point(a));ctx.lineTo(...point(b));ctx.stroke();}}
   for(const b of data.buildings){ctx.fillStyle=inspect?city.sourceColors[b.source]:b.height>130?'#899b91':'#b4beb0';ctx.beginPath();for(const ring of [b.outer,...b.holes]){ring.forEach((p,i)=>ctx[i?'lineTo':'moveTo'](...point(p)));ctx.closePath();}ctx.fill('evenodd');}
   const p=point([camera.position.x,camera.position.z]),target=point([controls.target.x,controls.target.z]);

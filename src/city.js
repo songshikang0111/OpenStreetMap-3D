@@ -96,8 +96,8 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
   base.position.set((x0+x1)/2,-7,(z0+z1)/2); base.receiveShadow = true; base.name = 'Flat ground / no DEM'; base.userData.inkClass=5; group.add(base);
   const groundWriter = new MeshWriter();
   const groundFrame=[[[x0,z0],[x1,z0],[x1,z1],[x0,z1]]];
-  for (const feature of data.water) for(const [outer,...holes] of clipping.intersection([feature.outer,...(feature.holes||[])],groundFrame)) polygon(groundWriter, {outer,holes}, .22, '#8dacae', 60001);
-  const landCover=groundWriter.mesh(baseMaterial,'Land cover');landCover.userData.inkClass=5;group.add(landCover);
+  for (const feature of data.water) for(const [outer,...holes] of clipping.intersection([feature.outer,...(feature.holes||[])],groundFrame)) polygon(groundWriter, {outer,holes}, .22, '#82aac4', 60001);
+  const landCover=groundWriter.mesh(baseMaterial,'Land cover');landCover.userData.inkClass=6;group.add(landCover);
   const roadSurface=buildRoadSurface(data);group.add(roadSurface.group);
   const landscape=buildLandscape(data,{roadPlan:roadSurface.plan,seed:data.seed||1,profile:{...data.metadata?.landscapeProfile,enabled:landscapeEnabled}});
   group.add(landscape.group);
