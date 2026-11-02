@@ -1,6 +1,7 @@
 // Region selection changes data and labels, never rendering rules or materials.
 export const LOCATIONS = [
   {id:'beijing',name:'北京 · 国贸 CBD',subtitle:'国贸中心 · 央视总部 · 中国尊',label:'BEIJING / CHAOYANG',file:'beijing-cbd',overlays:['street-details','landscape-details'],profile:'landscape-profile'},
+  {id:'lingxiu',name:'北京 · 领秀新硅谷 D 区周边',subtitle:'海淀 · 西二旗 · 住宅街区与周边道路',label:'BEIJING / HAIDIAN / LINGXIU',file:'beijing-lingxiu-d'},
   {id:'shanghai',name:'上海 · 陆家嘴',subtitle:'高层密集区 · 黄浦江岸',label:'SHANGHAI / LUJIAZUI',file:'shanghai-lujiazui'},
   {id:'kyoto',name:'京都 · 祇园',subtitle:'低层街区 · 神社与绿地',label:'KYOTO / GION',file:'kyoto-gion'},
   {id:'amsterdam',name:'阿姆斯特丹 · 运河街区',subtitle:'连续街屋 · 运河与桥梁',label:'AMSTERDAM / CANAL DISTRICT',file:'amsterdam-canals'},

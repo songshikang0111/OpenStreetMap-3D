@@ -1,0 +1,244 @@
+{
+  "name": "北京 · 领秀新硅谷 D 区周边",
+  "bbox": [
+    40.0485,
+    116.2965,
+    40.0575,
+    116.3095
+  ],
+  "retrievedAt": "2026-11-02T16:49:12.551279+00:00",
+  "rawElements": 5407,
+  "buildings": 263,
+  "roads": 272,
+  "heights": {
+    "height": 0,
+    "levels": 54,
+    "estimated": 209
+  },
+  "knownHeightFraction": 0.20532319391634982,
+  "osmTrees": 0,
+  "treeCount": 906,
+  "waterPolygons": 1,
+  "landscapePolygons": 20,
+  "inputTags": {},
+  "parseStats": {
+    "invalidRings": 0,
+    "incompleteRelations": 0,
+    "suppressed": 0,
+    "landscapePolygons": 20
+  },
+  "buildMs": 1314,
+  "meshObjects": 303,
+  "triangles": 439550,
+  "nonFinite": 0,
+  "outsidePlanarVertices": 79,
+  "roadStats": {
+    "sourceRoads": 272,
+    "segments": 1678,
+    "driveSegments": 1026,
+    "walkSegments": 652,
+    "miterJoins": 757,
+    "bevelJoins": 1,
+    "duplicateSegments": 0,
+    "clippedOverlaps": 5048,
+    "junctions": 161,
+    "crossingExclusions": 23,
+    "dashes": 1003,
+    "stopLines": 1,
+    "drivePolygons": 2918,
+    "walkPolygons": 2274,
+    "pavingPolygons": 7946,
+    "surfaceTriangles": 26206,
+    "roadArea": 196157.43239997997,
+    "pavementArea": 71165.10099905536,
+    "observedSidewalkWays": 12,
+    "observedCrossingWays": 15,
+    "inferredMarginWays": 106,
+    "pavementBuildingBlockers": 1525,
+    "gradeSource": "OSM connectivity + inferred layer heights",
+    "gradeOriginalDiscontinuities": 16,
+    "gradeResolvedConnections": 16,
+    "gradeChangedWays": 82,
+    "gradeMaxVehicleSlope": 0.10000000000000005,
+    "gradeSteepVehicleRuns": 0,
+    "gradeCrossingConstraints": 78,
+    "gradeRemainingDiscontinuities": 0,
+    "gradeConstraintIterations": 12,
+    "gradeConstraintConflicts": 0,
+    "gradeAmbiguousCrossings": 0,
+    "stairFlights": 12,
+    "gradeSteepWalkingWays": 4,
+    "gradeMaxWalkingSlope": 0.35,
+    "discardedMicroTriangles": 392,
+    "renderedTriangles": 32256,
+    "bridgeWays": 29,
+    "bridgeSegments": 382,
+    "bridgeDecks": 598,
+    "bridgePiers": 87,
+    "bridgeSupportCandidates": 110,
+    "bridgeGuardrailSegments": 1379,
+    "bridgeRailInteriorSkipped": 496,
+    "bridgeRejectedSupports": {
+      "pedestrian-clearance": 4,
+      "traffic-clearance": 17,
+      "building-clearance": 2
+    },
+    "unsupportedBridgeWays": 9,
+    "bridgeHeightSource": "inferred-layer-times-7m",
+    "bridgeGradeConnectionsUnresolved": 0,
+    "bridgeStructureTriangles": 57723,
+    "stairTreads": 265,
+    "stairPosts": 310,
+    "stairTriangles": 13698,
+    "stairSkippedFlights": 0,
+    "stairSteepFlights": 1,
+    "stairHeightSource": "shared-road-grade-inference"
+  },
+  "landscapeStats": {
+    "observedFeatures": 20,
+    "observedSurfaceArea": 42285.295238347266,
+    "inferredSites": 0,
+    "inferredPavedArea": 0,
+    "inferredPlantedArea": 0,
+    "rejectedCandidates": 0,
+    "rejectedGeometry": 0,
+    "templates": {},
+    "layouts": {},
+    "kindAreas": {
+      "parking": 7571.189253973254,
+      "sport": 2692.6337970000022,
+      "plaza": 9794.61398457634,
+      "garden": 3536.7419947402586,
+      "wood": 4323.323381782189,
+      "park": 14366.792826275228
+    },
+    "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+    "availableTreeCandidates": 0,
+    "availablePropCandidates": 0,
+    "treesByTemplate": {},
+    "commonCandidates": 0,
+    "treeCandidates": 0,
+    "props": 0,
+    "surfaces": 34,
+    "inferredArea": 0,
+    "inferredFraction": 0,
+    "knownGroundFraction": 0.03814572687950983,
+    "unfilledBeforeFraction": 0.499869041382923,
+    "unfilledAfterFraction": 0.499869041382923,
+    "coverageSampleSpacing": 12,
+    "coverageSamples": 7636,
+    "markingStrips": 0,
+    "markingPrecisionRetries": 0,
+    "omittedMarkingStrips": 0,
+    "renderedTriangles": 568,
+    "drawMeshes": 6
+  },
+  "facadeFamilies": {
+    "lowrise": 204,
+    "ribbon": 11,
+    "residential": 48
+  },
+  "landmarks": [],
+  "tallest": [
+    {
+      "id": "w853077421",
+      "height": 62,
+      "source": "levels",
+      "part": false
+    },
+    {
+      "id": "w853077422",
+      "height": 62,
+      "source": "levels",
+      "part": false
+    },
+    {
+      "id": "w853077423",
+      "height": 62,
+      "source": "levels",
+      "part": false
+    },
+    {
+      "id": "w853077424",
+      "height": 62,
+      "source": "levels",
+      "part": false
+    },
+    {
+      "id": "w853077426",
+      "height": 62,
+      "source": "levels",
+      "part": false
+    },
+    {
+      "id": "w853077433",
+      "height": 62,
+      "source": "levels",
+      "part": false
+    },
+    {
+      "id": "w26545793",
+      "name": "西二旗铭科苑14号楼",
+      "height": 55.800000000000004,
+      "source": "levels",
+      "part": false
+    },
+    {
+      "id": "w26545797",
+      "name": "Building 13",
+      "height": 55.800000000000004,
+      "source": "levels",
+      "part": false
+    }
+  ],
+  "views": {
+    "overview": {
+      "position": [
+        865.2246987118659,
+        798.668952657107,
+        942.8730691090846
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "skyline": {
+      "position": [
+        -88.74099473967856,
+        25,
+        1053.7993125336827
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "roof": {
+      "position": [
+        -244.03773553411602,
+        60,
+        277.3156085614955
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "facade": {
+      "position": [
+        40.89189008347411,
+        7.79,
+        37.72595168179866
+      ],
+      "target": [
+        5.8918900834741095,
+        2.79,
+        2.7259516817986595
+      ]
+    }
+  }
+}

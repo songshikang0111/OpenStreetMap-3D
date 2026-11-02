@@ -58,6 +58,8 @@ npm run dev
 
 打开 <http://127.0.0.1:5178/>。也可在 PowerShell 中运行 `./start.ps1`。
 
+领秀新硅谷 D 区及周边可直接打开 <http://127.0.0.1:5178/?site=lingxiu>，也可在左上角地点菜单选择。独立 OSM 样本覆盖 WGS84 南 40.0485、西 116.2965、北 40.0575、东 116.3095，沿用通用渲染规则与机位，不加载国贸的补充标注。D 区位置参照 [36 号楼](https://www.poi86.com/poi/amap2/118838995.html)与 [60 号楼](https://www.poi86.com/poi/amap2/118838997.html)的大地坐标核对；地图来源、获取时间及许可保存在 `public/data/beijing-lingxiu-d.json` 的 `metadata` 中。缺失的楼高、树木与立面细节仍由现有规则估算。
+
 主数据保存在 `public/data/beijing-cbd.json`，补充街道标注在 `public/data/street-details.json`，补充场地在 `public/data/landscape-details.json`，场地模板参数在 `public/data/landscape-profile.json`。首次安装依赖后，预览不需要外部网络、地图密钥或在线推理服务。没有使用卫星影像、街景纹理或外部三维模型；侧栏俯视图也是按矢量数据绘制。
 
 ```powershell
