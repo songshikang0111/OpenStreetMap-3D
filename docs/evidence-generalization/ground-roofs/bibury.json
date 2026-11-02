@@ -1,0 +1,78 @@
+{
+  "site": "bibury",
+  "buildings": 148,
+  "roofShapeTags": 0,
+  "roofStats": {
+    "tagged": 0,
+    "inferred": 40,
+    "unsupported": 0
+  },
+  "inferredRoofCandidates": 40,
+  "waterArea": 16042.531666649498,
+  "waterFraction": 0.024210753923680623,
+  "waterPolygons": 15,
+  "completedAreas": [
+    {
+      "relation": 1912845,
+      "endpoint": "https://api.openstreetmap.org/api/0.6/relation/1912845/full.json",
+      "retrievedAt": "2026-11-02T15:57:38.427319+00:00"
+    },
+    {
+      "relation": 20266365,
+      "endpoint": "https://api.openstreetmap.org/api/0.6/relation/20266365/full.json",
+      "retrievedAt": "2026-11-02T15:57:39.931043+00:00"
+    },
+    {
+      "relation": 20266367,
+      "endpoint": "https://api.openstreetmap.org/api/0.6/relation/20266367/full.json",
+      "retrievedAt": "2026-11-02T15:57:40.988034+00:00"
+    }
+  ],
+  "parseStats": {
+    "invalidRings": 0,
+    "incompleteRelations": 0,
+    "suppressed": 0,
+    "landscapePolygons": 39
+  },
+  "landscapeStats": {
+    "observedFeatures": 39,
+    "observedSurfaceArea": 170969.11709814137,
+    "inferredSites": 0,
+    "inferredPavedArea": 0,
+    "inferredPlantedArea": 0,
+    "rejectedCandidates": 0,
+    "rejectedGeometry": 0,
+    "templates": {},
+    "layouts": {},
+    "kindAreas": {
+      "parking": 1406.6596007587177,
+      "sport": 11616.303770157789,
+      "lawn": 62640.930812509934,
+      "garden": 4208.957188075393,
+      "wood": 91096.2657266396
+    },
+    "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+    "availableTreeCandidates": 0,
+    "availablePropCandidates": 0,
+    "treesByTemplate": {},
+    "commonCandidates": 0,
+    "treeCandidates": 0,
+    "props": 0,
+    "surfaces": 57,
+    "inferredArea": 0,
+    "inferredFraction": 0,
+    "knownGroundFraction": 0.2580198255875741,
+    "unfilledBeforeFraction": 0.5865800865800865,
+    "unfilledAfterFraction": 0.5865800865800865,
+    "coverageSampleSpacing": 12,
+    "coverageSamples": 4620,
+    "markingStrips": 0,
+    "markingPrecisionRetries": 0,
+    "omittedMarkingStrips": 0,
+    "renderedTriangles": 1019,
+    "drawMeshes": 5
+  },
+  "treeCount": 1737,
+  "nonFinite": 0,
+  "buildMs": 502
+}

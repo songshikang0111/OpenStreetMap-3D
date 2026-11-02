@@ -1,0 +1,62 @@
+{
+  "site": "shuhe",
+  "buildings": 868,
+  "roofShapeTags": 0,
+  "roofStats": {
+    "tagged": 0,
+    "inferred": 438,
+    "unsupported": 0
+  },
+  "inferredRoofCandidates": 438,
+  "waterArea": 886.6072036850494,
+  "waterFraction": 0.0010070154807032047,
+  "waterPolygons": 4,
+  "completedAreas": [],
+  "parseStats": {
+    "invalidRings": 0,
+    "incompleteRelations": 0,
+    "suppressed": 0,
+    "landscapePolygons": 11
+  },
+  "landscapeStats": {
+    "observedFeatures": 11,
+    "observedSurfaceArea": 44384.46747016951,
+    "inferredSites": 0,
+    "inferredPavedArea": 0,
+    "inferredPlantedArea": 0,
+    "rejectedCandidates": 0,
+    "rejectedGeometry": 0,
+    "templates": {},
+    "layouts": {},
+    "kindAreas": {
+      "parking": 7502.81866677962,
+      "sport": 1735.8695569999945,
+      "construction": 24573.38005385199,
+      "plaza": 3065.422243531397,
+      "park": 7506.976949006517
+    },
+    "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+    "availableTreeCandidates": 0,
+    "availablePropCandidates": 0,
+    "treesByTemplate": {},
+    "commonCandidates": 0,
+    "treeCandidates": 0,
+    "props": 0,
+    "surfaces": 24,
+    "inferredArea": 0,
+    "inferredFraction": 0,
+    "knownGroundFraction": 0.05041222951884098,
+    "unfilledBeforeFraction": 0.6230869423640508,
+    "unfilledAfterFraction": 0.6230869423640508,
+    "coverageSampleSpacing": 12,
+    "coverageSamples": 6142,
+    "markingStrips": 0,
+    "markingPrecisionRetries": 0,
+    "omittedMarkingStrips": 0,
+    "renderedTriangles": 313,
+    "drawMeshes": 5
+  },
+  "treeCount": 330,
+  "nonFinite": 0,
+  "buildMs": 668
+}

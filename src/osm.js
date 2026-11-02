@@ -47,7 +47,7 @@ export function heightInfo(tags, footprintArea, id, seed = 1) {
   const levels = Number(tags['building:levels']);
   let height = metres(tags.height), source = 'height';
   if (!(height > 0)) {
-    if (levels > 0) { height = levels * levelHeight; source = 'levels'; }
+    if (levels > 0) { height = levels * levelHeight + Math.max(0,metres(tags['roof:height'])||Number(tags['roof:levels'])*3||0); source = 'levels'; }
     else {
       source = 'estimated';
       let guessedFloors;

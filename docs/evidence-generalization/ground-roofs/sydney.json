@@ -1,0 +1,84 @@
+{
+  "site": "sydney",
+  "buildings": 126,
+  "roofShapeTags": 86,
+  "roofStats": {
+    "tagged": 2,
+    "inferred": 5,
+    "unsupported": 84
+  },
+  "inferredRoofCandidates": 5,
+  "waterArea": 466263.47152146726,
+  "waterFraction": 0.796929888116182,
+  "waterPolygons": 4,
+  "completedAreas": [
+    {
+      "relation": 1252425,
+      "endpoint": "https://api.openstreetmap.org/api/0.6/relation/1252425/full.json",
+      "retrievedAt": "2026-11-02T15:57:30.031046+00:00"
+    },
+    {
+      "relation": 3744333,
+      "endpoint": "https://api.openstreetmap.org/api/0.6/relation/3744333/full.json",
+      "retrievedAt": "2026-11-02T15:57:31.265093+00:00"
+    },
+    {
+      "relation": 3744999,
+      "endpoint": "https://api.openstreetmap.org/api/0.6/relation/3744999/full.json",
+      "retrievedAt": "2026-11-02T15:57:32.828296+00:00"
+    },
+    {
+      "relation": 15522136,
+      "endpoint": "https://api.openstreetmap.org/api/0.6/relation/15522136/full.json",
+      "retrievedAt": "2026-11-02T15:57:36.299612+00:00"
+    }
+  ],
+  "parseStats": {
+    "invalidRings": 2,
+    "incompleteRelations": 2,
+    "suppressed": 1,
+    "landscapePolygons": 67
+  },
+  "landscapeStats": {
+    "observedFeatures": 12,
+    "observedSurfaceArea": 53168.6025182808,
+    "inferredSites": 0,
+    "inferredPavedArea": 0,
+    "inferredPlantedArea": 0,
+    "rejectedCandidates": 0,
+    "rejectedGeometry": 0,
+    "templates": {},
+    "layouts": {},
+    "kindAreas": {
+      "parking": 878.471562598907,
+      "soil": 146.4904157049973,
+      "plaza": 6339.473385532619,
+      "lawn": 19284.894712370125,
+      "garden": 16106.242528811686,
+      "park": 10413.029913262468
+    },
+    "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+    "availableTreeCandidates": 0,
+    "availablePropCandidates": 0,
+    "treesByTemplate": {},
+    "commonCandidates": 0,
+    "treeCandidates": 0,
+    "props": 0,
+    "surfaces": 76,
+    "inferredArea": 0,
+    "inferredFraction": 0,
+    "knownGroundFraction": 0.09087490452109423,
+    "unfilledBeforeFraction": 0.01793275217932752,
+    "unfilledAfterFraction": 0.01793275217932752,
+    "coverageSampleSpacing": 12,
+    "coverageSamples": 4015,
+    "markingStrips": 0,
+    "markingPrecisionRetries": 0,
+    "omittedMarkingStrips": 0,
+    "renderedTriangles": 1881,
+    "drawMeshes": 6
+  },
+  "treeCount": 356,
+  "nonFinite": 0,
+  "buildMs": 756
+}
