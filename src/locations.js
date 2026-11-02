@@ -4,6 +4,11 @@ export const LOCATIONS = [
   {id:'shanghai',name:'上海 · 陆家嘴',subtitle:'高层密集区 · 黄浦江岸',label:'SHANGHAI / LUJIAZUI',file:'shanghai-lujiazui'},
   {id:'kyoto',name:'京都 · 祇园',subtitle:'低层街区 · 神社与绿地',label:'KYOTO / GION',file:'kyoto-gion'},
   {id:'amsterdam',name:'阿姆斯特丹 · 运河街区',subtitle:'连续街屋 · 运河与桥梁',label:'AMSTERDAM / CANAL DISTRICT',file:'amsterdam-canals'},
+  {id:'shuhe',name:'丽江 · 束河古镇',subtitle:'亚洲 / 中国 · 低层古镇与水巷',label:'LIJIANG / SHUHE',file:'lijiang-shuhe'},
+  {id:'bibury',name:'英国 · 拜伯里村',subtitle:'欧洲 / 英国 · 阿灵顿排屋与乡村河道',label:'BIBURY / ARLINGTON ROW',file:'bibury-village'},
+  {id:'manhattan',name:'纽约 · 曼哈顿金融区',subtitle:'北美洲 / 美国 · 华尔街与高层街谷',label:'NEW YORK / FINANCIAL DISTRICT',file:'manhattan-financial'},
+  {id:'marrakech',name:'马拉喀什 · 老城',subtitle:'非洲 / 摩洛哥 · 德吉玛广场与密集巷道',label:'MARRAKECH / MEDINA',file:'marrakech-medina'},
+  {id:'sydney',name:'悉尼 · 歌剧院',subtitle:'大洋洲 / 澳大利亚 · 歌剧院与邻近植物园',label:'SYDNEY / OPERA HOUSE',file:'sydney-harbour'},
 ];
 
 export function resolveLocation(search='') {

@@ -1,0 +1,257 @@
+{
+  "name": "马拉喀什 · 老城",
+  "bbox": [
+    31.621,
+    -7.995,
+    31.631,
+    -7.983
+  ],
+  "retrievedAt": "2026-11-02T15:29:28.168568+00:00",
+  "rawElements": 28450,
+  "buildings": 3137,
+  "roads": 809,
+  "heights": {
+    "height": 52,
+    "levels": 20,
+    "estimated": 3065
+  },
+  "knownHeightFraction": 0.02295186483901817,
+  "osmTrees": 82,
+  "treeCount": 1180,
+  "waterPolygons": 6,
+  "landscapePolygons": 124,
+  "inputTags": {
+    "roof:shape": 47,
+    "building:colour": 46,
+    "roof:height": 36,
+    "building:material": 39
+  },
+  "parseStats": {
+    "invalidRings": 2,
+    "suppressed": 3,
+    "landscapePolygons": 124
+  },
+  "buildMs": 15967,
+  "meshObjects": 3178,
+  "triangles": 750194,
+  "nonFinite": 0,
+  "outsidePlanarVertices": 0,
+  "roadStats": {
+    "sourceRoads": 809,
+    "segments": 3878,
+    "driveSegments": 2441,
+    "walkSegments": 1437,
+    "miterJoins": 2381,
+    "bevelJoins": 9,
+    "duplicateSegments": 0,
+    "clippedOverlaps": 12767,
+    "junctions": 359,
+    "crossingExclusions": 17,
+    "dashes": 94,
+    "stopLines": 2,
+    "drivePolygons": 8174,
+    "walkPolygons": 5127,
+    "pavingPolygons": 10990,
+    "surfaceTriangles": 48234,
+    "roadArea": 136186.08536611157,
+    "pavementArea": 75119.78940163375,
+    "observedSidewalkWays": 4,
+    "observedCrossingWays": 4,
+    "inferredMarginWays": 134,
+    "pavementBuildingBlockers": 12864,
+    "gradeSource": "OSM connectivity + inferred layer heights",
+    "gradeOriginalDiscontinuities": 0,
+    "gradeResolvedConnections": 0,
+    "gradeChangedWays": 106,
+    "gradeMaxVehicleSlope": 0,
+    "gradeSteepVehicleRuns": 0,
+    "gradeCrossingConstraints": 0,
+    "gradeRemainingDiscontinuities": 0,
+    "gradeConstraintIterations": 0,
+    "gradeConstraintConflicts": 0,
+    "gradeAmbiguousCrossings": 0,
+    "stairFlights": 0,
+    "gradeSteepWalkingWays": 2,
+    "gradeMaxWalkingSlope": 0.17041860625370392,
+    "discardedMicroTriangles": 412,
+    "renderedTriangles": 48502,
+    "bridgeWays": 0,
+    "bridgeSegments": 0,
+    "bridgeDecks": 0,
+    "bridgePiers": 0,
+    "bridgeSupportCandidates": 0,
+    "bridgeGuardrailSegments": 0,
+    "bridgeRailInteriorSkipped": 0,
+    "bridgeRejectedSupports": {},
+    "unsupportedBridgeWays": 0,
+    "bridgeHeightSource": "inferred-layer-times-7m",
+    "bridgeGradeConnectionsUnresolved": 0,
+    "bridgeStructureTriangles": 0,
+    "stairTreads": 0,
+    "stairPosts": 0,
+    "stairTriangles": 0,
+    "stairSkippedFlights": 0,
+    "stairSteepFlights": 0,
+    "stairHeightSource": "shared-road-grade-inference"
+  },
+  "landscapeStats": {
+    "observedFeatures": 121,
+    "observedSurfaceArea": 167413.729955699,
+    "inferredSites": 206,
+    "inferredPavedArea": 48155.74893629752,
+    "inferredPlantedArea": 15496.33131744672,
+    "rejectedCandidates": 640,
+    "rejectedGeometry": 0,
+    "templates": {
+      "garden-court": 193,
+      "verge": 13
+    },
+    "layouts": {
+      "offset": 47,
+      "paired": 104,
+      "single": 55
+    },
+    "kindAreas": {
+      "parking": 4742.473978729095,
+      "sport": 1320.7402725000175,
+      "plaza": 30787.957712641783,
+      "lawn": 37731.65504107134,
+      "garden": 86444.50419240788,
+      "wood": 323.19674628031044,
+      "park": 20670.74032968732,
+      "paving": 48155.748936297525,
+      "shrub": 888.6775364775538
+    },
+    "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+    "availableTreeCandidates": 67,
+    "availablePropCandidates": 23,
+    "treesByTemplate": {
+      "garden-court": 54,
+      "verge": 13
+    },
+    "commonCandidates": 0,
+    "treeCandidates": 67,
+    "props": 23,
+    "surfaces": 845,
+    "inferredArea": 63652.080253744236,
+    "inferredFraction": 0.05042241549179445,
+    "knownGroundFraction": 0.13261789115463793,
+    "unfilledBeforeFraction": 0.37414187643020597,
+    "unfilledAfterFraction": 0.32471395881006865,
+    "coverageSampleSpacing": 12,
+    "coverageSamples": 8740,
+    "markingStrips": 261,
+    "markingPrecisionRetries": 0,
+    "omittedMarkingStrips": 0,
+    "renderedTriangles": 11573,
+    "drawMeshes": 13
+  },
+  "facadeFamilies": {
+    "lowrise": 2699,
+    "residential": 348,
+    "ribbon": 89,
+    "curtain": 1
+  },
+  "landmarks": [],
+  "tallest": [
+    {
+      "id": "w364041064",
+      "height": 71,
+      "source": "height",
+      "part": true
+    },
+    {
+      "id": "w364034894",
+      "height": 69,
+      "source": "height",
+      "part": true
+    },
+    {
+      "id": "w364034893",
+      "height": 62,
+      "source": "height",
+      "part": true
+    },
+    {
+      "id": "w853748055",
+      "name": "Agence Immobiliere",
+      "height": 60.8,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w1207365843",
+      "height": 40.300000000000004,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w1207629965",
+      "height": 40.300000000000004,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w1218237726",
+      "height": 40.300000000000004,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w1218238458",
+      "height": 40.300000000000004,
+      "source": "estimated",
+      "part": false
+    }
+  ],
+  "views": {
+    "overview": {
+      "position": [
+        888.0278110658006,
+        819.7179794453543,
+        967.7226146229877
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "skyline": {
+      "position": [
+        -91.07977549392827,
+        25,
+        1081.5723339903982
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "roof": {
+      "position": [
+        -250.46938260830274,
+        60,
+        284.6242984185258
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "facade": {
+      "position": [
+        8.340190714822462,
+        9.185,
+        21.300656979068094
+      ],
+      "target": [
+        -26.659809285177538,
+        4.1850000000000005,
+        -13.699343020931906
+      ]
+    }
+  }
+}

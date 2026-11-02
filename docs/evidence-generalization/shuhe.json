@@ -1,0 +1,252 @@
+{
+  "name": "丽江 · 束河古镇",
+  "bbox": [
+    26.917,
+    100.201,
+    26.925,
+    100.211
+  ],
+  "retrievedAt": "2026-11-02T15:28:57.174152+00:00",
+  "rawElements": 6615,
+  "buildings": 868,
+  "roads": 182,
+  "heights": {
+    "height": 0,
+    "levels": 0,
+    "estimated": 868
+  },
+  "knownHeightFraction": 0,
+  "osmTrees": 0,
+  "treeCount": 1152,
+  "waterPolygons": 4,
+  "landscapePolygons": 11,
+  "inputTags": {},
+  "parseStats": {
+    "invalidRings": 0,
+    "suppressed": 0,
+    "landscapePolygons": 11
+  },
+  "buildMs": 4038,
+  "meshObjects": 910,
+  "triangles": 502791,
+  "nonFinite": 0,
+  "outsidePlanarVertices": 0,
+  "roadStats": {
+    "sourceRoads": 182,
+    "segments": 1110,
+    "driveSegments": 563,
+    "walkSegments": 547,
+    "miterJoins": 609,
+    "bevelJoins": 0,
+    "duplicateSegments": 0,
+    "clippedOverlaps": 2657,
+    "junctions": 81,
+    "crossingExclusions": 1,
+    "dashes": 198,
+    "stopLines": 0,
+    "drivePolygons": 1694,
+    "walkPolygons": 1363,
+    "pavingPolygons": 2345,
+    "surfaceTriangles": 10773,
+    "roadArea": 68601.86910160966,
+    "pavementArea": 49931.77629883829,
+    "observedSidewalkWays": 0,
+    "observedCrossingWays": 0,
+    "inferredMarginWays": 52,
+    "pavementBuildingBlockers": 2897,
+    "gradeSource": "OSM connectivity + inferred layer heights",
+    "gradeOriginalDiscontinuities": 10,
+    "gradeResolvedConnections": 10,
+    "gradeChangedWays": 49,
+    "gradeMaxVehicleSlope": 0.08703773524977913,
+    "gradeSteepVehicleRuns": 0,
+    "gradeCrossingConstraints": 0,
+    "gradeRemainingDiscontinuities": 0,
+    "gradeConstraintIterations": 4,
+    "gradeConstraintConflicts": 0,
+    "gradeAmbiguousCrossings": 0,
+    "stairFlights": 0,
+    "gradeSteepWalkingWays": 11,
+    "gradeMaxWalkingSlope": 0.35000000000000026,
+    "discardedMicroTriangles": 78,
+    "renderedTriangles": 12019,
+    "bridgeWays": 24,
+    "bridgeSegments": 181,
+    "bridgeDecks": 262,
+    "bridgePiers": 20,
+    "bridgeSupportCandidates": 20,
+    "bridgeGuardrailSegments": 680,
+    "bridgeRailInteriorSkipped": 53,
+    "bridgeRejectedSupports": {},
+    "unsupportedBridgeWays": 15,
+    "bridgeHeightSource": "inferred-layer-times-7m",
+    "bridgeGradeConnectionsUnresolved": 0,
+    "bridgeStructureTriangles": 34797,
+    "stairTreads": 0,
+    "stairPosts": 0,
+    "stairTriangles": 0,
+    "stairSkippedFlights": 0,
+    "stairSteepFlights": 0,
+    "stairHeightSource": "shared-road-grade-inference"
+  },
+  "landscapeStats": {
+    "observedFeatures": 11,
+    "observedSurfaceArea": 44384.44367166952,
+    "inferredSites": 207,
+    "inferredPavedArea": 121314.72509540888,
+    "inferredPlantedArea": 123866.6212623898,
+    "rejectedCandidates": 315,
+    "rejectedGeometry": 0,
+    "templates": {
+      "garden-court": 102,
+      "verge": 87,
+      "pocket-common": 18
+    },
+    "layouts": {
+      "single": 28,
+      "offset": 32,
+      "paired": 129
+    },
+    "kindAreas": {
+      "parking": 7502.7785587796225,
+      "sport": 1735.885866499997,
+      "construction": 24573.38005385199,
+      "plaza": 3065.422243531397,
+      "park": 7506.976949006517,
+      "paving": 121314.72509540892,
+      "lawn": 84410.5063015898,
+      "shrub": 4886.353777028513,
+      "garden": 34569.27675685507
+    },
+    "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+    "availableTreeCandidates": 818,
+    "availablePropCandidates": 102,
+    "treesByTemplate": {
+      "garden-court": 16,
+      "verge": 490,
+      "pocket-common": 312
+    },
+    "commonCandidates": 97,
+    "treeCandidates": 818,
+    "props": 102,
+    "surfaces": 767,
+    "inferredArea": 245181.34635779867,
+    "inferredFraction": 0.27847891415245557,
+    "knownGroundFraction": 0.050412202488316286,
+    "unfilledBeforeFraction": 0.6230869423640508,
+    "unfilledAfterFraction": 0.34630413546076194,
+    "coverageSampleSpacing": 12,
+    "coverageSamples": 6142,
+    "markingStrips": 148,
+    "markingPrecisionRetries": 0,
+    "omittedMarkingStrips": 0,
+    "renderedTriangles": 11697,
+    "drawMeshes": 11
+  },
+  "facadeFamilies": {
+    "lowrise": 865,
+    "residential": 1,
+    "ribbon": 2
+  },
+  "landmarks": [],
+  "tallest": [
+    {
+      "id": "w1000077648",
+      "height": 31,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w995081289",
+      "height": 27.900000000000002,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w995074858",
+      "height": 21.7,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w995070538",
+      "height": 18.6,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w995070552",
+      "height": 18.6,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w995070565",
+      "height": 18.6,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w995070568",
+      "height": 18.6,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w995070573",
+      "height": 18.6,
+      "source": "estimated",
+      "part": false
+    }
+  ],
+  "views": {
+    "overview": {
+      "position": [
+        774.7288003308427,
+        715.1342772284701,
+        844.2557439502772
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "skyline": {
+      "position": [
+        -79.45936413649667,
+        25,
+        943.579949120898
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "roof": {
+      "position": [
+        -218.51325137536585,
+        60,
+        248.31051292655212
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "facade": {
+      "position": [
+        44.04727437729209,
+        7.79,
+        73.75783602740148
+      ],
+      "target": [
+        1.0925662583522513,
+        2.79,
+        30.803127908461647
+      ]
+    }
+  }
+}
