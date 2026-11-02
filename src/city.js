@@ -86,7 +86,7 @@ function facadeMaterial(shared) {
   return material;
 }
 
-export function buildCity(data, { landscapeEnabled = true } = {}) {
+export function buildCity(data, { landscapeEnabled = false } = {}) {
   const group = new THREE.Group(); group.name = 'Beijing CBD — OpenStreetMap';
   const shared = { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: {value:.5}, glassReflection: {value:.65}, toneSize:{value:4.2}, sunDirection:{value:new THREE.Vector3(.5,.707,-.5)}, projectionScale:{value:1000} };
   const material = facadeMaterial(shared);

@@ -14,7 +14,7 @@ const viewport=$('viewport');
 let renderer,scene,camera,controls,ink,city,data,sun,needsRender=true,mode=0,inspect=false,toastTimer;
 let mapState=null,depthBounds=[];
 const initialView=decodeView(location.hash);
-if(initialView?.toggles?.['landscape-toggle']===false)$('landscape-toggle').checked=false;
+if(typeof initialView?.toggles?.['landscape-toggle']==='boolean')$('landscape-toggle').checked=initialView.toggles['landscape-toggle'];
 let rawData,seed=initialView?.seed||1,currentView='overview';
 let activeLocation=LOCATIONS[0];
 let buildCity=data=>buildEnhancedCity(data,{landscapeEnabled:$('landscape-toggle').checked}),InkRenderer=EnhancedInkRenderer;
@@ -160,7 +160,7 @@ function updateGenerationStats(){
   $('seed-label').textContent=`种子 ${seed}`;
   const stats=city.streetStats||city.stats||{};
   const land=city.landscapeStats;
-  $('generation-stats').textContent=`树木 ${city.treeCount}（规则补充 ${city.generatedTrees}） · 街道标注 ${data.streetNodes.length} 个。${land?`场地：OSM ${data.landscapes.length} 处，景观补全 ${land.inferredSites} 处。`:''} 补全为示意；相同种子保持布局。`;
+  $('generation-stats').textContent=`树木 ${city.treeCount}（规则补充 ${city.generatedTrees}） · 街道标注 ${data.streetNodes.length} 个。${land?`场地：OSM ${data.landscapes.length} 处，试验补全 ${land.inferredSites} 处。`:''} 未标注空地默认留白；试验补全不代表实测。`;
   $('render-status').textContent=`${data.buildings.length} 个体块 · ${city.treeCount} 棵树 · 规则生成细节`;
 }
 function regenerate(nextSeed){
