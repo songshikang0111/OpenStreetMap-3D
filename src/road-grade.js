@@ -89,13 +89,22 @@ export function planRoadGrades(data, options={}){
     const c=crossing(a,b);if(!c)continue;
     const samples=[];
     for(const [s,lower,t]of [[a,b,c.t],[b,a,c.u]]){
-      const reach=(lower.road.width/2+s.road.width/2+2)/Math.max(.08,c.sine)+settings.spacing;
-      samples.push(s.sample.filter((n,k)=>Math.abs(k/(s.sample.length-1)-t)*s.length<=reach));
-      s.sample.forEach((n,k)=>{if(Math.abs(k/(s.sample.length-1)-t)*s.length<=reach){
+      // Project the actual overlap of the two road-width strips onto this
+      // centreline. Padding the overlap by several metres used to capture a
+      // nearby connecting ramp/landing, making clearance contradict its slope.
+      // Keep the two bracketing samples: all interpolated heights over the
+      // complete crossing footprint remain constrained, including its edges.
+      const cosine=Math.sqrt(Math.max(0,1-c.sine*c.sine));
+      const reach=(lower.road.width/2+s.road.width/2*cosine)/Math.max(1e-8,c.sine);
+      const first=Math.max(0,Math.floor((t-reach/s.length)*(s.sample.length-1)));
+      const last=Math.min(s.sample.length-1,Math.ceil((t+reach/s.length)*(s.sample.length-1)));
+      const selected=s.sample.slice(first,last+1);
+      samples.push(selected);
+      selected.forEach(n=>{
         const gap=WALK.test(lower.road.type)?3.6:5.95;
         if(s.nominal>lower.nominal)n.lowerBound=Math.max(n.lowerBound??0,lower.nominal+gap);
         else n.upperBound=Math.min(n.upperBound??Infinity,lower.nominal-(WALK.test(s.road.type)?3.6:5.95));
-      }});
+      });
     }
     const lowerRoad=a.nominal<b.nominal?a.road:b.road;
     crossingConstraints.push({aRoad:a.road.id,bRoad:b.road.id,point:pointAt(a.a,a.b,c.t),aY:a.nominal,bY:b.nominal,gap:WALK.test(lowerRoad.type)?3.6:5.95,samples});
