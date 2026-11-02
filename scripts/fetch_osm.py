@@ -6,6 +6,7 @@ import pathlib
 import sys
 import urllib.parse
 import urllib.request
+from osm_map_areas import complete_areas
 
 sys.stdout.reconfigure(encoding='utf-8')
 parser = argparse.ArgumentParser()
@@ -13,6 +14,7 @@ parser.add_argument('--bbox', default='39.9015,116.4490,39.9175,116.4720', help=
 parser.add_argument('--name', default='北京 · 国贸 CBD')
 parser.add_argument('--output', default='public/data/beijing-cbd.json')
 parser.add_argument('--context', action='store_true', help='Include street nodes and landscape semantics in the same regional extract')
+parser.add_argument('--source', choices=['overpass', 'map-api'], default='overpass', help='Use map-api for small extracts when Overpass is unavailable')
 args = parser.parse_args()
 bbox = [float(x) for x in args.bbox.split(',')]
 if len(bbox) != 4 or not (-90 <= bbox[0] < bbox[2] <= 90 and -180 <= bbox[1] < bbox[3] <= 180):
@@ -39,19 +41,30 @@ node["natural"="tree"]({box});
 {context}
 );out body geom;'''
 endpoints = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter']
+if args.source == 'map-api':
+    # The map API includes nodes and ways directly; parseOSM already resolves
+    # node references. Keep requests small and retain the exact source URL.
+    map_box = ','.join(str(bbox[i]) for i in (1, 0, 3, 2))
+    endpoints = ['https://api.openstreetmap.org/api/0.6/map.json?' + urllib.parse.urlencode({'bbox': map_box})]
 for endpoint in endpoints:
     try:
         print('Fetching', endpoint, args.bbox, flush=True)
-        request = urllib.request.Request(endpoint, data=urllib.parse.urlencode({'data': query}).encode(), headers={'User-Agent': 'BeijingCityInk/0.1 (local OSM visualization prototype)'})
+        body = urllib.parse.urlencode({'data': query}).encode() if args.source == 'overpass' else None
+        request = urllib.request.Request(endpoint, data=body, headers={'User-Agent': 'BeijingCityInk/0.1 (local OSM visualization prototype)'})
         with urllib.request.urlopen(request, timeout=75) as response:
             data = json.load(response)
         if data.get('remark') or not data.get('elements'):
             raise ValueError(data.get('remark', 'Empty response'))
+        if args.source == 'map-api':
+            data = complete_areas(data)
+        completed = data.get('metadata', {}).get('completedAreas', [])
         data['metadata'] = {
             'name': args.name, 'bbox': bbox,
             'center': [(bbox[0]+bbox[2])/2, (bbox[1]+bbox[3])/2],
             'retrievedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            'endpoint': endpoint, 'query': query,
+            'endpoint': endpoint, 'query': query if args.source == 'overpass' else None,
+            'sourceApi': args.source,
+            'completedAreas': completed,
             'attribution': '© OpenStreetMap contributors',
             'license': 'ODbL-1.0',
             'licenseUrl': 'https://www.openstreetmap.org/copyright',
@@ -66,4 +79,4 @@ for endpoint in endpoints:
     except Exception as error:
         print(f'{type(error).__name__}: {error}', flush=True)
 else:
-    raise SystemExit('All Overpass endpoints failed; existing extract was not changed.')
+    raise SystemExit('All source endpoints failed; existing extract was not changed.')

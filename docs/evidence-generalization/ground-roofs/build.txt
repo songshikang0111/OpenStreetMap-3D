@@ -1,0 +1,21 @@
+
+> beijing-city-ink@0.8.1 build
+> vite build
+
+vite v6.4.5 building for production...
+transforming...
+✓ 48 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   10.82 kB │ gzip:   4.02 kB
+dist/assets/index-BPbkEoRY.css    11.44 kB │ gzip:   3.41 kB
+dist/assets/ink-v1-u8_0JqfT.js     5.49 kB │ gzip:   2.13 kB
+dist/assets/city-v1-DSdHMraf.js    9.05 kB │ gzip:   3.97 kB
+dist/assets/index-CLw7dJqP.js    278.36 kB │ gzip:  97.85 kB
+dist/assets/three-DzI0ZAtl.js    546.36 kB │ gzip: 138.78 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.26s

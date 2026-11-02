@@ -1,4 +1,5 @@
 import { classifyLandscape, classifyLandscapeContext, isSurfaceLandscape } from './landscape-tags.js';
+import clipping from 'polygon-clipping';
 
 // All coordinates are local metres, x = east, z = south. No GCJ-02 offset.
 export function projection(lat, lon) {
@@ -46,7 +47,7 @@ export function heightInfo(tags, footprintArea, id, seed = 1) {
   const levels = Number(tags['building:levels']);
   let height = metres(tags.height), source = 'height';
   if (!(height > 0)) {
-    if (levels > 0) { height = levels * levelHeight; source = 'levels'; }
+    if (levels > 0) { height = levels * levelHeight + Math.max(0,metres(tags['roof:height'])||Number(tags['roof:levels'])*3||0); source = 'levels'; }
     else {
       source = 'estimated';
       let guessedFloors;
@@ -124,10 +125,15 @@ export function parseOSM(raw, seed = 1) {
   const ways = new Map(raw.elements.filter(e => e.type === 'way').map(e => [e.id, e]));
   const geometry = e => e.geometry || (e.nodes || []).map(id => nodes.get(id)).filter(Boolean);
   const polygons = [], relationMembers = new Set();
-  let invalidRings = 0;
+  let invalidRings = 0, incompleteRelations = 0;
   for (const e of raw.elements.filter(e => e.type === 'relation')) {
     if (e.tags?.type !== 'multipolygon') continue;
     const members = e.members || [];
+    // A bbox Map API response can reference ways outside its crop. Never close
+    // a partial ring with invented edges or silently discard missing islands.
+    if(members.some(m=>m.type==='way' && !m.geometry && (!ways.has(m.ref) || (ways.get(m.ref).nodes||[]).some(id=>!nodes.has(id))))) {
+      invalidRings++; incompleteRelations++; continue;
+    }
     const outer = stitchRings(members.filter(m => m.type === 'way' && m.role !== 'inner').map(m => m.geometry || geometry(ways.get(m.ref) || {})));
     const holes = stitchRings(members.filter(m => m.type === 'way' && m.role === 'inner').map(m => m.geometry || geometry(ways.get(m.ref) || {}))).map(r => r.map(project.point));
     if (!outer.length) { invalidRings++; continue; }
@@ -143,6 +149,8 @@ export function parseOSM(raw, seed = 1) {
     if (g.length >= 4 && equalPoint(g[0], g.at(-1))) polygons.push({ id: `w${e.id}`, osmType: 'way', osmId: e.id, outer: g.slice(0, -1).map(project.point), holes: [], tags: e.tags || {} });
   }
   let buildings = [], greens = [], water = [], landscapes = [], landscapeContexts = [];
+  const surfaceFrame=[[[nw[0],nw[1]],[se[0],nw[1]],[se[0],se[1]],[nw[0],se[1]]]];
+  const cropSurface=p=>clipping.intersection([p.outer,...p.holes],surfaceFrame).map(([outer,...holes],i)=>({...p,id:i?`${p.id}:clip:${i}`:p.id,outer,holes}));
   for (const p of polygons) {
     const extent = p.outer.reduce((b, q) => [Math.min(b[0], q[0]), Math.min(b[1], q[1]), Math.max(b[2], q[0]), Math.max(b[3], q[1])], [Infinity, Infinity, -Infinity, -Infinity]);
     p.center = [(extent[0] + extent[2]) / 2, (extent[1] + extent[3]) / 2];
@@ -156,14 +164,15 @@ export function parseOSM(raw, seed = 1) {
       buildings.push(p);
     } else {
       if (!isSurfaceLandscape(p.tags)) continue;
-      if (p.tags.natural === 'water' || p.tags.amenity === 'fountain') { water.push(p); continue; }
+      if (p.tags.natural === 'water' || p.tags.amenity === 'fountain' || p.tags.waterway==='riverbank' || p.tags.leisure==='swimming_pool') { water.push(...cropSurface(p)); continue; }
       const kind = classifyLandscape(p.tags);
       if (kind) {
-        landscapes.push({ ...p, kind, source: 'osm' });
-        if (['lawn', 'wood', 'garden', 'park'].includes(kind)) greens.push(p);
+        const pieces=cropSurface(p);
+        landscapes.push(...pieces.map(part=>({ ...part, kind, source: 'osm' })));
+        if (['lawn', 'wood', 'garden', 'park'].includes(kind)) greens.push(...pieces);
       }
       const context = classifyLandscapeContext(p.tags);
-      if (context) landscapeContexts.push({ ...p, context, source: 'osm' });
+      if (context) landscapeContexts.push(...cropSurface(p).map(part=>({ ...part, context, source: 'osm' })));
     }
   }
   // A fully represented building outline must not overlap its 3D parts.
@@ -192,8 +201,14 @@ export function parseOSM(raw, seed = 1) {
     }
     if (segments.length) roads.push({ id: e.id, name: t.name || '', type: t.highway, tags:t, nodes:e.nodes || [], segments, segmentNodes, width: Math.min(50, Math.max(1, metres(t.width) || Number(t.lanes) * 3.2 || widths[t.highway] || 6)), bridge: t.bridge === 'yes', layer: Number(t.layer) || 0 });
   }
+  // Named harbour/bay relations may overlap. Use a single water mask in every
+  // consumer so surfaces cannot depth-fight or double-count their coverage.
+  if(water.length){
+    const sourceIds=water.map(p=>p.id);
+    water=clipping.union(...water.map(p=>[p.outer,...p.holes])).map(([outer,...holes],i)=>({id:`water:${i}`,outer,holes,tags:{natural:'water'},source:'osm',sourceIds,area:area(outer)-holes.reduce((s,h)=>s+area(h),0)}));
+  }
   const trees = raw.elements.filter(e => e.type === 'node' && e.tags?.natural === 'tree').map(e => ({ point: project.point(e), id: e.id, height: metres(e.tags.height) || 7, tags: { ...e.tags } })).filter(e => contains(e.point));
   const streetNodes=raw.elements.filter(e=>e.type==='node' && /^(crossing|traffic_signals|street_lamp|bus_stop)$/.test(e.tags?.highway||'')).map(e=>({id:e.id,point:project.point(e),kind:e.tags.highway,tags:e.tags})).filter(e=>contains(e.point));
   const treeRows=raw.elements.filter(e=>e.type==='way' && e.tags?.natural==='tree_row').map(e=>({id:e.id,points:geometry(e).map(project.point),tags:e.tags}));
-  return { buildings, roads, greens, water, landscapes, landscapeContexts, trees, streetNodes, treeRows, bounds, project, seed, metadata: raw.metadata, stats: { invalidRings, suppressed, landscapePolygons: landscapes.length } };
+  return { buildings, roads, greens, water, landscapes, landscapeContexts, trees, streetNodes, treeRows, bounds, project, seed, metadata: raw.metadata, stats: { invalidRings, incompleteRelations, suppressed, landscapePolygons: landscapes.length } };
 }

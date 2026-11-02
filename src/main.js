@@ -14,10 +14,10 @@ const viewport=$('viewport');
 let renderer,scene,camera,controls,ink,city,data,sun,needsRender=true,mode=0,inspect=false,toastTimer;
 let mapState=null,depthBounds=[];
 const initialView=decodeView(location.hash);
-if(initialView?.toggles?.['landscape-toggle']===false)$('landscape-toggle').checked=false;
+for(const id of ['landscape-toggle','roof-inference-toggle'])if(typeof initialView?.toggles?.[id]==='boolean')$(id).checked=initialView.toggles[id];
 let rawData,seed=initialView?.seed||1,currentView='overview';
 let activeLocation=LOCATIONS[0];
-let buildCity=data=>buildEnhancedCity(data,{landscapeEnabled:$('landscape-toggle').checked}),InkRenderer=EnhancedInkRenderer;
+let buildCity=data=>buildEnhancedCity(data,{landscapeEnabled:$('landscape-toggle').checked,inferRoofs:$('roof-inference-toggle').checked}),InkRenderer=EnhancedInkRenderer;
 const baselineMode=new URLSearchParams(location.search).get('baseline')==='1';
 const rangeBindings=[
   ['line-width','line-output','lineWidth',1,1],['tone-size','tone-output','toneSize',1,1],['density','density-output','inkDensity',100,0],
@@ -108,7 +108,11 @@ function drawMap(){
   const point=p=>[(p[0]-x0)*scale+offsetX,(p[1]-z0)*scale+offsetY];
   mapState={scale,offsetX,offsetY,x0,z0};
   ctx.fillStyle='#eceee4';ctx.fillRect(0,0,canvas.width,canvas.height);
-  for(const b of data.greens){ctx.fillStyle='#d3dfc8';ctx.beginPath();b.outer.forEach((p,i)=>ctx[i?'lineTo':'moveTo'](...point(p)));ctx.closePath();ctx.fill();}
+  const fillArea=(b,color)=>{ctx.fillStyle=color;ctx.beginPath();for(const ring of [b.outer,...(b.holes||[])]){ring.forEach((p,i)=>ctx[i?'lineTo':'moveTo'](...point(p)));ctx.closePath();}ctx.fill('evenodd');};
+  const groundColors={wood:'#6f9b72',park:'#c4d7ac',garden:'#abc58f',lawn:'#c7dbaf',parking:'#b4b7b4',plaza:'#ded4bf',sport:'#b7cbb7',soil:'#cdbfa6',construction:'#c8b99f'};
+  for(const b of data.landscapes)fillArea(b,groundColors[b.kind]||'#d9d2bf');
+  for(const b of data.water)fillArea(b,'#83b5d6');
+  ctx.fillStyle='#428257';for(const tree of data.trees){const p=point(tree.point);ctx.beginPath();ctx.arc(...p,Math.max(.8,scale*2),0,Math.PI*2);ctx.fill();}
   for(const road of data.roads){ctx.strokeStyle='#faf9f1';ctx.lineWidth=Math.max(1.5,road.width*scale);ctx.lineCap='round';for(const [a,b]of road.segments){ctx.beginPath();ctx.moveTo(...point(a));ctx.lineTo(...point(b));ctx.stroke();}}
   for(const b of data.buildings){ctx.fillStyle=inspect?city.sourceColors[b.source]:b.height>130?'#899b91':'#b4beb0';ctx.beginPath();for(const ring of [b.outer,...b.holes]){ring.forEach((p,i)=>ctx[i?'lineTo':'moveTo'](...point(p)));ctx.closePath();}ctx.fill('evenodd');}
   const p=point([camera.position.x,camera.position.z]),target=point([controls.target.x,controls.target.z]);
@@ -130,6 +134,7 @@ function showBuilding(b){
   const finishes={'reflective-glass':'反射玻璃','smooth-render':'浅色抹灰','cut-stone':'石材分缝','warm-brick':'暖色砌砖','precast-panels':'预制板墙','vertical-piers':'竖向壁柱','ceramic-tile':'面砖饰面'};
   if(skin?.facadeSurface){const p=document.createElement('p');p.className='notice';p.textContent=`示意饰面：${finishes[skin.facadeSurface]||skin.facadeSurface}。材质标签优先；缺失时按种子生成，玻璃反射为程序化环境。`;details.append(p);}
   if(b.source!=='height'){const p=document.createElement('p');p.className='notice';p.textContent=b.source==='estimated'?'地图缺少高度和层数，当前高度由用途与面积估算。':'高度由楼层数与假定层高换算，非实测高度。';details.append(p);}
+  if(b.roofModel){const p=document.createElement('p');p.className='notice';const roof=b.roofModel;p.textContent=roof.source==='inferred'?'坡屋顶为低层小房屋的形态推测，地图未标注真实屋顶。':roof.supported?`屋顶形状来自 OSM：${roof.shape}。${roof.dimensionsInferred?'坡高与朝向缺失时使用几何近似。':''}`:roof.source==='osm'&&roof.shape!=='flat'?`OSM 屋顶 ${roof.shape} 尚未实现，当前保留简化体块。`:'地图未提供可用屋顶形状，当前按平顶显示。';details.append(p);}
   $('osm-link').href=`https://www.openstreetmap.org/${b.osmType}/${b.osmId}`;$('building-info').hidden=false;
 }
 
@@ -137,7 +142,7 @@ function download(blob,name){const link=document.createElement('a');const url=UR
 
 function captureState(){
   const rounded=v=>v.toArray().map(x=>Math.round(x*1000)/1000);
-  return {version:2,view:currentView,seed,mode,position:rounded(camera.position),target:rounded(controls.target),parameters:Object.fromEntries(Object.keys(parameterRanges).map(id=>[id,Number($(id).value)])),toggles:Object.fromEntries(['windows-toggle','trees-toggle','props-toggle','shadows-toggle','landscape-toggle'].map(id=>[id,$(id).checked]))};
+  return {version:2,view:currentView,seed,mode,position:rounded(camera.position),target:rounded(controls.target),parameters:Object.fromEntries(Object.keys(parameterRanges).map(id=>[id,Number($(id).value)])),toggles:Object.fromEntries(['windows-toggle','trees-toggle','props-toggle','shadows-toggle','landscape-toggle','roof-inference-toggle'].map(id=>[id,$(id).checked]))};
 }
 function applyParameters(){
   for(const [id,output,uniform,divisor,precision]of rangeBindings){const value=Number($(id).value);$(output).value=divisor===100?`${value}%`:value.toFixed(precision);if(ink.material.uniforms[uniform])ink.material.uniforms[uniform].value=value/divisor;}
@@ -156,7 +161,7 @@ function updateGenerationStats(){
   $('seed-label').textContent=`种子 ${seed}`;
   const stats=city.streetStats||city.stats||{};
   const land=city.landscapeStats;
-  $('generation-stats').textContent=`树木 ${city.treeCount}（规则补充 ${city.generatedTrees}） · 街道标注 ${data.streetNodes.length} 个。${land?`场地：OSM ${data.landscapes.length} 处，景观补全 ${land.inferredSites} 处。`:''} 补全为示意；相同种子保持布局。`;
+  $('generation-stats').textContent=`树木 ${city.treeCount}（规则补充 ${city.generatedTrees}） · 街道标注 ${data.streetNodes.length} 个。${land?`场地：OSM ${data.landscapes.length} 处，试验补全 ${land.inferredSites} 处。`:''}${city.roofStats?` 坡屋顶：标注 ${city.roofStats.tagged}，推测 ${city.roofStats.inferred}。`:''} 缺失信息保持留白；推测形态不代表实测。`;
   $('render-status').textContent=`${data.buildings.length} 个体块 · ${city.treeCount} 棵树 · 规则生成细节`;
 }
 function regenerate(nextSeed){
@@ -212,6 +217,7 @@ function connectUI(){
   $('detail-view').onchange=()=>{if($('detail-view').value)preset($('detail-view').value);};
   $('props-toggle').onchange=applyParameters;
   $('landscape-toggle').onchange=()=>{regenerate(seed);sun.shadow.needsUpdate=true;invalidate();};
+  $('roof-inference-toggle').onchange=()=>{regenerate(seed);sun.shadow.needsUpdate=true;invalidate();};
   $('reset-look').onclick=()=>{for(const id of Object.keys(parameterRanges))if(id!=='lens')$(id).value=$(id).defaultValue;applyParameters();};
   $('save-view').onclick=async()=>{const hash=encodeView(captureState());history.replaceState(null,'',hash);$('view-link').value=location.href;try{await navigator.clipboard.writeText(location.href);toast('视角链接已复制，包含机位、参数与种子。');}catch{toast('视角已写入地址栏，也可在侧栏复制链接。');}};
   $('export-state').onclick=()=>download(new Blob([JSON.stringify(captureState(),null,2)],{type:'application/json'}),'beijing-city-ink-view.json');

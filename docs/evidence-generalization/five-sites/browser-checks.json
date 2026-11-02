@@ -1,0 +1,42 @@
+[
+  {
+    "site": "shuhe",
+    "buildings": "868",
+    "canvases": 1,
+    "loading": false,
+    "roads": "182",
+    "title": "丽江 · 束河古镇 · 城市线境"
+  },
+  {
+    "site": "bibury",
+    "buildings": "148",
+    "canvases": 1,
+    "loading": false,
+    "roads": "120",
+    "title": "英国 · 拜伯里村 · 城市线境"
+  },
+  {
+    "site": "manhattan",
+    "buildings": "1317",
+    "canvases": 1,
+    "loading": false,
+    "roads": "2050",
+    "title": "纽约 · 曼哈顿金融区 · 城市线境"
+  },
+  {
+    "site": "marrakech",
+    "buildings": "3137",
+    "canvases": 1,
+    "loading": false,
+    "roads": "809",
+    "title": "马拉喀什 · 老城 · 城市线境"
+  },
+  {
+    "site": "sydney",
+    "buildings": "126",
+    "canvases": 1,
+    "loading": false,
+    "roads": "178",
+    "title": "悉尼 · 歌剧院 · 城市线境"
+  }
+]

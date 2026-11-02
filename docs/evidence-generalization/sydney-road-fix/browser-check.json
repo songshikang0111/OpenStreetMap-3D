@@ -1,0 +1,9 @@
+{
+  "bounds": "1.2 × 1.1 km",
+  "buildings": "584",
+  "loading": false,
+  "roads": "1656",
+  "status": "树木 1702（规则补充 792） · 街道标注 324 个。场地：OSM 239 处，试验补全 0 处。 坡屋顶：标注 6，推测 0。 缺失信息保持留白；推测形态不代表实测。",
+  "title": "悉尼 · 歌剧院与环形码头 · 城市线境",
+  "url": "http://127.0.0.1:5178/?site=sydney#v=%7B%22version%22%3A2%2C%22seed%22%3A1%2C%22mode%22%3A2%2C%22view%22%3A%22overview%22%2C%22toggles%22%3A%7B%22landscape-toggle%22%3Afalse%2C%22roof-inference-toggle%22%3Afalse%7D%7D"
+}

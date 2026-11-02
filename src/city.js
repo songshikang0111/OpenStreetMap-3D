@@ -10,6 +10,7 @@ import { installFacadeShader } from './facade-shader.js';
 import { buildLandscape } from './landscape.js';
 import { updateRoofDetails } from './distance-style.js';
 import { planBuildingEnvelopes } from './building-envelope.js';
+import { planRoof,writeRoof } from './roofs.js';
 
 class MeshWriter {
   constructor() { this.positions = []; this.normals = []; this.colors = []; this.facades = []; this.ids = []; this.styles=[]; this.style=0; this.variant=0; this.layouts=[]; this.layout=[0,0,0,0]; this.surfaces=[];this.surface=[0,1]; }
@@ -86,7 +87,7 @@ function facadeMaterial(shared) {
   return material;
 }
 
-export function buildCity(data, { landscapeEnabled = true } = {}) {
+export function buildCity(data, { landscapeEnabled = false, inferRoofs = false } = {}) {
   const group = new THREE.Group(); group.name = 'Beijing CBD — OpenStreetMap';
   const shared = { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: {value:.5}, glassReflection: {value:.65}, toneSize:{value:4.2}, sunDirection:{value:new THREE.Vector3(.5,.707,-.5)}, projectionScale:{value:1000} };
   const material = facadeMaterial(shared);
@@ -96,8 +97,8 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
   base.position.set((x0+x1)/2,-7,(z0+z1)/2); base.receiveShadow = true; base.name = 'Flat ground / no DEM'; base.userData.inkClass=5; group.add(base);
   const groundWriter = new MeshWriter();
   const groundFrame=[[[x0,z0],[x1,z0],[x1,z1],[x0,z1]]];
-  for (const feature of data.water) for(const [outer,...holes] of clipping.intersection([feature.outer,...(feature.holes||[])],groundFrame)) polygon(groundWriter, {outer,holes}, .22, '#8dacae', 60001);
-  const landCover=groundWriter.mesh(baseMaterial,'Land cover');landCover.userData.inkClass=5;group.add(landCover);
+  for (const feature of data.water) for(const [outer,...holes] of clipping.intersection([feature.outer,...(feature.holes||[])],groundFrame)) polygon(groundWriter, {outer,holes}, .22, '#82aac4', 60001);
+  const landCover=groundWriter.mesh(baseMaterial,'Land cover');landCover.userData.inkClass=6;group.add(landCover);
   const roadSurface=buildRoadSurface(data);group.add(roadSurface.group);
   const landscape=buildLandscape(data,{roadPlan:roadSurface.plan,seed:data.seed||1,profile:{...data.metadata?.landscapeProfile,enabled:landscapeEnabled}});
   group.add(landscape.group);
@@ -105,12 +106,18 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
   const buildings=[],nearWalls=[],landmarks=[],familyCounts={},grammarCounts={},surfaceCounts={};
   const sourceColors={height:'#60988e',levels:'#86a8c3',estimated:'#daab73'};
   const roofWriter=new MeshWriter(),roofDetails=[];
-  const envelopes=planBuildingEnvelopes(data.buildings,{exclude:landmarkKind});
+  const roofPlans=new Map(data.buildings.map(b=>[b.id,planRoof(b,{inferRoofs})]));
+  const roofStats={tagged:0,inferred:0,unsupported:0};
+  const envelopes=planBuildingEnvelopes(data.buildings.map(b=>roofPlans.get(b.id).supported?{...b,height:roofPlans.get(b.id).eave-.45}:b),{exclude:landmarkKind});
   data.buildings.forEach((building,index)=>{
     const writer=new MeshWriter(),id=index+1,style=buildingStyle(building,data.seed||1),landmark=landmarkKind(building);
     writer.style=style.code;writer.variant=style.variant;familyCounts[style.family]=(familyCounts[style.family]||0)+1;
     writer.surface=[style.surface,style.surfaceScale];surfaceCounts[style.surfaceName]=(surfaceCounts[style.surfaceName]||0)+1;
-    const wall=new THREE.Color(style.color),floorHeight=style.floor,baseY=.45+building.minHeight,topY=.45+building.height;
+    const roof=roofPlans.get(building.id),bodyHeight=roof.supported?roof.eave-.45:building.height;
+    const wall=new THREE.Color(style.color),floorHeight=style.floor,baseY=.45+building.minHeight,topY=.45+bodyHeight;
+    building.roofModel={shape:roof.shape,source:roof.source,supported:roof.supported,dimensionsInferred:roof.dimensionsInferred||false};
+    if(roof.supported)roofStats[roof.source==='osm'?'tagged':'inferred']++;
+    else if(roof.source==='osm'&&roof.shape!=='flat')roofStats.unsupported++;
     const trim=style.family==='curtain'?'#c9d5d7':'#e5e1d6';
     let profile=null;
     if(landmark==='china-zun')profile=buildChinaZun(writer,building,id,addBeam);
@@ -132,7 +139,7 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
           if(!ringIndex&&span.lo===0&&(!longest||spanLen>longest.len))longest={a:sa,b:sb,len:spanLen,normal,angle,mid:sm,dx:sb[0]-sa[0],dz:sb[1]-sa[1]};
           // Trim follows the exposed wall, never a buried podium/tower seam.
           if(spanLen>2&&building.height>6){
-            if(span.hi===building.height){
+            if(span.hi===bodyHeight&&!roof.supported){
               addBox(writer,[sm[0]-normal[0]*.35,topY+.32,sm[1]-normal[2]*.35],[spanLen,.65,.5],trim,id,angle);
               if(style.family==='curtain'&&building.height>60&&topY-4>low)addBox(writer,[sm[0]+normal[0]*.12,topY-4,sm[1]+normal[2]*.12],[spanLen,.24,.25],trim,id,angle);
             }
@@ -147,11 +154,15 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
         }
         // Fine frame grammar is valid on a complete original wall only.
         // Clipped partial walls keep the same shader panes without stray frames.
-        if(!ringIndex&&len>7&&spans.length===1&&spans[0].t0===0&&spans[0].t1===1&&spans[0].lo===building.minHeight&&spans[0].hi===building.height)nearWalls.push({key:`${building.id}:${i}`,a,dx,dz,len,normal,angle,layout,baseY,style});
+        if(!ringIndex&&len>7&&spans.length===1&&spans[0].t0===0&&spans[0].t1===1&&spans[0].lo===building.minHeight&&spans[0].hi===bodyHeight)nearWalls.push({key:`${building.id}:${i}`,a,dx,dz,len,normal,angle,layout,baseY,style});
       }
       grammarCounts[grammarName]=(grammarCounts[grammarName]||0)+1;
       writer.style=0;
-      for(const [outer,...holes]of envelope.roof)polygon(writer,{outer,holes},topY,'#e1e3dd',id);
+      if(roof.supported){
+        const rawColor=building.tags['roof:colour']||building.tags['roof:color'];
+        const roofColor=rawColor&&(/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(rawColor)||THREE.Color.NAMES[rawColor.toLowerCase()]!==undefined)?rawColor:'#a5a8a0';
+        writeRoof(writer,building,roof,roofColor,id,wall);
+      }else for(const [outer,...holes]of envelope.roof)polygon(writer,{outer,holes},topY,'#e1e3dd',id);
       if(building.minHeight>0){
         const start=writer.positions.length;for(const [outer,...holes]of envelope.bottom)polygon(writer,{outer,holes},baseY,wall,id);
         for(let i=start;i<writer.positions.length;i+=9){for(let c=0;c<3;c++)[writer.positions[i+3+c],writer.positions[i+6+c]]=[writer.positions[i+6+c],writer.positions[i+3+c]];for(let c=0;c<3;c++)writer.normals[i+c*3+1]=-1;}
@@ -162,7 +173,7 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
         addBox(writer,[x+normal[0]*1,baseY+4.4,z+normal[2]*1],[w+2,.28,2.6],trim,id,angle);
         addBox(writer,[x,baseY+2.15,z],[.16,4.3,.48],trim,id,angle);
       }
-      for(const box of roofEquipment(building)){
+      for(const box of roof.supported?[]:roofEquipment(building)){
         if(!envelope.roof.some(([outer,...holes])=>inside([box.x,box.z],outer)&&!holes.some(h=>inside([box.x,box.z],h))))continue;
         const start=roofWriter.positions.length;
         addBox(roofWriter,[box.x,topY+box.h/2,box.z],[box.w,box.h,box.d],'#aeb7b4',id);
@@ -204,5 +215,5 @@ export function buildCity(data, { landscapeEnabled = true } = {}) {
     shared.provenance.value=on?1:0;
     for(const mesh of buildings){const colors=mesh.geometry.attributes.color;if(on){const c=mesh.userData.sourceColor;for(let i=0;i<colors.count;i++)colors.setXYZ(i,c.r,c.g,c.b);}else colors.array.set(mesh.userData.originalColors);colors.needsUpdate=true;}
   }
-  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,landscapeStats:landscape.stats,sourceColors,landmarks,familyCounts,grammarCounts,surfaceCounts,facadeStats:{candidateWalls:nearWalls.length,maxInstances:18000}};
+  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,landscapeStats:landscape.stats,roofStats,sourceColors,landmarks,familyCounts,grammarCounts,surfaceCounts,facadeStats:{candidateWalls:nearWalls.length,maxInstances:18000}};
 }

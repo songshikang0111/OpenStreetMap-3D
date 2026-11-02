@@ -1,0 +1,5 @@
+{
+  "shuhe": "http://127.0.0.1:5178/?site=shuhe#v=%7B%22version%22%3A2%2C%22seed%22%3A1%2C%22mode%22%3A0%2C%22view%22%3A%22overview%22%2C%22toggles%22%3A%7B%22landscape-toggle%22%3Afalse%2C%22roof-inference-toggle%22%3Atrue%7D%7D",
+  "bibury": "http://127.0.0.1:5178/?site=bibury#v=%7B%22version%22%3A2%2C%22seed%22%3A1%2C%22mode%22%3A0%2C%22view%22%3A%22overview%22%2C%22toggles%22%3A%7B%22landscape-toggle%22%3Afalse%2C%22roof-inference-toggle%22%3Atrue%7D%7D",
+  "sydney": "http://127.0.0.1:5178/?site=sydney#v=%7B%22version%22%3A2%2C%22seed%22%3A1%2C%22mode%22%3A2%2C%22view%22%3A%22overview%22%2C%22toggles%22%3A%7B%22landscape-toggle%22%3Afalse%2C%22roof-inference-toggle%22%3Afalse%7D%7D"
+}

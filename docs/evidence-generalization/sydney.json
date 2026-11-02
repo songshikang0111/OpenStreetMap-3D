@@ -1,0 +1,258 @@
+{
+  "name": "悉尼 · 歌剧院",
+  "bbox": [
+    -33.8605,
+    151.2105,
+    -33.8545,
+    151.22
+  ],
+  "retrievedAt": "2026-11-02T15:33:12.637348+00:00",
+  "rawElements": 5375,
+  "buildings": 126,
+  "roads": 178,
+  "heights": {
+    "height": 3,
+    "levels": 13,
+    "estimated": 110
+  },
+  "knownHeightFraction": 0.12698412698412698,
+  "osmTrees": 146,
+  "treeCount": 693,
+  "waterPolygons": 2,
+  "landscapePolygons": 65,
+  "inputTags": {
+    "roof:shape": 86
+  },
+  "parseStats": {
+    "invalidRings": 7,
+    "suppressed": 1,
+    "landscapePolygons": 65
+  },
+  "buildMs": 1433,
+  "meshObjects": 173,
+  "triangles": 291544,
+  "nonFinite": 0,
+  "outsidePlanarVertices": 0,
+  "roadStats": {
+    "sourceRoads": 178,
+    "segments": 667,
+    "driveSegments": 90,
+    "walkSegments": 577,
+    "miterJoins": 459,
+    "bevelJoins": 8,
+    "duplicateSegments": 0,
+    "clippedOverlaps": 938,
+    "junctions": 9,
+    "crossingExclusions": 0,
+    "dashes": 7,
+    "stopLines": 0,
+    "drivePolygons": 314,
+    "walkPolygons": 1772,
+    "pavingPolygons": 243,
+    "surfaceTriangles": 4616,
+    "roadArea": 5321.082696441141,
+    "pavementArea": 12511.426872682317,
+    "observedSidewalkWays": 3,
+    "observedCrossingWays": 0,
+    "inferredMarginWays": 4,
+    "pavementBuildingBlockers": 1140,
+    "gradeSource": "OSM connectivity + inferred layer heights",
+    "gradeOriginalDiscontinuities": 8,
+    "gradeResolvedConnections": 8,
+    "gradeChangedWays": 24,
+    "gradeMaxVehicleSlope": 0,
+    "gradeSteepVehicleRuns": 0,
+    "gradeCrossingConstraints": 0,
+    "gradeRemainingDiscontinuities": 0,
+    "gradeConstraintIterations": 5,
+    "gradeConstraintConflicts": 0,
+    "gradeAmbiguousCrossings": 0,
+    "stairFlights": 1,
+    "gradeSteepWalkingWays": 8,
+    "gradeMaxWalkingSlope": 0.3500000000000001,
+    "discardedMicroTriangles": 62,
+    "renderedTriangles": 4594,
+    "bridgeWays": 14,
+    "bridgeSegments": 57,
+    "bridgeDecks": 103,
+    "bridgePiers": 5,
+    "bridgeSupportCandidates": 6,
+    "bridgeGuardrailSegments": 211,
+    "bridgeRailInteriorSkipped": 24,
+    "bridgeRejectedSupports": {
+      "pedestrian-clearance": 1
+    },
+    "unsupportedBridgeWays": 12,
+    "bridgeHeightSource": "inferred-layer-times-7m",
+    "bridgeGradeConnectionsUnresolved": 0,
+    "bridgeStructureTriangles": 11253,
+    "stairTreads": 9,
+    "stairPosts": 12,
+    "stairTriangles": 494,
+    "stairSkippedFlights": 0,
+    "stairSteepFlights": 0,
+    "stairHeightSource": "shared-road-grade-inference"
+  },
+  "landscapeStats": {
+    "observedFeatures": 14,
+    "observedSurfaceArea": 29040.640349619087,
+    "inferredSites": 39,
+    "inferredPavedArea": 104792.70642078762,
+    "inferredPlantedArea": 104043.29718267168,
+    "rejectedCandidates": 38,
+    "rejectedGeometry": 0,
+    "templates": {
+      "garden-court": 7,
+      "verge": 1,
+      "pocket-common": 31
+    },
+    "layouts": {
+      "single": 2,
+      "paired": 4,
+      "offset": 2
+    },
+    "kindAreas": {
+      "parking": 878.471701098907,
+      "soil": 146.4904157049973,
+      "plaza": 6339.482144351026,
+      "lawn": 123180.59862261749,
+      "garden": 1752.2719487585628,
+      "wood": 472.61088002416557,
+      "park": 147.4698431863144,
+      "paving": 104792.70642078761,
+      "shrub": 166.52204141080767
+    },
+    "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+    "availableTreeCandidates": 477,
+    "availablePropCandidates": 63,
+    "treesByTemplate": {
+      "garden-court": 5,
+      "pocket-common": 472
+    },
+    "commonCandidates": 282,
+    "treeCandidates": 477,
+    "props": 63,
+    "surfaces": 219,
+    "inferredArea": 208836.0036034593,
+    "inferredFraction": 0.3569390766196295,
+    "knownGroundFraction": 0.04963578679909236,
+    "unfilledBeforeFraction": 0.8572851805728519,
+    "unfilledAfterFraction": 0.4998754669987547,
+    "coverageSampleSpacing": 12,
+    "coverageSamples": 4015,
+    "markingStrips": 11,
+    "markingPrecisionRetries": 0,
+    "omittedMarkingStrips": 0,
+    "renderedTriangles": 5773,
+    "drawMeshes": 13
+  },
+  "facadeFamilies": {
+    "ribbon": 2,
+    "lowrise": 123,
+    "residential": 1
+  },
+  "landmarks": [],
+  "tallest": [
+    {
+      "id": "w191626163",
+      "name": "Bennelong Apartments",
+      "height": 46.5,
+      "source": "levels",
+      "part": false
+    },
+    {
+      "id": "w23717448",
+      "name": "Opera Quays",
+      "height": 37.2,
+      "source": "levels",
+      "part": false
+    },
+    {
+      "id": "r9596872-0",
+      "name": "Sydney Opera House",
+      "height": 15.5,
+      "source": "levels",
+      "part": false
+    },
+    {
+      "id": "w682034612",
+      "height": 12.4,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w1395893898",
+      "height": 9.3,
+      "source": "estimated",
+      "part": false
+    },
+    {
+      "id": "w625461202",
+      "height": 9,
+      "source": "height",
+      "part": true
+    },
+    {
+      "id": "w62264939",
+      "height": 6.2,
+      "source": "levels",
+      "part": false
+    },
+    {
+      "id": "w1309136052",
+      "height": 6.2,
+      "source": "estimated",
+      "part": false
+    }
+  ],
+  "views": {
+    "overview": {
+      "position": [
+        685.7128825327865,
+        632.965737722572,
+        747.2512181447032
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "skyline": {
+      "position": [
+        -70.32952641361912,
+        25,
+        835.1631261617271
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "roof": {
+      "position": [
+        -193.40619763745258,
+        60,
+        219.77977004255976
+      ],
+      "target": [
+        0,
+        8,
+        0
+      ]
+    },
+    "facade": {
+      "position": [
+        40.77442427437127,
+        6.395,
+        6.254919134606656
+      ],
+      "target": [
+        5.774424274371269,
+        1.395,
+        -28.745080865393344
+      ]
+    }
+  }
+}
