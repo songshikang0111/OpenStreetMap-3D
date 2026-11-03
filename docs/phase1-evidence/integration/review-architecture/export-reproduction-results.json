@@ -1,0 +1,123 @@
+{
+  "date": "2026-11-03T10:17:54.841Z",
+  "sourceInstanceColors": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    1
+  ],
+  "sourceMaterialColor": [
+    0.5,
+    1,
+    0.5
+  ],
+  "exports": {
+    "loaded": {
+      "bytes": 3200,
+      "materials": [
+        [
+          0.5,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0.5,
+          1
+        ]
+      ],
+      "nodes": [
+        {
+          "mesh": 0,
+          "city": {
+            "featureId": "a",
+            "featureIds": [
+              "a"
+            ],
+            "kind": "tree",
+            "materialRole": "foliage",
+            "schemaVersion": 1,
+            "sourceIds": [
+              "node/1"
+            ]
+          }
+        },
+        {
+          "mesh": 1,
+          "city": {
+            "featureId": "b",
+            "featureIds": [
+              "b"
+            ],
+            "kind": "tree",
+            "materialRole": "foliage",
+            "schemaVersion": 1,
+            "sourceIds": [
+              "node/2"
+            ]
+          }
+        }
+      ]
+    },
+    "complete": {
+      "bytes": 3204,
+      "materials": [
+        [
+          0.5,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0.5,
+          1
+        ]
+      ],
+      "nodes": [
+        {
+          "mesh": 0,
+          "city": {
+            "featureId": "a",
+            "featureIds": [
+              "a"
+            ],
+            "kind": "tree",
+            "materialRole": "foliage",
+            "schemaVersion": 1,
+            "sourceIds": [
+              "node/1"
+            ]
+          }
+        },
+        {
+          "mesh": 1,
+          "city": {
+            "featureId": "b",
+            "featureIds": [
+              "b"
+            ],
+            "kind": "tree",
+            "materialRole": "foliage",
+            "schemaVersion": 1,
+            "sourceIds": [
+              "node/2"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "cancellation": {
+    "encodingStarted": true,
+    "aborted": true,
+    "status": "rejected",
+    "name": "AbortError",
+    "code": 20
+  }
+}
