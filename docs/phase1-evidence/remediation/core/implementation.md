@@ -24,3 +24,10 @@ core generator 由1.0.0升至1.1.0，CINK/manifest schemaVersion仍为1。需重
 地面附着普通建筑的far底面不再存在，因此既有role回归改为low要求wall/roof，medium/high仍要求structure；独立新增回归明确悬空分部的underside不可删除。没有删去角色协议或降低浮空形体完整性要求。
 
 临时生成物在 ignored work/core-repair-scenes；后续交接附全12案成本、几何/身份连续性验证和独立审查。本文的四通道成本上界是CPU几何提交可行性依据，不是最终AC18放行。
+
+
+## 近景数量字段（A/D冻结）
+
+LOD增加可选`nearDetails`：可见/激活的完整chunk组内，`lodRole=detail`或`near`的普通Mesh计1、InstancedMesh计实际count，保守不按相机frustum进一步切分。无per-unit near字段。compiler的sceneStats与runtime.measureGroup同义，descriptor输出真实值；validator/types/Schema同步，decodeChunk校验实际资源数量。旧manifest缺省仍合法，D需采用已解码缓存实际数优先、再metadata、最后旧未知0并在加载后校正。
+
+standby不可见时不占活跃near计数，但其bytes仍由D的ResourceRegistry引用统计保留。SDK附件只能分配`max(0,budget.nearDetails-mainActualNearDetails)`；主体不足时完整LOD降级，不能通过删必要城市对象或提高18000默认数量来过关。本分支不改任何SDK/runtime文件。

@@ -1,5 +1,6 @@
 /** Optional per-mesh costs must preserve the resource's complete cost. */
 export function drawUnitsError(lod) {
+  if(lod.nearDetails!==undefined&&(!Number.isSafeInteger(lod.nearDetails)||lod.nearDetails<0))return 'nearDetails must be a non-negative safe integer.';
   for(const [name,total]of [['shadowTriangles',lod.triangles],['shadowDrawCalls',lod.drawCalls]])if(lod[name]!==undefined&&(!Number.isSafeInteger(lod[name])||lod[name]<0||lod[name]>total))return 'Caster cost must be a non-negative safe integer within total cost.';
   if (lod.drawUnits === undefined) return null;
   if (!Array.isArray(lod.drawUnits)) return 'drawUnits must be an array.';

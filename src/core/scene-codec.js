@@ -8,7 +8,7 @@ const finite = values => values.every(Number.isFinite);
 const MAX_PAYLOAD_BYTES = 512 * 1024 * 1024;
 
 export function sceneStats(group) {
-  const geometries=new Set(),materials=new Set(); let residentBytes=0,triangles=0,drawCalls=0,instances=0,shadowTriangles=0,shadowDrawCalls=0;
+  const geometries=new Set(),materials=new Set(); let residentBytes=0,triangles=0,drawCalls=0,instances=0,shadowTriangles=0,shadowDrawCalls=0,nearDetails=0;
   group.traverseVisible(o=>{
     if(!o.isMesh || !o.visible) return;
     if(!geometries.has(o.geometry)) {
@@ -17,13 +17,14 @@ export function sceneStats(group) {
       residentBytes+=o.geometry.index?.array.byteLength||0;
     }
     for(const m of (Array.isArray(o.material)?o.material:[o.material])) materials.add(m);
+    if(o.userData.city?.lodRole==='detail'||o.userData.city?.lodRole==='near')nearDetails+=o.isInstancedMesh?o.count:1;
     if(o.isInstancedMesh){residentBytes+=o.count*64+(o.instanceColor?o.count*12:0);instances+=o.count;}
     const total=o.geometry.index?.count??o.geometry.attributes.position.count,start=o.geometry.drawRange.start,end=Math.min(total,start+o.geometry.drawRange.count),copies=o.isInstancedMesh?o.count:1;
     const multi=Array.isArray(o.material),semanticGroups=Array.isArray(o.geometry.userData.city?.materialRoles);
     const ranges=multi||semanticGroups?o.geometry.groups.filter(g=>!multi||o.material[g.materialIndex]).map(g=>[Math.max(start,g.start),Math.min(end,g.start+g.count)]):[[start,end]];
     for(const [lo,hi]of ranges){const count=Math.max(0,Math.floor((hi-lo)/3));triangles+=count*copies;if(count>0&&copies>0){drawCalls++;if(o.castShadow)shadowDrawCalls++;}if(o.castShadow)shadowTriangles+=count*copies;}
   });
-  return {residentBytes,triangles,drawCalls,shadowTriangles,shadowDrawCalls,instances,geometries:geometries.size,materials:materials.size};
+  return {residentBytes,triangles,drawCalls,shadowTriangles,shadowDrawCalls,nearDetails,instances,geometries:geometries.size,materials:materials.size};
 }
 
 /** Binary typed arrays + deterministic JSON metadata. No Three UUIDs or code. */
@@ -125,7 +126,7 @@ export async function decodeChunk(payload, descriptor = {}) {
     }
     group.updateMatrixWorld(true);
     const actual=sceneStats(group);
-    for(const key of ['triangles','shadowTriangles','shadowDrawCalls'])if(descriptor[key]!==undefined&&actual[key]!==descriptor[key])fail(`${key} cost does not match decoded geometry/castShadow flags.`);
+    for(const key of ['triangles','shadowTriangles','shadowDrawCalls','nearDetails'])if(descriptor[key]!==undefined&&actual[key]!==descriptor[key])fail(`${key} cost does not match decoded geometry/castShadow flags.`);
     if(Array.isArray(descriptor.drawUnits)&&descriptor.drawUnits.some(u=>u.shadowTriangles!==undefined||u.shadowDrawCalls!==undefined)){
       const units=group.children.map(mesh=>{const box=new THREE.Box3().setFromObject(mesh,true);return {bounds:[...box.min.toArray(),...box.max.toArray()],...sceneStats(mesh)};});
       for(const unit of descriptor.drawUnits){

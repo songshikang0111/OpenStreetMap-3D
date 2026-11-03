@@ -149,6 +149,12 @@
         "shadowDrawCalls": {
           "type": "integer",
           "minimum": 0
+        },
+        "nearDetails": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "Optional complete active-group detail/near count. Ordinary Mesh=1; InstancedMesh=count. No per-frustum or per-unit slicing."
         }
       }
     }

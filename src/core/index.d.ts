@@ -21,6 +21,8 @@ export interface LODDescriptor {
   residentBytes: number; triangles: number; drawCalls: number; instances: number; geometries: number; materials: number;
   /** Optional exact submitted caster costs before shadow-frustum culling. */
   shadowTriangles?:number; shadowDrawCalls?:number;
+  /** Complete active-group detail/near Mesh count: ordinary=1, instances=count. */
+  nearDetails?:number;
   bounds: Bounds3; geometricError: number; maxScreenSpaceError: number; description: string;
   /** Conservative per-mesh submission costs for runtime frustum budgets. */
   drawUnits?: {bounds:Bounds3;triangles:number;drawCalls:number;shadowTriangles?:number;shadowDrawCalls?:number}[];

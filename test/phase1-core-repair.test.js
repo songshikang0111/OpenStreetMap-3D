@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import {compileScene,validateSceneManifest} from '../src/core/index.js';
-import {decodeChunk,sceneStats} from '../src/core/scene-codec.js';
+import {decodeChunk,encodeChunk,sceneStats} from '../src/core/scene-codec.js';
 import {farCrownGeometry,trunkGeometry} from '../src/core/lod-batching.js';
 import {surfaceGeometry,farDeckGeometry,mergeRailSegments,stairGeometries} from '../src/core/lod-surfaces.js';
 import {simplifyClosedRing} from '../src/core/lod-simplify.js';
@@ -93,4 +93,16 @@ test('repair caster statistics match actual flags; low has full body identities 
   }
   for(const f of Object.values(r.manifest.featureIndex)){if(f.kind==='tree')assert.ok(trees.has(f.featureId));if(f.kind==='building')assert.ok(buildings.has(f.featureId));}
   const invalid=structuredClone(r.manifest);invalid.chunks[0].lods[0].shadowTriangles=1;assert.equal(validateSceneManifest(invalid).valid,false);
+});
+
+test('repair nearDetails is the actual active complete-group count and remains optional for old assets',async()=>{
+  const {measureGroup,ResourceRegistry}=await import('../src/runtime/resources.js'),group=new THREE.Group(),geometry=new THREE.BoxGeometry(),material=new THREE.MeshStandardMaterial();
+  const details=new THREE.InstancedMesh(geometry,material,3);details.userData.city={lodRole:'detail'};group.add(details);const near=new THREE.Mesh(geometry,material);near.userData.city={lodRole:'near'};group.add(near);const body=new THREE.Mesh(geometry,material);body.userData.city={lodRole:'body'};group.add(body);
+  const hidden=new THREE.Group();hidden.visible=false;const ignored=new THREE.Mesh(geometry,material);ignored.userData.city={lodRole:'detail'};hidden.add(ignored);group.add(hidden);
+  assert.equal(sceneStats(group).nearDetails,4);assert.equal(measureGroup(group).nearDetails,4);const payload=encodeChunk(group);assert.equal(sceneStats(await decodeChunk(payload,{nearDetails:4})).nearDetails,4);await assert.rejects(decodeChunk(payload,{nearDetails:0}),{code:'INVALID_CHUNK'});await decodeChunk(payload,{});
+  const registry=new ResourceRegistry(),resources=registry.retain(group);group.visible=false;assert.equal(sceneStats(group).nearDetails,0);assert.ok(registry.stats().geometryArrayBytes>0);registry.release(resources);
+  const {raw,config}=continuityFixture(),r=await compileScene(raw,config),{normalizeManifest}=await import('../src/runtime/manifest.js');
+  for(const d of r.manifest.chunks[0].lods){const decoded=await decodeChunk(r.assets[d.uri],d);assert.equal(d.nearDetails,measureGroup(decoded).nearDetails);assert.equal(d.drawUnits.some(u=>'nearDetails'in u),false);}
+  for(const value of [-1,NaN,1.5,Number.MAX_SAFE_INTEGER+1]){const m=structuredClone(r.manifest);m.chunks[0].lods[0].nearDetails=value;assert.equal(validateSceneManifest(m).valid,false);assert.throws(()=>normalizeManifest(m,'https://example.test/manifest.json'));}
+  const legacy=structuredClone(r.manifest);for(const c of legacy.chunks)for(const d of c.lods)delete d.nearDetails;assert.equal(validateSceneManifest(legacy).valid,true);normalizeManifest(legacy,'https://example.test/manifest.json');
 });
