@@ -27,7 +27,7 @@ export function projectChunks(chunks, camera, height, margin = 0, context, unitC
     const depth = Math.max(.1, -center.clone().applyMatrix4(camera.matrixWorldInverse).z);
     const visible = frustum.intersectsBox(chunk.box);
     const costs = visible ? chunk.lods.map(lod => {
-      const units = unitCache?.get(lod.url) || lod.drawUnits;
+      const units = unitCache?.get(`${chunk.id}:${lod.url}`) || lod.drawUnits;
       if (context) return drawUnitCost(units || [{ sphere: chunk.box.getBoundingSphere(new Sphere()), triangles: lod.triangles, drawCalls: lod.drawCalls ?? 1 }], context);
       return units ? units.reduce((sum, unit) => { if (frustum.intersectsSphere(unit.sphere)) { sum.triangles += unit.triangles; sum.drawCalls += unit.drawCalls; } return sum; }, { triangles: 0, drawCalls: 0 }) : { triangles: lod.triangles, drawCalls: lod.drawCalls ?? 1 };
     }) : [];

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import {collectDrawUnits,costContext,drawUnitCost,renderProfile,renderWithProfile} from '../src/runtime/render-cost.js';
 import {ChunkStreamer} from '../src/runtime/streamer.js';
-import {createBudget,budgetPlan} from '../src/runtime/policy.js';
+import {createBudget,budgetPlan,projectChunks} from '../src/runtime/policy.js';
 import {normalizeManifest} from '../src/runtime/manifest.js';
 
 test('frame costs separate view, offscreen shadow casters, groups, instances and double-sided color',()=>{
@@ -46,4 +46,23 @@ test('counted coarse standby preserves coverage during immediate camera budget c
  assert.equal(streamer.current.get('x').index,0);assert.equal(streamer.standby.size,1);assert(streamer.estimatedBytes()>streamer.current.get('x').estimatedBytes);
  budget.visibleTriangles=20;streamer.update(camera,720,5000,{renderContext:context});assert.equal(streamer.current.get('x').index,1);assert.equal(streamer.stats().missingChunks.length,0);assert(streamer.frameCost().triangles<=20);
  await streamer.dispose();assert.equal(streamer.registry.refs.size,0);assert.equal(streamer.estimatedBytes(),0);
+});
+
+test('standby admission cannot alternate targets at a narrow resident limit',async()=>{
+ for(const underDeclared of [false,true]){
+  const manifest=normalizeManifest({schemaVersion:1,bounds:[-5,-5,-5,5,5,5],chunks:[{id:'x',contentBounds:[-5,-5,-5,5,5,5],lods:[{uri:'high',level:0,bytes:1500,triangles:100,minScreenPixels:0},{uri:'low',level:1,bytes:1000,triangles:12}]}]},'https://example.test/manifest.json');
+  const budget=createBudget({minResidenceMs:0,residentBytes:underDeclared?10000:2000}),camera=new THREE.PerspectiveCamera(50,1,.1,100);camera.position.set(0,0,10);camera.lookAt(0,0,0);
+  const requests=[];const streamer=new ChunkStreamer({manifest,budget,readAsset:async url=>{requests.push(url);return new ArrayBuffer(0);},decodeChunk:(_bytes,lod)=>{const g=new THREE.Group();g.add(new THREE.Mesh(lod.level===0&&underDeclared?new THREE.SphereGeometry(1,32,24):new THREE.BoxGeometry(),new THREE.MeshBasicMaterial()));return g;}});
+  const context=costContext(camera,{scenePasses:1,colorPasses:1,shadowPasses:0,fixedCalls:0,fixedTriangles:0});
+  for(let i=0;i<100;i++){streamer.update(camera,720,i*40,{renderContext:context});await new Promise(r=>setTimeout(r,0));}
+  assert.equal(streamer.current.get('x').index,1);assert.equal(streamer.counters.swaps,0);assert(requests.filter(url=>url.endsWith('/high')).length<=1);assert(streamer.estimatedBytes()<=budget.residentBytes);assert(streamer.isSettled());await streamer.dispose();
+ }
+});
+
+test('cached world-space units remain isolated when chunks reuse one asset URL with different transforms',()=>{
+ const manifest=normalizeManifest({schemaVersion:1,bounds:[-1,-1,-1,101,1,1],chunks:[0,100].map((x,i)=>({id:String(i),contentBounds:[x-1,-1,-1,x+1,1,1],transform:{translation:[x,0,0]},lods:[{uri:'shared',bytes:1,triangles:12}]}))},'https://example.test/manifest.json');
+ const camera=new THREE.PerspectiveCamera(50,1,.1,100);camera.position.set(0,0,10);camera.lookAt(0,0,0);const context=costContext(camera,{scenePasses:1,colorPasses:1,shadowPasses:0});
+ const cache=new Map(manifest.chunks.map(chunk=>[`${chunk.id}:${chunk.lods[0].url}`,[{sphere:chunk.box.getBoundingSphere(new THREE.Sphere()),triangles:12,drawCalls:1}]]));
+ const projected=projectChunks(manifest.chunks,camera,720,100,context,cache);
+ assert.equal(projected[0].costs[0].frameTriangles,12);assert.equal(projected[1].costs[0].frameTriangles,0);
 });
