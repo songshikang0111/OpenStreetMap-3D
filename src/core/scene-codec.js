@@ -19,7 +19,8 @@ export function sceneStats(group) {
     for(const m of (Array.isArray(o.material)?o.material:[o.material])) materials.add(m);
     if(o.isInstancedMesh){residentBytes+=o.count*64+(o.instanceColor?o.count*12:0);instances+=o.count;}
     const total=o.geometry.index?.count??o.geometry.attributes.position.count,start=o.geometry.drawRange.start,end=Math.min(total,start+o.geometry.drawRange.count),copies=o.isInstancedMesh?o.count:1;
-    const ranges=Array.isArray(o.material)?o.geometry.groups.filter(g=>o.material[g.materialIndex]).map(g=>[Math.max(start,g.start),Math.min(end,g.start+g.count)]):[[start,end]];
+    const multi=Array.isArray(o.material),semanticGroups=Array.isArray(o.geometry.userData.city?.materialRoles);
+    const ranges=multi||semanticGroups?o.geometry.groups.filter(g=>!multi||o.material[g.materialIndex]).map(g=>[Math.max(start,g.start),Math.min(end,g.start+g.count)]):[[start,end]];
     for(const [lo,hi]of ranges){const count=Math.max(0,Math.floor((hi-lo)/3));triangles+=count*copies;if(count>0&&copies>0)drawCalls++;}
   });
   return {residentBytes,triangles,drawCalls,instances,geometries:geometries.size,materials:materials.size};

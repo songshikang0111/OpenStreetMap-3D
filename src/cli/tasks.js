@@ -27,6 +27,7 @@ async function engineFingerprint() {
     }
   }
   await visit(root);
+  await visit(fileURLToPath(new URL('../../packages/',import.meta.url)));
   const packageInfo=await readJSON(new URL('../../package.json',import.meta.url));
   return hash({sources:entries,dependencies:packageInfo.dependencies});
 }

@@ -4,6 +4,8 @@ import {compileScene,validateProjectConfig} from '../src/core/index.js';
 import {decodeChunk} from '../src/core/scene-codec.js';
 import {createLandmarkRegistry} from '../src/landmark-registry.js';
 import {bindSceneStyle} from '../src/styles/index.js';
+import {getStyle} from '../src/styles/index.js';
+import {MeshStandardMaterial} from 'three';
 import official from '../packages/landmarks/index.js';
 import {continuityFixture} from './phase1-core-fixture.js';
 
@@ -38,4 +40,17 @@ test('integrated project strict policy rejects unknown generators while degraded
   assert.ok(degraded.report.diagnostics.some(diagnostic=>diagnostic.code==='LANDMARK_GENERATOR_UNKNOWN'));assert.equal(degraded.manifest.featureIndex.w599547918.provenance.recipeId,undefined);
   await assert.rejects(compileScene(raw,{...config,landmarks:{enabled:true,policy:'strict',packages:[]}},{landmarkRegistry:registry}),error=>error.code==='LANDMARK_GENERATOR_UNKNOWN');
   assert.equal(validateProjectConfig({...config,camera:{position:[NaN,0,0]}}).valid,false);
+});
+
+test('CINK partitions and far batches preserve roof/wall/structure roles for external style binding',async()=>{
+  const {raw,config}=continuityFixture(),result=await compileScene(raw,{...config,tiling:{divisions:2}});
+  for(const level of ['low','medium','high']){
+    const seen=new Set();
+    for(const chunk of result.manifest.chunks){
+      const descriptor=chunk.lods.find(lod=>lod.id===level),group=await decodeChunk(result.assets[descriptor.uri],descriptor);
+      const style={...getStyle('color'),id:'role-audit',createMaterial({object,role}){if(object.userData.city.featureIds.includes('w1'))seen.add(role);return new MeshStandardMaterial();}};
+      const binding=bindSceneStyle(group,{style});binding.dispose();
+    }
+    for(const role of ['wall','roof','structure'])assert.ok(seen.has(role),`${level} missing ${role}`);
+  }
 });

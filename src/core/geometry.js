@@ -108,6 +108,7 @@ export function partitionMesh(mesh, grid, ownerFor, featureIds) {
   }
   return [...output].map(([tile,indices])=>{
     const geometry=new THREE.BufferGeometry();
+    geometry.userData=structuredClone(g.userData);
     for(const [name,a]of Object.entries(g.attributes)){
       if(a.isInstancedBufferAttribute)continue;
       const values=new a.array.constructor(indices.length*a.itemSize);
@@ -115,7 +116,7 @@ export function partitionMesh(mesh, grid, ownerFor, featureIds) {
       geometry.setAttribute(name,new THREE.BufferAttribute(values,a.itemSize,a.normalized));
     }
     // Preserve multi-role materials on generator geometries when de-indexing.
-    if(multi){
+    if(multi||Array.isArray(g.userData.city?.materialRoles)){
       for(const source of g.groups){
         let run=null;
         for(let i=0;i<indices.sourceTriangles.length;i++){
@@ -153,6 +154,21 @@ export function mergeLowBuildings(group) {
       }
       geometry.setAttribute(name,name==='cityFeature'?new THREE.Uint32BufferAttribute(values,1):name==='cityMaterialRole'?new THREE.Uint8BufferAttribute(values,1):new THREE.Float32BufferAttribute(values,size));
     }
+    // Batch by semantic role as well as building family. Re-indexing keeps
+    // source vertices/IDs intact and costs one draw per role, not per facade.
+    const roleIndices=new Map();let offset=0;
+    for(const mesh of meshes){
+      const g=mesh.geometry,index=g.index?.array,total=index?.length??g.attributes.position.count,table=g.userData.city?.materialRoles,attribute=g.attributes.cityMaterialRole;
+      for(let t=0;t+2<total;t+=3){
+        const part=table?g.groups.find(group=>t>=group.start&&t+2<group.start+group.count):null;
+        const role=table?.[part?.materialIndex]||mesh.userData.city.materialRoleTable?.[attribute?.getX(index?index[t]:t)]||mesh.userData.city.materialRole;
+        if(!roleIndices.has(role))roleIndices.set(role,[]);roleIndices.get(role).push(offset+t,offset+t+1,offset+t+2);
+      }
+      offset+=total;
+    }
+    const roles=[...roleIndices.keys()].sort(),indices=[];
+    for(const [materialIndex,role]of roles.entries()){const entries=roleIndices.get(role),start=indices.length;for(const index of entries)indices.push(index);geometry.addGroup(start,entries.length,materialIndex);}
+    geometry.setIndex(indices);geometry.userData.city={schemaVersion:1,materialRoles:roles};
     const merged=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9}));merged.name='Far building silhouettes';merged.receiveShadow=true;
     merged.userData={inkClass:1,city:{schemaVersion:1,kind:'building',materialRole:role,lodRole:'far',materialRoleTable:meshes[0].userData.city.materialRoleTable,materialRoleAttribute:'cityMaterialRole',featureIds:[...new Set(meshes.flatMap(m=>m.userData.city.featureIds))].sort(),sourceIds:[...new Set(meshes.flatMap(m=>m.userData.city.sourceIds))].sort()}};
     for(const mesh of meshes)group.remove(mesh);group.add(merged);
