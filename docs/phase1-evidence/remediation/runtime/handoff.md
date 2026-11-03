@@ -1,5 +1,7 @@
 # D 运行时 / SDK 修复交付
 
+追加：主对话随后发现的可配置近景总预算 P2 已另行修复，见 [near-budget/handoff.md](near-budget/handoff.md)。以下保留首轮 R1/R4 冻结记录。
+
 2026-11-03。分支 `codex/phase1-runtime-repair`，基线 `dee3cc8`。产品冻结提交 `492744bf083d816143ad54f66035cfb76b11a5fa`。这是 R1/R4 组件交付，不是 AC01–AC27 或最终 12 组集成验收结论。
 
 ## 可集成提交与边界

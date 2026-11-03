@@ -1,0 +1,27 @@
+{
+  "manifest": "work/integration-scenes/beijing-cbd-grow-1/manifest.json",
+  "manifestSha256": "47afbd8d545f60db3121006cdc84fcd0d2416cfb01d73871b019f23bcb63a043",
+  "lods": [
+    {
+      "chunkId": "0_0",
+      "id": "low",
+      "hash": "f9edc29720a11a9ced673c117a6c5e8ef1361df2bdade6fde4278ca8723ff3ea",
+      "nearDetails": null,
+      "bytes": 3650032
+    },
+    {
+      "chunkId": "0_0",
+      "id": "medium",
+      "hash": "85bf86dcb48e5e44734d933afccc8f2d3162a396f5d66bf521e87763b0a07b37",
+      "nearDetails": null,
+      "bytes": 8586796
+    },
+    {
+      "chunkId": "0_0",
+      "id": "high",
+      "hash": "fbe8aba94c60aa49b1fdc9342da696837b1592707d2aec2a4cd5cde64c7f2694",
+      "nearDetails": null,
+      "bytes": 9314120
+    }
+  ]
+}
