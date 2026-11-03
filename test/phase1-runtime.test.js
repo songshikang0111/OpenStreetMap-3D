@@ -7,7 +7,7 @@ import { ResourceRegistry } from '../src/runtime/resources.js';
 import { ChunkStreamer } from '../src/runtime/streamer.js';
 import { FrameStatistics } from '../src/runtime/statistics.js';
 import { encodeFixture, decodeFixture } from '../examples/embed/fixture-codec.js';
-import { exportViewerGLB } from '../src/sdk/exports.js';
+import { exportViewerGLB, exportViewerPNG } from '../src/sdk/exports.js';
 
 function manifest(count = 1) {
   return normalizeManifest({ schemaVersion: 1, bounds: [-100, 0, -100, count * 100, 50, 100], chunks: Array.from({ length: count }, (_, i) => ({ id: `c${i}`, contentBounds: [i * 100 - 50, 0, -50, i * 100 + 50, 50, 50], transform: { translation: [0, 0, 0] }, lods: [0, 1, 2].map(level => ({ level, uri: `nested/${i}-${level}.bin`, bytes: (3 - level) * 1000, triangles: (3 - level) * 100, drawCalls: 3 - level, nearDetails: level === 0 ? 30 : 0, minScreenPixels: level === 0 ? 800 : 200 })) })) }, 'https://example.test/cities/site/manifest.json');
@@ -119,4 +119,10 @@ test('whole-frame counters and percentile definitions include all passes', () =>
 test('GLB export requires explicit scope and rejects complete budget overflow before loading', async () => {
   const ctx={isDisposed:()=>false,manifest:manifest(2),budget:{residentBytes:1},readAsset:()=>{throw new Error('must not fetch');}};
   await assert.rejects(exportViewerGLB(ctx),{code:'EXPORT_SCOPE_REQUIRED'});await assert.rejects(exportViewerGLB(ctx,{scope:'complete'}),{code:'EXPORT_RESOURCE_BUDGET'});
+});
+test('nonfinite export limits cannot bypass the PNG or complete GLB resource caps',async()=>{
+  const ctx={isDisposed:()=>false,manifest:manifest(),budget:{residentBytes:1000000},readAsset:()=>{throw new Error('must not fetch');}};
+  await assert.rejects(exportViewerPNG(ctx,{width:50000,height:50000,maxPixels:NaN}),{code:'EXPORT_PIXEL_BUDGET'});
+  await assert.rejects(exportViewerGLB(ctx,{scope:'complete',maxBytes:NaN}),{code:'EXPORT_RESOURCE_BUDGET'});
+  await assert.rejects(exportViewerGLB(ctx,{scope:'complete',maxBytes:Infinity}),{code:'EXPORT_RESOURCE_BUDGET'});
 });

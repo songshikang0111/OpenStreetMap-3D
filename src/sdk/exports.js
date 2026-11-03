@@ -15,7 +15,7 @@ function attributionText(manifest) {
 /** Captures the current camera and loaded LODs, with an attribution footer. */
 export async function exportViewerPNG(ctx, { width = ctx.width, height = ctx.height, maxPixels = 16000000 } = {}) {
   check(ctx);
-  if (![width, height].every(x => Number.isInteger(x) && x > 0) || width * height > Math.min(maxPixels, 16000000)) throw runtimeError('EXPORT_PIXEL_BUDGET', 'export', 'PNG dimensions exceed the 16 megapixel export budget.');
+  if (!Number.isFinite(maxPixels) || maxPixels <= 0 || ![width, height].every(x => Number.isInteger(x) && x > 0) || width * height > Math.min(maxPixels, 16000000)) throw runtimeError('EXPORT_PIXEL_BUDGET', 'export', 'PNG dimensions exceed the 16 megapixel export budget or maxPixels is not finite and positive.');
   const previous = { width: ctx.width, height: ctx.height, ratio: ctx.renderer.getPixelRatio() };
   const resume = ctx.acquirePause();
   try {
@@ -59,6 +59,7 @@ function portableClone(group, ownedMaterials) {
 export async function exportViewerGLB(ctx, { scope, lod = 0, signal, maxBytes = ctx.budget.residentBytes } = {}) {
   check(ctx);
   if (!['loaded', 'complete'].includes(scope)) throw runtimeError('EXPORT_SCOPE_REQUIRED', 'export', 'Specify GLB scope: "loaded" for current loaded LODs, or "complete" for every manifest chunk.');
+  if (!Number.isFinite(maxBytes) || maxBytes <= 0) throw runtimeError('EXPORT_RESOURCE_BUDGET', 'export', 'GLB maxBytes must be finite and positive.');
   const group = new Group(), registry = new ResourceRegistry(), retained = [], materials = new Set(), bindings = [];
   const chunkIds = [], limitations = 'Standard colors and geometry only. Procedural windows, glass shaders, ink and postprocessing are not portable GLB effects. Camera-dependent near attachments are included only with scope loaded; complete exports every persisted LOD chunk.';
   const aborted = () => { check(ctx); if (signal?.aborted) throw new DOMException('Export cancelled', 'AbortError'); };
