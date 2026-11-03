@@ -9,7 +9,7 @@ const MAX_PAYLOAD_BYTES = 512 * 1024 * 1024;
 
 export function sceneStats(group) {
   const geometries=new Set(),materials=new Set(); let residentBytes=0,triangles=0,drawCalls=0,instances=0;
-  group.traverse(o=>{
+  group.traverseVisible(o=>{
     if(!o.isMesh || !o.visible) return;
     if(!geometries.has(o.geometry)) {
       geometries.add(o.geometry);
@@ -18,9 +18,9 @@ export function sceneStats(group) {
     }
     for(const m of (Array.isArray(o.material)?o.material:[o.material])) materials.add(m);
     if(o.isInstancedMesh){residentBytes+=o.count*64+(o.instanceColor?o.count*12:0);instances+=o.count;}
-    const count=Math.min(o.geometry.drawRange.count,(o.geometry.index?.count??o.geometry.attributes.position.count)-o.geometry.drawRange.start);
-    const copies=o.isInstancedMesh?o.count:1;
-    triangles+=count/3*copies;drawCalls+=copies>0?(Array.isArray(o.material)?o.geometry.groups.length:1):0;
+    const total=o.geometry.index?.count??o.geometry.attributes.position.count,start=o.geometry.drawRange.start,end=Math.min(total,start+o.geometry.drawRange.count),copies=o.isInstancedMesh?o.count:1;
+    const ranges=Array.isArray(o.material)?o.geometry.groups.filter(g=>o.material[g.materialIndex]).map(g=>[Math.max(start,g.start),Math.min(end,g.start+g.count)]):[[start,end]];
+    for(const [lo,hi]of ranges){const count=Math.max(0,Math.floor((hi-lo)/3));triangles+=count*copies;if(count>0&&copies>0)drawCalls++;}
   });
   return {residentBytes,triangles,drawCalls,instances,geometries:geometries.size,materials:materials.size};
 }
@@ -29,6 +29,7 @@ export function sceneStats(group) {
 export function encodeChunk(group) {
   const parts=[], geometries=[], materials=[],nodes=[],geoIds=new Map(),matIds=new Map();let offset=0;
   const pack=array=>{
+    if(!finite(array))throw new CityBuildError('NON_FINITE_GEOMETRY','Binary attributes and matrices must be finite.','encode');
     const pad=(4-offset%4)%4;if(pad){parts.push(new Uint8Array(pad));offset+=pad;}
     const entry={type:array.constructor.name,offset,length:array.length};
     if(!TYPES[entry.type]) throw new CityBuildError('UNSUPPORTED_ATTRIBUTE',`Unsupported array ${entry.type}.`,'encode');
@@ -40,7 +41,7 @@ export function encodeChunk(group) {
     return {...pack(a.array),itemSize:a.itemSize,normalized:a.normalized,instanced:!!a.isInstancedBufferAttribute,meshPerAttribute:a.meshPerAttribute||1};
   };
   group.updateMatrixWorld(true);
-  group.traverse(o=>{
+  group.traverseVisible(o=>{
     if(!o.isMesh || !o.visible || (o.isInstancedMesh && !o.count) || !o.geometry.attributes.position?.count)return;
     let gid=geoIds.get(o.geometry);
     if(gid===undefined){
@@ -72,17 +73,19 @@ export async function decodeChunk(payload, descriptor = {}) {
   if(descriptor.hash && await sha256(bytes)!==descriptor.hash.replace(/^sha256:/,''))fail('Chunk SHA-256 does not match manifest.');
   const length=view.getUint32(8,true),start=(12+length+3)&~3;if(length>bytes.length-12||start>bytes.length)fail('Truncated chunk header.');
   let doc;try{doc=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(12,12+length)));}catch{fail('Invalid chunk JSON header.');}
+  if(!doc||typeof doc!=='object'||Array.isArray(doc))fail('Chunk metadata must be an object.');
   if(doc.schemaVersion!==1)throw new CityBuildError('UNSUPPORTED_CHUNK_VERSION','Unsupported chunk metadata schema.','decode');
   if(!Array.isArray(doc.geometries)||!Array.isArray(doc.materials)||!Array.isArray(doc.nodes))fail('Missing chunk tables.');
   if(doc.nodes.length>100000 || doc.geometries.length>100000)fail('Chunk table limits exceeded.');
   const unpack=spec=>{
-    const Type=TYPES[spec?.type];
+    const Type=spec&&Object.hasOwn(TYPES,spec.type)?TYPES[spec.type]:null;
     if(!Type||!Number.isSafeInteger(spec.offset)||!Number.isSafeInteger(spec.length)||spec.offset<0||spec.length<0||spec.length*Type.BYTES_PER_ELEMENT>bytes.length-start-spec.offset)fail('Invalid typed array range.');
     const array=new Type(spec.length);new Uint8Array(array.buffer).set(bytes.subarray(start+spec.offset,start+spec.offset+array.byteLength));
     if(!finite(array))fail('Non-finite attribute value.');return array;
   };
   const attribute=spec=>{
     if(!Number.isInteger(spec?.itemSize)||spec.itemSize<1||spec.itemSize>16||spec.length%spec.itemSize)fail('Invalid attribute itemSize.');
+    if(spec.instanced&&(!Number.isSafeInteger(spec.meshPerAttribute)||spec.meshPerAttribute<1))fail('Invalid instance attribute divisor.');
     const a=unpack(spec);return spec.instanced?new THREE.InstancedBufferAttribute(a,spec.itemSize,!!spec.normalized,spec.meshPerAttribute):new THREE.BufferAttribute(a,spec.itemSize,!!spec.normalized);
   };
   const allocatedGeometries=[],allocatedMaterials=[];
@@ -110,6 +113,7 @@ export async function decodeChunk(payload, descriptor = {}) {
       const mats=spec.materials.map(id=>materials[id]);let mesh;
       if(spec.instances){
         const i=spec.instances;if(!Number.isSafeInteger(i.count)||i.count<1||i.count>1000000||i.matrix?.length!==i.count*16||i.matrix.type!=='Float32Array'||i.color&&(i.color.length!==i.count*3||i.color.type!=='Float32Array'))fail('Invalid instance table.');
+        for(const a of Object.values(g.attributes))if(a.isInstancedBufferAttribute&&a.count*a.meshPerAttribute<i.count)fail('Instance attribute count mismatch.');
         const matrices=unpack(i.matrix),colors=i.color?unpack(i.color):null;
         mesh=new THREE.InstancedMesh(g,mats.length===1?mats[0]:mats,i.count);mesh.instanceMatrix.array.set(matrices);
         if(colors)mesh.instanceColor=new THREE.InstancedBufferAttribute(colors,3);

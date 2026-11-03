@@ -77,7 +77,16 @@ export function partitionMesh(mesh, grid, ownerFor, featureIds) {
       const tile=ownerFor(id)||grid.at(point.x,point.z);if(!output.has(tile))output.set(tile,[]);output.get(tile).push(i);
     }
     return [...output].map(([tile,indices])=>{
-      const copy=new THREE.InstancedMesh(g,mesh.material,indices.length);
+      let geometry=g;
+      if(Object.values(g.attributes).some(a=>a.isInstancedBufferAttribute)){
+        geometry=g.clone();
+        for(const [name,a]of Object.entries(g.attributes))if(a.isInstancedBufferAttribute){
+          const values=new a.array.constructor(indices.length*a.itemSize);
+          for(let j=0;j<indices.length;j++)for(let k=0;k<a.itemSize;k++)values[j*a.itemSize+k]=a.array[Math.floor(indices[j]/a.meshPerAttribute)*a.itemSize+k];
+          geometry.setAttribute(name,new THREE.InstancedBufferAttribute(values,a.itemSize,a.normalized,1));
+        }
+      }
+      const copy=new THREE.InstancedMesh(geometry,mesh.material,indices.length);
       for(let j=0;j<indices.length;j++){
         mesh.getMatrixAt(indices[j],matrix);copy.setMatrixAt(j,matrix);
         if(mesh.instanceColor)copy.setColorAt(j,new THREE.Color().fromBufferAttribute(mesh.instanceColor,indices[j]));
@@ -89,7 +98,9 @@ export function partitionMesh(mesh, grid, ownerFor, featureIds) {
   }
   const index=g.index?.array,total=index?.length??g.attributes.position.count,feature=g.attributes.cityFeature;
   const point=new THREE.Vector3();
-  for(let t=0;t<total;t+=3){
+  const start=g.drawRange.start,end=Math.min(total,start+g.drawRange.count),multi=Array.isArray(mesh.material);
+  for(let t=start;t+2<end;t+=3){
+    if(multi&&!g.groups.some(s=>t>=s.start&&t+2<s.start+s.count&&mesh.material[s.materialIndex]))continue;
     const ix=[0,1,2].map(k=>index?index[t+k]:t+k),id=featureIds[feature.getX(ix[0])];
     let tile=ownerFor(id);
     if(!tile){let x=0,z=0;for(const i of ix){point.fromBufferAttribute(g.attributes.position,i).applyMatrix4(mesh.matrixWorld);x+=point.x/3;z+=point.z/3;}tile=grid.at(x,z);}
@@ -104,11 +115,14 @@ export function partitionMesh(mesh, grid, ownerFor, featureIds) {
       geometry.setAttribute(name,new THREE.BufferAttribute(values,a.itemSize,a.normalized));
     }
     // Preserve multi-role materials on generator geometries when de-indexing.
-    if(g.groups.length){
-      let cursor=0,run=null;
-      for(const t of indices.sourceTriangles){
-        const mi=g.groups.find(s=>t>=s.start&&t<s.start+s.count)?.materialIndex??0;
-        if(run&&run.materialIndex===mi)run.count+=3;else{run={start:cursor,count:3,materialIndex:mi};geometry.groups.push(run);}cursor+=3;
+    if(multi){
+      for(const source of g.groups){
+        let run=null;
+        for(let i=0;i<indices.sourceTriangles.length;i++){
+          const t=indices.sourceTriangles[i];if(t<source.start||t+2>=source.start+source.count){run=null;continue;}
+          if(run&&run.start+run.count===i*3)run.count+=3;
+          else {run={start:i*3,count:3,materialIndex:source.materialIndex};geometry.groups.push(run);}
+        }
       }
     }
     const copy=new THREE.Mesh(geometry,mesh.material);copy.name=mesh.name;copy.matrix.copy(mesh.matrixWorld);copy.matrixAutoUpdate=false;copy.castShadow=mesh.castShadow;copy.receiveShadow=mesh.receiveShadow;
@@ -124,9 +138,9 @@ export function mergeLowBuildings(group) {
     const key=mesh.userData.city.materialRole;if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(mesh);
   }
   for(const [role,meshes]of buckets){
-    const geometry=new THREE.BufferGeometry(),names=['position','normal','color','cityFeature','objectId'];
+    const geometry=new THREE.BufferGeometry(),names=['position','normal','color','cityFeature','cityMaterialRole','objectId'];
     for(const name of names){
-      const size=name==='cityFeature'?1:3,values=[];
+      const size=name==='cityFeature'||name==='cityMaterialRole'?1:3,values=[];
       for(const mesh of meshes){
         const g=mesh.geometry.index?mesh.geometry.toNonIndexed():mesh.geometry,a=g.attributes[name];
         const point=new THREE.Vector3(),normalMatrix=new THREE.Matrix3().getNormalMatrix(mesh.matrix);
@@ -137,10 +151,10 @@ export function mergeLowBuildings(group) {
         }
         if(g!==mesh.geometry)g.dispose();
       }
-      geometry.setAttribute(name,name==='cityFeature'?new THREE.Uint32BufferAttribute(values,1):new THREE.Float32BufferAttribute(values,size));
+      geometry.setAttribute(name,name==='cityFeature'?new THREE.Uint32BufferAttribute(values,1):name==='cityMaterialRole'?new THREE.Uint8BufferAttribute(values,1):new THREE.Float32BufferAttribute(values,size));
     }
     const merged=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9}));merged.name='Far building silhouettes';merged.receiveShadow=true;
-    merged.userData={inkClass:1,city:{kind:'building',materialRole:role,lodRole:'far',featureIds:[...new Set(meshes.flatMap(m=>m.userData.city.featureIds))].sort(),sourceIds:[...new Set(meshes.flatMap(m=>m.userData.city.sourceIds))].sort()}};
+    merged.userData={inkClass:1,city:{kind:'building',materialRole:role,lodRole:'far',materialRoleTable:meshes[0].userData.city.materialRoleTable,materialRoleAttribute:'cityMaterialRole',featureIds:[...new Set(meshes.flatMap(m=>m.userData.city.featureIds))].sort(),sourceIds:[...new Set(meshes.flatMap(m=>m.userData.city.sourceIds))].sort()}};
     for(const mesh of meshes)group.remove(mesh);group.add(merged);
   }
 }

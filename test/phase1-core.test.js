@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { compileScene, validateProjectConfig, validateSceneManifest } from '../src/core/index.js';
 import { decodeChunk, encodeChunk, sceneStats } from '../src/core/scene-codec.js';
 import { continuityFixture } from './phase1-core-fixture.js';
+import { partitionMesh } from '../src/core/geometry.js';
 
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const totals=(r,lod)=>r.manifest.chunks.reduce((s,c)=>{const l=c.lods.find(l=>l.id===lod);for(const k of ['triangles','bytes','drawCalls','residentBytes'])s[k]=(s[k]||0)+(l?.[k]||0);return s;},{});
@@ -102,4 +103,84 @@ test('injected registry claims multipart objects once; failed recipes diagnose f
   assert.equal(new Set(claimed.map(id=>result.manifest.featureIndex[id].ownerChunk)).size,1);
   const failed=await compileScene(raw,config,{landmarkRegistry:{...landmarkRegistry,generate:()=>{throw Error('broken');}}});assert.ok(failed.report.diagnostics.some(d=>d.code==='LANDMARK_GENERATION_FAILED'));
   const disabled=await compileScene(raw,{...config,landmarks:{enabled:false}},{landmarkRegistry});assert.equal(generated,1);assert.equal(disabled.manifest.featureIndex.w548126516.atomicGroupId,undefined);
+});
+
+test('independent review: matcher errors and empty generated groups retain default bodies with diagnostics',async()=>{
+  const {raw,config}=continuityFixture(),base=await compiled();
+  const match={recipeId:'broken',recipeVersion:'1',claimedFeatureIds:['w1']};
+  for(const registry of [{match:()=>{throw Error('matcher failed');}}, {match:()=>[match],generate:()=>({group:new THREE.Group(),claimedFeatureIds:['w1']})}]){
+    const r=await compileScene(raw,config,{landmarkRegistry:registry});assert.ok(r.report.diagnostics.some(d=>/^LANDMARK_(MATCH|GENERATION)_FAILED$/.test(d.code)));
+    assert.equal(r.manifest.featureIndex.w1.provenance.recipeId,undefined);assert.deepEqual(r.manifest.featureIndex.w1.bounds,base.manifest.featureIndex.w1.bounds);
+    assert.equal(totals(r,'medium').triangles,totals(base,'medium').triangles);
+  }
+});
+
+test('independent review: registry supports repeated instances for a single claimed building',async()=>{
+  const {raw,config}=continuityFixture();
+  const match={recipeId:'instanced',recipeVersion:'1',claimedFeatureIds:['w1']};
+  const r=await compileScene(raw,{...config,tiling:{divisions:4}},{landmarkRegistry:{match:()=>[match],generate:()=>{
+    const group=new THREE.Group(),mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(5,20,5),new THREE.MeshStandardMaterial(),2);mesh.setMatrixAt(0,new THREE.Matrix4().makeTranslation(-10,10,0));mesh.setMatrixAt(1,new THREE.Matrix4().makeTranslation(10,10,0));group.add(mesh);return {group,claimedFeatureIds:['w1']};
+  }}});
+  assert.equal(r.manifest.featureIndex.w1.chunkIds.length,1);const chunk=r.manifest.chunks.find(c=>c.id===r.manifest.featureIndex.w1.ownerChunk),d=chunk.lods.find(d=>d.id==='medium'),g=await decodeChunk(r.assets[d.uri],d);
+  const m=g.children.find(m=>m.userData.city.recipeId==='instanced');assert.deepEqual(m.userData.city.instanceFeatureIds,['w1','w1']);assert.equal(m.count,2);
+});
+
+test('independent review: partitioning reorders custom per-instance shader attributes with matrix/color/identity',async()=>{
+  const geometry=new THREE.BoxGeometry(1,1,1);geometry.setAttribute('aVariant',new THREE.InstancedBufferAttribute(new Float32Array([11,22]),1));
+  const mesh=new THREE.InstancedMesh(geometry,new THREE.MeshStandardMaterial(),2);mesh.userData.city={instanceFeatureIds:['a','b']};mesh.setMatrixAt(0,new THREE.Matrix4().makeTranslation(-10,0,0));mesh.setMatrixAt(1,new THREE.Matrix4().makeTranslation(10,0,0));mesh.updateMatrixWorld();
+  const pieces=partitionMesh(mesh,{at:x=>x<0?'left':'right'},()=>undefined,[]);
+  for(const [id,m]of pieces){assert.equal(m.geometry.attributes.aVariant.getX(0),id==='left'?11:22);assert.deepEqual(m.userData.city.instanceFeatureIds,[id==='left'?'a':'b']);const g=new THREE.Group();g.add(m);const decoded=await decodeChunk(encodeChunk(g));assert.equal(decoded.children[0].geometry.attributes.aVariant.getX(0),id==='left'?11:22);}
+});
+
+test('independent review: null chunk metadata returns a structured corruption error',async()=>{
+  const header=new TextEncoder().encode('null'),payload=new Uint8Array(16),view=new DataView(payload.buffer);payload.set([67,73,78,75]);view.setUint32(4,1,true);view.setUint32(8,header.length,true);payload.set(header,12);
+  await assert.rejects(decodeChunk(payload),{code:'INVALID_CHUNK'});
+});
+
+test('compiled multi-role buildings preserve roof/wall roles through the typed attribute table',async()=>{
+  const r=await compiled(),d=r.manifest.chunks[0].lods.find(d=>d.id==='medium'),group=await decodeChunk(r.assets[d.uri],d),mesh=group.children.find(m=>m.userData.city.featureId==='w1');
+  const table=mesh.userData.city.materialRoleTable,roles=new Set(mesh.geometry.attributes.cityMaterialRole.array);assert.ok(roles.has(table.indexOf('roof')));assert.ok(roles.has(table.indexOf('wall'))||roles.has(table.indexOf('glass')));
+});
+
+test('independent review: shared primitive geometries cannot overwrite road/structure material roles',async()=>{
+  const r=await compiled(),d=r.manifest.chunks[0].lods.find(d=>d.id==='high'),group=await decodeChunk(r.assets[d.uri],d);
+  const zebra=group.children.find(m=>m.name==='Inferred zebra crossings');assert.ok(zebra);const table=zebra.userData.city.materialRoleTable;
+  assert.deepEqual([...new Set(zebra.geometry.attributes.cityMaterialRole.array)],[table.indexOf('road')]);
+  const greens=Object.values(r.manifest.featureIndex).filter(f=>f.provenance.source==='inferred-green');assert.ok(greens.length>0);assert.ok(greens.every(f=>f.sourceIds.includes('way/51')));
+});
+
+test('independent review: partition and budget statistics respect draw ranges and material group intersections',()=>{
+  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute([0,0,0,1,0,0,0,0,1,10,0,0,11,0,0,10,0,1],3));geometry.setAttribute('cityFeature',new THREE.Uint32BufferAttribute([1,1,1,1,1,1],1));geometry.setDrawRange(0,3);
+  const material=new THREE.MeshStandardMaterial(),mesh=new THREE.Mesh(geometry,material);mesh.userData.city={featureIds:['a']};mesh.updateMatrixWorld();
+  const parts=partitionMesh(mesh,{at:()=> 'one'},()=>undefined,[null,'a']);assert.equal(parts[0][1].geometry.attributes.position.count,3);
+  geometry.setDrawRange(0,Infinity);geometry.addGroup(0,3,0);mesh.material=[material];const g=new THREE.Group();g.add(mesh);assert.equal(sceneStats(g).triangles,1);assert.equal(sceneStats(g).drawCalls,1);
+  assert.equal(partitionMesh(mesh,{at:()=> 'one'},()=>undefined,[null,'a'])[0][1].geometry.attributes.position.count,3);
+});
+
+test('independent review: invisible parent groups stay absent after flattening and roundtrip',async()=>{
+  const root=new THREE.Group(),hidden=new THREE.Group();hidden.visible=false;hidden.add(new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshStandardMaterial()));root.add(hidden);
+  assert.equal(sceneStats(root).triangles,0);assert.equal((await decodeChunk(encodeChunk(root))).children.length,0);
+});
+
+test('independent review: validators reject malformed semantics, false origins and null OSM elements',async()=>{
+  const r=await compiled(),{raw,config}=continuityFixture();
+  for(const origin of [null,0,''])assert.equal(validateProjectConfig({...config,origin}).valid,false);
+  for(const change of [m=>m.generator={id:42,version:{}},m=>m.attribution={text:42},m=>delete m.featureIndex.w1.kind,m=>delete m.featureIndex.w1.provenance,m=>m.featureIndex.w1.sourceIds=[null],m=>m.featureIndex.w1.ownerChunk='missing',m=>m.featureIndex.w1.bounds=[1,1,1,0,0,0]]){const m=structuredClone(r.manifest);change(m);assert.equal(validateSceneManifest(m).valid,false);}
+  await assert.rejects(compileScene({...raw,elements:[null]},config),{code:'INVALID_SOURCE_ELEMENT'});
+});
+
+test('independent review: successful replacement also removes legacy rooftop attachments of claimed features',async()=>{
+  const {raw,config}=continuityFixture();const r=await compileScene(raw,config,{landmarkRegistry:{match:()=>[{recipeId:'moved',recipeVersion:'1',claimedFeatureIds:['w1']}],generate:()=>{
+    const group=new THREE.Group(),mesh=new THREE.Mesh(new THREE.BoxGeometry(10,10,10),new THREE.MeshStandardMaterial());mesh.position.set(200,5,200);group.add(mesh);return {group,claimedFeatureIds:['w1']};
+  }}});
+  const d=r.manifest.chunks[0].lods.find(d=>d.id==='high'),group=await decodeChunk(r.assets[d.uri],d),equipment=group.children.find(m=>m.name==='Procedural roof equipment groups');
+  assert.ok(!equipment||!Array.from(equipment.geometry.attributes.cityFeature.array).includes(r.manifest.featureIndex.w1.renderId));
+});
+
+test('independent review: malformed matches and non-finite generated geometry diagnose fallback',async()=>{
+  const {raw,config}=continuityFixture();
+  const badMatches=await compileScene(raw,config,{landmarkRegistry:{match:()=>[null]}});assert.ok(badMatches.report.diagnostics.some(d=>d.code==='INVALID_LANDMARK_CLAIM'));
+  const badGeometry=await compileScene(raw,config,{landmarkRegistry:{match:()=>[{recipeId:'nan',recipeVersion:'1',claimedFeatureIds:['w1']}],generate:()=>{const group=new THREE.Group(),g=new THREE.BoxGeometry();g.attributes.position.setX(0,NaN);group.add(new THREE.Mesh(g,new THREE.MeshStandardMaterial()));return {group,claimedFeatureIds:['w1']};}}});
+  assert.ok(badGeometry.report.diagnostics.some(d=>d.code==='LANDMARK_GENERATION_FAILED'));assert.equal(badGeometry.manifest.featureIndex.w1.provenance.recipeId,undefined);
+  await assert.rejects(compileScene({elements:[{type:'node',id:1,lat:NaN,lon:1}]},config),{code:'INVALID_SOURCE_COORDINATES'});
 });

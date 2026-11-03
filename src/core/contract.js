@@ -36,7 +36,11 @@ export function normalizeRaw(raw, config) {
   if (!raw || !Array.isArray(raw.elements)) throw new CityBuildError('INVALID_SOURCE', 'Expected an OSM JSON object with elements.', 'parse');
   const byId = new Map();
   for (const element of raw.elements) {
-    if (!['node', 'way', 'relation'].includes(element.type) || !Number.isSafeInteger(element.id)) throw new CityBuildError('INVALID_SOURCE_ELEMENT', 'OSM elements require a type and safe integer id.', 'parse');
+    if (!element || typeof element!=='object' || !['node', 'way', 'relation'].includes(element.type) || !Number.isSafeInteger(element.id)) throw new CityBuildError('INVALID_SOURCE_ELEMENT', 'OSM elements require a type and safe integer id.', 'parse');
+    const validPoint=p=>p&&Number.isFinite(p.lat)&&Number.isFinite(p.lon)&&Math.abs(p.lat)<=90&&Math.abs(p.lon)<=180;
+    const validGeometry=g=>Array.isArray(g)&&g.every(validPoint);
+    if(element.type==='node'&&!validPoint(element)||element.geometry!==undefined&&!validGeometry(element.geometry))throw new CityBuildError('INVALID_SOURCE_COORDINATES',`Invalid WGS84 geometry on ${element.type}/${element.id}.`,'parse');
+    if(element.type==='relation'&&element.members!==undefined&&(!Array.isArray(element.members)||element.members.some(m=>!m||!['node','way','relation'].includes(m.type)||!Number.isSafeInteger(m.ref)||m.geometry!==undefined&&!validGeometry(m.geometry))))throw new CityBuildError('INVALID_SOURCE_ELEMENT',`Malformed members on relation/${element.id}.`,'parse');
     const copy = JSON.parse(canonicalStringify(element));
     if (copy.members) copy.members.sort((a,b) => canonicalStringify(a).localeCompare(canonicalStringify(b), 'en'));
     const key = `${copy.type}:${copy.id}`, previous = byId.get(key);

@@ -22,10 +22,10 @@ low：普通建筑 footprint 挤出，保留洞和高度；中国尊 10×12 截�
 
 `.cink`：12 byte 前缀（ASCII CINK、uint32LE version=1、uint32LE JSON 长度），UTF-8 canonical JSON 元数据，补齐至四字节，随后原始类型化数组。几何/材质表在单块内共享；保留 index、geometry groups、实例矩阵/颜色、全部顶点属性与可序列化 userData；去掉 UUID、函数、原颜色副本。`decodeChunk(payload, lodDescriptor)` 可 await，校验 magic/version/bytes/hash/索引/属性范围后返回 Group；不绑定 shader。
 
-风格层遍历 `userData.city`（featureId/featureIds/sourceIds/kind/materialRole/lodRole）、`inkClass`、`generatedFacade` 与 `aFacade/aStyle/aLayout/aSurface` 后恢复 shader。`cityFeature` 是 Uint32 顶点属性，值对应 featureIndex.renderId；合批建筑靠它恢复每三角形对象。实例通过 `userData.city.instanceFeatureIds[instanceId]` 映射身份。多材质生成器还可在 material.userData.city 声明角色。编码不保存运行时代码。
+风格层遍历 `userData.city`（featureId/featureIds/sourceIds/kind/materialRole/lodRole）、`inkClass`、`generatedFacade` 与 `aFacade/aStyle/aLayout/aSurface` 后恢复 shader。`cityMaterialRole` 为 Uint8 角色索引，`userData.city.materialRoleTable` 给出完整角色表；屋顶与墙面保留独立角色，即使共享一套几何。`cityFeature` 是 Uint32 顶点属性，值对应 featureIndex.renderId；合批建筑靠它恢复每三角形对象。实例几何的 cityFeature=0，实例通过 `userData.city.instanceFeatureIds[instanceId]` 映射身份。多材质生成器还可在 material.userData.city 声明角色。编码不保存运行时代码。
 
 ## 依赖与跨所有权改动
 
 未改根 package/lock，无新运行时依赖。使用现有 three/polygon-clipping 和 Node 22+/现代浏览器 Web Crypto。公共类型位于 `src/core/index.d.ts` 和 `scene-codec.d.ts`；消费者应安装与 three 匹配的 `@types/three`。
 
-`src/city.js` 四处小改：可选 `landmarksEnabled=true` 控制通用回退，并在返回对象增加 `roadPlan` 和 `streetlifePlan`，供核心读取同一次共享规划。这会与 C 的 city.js 修改相遇；集成时保留 C 的 registry/style 逻辑及这两个返回字段。A 的注入 registry 在完整旧规划后替换 claimed 建筑 mesh，生成失败记录诊断并保留原形体。D 应用此处的真实 `.cink`，禁止将依赖注入测试当作真实集成成功。
+`src/city.js` 四处小改：可选 `landmarksEnabled=true` 控制通用回退，并在返回对象增加 `roadPlan` 和 `streetlifePlan`，供核心读取同一次共享规划。这会与 C 的 city.js 修改相遇；集成时保留 C 的 registry/style 逻辑及这两个返回字段。A 的注入 registry 在完整旧规划后替换 claimed 建筑 mesh，match/生成/空几何/不兼容实例及非有限数值失败均记录诊断并保留原形体；成功接管同时删除原屋顶附件。D 应用此处的真实 `.cink`，禁止将依赖注入测试当作真实集成成功。

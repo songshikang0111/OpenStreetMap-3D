@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import * as THREE from 'three';
 import { compileScene } from '../../../src/core/index.js';
@@ -10,7 +11,7 @@ import { projection } from '../../../src/osm.js';
 
 const root=fileURLToPath(new URL('../../../',import.meta.url));
 const hash=x=>createHash('sha256').update(x).digest('hex');
-const report={date:'2026-11-03',environment:{node:process.version,platform:process.platform,arch:process.arch,cpu:os.cpus()[0].model,totalMemory:os.totalmem()},method:'CPU scene-package audit; this is not browser/GPU performance evidence.',samples:[]};
+const report={date:'2026-11-03',commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),environment:{node:process.version,platform:process.platform,arch:process.arch,cpu:os.cpus()[0].model,totalMemory:os.totalmem()},method:'CPU scene-package audit; this is not browser/GPU performance evidence.',samples:[]};
 const signatures=async result=>{
   const records=[];
   for(const c of result.manifest.chunks){
@@ -43,12 +44,13 @@ for(const name of ['beijing-cbd','kyoto-gion']){
     }
   }
   const p=projection(origin.lat,origin.lon);
+  const cellSizeMeters=name==='kyoto-gion'?250:500;
   for(const cells of [1,2,3]){
-    const half=cells*250,[s,w]=p.inverse([-half,half]),[n,e]=p.inverse([half,-half]);
-    if(s<south||w<west||n>north||e>east){report.samples.push({name,experiment:'fixed-500m-cells',cells,status:'not-run',reason:'Requested coverage exceeds source snapshot.'});continue;}
-    globalThis.gc?.();const start=performance.now(),result=await compileScene(raw,{...base,area:{south:s,west:w,north:n,east:e},tiling:{sizeMeters:500}});
-    report.samples.push({name,experiment:'fixed-500m-cells',cells,counts:result.report.counts,sourceFileSHA256:hash(text),buildMs:performance.now()-start,lods:Object.fromEntries(['low','medium','high'].map(id=>[id,result.manifest.chunks.reduce((s,c)=>{const d=c.lods.find(d=>d.id===id);for(const k of ['triangles','bytes','residentBytes','drawCalls'])s[k]=(s[k]||0)+d[k];return s;},{})]))});
-    console.log(`${name} expanded ${cells}×${cells} physical 500 m coverage: ${result.report.counts.buildings} buildings, ${result.report.counts.chunks} chunks`);
+    const half=cells*cellSizeMeters/2,[s,w]=p.inverse([-half,half]),[n,e]=p.inverse([half,-half]);
+    if(s<south||w<west||n>north||e>east){report.samples.push({name,experiment:'fixed-physical-cells',cellSizeMeters,cells,status:'not-run',reason:'Requested coverage exceeds source snapshot.'});continue;}
+    globalThis.gc?.();const start=performance.now(),result=await compileScene(raw,{...base,area:{south:s,west:w,north:n,east:e},tiling:{sizeMeters:cellSizeMeters}});
+    report.samples.push({name,experiment:'fixed-physical-cells',cellSizeMeters,cells,counts:result.report.counts,sourceFileSHA256:hash(text),buildMs:performance.now()-start,lods:Object.fromEntries(['low','medium','high'].map(id=>[id,result.manifest.chunks.reduce((s,c)=>{const d=c.lods.find(d=>d.id===id);for(const k of ['triangles','bytes','residentBytes','drawCalls'])s[k]=(s[k]||0)+d[k];return s;},{})]))});
+    console.log(`${name} expanded ${cells}×${cells} physical ${cellSizeMeters} m coverage: ${result.report.counts.buildings} buildings, ${result.report.counts.chunks} chunks`);
   }
 }
 await fs.writeFile(new URL('./snapshot-audit.json',import.meta.url),`${JSON.stringify(report,null,2)}\n`);

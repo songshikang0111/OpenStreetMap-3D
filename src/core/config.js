@@ -16,7 +16,7 @@ export function validateProjectConfig(config) {
     const p=projection((a.south+a.north)/2,(a.west+a.east)/2), nw=p.point({lat:a.north,lon:a.west}),se=p.point({lat:a.south,lon:a.east});
     if(se[0]-nw[0]>MAX_AREA_SPAN_METERS || se[1]-nw[1]>MAX_AREA_SPAN_METERS) error('area',`Each local-projection area span is limited to ${MAX_AREA_SPAN_METERS} m; this is a build guard, not a browser performance claim.`);
   }
-  const origin=config.origin || (a && {lat:(a.south+a.north)/2,lon:(a.west+a.east)/2});
+  const origin=config.origin === undefined ? (a && {lat:(a.south+a.north)/2,lon:(a.west+a.east)/2}) : config.origin;
   if (!origin || !Number.isFinite(origin.lat) || !Number.isFinite(origin.lon) || Math.abs(origin.lat)>80 || Math.abs(origin.lon)>180) error('origin','Origin requires finite WGS84 lat/lon within the supported projection.');
   else if(a && (origin.lat<a.south || origin.lat>a.north || origin.lon<a.west || origin.lon>a.east)) error('origin','The locked origin must lie in the project area.');
   for(const key of ['generation','tiling','style','landmarks'])if(config[key]!==undefined&&(!config[key]||typeof config[key]!=='object'||Array.isArray(config[key])))error(key,'Expected an object.');
