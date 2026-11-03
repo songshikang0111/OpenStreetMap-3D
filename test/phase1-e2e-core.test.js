@@ -30,3 +30,12 @@ test('official override changes actual high geometry and leaves one source owner
 test('shared project contract accepts CLI import, runtime low and locked recipe objects',()=>{
   const {config}=continuityFixture();assert.equal(validateProjectConfig({...config,source:{kind:'import',file:'data/source.json'},quality:'low',landmarks:{enabled:true,packages:[{path:'rules/package.json',hash:'a'.repeat(64)}]}}).valid,true);
 });
+
+test('integrated project strict policy rejects unknown generators while degraded retains source bodies',async()=>{
+  const {raw,config}=continuityFixture(),recipe=structuredClone(official.recipes[0]);recipe.generator='missing/generator';
+  const registry=createLandmarkRegistry({overrides:{'china-zun':recipe}});
+  const degraded=await compileScene(raw,config,{landmarkRegistry:registry});
+  assert.ok(degraded.report.diagnostics.some(diagnostic=>diagnostic.code==='LANDMARK_GENERATOR_UNKNOWN'));assert.equal(degraded.manifest.featureIndex.w599547918.provenance.recipeId,undefined);
+  await assert.rejects(compileScene(raw,{...config,landmarks:{enabled:true,policy:'strict',packages:[]}},{landmarkRegistry:registry}),error=>error.code==='LANDMARK_GENERATOR_UNKNOWN');
+  assert.equal(validateProjectConfig({...config,camera:{position:[NaN,0,0]}}).valid,false);
+});

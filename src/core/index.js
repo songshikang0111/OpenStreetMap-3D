@@ -51,7 +51,7 @@ export async function compileScene(raw, inputConfig, options = {}) {
   const remember=group=>group.traverse(o=>{if(o.geometry)ownedGeometry.add(o.geometry);for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[])ownedMaterial.add(m);});
   remember(city.group);
   try {
-    const featureIndex={},atomicGroups=new Map(),context={origin:config.origin,bounds:data.bounds,seed:config.seed,features:data.buildings,objectIds:new Map(data.buildings.map((building,index)=>[building.id,index+1]))};
+    const featureIndex={},atomicGroups=new Map(),context={origin:config.origin,bounds:data.bounds,seed:config.seed,policy:config.landmarks.policy||'degraded',features:data.buildings,objectIds:new Map(data.buildings.map((building,index)=>[building.id,index+1]))};
     const add=(id,record)=>featureIndex[id]||=({featureId:id,sourceIds:[],kind:'generated',...record,chunkIds:[]});
     for(const b of data.buildings)add(b.id,{kind:'building',sourceIds:[sourceId(b)],provenance:{height:b.source,heightMeters:b.height,minHeightMeters:b.minHeight,tags:b.tags},anchor:[...b.center]});
     for(const r of data.roads)add(`w${r.id}`,{kind:'road',sourceIds:[`way/${r.id}`],provenance:{tags:r.tags,elevation:'rule-inferred',widthMeters:r.width}});
@@ -65,7 +65,7 @@ export async function compileScene(raw, inputConfig, options = {}) {
     if(landmarkRegistry){
       let matches=[];const claimed=new Set();
       try {matches=await landmarkRegistry.match(data.buildings,context);if(!Array.isArray(matches))throw Error('Registry match must return an array.');}
-      catch(error){diagnostics.push({code:'LANDMARK_MATCH_FAILED',stage:'plan',message:error.message,hint:'Retained default shapes; fix the registry matcher.'});matches=[];}
+      catch(error){if(context.policy==='strict')throw error;diagnostics.push({code:'LANDMARK_MATCH_FAILED',stage:'plan',message:error.message,hint:'Retained default shapes; fix the registry matcher.'});matches=[];}
       usedRegistries.add(landmarkRegistry);
       const matchRegistry=new Map(matches.map(match=>[match,landmarkRegistry]));
       // Legacy injected match/generate adapters add rules to the official set.
@@ -75,9 +75,9 @@ export async function compileScene(raw, inputConfig, options = {}) {
         for(const match of official.match(data.buildings,context))if(!match.claimedFeatureIds.some(id=>customClaims.has(id))){matches.push(match);matchRegistry.set(match,official);}
         usedRegistries.add(official);
       }
-      for(const match of matches.filter(m=>{if(m&&typeof m==='object'&&typeof m.recipeId==='string')return true;diagnostics.push({code:'INVALID_LANDMARK_CLAIM',stage:'plan',message:'Ignored malformed registry match.'});return false;}).sort((a,b)=>`${a.recipeId}:${a.claimedFeatureIds}`.localeCompare(`${b.recipeId}:${b.claimedFeatureIds}`,'en'))){
+      for(const match of matches.filter(m=>{if(m&&typeof m==='object'&&typeof m.recipeId==='string')return true;if(context.policy==='strict')throw new CityBuildError('INVALID_LANDMARK_CLAIM','Ignored malformed registry match.','plan');diagnostics.push({code:'INVALID_LANDMARK_CLAIM',stage:'plan',message:'Ignored malformed registry match.'});return false;}).sort((a,b)=>`${a.recipeId}:${a.claimedFeatureIds}`.localeCompare(`${b.recipeId}:${b.claimedFeatureIds}`,'en'))){
         checkCancelled(signal);
-        if(!Array.isArray(match.claimedFeatureIds)||!match.claimedFeatureIds.length||new Set(match.claimedFeatureIds).size!==match.claimedFeatureIds.length||match.claimedFeatureIds.some(id=>!featureIndex[id]||claimed.has(id))){diagnostics.push({code:'INVALID_LANDMARK_CLAIM',stage:'plan',message:`Ignored invalid or overlapping claim for ${match.recipeId}.`});continue;}
+        if(!Array.isArray(match.claimedFeatureIds)||!match.claimedFeatureIds.length||new Set(match.claimedFeatureIds).size!==match.claimedFeatureIds.length||match.claimedFeatureIds.some(id=>!featureIndex[id]||claimed.has(id))){if(context.policy==='strict')throw new CityBuildError('INVALID_LANDMARK_CLAIM',`Invalid or overlapping claim for ${match.recipeId}.`,'plan');diagnostics.push({code:'INVALID_LANDMARK_CLAIM',stage:'plan',message:`Ignored invalid or overlapping claim for ${match.recipeId}.`});continue;}
         try {
           const generated=await matchRegistry.get(match).generate(match,context);
           if(!generated.group?.isGroup)throw new Error('Generator must return a Three.js Group.');
@@ -100,7 +100,7 @@ export async function compileScene(raw, inputConfig, options = {}) {
           for(const mesh of city.buildings)if(ids.includes(mesh.userData.feature.id))mesh.removeFromParent();
           generated.group.traverse(mesh=>{if(mesh.isMesh){registryObjects.add(mesh);mesh.userData.city={...mesh.userData.city,featureId:mesh.userData.city?.featureId&&ids.includes(mesh.userData.city.featureId)?mesh.userData.city.featureId:ids[0],featureIds:ids,sourceIds:ids.flatMap(id=>featureIndex[id].sourceIds),kind:'building',atomicGroupId:groupId,recipeId:match.recipeId,recipeVersion:match.recipeVersion,generatorId:match.generatorId,recipeParameters:match.parameters,materialRole:mesh.userData.city?.materialRole||'structure'};}});
           city.group.add(generated.group);remember(generated.group);diagnostics.push(...(generated.diagnostics||[]),...(match.diagnostics||[]));
-        }catch(error){diagnostics.push({code:'LANDMARK_GENERATION_FAILED',stage:'geometry',message:`${match.recipeId}: ${error.message}`,hint:'Retained the legacy/default shape; fix or disable the supplied recipe.'});}
+        }catch(error){if(context.policy==='strict')throw error;diagnostics.push({code:'LANDMARK_GENERATION_FAILED',stage:'geometry',message:`${match.recipeId}: ${error.message}`,hint:'Retained the legacy/default shape; fix or disable the supplied recipe.'});}
       }
     }
     for(const registry of usedRegistries)diagnostics.push(...(registry.diagnostics||[]));

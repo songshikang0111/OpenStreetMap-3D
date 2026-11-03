@@ -24,12 +24,21 @@ export function validateProjectConfig(config) {
   if (!config.source || !['overpass','osm-map','local','import','sample'].includes(config.source.kind) || typeof config.source.file !== 'string' || !config.source.file.trim()) error('source','source requires kind (overpass/osm-map/local/import/sample) and file.');
   for (const key of ['landscapeEnabled','inferRoofs']) if(config.generation?.[key] !== undefined && typeof config.generation[key] !== 'boolean') error(`generation.${key}`,'Expected boolean.');
   if(config.landmarks?.enabled !== undefined && typeof config.landmarks.enabled !== 'boolean') error('landmarks.enabled','Expected boolean.');
+  if(config.landmarks?.policy !== undefined && !['strict','degraded'].includes(config.landmarks.policy))error('landmarks.policy','Expected strict or degraded.');
   if(config.landmarks?.packages !== undefined && (!Array.isArray(config.landmarks.packages)||!config.landmarks.packages.every(x=>typeof x==='string'||(x&&typeof x==='object'&&typeof x.path==='string'&&(!x.hash||/^[a-f0-9]{64}$/.test(x.hash)))))) error('landmarks.packages','Expected project-relative paths or locked {path,hash,recipes} entries.');
   if(config.tiling?.sizeMeters !== undefined && (!Number.isFinite(config.tiling.sizeMeters)||config.tiling.sizeMeters<25||config.tiling.sizeMeters>10000)) error('tiling.sizeMeters','Tile size must be 25–10000 m.');
   if(config.tiling?.divisions !== undefined && (!Number.isInteger(config.tiling.divisions)||config.tiling.divisions<1||config.tiling.divisions>32)) error('tiling.divisions','Optional fixed-area comparison grid requires divisions between 1 and 32.');
   if(config.quality !== undefined && !['draft','low','balanced','high'].includes(config.quality)) error('quality','Expected low, balanced or high (draft is a legacy alias).');
   if(config.style !== undefined && (!config.style || typeof config.style.id!=='string' || !config.style.id)) error('style','Style requires id.');
   if(config.style?.parameters !== undefined && (!config.style.parameters || typeof config.style.parameters!=='object' || Array.isArray(config.style.parameters))) error('style.parameters','Expected a parameter object.');
+  if(config.camera!==undefined){
+    if(!config.camera||typeof config.camera!=='object'||Array.isArray(config.camera))error('camera','Expected an object.');
+    else{
+      for(const key of ['position','target'])if(config.camera[key]!==undefined&&(!Array.isArray(config.camera[key])||config.camera[key].length!==3||!config.camera[key].every(Number.isFinite)))error(`camera.${key}`,'Expected three finite coordinates.');
+      if(config.camera.fov!==undefined&&(!Number.isFinite(config.camera.fov)||config.camera.fov<=0||config.camera.fov>=180))error('camera.fov','Expected 0 < fov < 180.');
+      if(config.camera.near!==undefined&&(!Number.isFinite(config.camera.near)||config.camera.near<=0))error('camera.near','Expected a positive near plane.');
+    }
+  }
   if(diagnostics.length) return {valid:false, diagnostics};
   const value={...config,origin,seed:config.seed??1,generation:{landscapeEnabled:false,inferRoofs:false,...config.generation},tiling:{sizeMeters:500,...config.tiling},quality:config.quality||'balanced',style:{id:'comic',parameters:{},...config.style},landmarks:{enabled:true,packages:[],...config.landmarks}};
   return {valid:true,diagnostics,value,config:value};
