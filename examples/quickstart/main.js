@@ -5,6 +5,6 @@ try {
   const viewer=await createCityViewer({container:document.getElementById('city'),manifestUrl,onDiagnostic:d=>{document.getElementById('status').textContent=d.message || JSON.stringify(d);}});
   globalThis.cityViewer=viewer;
   document.getElementById('style').addEventListener('change',event=>viewer.setStyle(event.target.value));
-  document.getElementById('status').textContent='© OpenStreetMap contributors · ODbL';
+  const credit=document.createElement('a');credit.href='https://www.openstreetmap.org/copyright';credit.textContent='© OpenStreetMap contributors';credit.target='_blank';credit.rel='noopener';document.getElementById('status').replaceChildren(credit,document.createTextNode(' · ODbL'));
   window.addEventListener('pagehide',()=>viewer.dispose(),{once:true});
 }catch(error){document.getElementById('status').textContent=error.message;}

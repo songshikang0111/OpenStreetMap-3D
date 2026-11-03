@@ -8,6 +8,6 @@ try {
   document.getElementById('style').value=config.style?.id || 'comic';
   globalThis.cityViewer=viewer;
   document.getElementById('style').addEventListener('change',event=>viewer.setStyle(event.target.value));
-  status.textContent='© OpenStreetMap contributors · ODbL';
+  const credit=document.createElement('a');credit.href='https://www.openstreetmap.org/copyright';credit.textContent='© OpenStreetMap contributors';credit.target='_blank';credit.rel='noopener';status.replaceChildren(credit,document.createTextNode(' · ODbL'));
   window.addEventListener('pagehide',()=>viewer.dispose(),{once:true});
 }catch(error){status.textContent=error.message;globalThis.cityViewerError=error.message;}

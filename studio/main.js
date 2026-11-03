@@ -26,11 +26,11 @@ async function listProjects() {
   if(state.project) $('projects').value=state.project.id;
   $('connection').textContent='本地服务已连接';
 }
-async function openProject(project) {
+async function openProject(project,{pendingJob}={}) {
   project = unwrap(project, 'project');
   if (!project.id) throw new Error('本地服务未返回项目 ID。');
   const detail = unwrap(await api.get(project.id), 'project');
-  if(state.project?.id!==project.id) {clearTimeout(state.polling);state.job=null;await state.viewer?.dispose();state.viewer=null;$('empty').hidden=false;}
+  if(state.project?.id!==project.id) {clearTimeout(state.polling);state.job=pendingJob||null;await state.viewer?.dispose();state.viewer=null;$('empty').hidden=false;}
   state.project = {...project,...detail}; state.config = detail.config || detail;
   const config=state.config;
   $('project-name').value=config.name; setArea(config.area);
@@ -40,12 +40,12 @@ async function openProject(project) {
   $('project-info').textContent=`${config.name} · ${state.project.relativePath || state.project.path || state.project.id} · 保存时固化范围、风格和相机`;
   remember(); enabled(); await listProjects();
   const existing=await fetch(`/projects/${encodeURIComponent(state.project.id)}/dist/manifest.json`);
-  if(existing.ok) await preview();
+  if(existing.ok&&!pendingJob) await preview();
 }
 async function save() {
   if(!state.project) throw new Error('请先打开项目。');
   const patch={name:$('project-name').value,area:getArea(),style:{id:$('style').value,parameters:state.config.style?.parameters || {}},quality:$('quality').value};
-  patch.seed=Number($('seed').value);patch.tiling={...state.config.tiling,sizeMeters:Number($('tile-size').value)};
+  patch.seed=$('seed').valueAsNumber;patch.tiling={...state.config.tiling,sizeMeters:$('tile-size').valueAsNumber};
   patch.generation={...state.config.generation,inferRoofs:$('infer-roofs').checked,landscapeEnabled:$('landscape').checked};patch.landmarks={...state.config.landmarks,enabled:$('landmarks').checked};
   if(state.viewer) patch.camera=state.viewer.getView();
   const result=unwrap(await api.save(state.project.id,patch),'project');
@@ -83,6 +83,11 @@ async function pollJob() {
     if(!isTerminal(job)) state.polling=setTimeout(pollJob,500);
     else if(job.status==='succeeded' && (job.kind || state.lastKind)==='build') {
       try{await preview();}catch(error){diagnostic(error);$('job-status').textContent=`构建已完成，预览失败：${error.message}`;enabled();}
+    }else if(!state.viewer){
+      try{
+        const existing=await fetch(`/projects/${encodeURIComponent(state.project.id)}/dist/manifest.json`);
+        if(existing.ok){await preview();$('job-status').textContent=`${job.kind || state.lastKind} · ${job.status} · 预览已有构建；输入变化后请重新构建。`;}
+      }catch(error){diagnostic(error);$('job-status').textContent=`${job.status} · 已有构建预览失败：${error.message}`;enabled();}
     }
 }
 async function start(kind,parameters={},resume) {
@@ -140,6 +145,7 @@ setInterval(()=>{if(state.viewer) $('stats').textContent=json(state.viewer.getSt
 window.addEventListener('beforeunload',()=>state.viewer?.dispose());
 action(async()=>{
   await listProjects();const saved=JSON.parse(localStorage.getItem('city-ink-studio')||'{}');
-  if(saved.projectId) await openProject({id:saved.projectId});
-  if(saved.jobId) {state.job={id:saved.jobId,status:'queued'};state.lastKind=saved.lastKind || 'build';enabled();await pollJob();}
+  state.lastKind=saved.lastKind || 'build';
+  if(saved.projectId) await openProject({id:saved.projectId},{pendingJob:saved.jobId?{id:saved.jobId,status:'queued'}:undefined});
+  if(saved.jobId) {enabled();await pollJob();}
 })();
