@@ -11,6 +11,9 @@ export async function loadCore() {
   try { return await import('../core/index.js'); }
   catch (e) { throw new CityError('CORE_UNAVAILABLE','build',`Core compiler could not load: ${e.message}`,'Integrate task A src/core before building.'); }
 }
+// Viewer settings are saved with the project, but do not alter scene geometry.
+// Keep the complete configHash in the lock for provenance and race detection.
+export function buildConfigHash({camera,style,quality,...geometryConfig}) {return hash(geometryConfig);}
 async function engineFingerprint() {
   const root = fileURLToPath(new URL('../', import.meta.url));
   const entries=[];
@@ -31,8 +34,7 @@ export async function buildProject(root, { signal, onProgress = () => {}, core, 
   await recoverBuildPublication(root);
   const config = await readProject(root);
   core ||= await loadCore();
-  // A's current enum aliases and string package paths; public project values remain preserved.
-  const compileConfig={...config,source:{...config.source,kind:config.source.kind==='import'?'local':config.source.kind},quality:config.quality==='low'?'draft':config.quality,landmarks:{...config.landmarks,packages:config.landmarks.packages.map(p=>typeof p==='string'?p:p.path)}};
+  const compileConfig=config;
   const validation = await core.validateProjectConfig(compileConfig);
   if (validation === false || validation?.valid === false) throw new CityError('INVALID_CONFIG','build','Core rejected project configuration.');
   const sourcePath = await safePath(root,config.source.file);
@@ -45,7 +47,7 @@ export async function buildProject(root, { signal, onProgress = () => {}, core, 
   }
   const previous = await readJSON(path.join(root,'city.lock.json'));
   if(previous.pendingRebuild?.next&&hash(previous.pendingRebuild.next)!==hash(config.landmarks.packages))throw new CityError('LANDMARK_UPDATE_INCOMPLETE','build','Landmark configuration and pending lock transaction differ.','Repeat the explicit landmark update or roll it back before building.');
-  const inputs = {configHash:hash(config), dataHash:raw.contentHash, sourceFileHash:hash(sourceBytes), engineHash:await engineFingerprint(), recipeHash:hash(recipes), styleHash:hash(config.style)};
+  const inputs = {configHash:hash(config), buildConfigHash:buildConfigHash(config), dataHash:raw.contentHash, sourceFileHash:hash(sourceBytes), engineHash:await engineFingerprint(), recipeHash:hash(recipes), styleHash:hash(config.style)};
   checkAbort(signal); onProgress({stage:'compile',progress:0});
   const result = await core.compileScene(raw.raw,compileConfig,{signal,onProgress,landmarkRegistry});
   if(hash(await readFile(sourcePath))!==inputs.sourceFileHash||hash(await readProject(root))!==inputs.configHash)throw new CityError('INPUT_CHANGED','build','Project input changed while compiling.','Wait for edits to finish and build again.');
@@ -90,7 +92,8 @@ export async function validateProject(root, {core}={}) {
   core ||= await loadCore(); const valid=await core.validateSceneManifest(manifest);
   if(valid===false||valid?.valid===false) throw new CityError('INVALID_MANIFEST','validate','Invalid scene manifest.');
   const recipes=await projectRecipes(root,config);
-  if(lock.inputs?.configHash!==hash(config)||lock.inputs.dataHash!==data.contentHash||lock.inputs.recipeHash!==hash(recipes)||lock.inputs.sourceFileHash!==hash(await readFile(await safePath(root,config.source.file)))) throw new CityError('STALE_BUILD','validate','Project inputs differ from the build lock.','Run city build.');
+  const configChanged=lock.inputs?.buildConfigHash?lock.inputs.buildConfigHash!==buildConfigHash(config):lock.inputs?.configHash!==hash(config);
+  if(configChanged||lock.inputs.dataHash!==data.contentHash||lock.inputs.recipeHash!==hash(recipes)||lock.inputs.sourceFileHash!==hash(await readFile(await safePath(root,config.source.file)))) throw new CityError('STALE_BUILD','validate','Project geometry inputs differ from the build lock.','Run city build after changing area, seed, tiling, generation or recipes.');
   if(lock.inputs.engineHash!==await engineFingerprint())throw new CityError('STALE_ENGINE','validate','Generator or dependency sources differ from the locked build.','Rebuild explicitly with the installed engine.');
   if(lock.manifestHash!==hash(manifest)) throw new CityError('CORRUPT_MANIFEST','validate','Manifest differs from build lock.');
   for(const [file,expected] of Object.entries(lock.assetHashes||{})) if(hash(await readFile(await safePath(root,`dist/${file}`)))!==expected) throw new CityError('CORRUPT_ASSET','validate',`Asset hash mismatch: ${file}.`);

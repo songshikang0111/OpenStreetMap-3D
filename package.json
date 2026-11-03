@@ -30,6 +30,9 @@
       "types": "./src/landmark-registry.d.ts",
       "import": "./src/landmark-registry.js"
     },
+    "./data": { "types": "./src/data/index.d.ts", "import": "./src/data/index.js" },
+    "./local-server": { "types": "./src/local-server/index.d.ts", "import": "./src/local-server/index.js" },
+    "./schemas/*": "./schemas/*",
     "./package.json": "./package.json"
   },
   "files": [

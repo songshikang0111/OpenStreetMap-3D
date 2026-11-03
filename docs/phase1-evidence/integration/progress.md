@@ -11,3 +11,11 @@
 集成准备迭代：已加入分离的演示/工作台/SDK 构建配置、公共包入口、CI、开发与扩展文档、纯本地静态导出及 Chromium 导出适配。API 调用已与 B 当前实现的 parameters/resume 契约对齐；GLB 使用 D 的 complete 范围，PNG/GLB 使用返回的 blob。初次本机 Chrome/CDP 自检成功；这仅验证浏览器适配，不代表场景或性能通过。
 
 迭代验证：旧 138 项 + 工作台 3 项，141/141 通过；新增静态 HTTP 非根路径/MIME/目录边界测试后，集成单元测试 4/4 通过。生产多入口构建仍等待 A/C/D 文件，禁止据此声明生产构建成功。
+
+A/C/B 已依次合入。C 与 A 的 city.js 冲突保留注册表/风格，以及共享 roadPlan/streetlifePlan；B 的 export.js 按交接选择 E 版本。B 缺 UI 错误用例改为显式 missing-studio fixture，避免把真实 UI 已存在当失败。B 29 项通过；A/C 核心联合 38 项通过。
+
+集成回归复现并修复：默认规则来源未记录、显式中国尊覆盖后旧地标未移除。核心现在用正式 C 注册表一次生成/认领，简化级保留官方轮廓参数和组归属；CINK 各档可交给实际 C 风格绑定，新增 3 项联合测试通过。项目 Schema/类型统一 low/import/锁定包对象。
+
+独立审查 P1 的实际编译复验：相机/画风/质量保存后 validate 成功；种子变化返回 STALE_BUILD。锁同时保留完整 configHash 和几何 buildConfigHash。等待 SDK 最终提交后做真实 UI 导出。
+
+2026-11-03 16:57（Asia/Shanghai）：同一默认 Overpass 服务一次约 90×110 m 的小范围获取、零重试，仍返回 HTTP 502，未写成功缓存。原始记录 network-results.json；AC04 保持 fail，未用仓库快照/本地 fixture 代替 live。

@@ -28,7 +28,7 @@ Exit codes: 0 success; 1 failed input/task; 2 partial/failed batch; 130 cancelle
 Batch file: {"projects":[{"project":"relative/path","kind":"build","parameters":{}}]}
 Search coordinates: latitude,longitude. OSM: way/123 or https://openstreetmap.org/way/123.
 Sample data is synthetic and explicitly labeled. Fetch is bounded to 5 km/side, 16 km².
-PNG requires Playwright + Chromium; GLB uses full-region highest-detail standard materials.
+PNG/GLB use installed Chrome/Edge (CITY_BROWSER override); GLB exports the complete area within its budget.
 Ordinary build/export/validate never refreshes network data. --resume retries failed/cancelled jobs.
 `;
 const flags=new Set(['json','help','offline','refresh','sample','rollback']);
