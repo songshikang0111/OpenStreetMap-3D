@@ -22,12 +22,14 @@ export function createStudioApi({base = '', fetchImpl = globalThis.fetch} = {}) 
   }
   const id = value => encodeURIComponent(value);
   return {
-    search: q => request(`/api/search?q=${encodeURIComponent(q)}`),
+    dataSources: () => request('/api/data-sources'),
+    search: (q,projectId) => request(`/api/search?q=${encodeURIComponent(q)}${projectId?`&projectId=${id(projectId)}`:''}`),
     projects: () => request('/api/projects'),
     create: body => request('/api/projects', body),
     open: relativePath => request('/api/projects/open', {relativePath}),
     get: projectId => request(`/api/projects/${id(projectId)}`),
     save: (projectId, config) => request(`/api/projects/${id(projectId)}`, config, 'PATCH'),
+    stylePreview: (projectId,style) => request(`/api/projects/${id(projectId)}/style-preview`, style?{style}:{}),
     start: (projectId, kind, parameters = {}, resume) => request(`/api/projects/${id(projectId)}/jobs`, {kind, parameters, ...(resume ? {resume} : {})}),
     job: jobId => request(`/api/jobs/${id(jobId)}`),
     cancel: jobId => request(`/api/jobs/${id(jobId)}/cancel`, {}),
