@@ -1,0 +1,721 @@
+{
+  "date": "2026-11-03T14:46:41.504Z",
+  "head": "112ae159ad6d5b867d7f3dbe9a48ded2e3c5d23b",
+  "firstFrameCommit": "743d3e55d51439e7a994203ea23d17d420ec493c",
+  "assessmentCommit": "112ae159ad6d5b867d7f3dbe9a48ded2e3c5d23b",
+  "windowAssessmentCommit": "a273e6a05182f989966cc3136b1cd6ea7f289889",
+  "mode": "Node integrity units. Constructed complete controls use explicit initialFrame; no browser/GPU launched; old archived evidence is read only.",
+  "controls": [
+    {
+      "name": "complete-case-initial-plus-interval-frames",
+      "status": "pass",
+      "physicalFrames": 6001,
+      "intervalFrames": 6000,
+      "rafP95": 10,
+      "gpu": {
+        "required": true,
+        "statistics": {
+          "count": 6000,
+          "p50": 3,
+          "p95": 4,
+          "p99": 4,
+          "max": 4
+        },
+        "pending": 1,
+        "active": false,
+        "checks": {
+          "available": true,
+          "samples": true,
+          "window": true,
+          "timestamps": true,
+          "aggregate": true,
+          "queries": true
+        }
+      }
+    },
+    {
+      "name": "gpu-valid-pending-0",
+      "status": "pass"
+    },
+    {
+      "name": "gpu-valid-pending-8",
+      "status": "pass"
+    },
+    {
+      "name": "gpu-valid-active-query",
+      "status": "pass"
+    },
+    {
+      "name": "unsupported-no-synthetic-ms",
+      "status": "pass"
+    },
+    {
+      "name": "path-exact-128MiB",
+      "status": "pass"
+    },
+    {
+      "name": "stationary-exact-128MiB",
+      "status": "pass"
+    },
+    {
+      "name": "real-FrameStatistics-first-copy-reset-and-FPS-definition",
+      "status": "pass"
+    }
+  ],
+  "rejectionProbes": [
+    {
+      "name": "path-missing-initial",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.completeSamples",
+      "actualCheck": false,
+      "failedChecks": [
+        "completeSamples"
+      ]
+    },
+    {
+      "name": "path-first-interval-not-null",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.completeSamples",
+      "actualCheck": false,
+      "failedChecks": [
+        "completeSamples"
+      ]
+    },
+    {
+      "name": "path-first-time-gap",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.completeSamples",
+      "actualCheck": false,
+      "failedChecks": [
+        "completeSamples"
+      ]
+    },
+    {
+      "name": "path-first-triangles",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.drawingTriangles",
+      "actualCheck": false,
+      "failedChecks": [
+        "drawingTriangles"
+      ]
+    },
+    {
+      "name": "path-first-drawCalls",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.drawingCalls",
+      "actualCheck": false,
+      "failedChecks": [
+        "drawingCalls"
+      ]
+    },
+    {
+      "name": "path-first-estimatedResidentBytes",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.resident",
+      "actualCheck": false,
+      "failedChecks": [
+        "resident"
+      ]
+    },
+    {
+      "name": "path-first-nearGeometryArrayBytes",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.resourceEvidence",
+      "actualCheck": false,
+      "failedChecks": [
+        "resourceEvidence"
+      ]
+    },
+    {
+      "name": "path-first-near-total",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.nearDetails",
+      "actualCheck": false,
+      "failedChecks": [
+        "nearDetails"
+      ]
+    },
+    {
+      "name": "path-first-near-total-mismatch",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.resourceEvidence",
+      "actualCheck": false,
+      "failedChecks": [
+        "resourceEvidence"
+      ]
+    },
+    {
+      "name": "path-sample-resident-over-limit",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.resident",
+      "actualCheck": false,
+      "failedChecks": [
+        "resident"
+      ]
+    },
+    {
+      "name": "path-sample-resident-over-final-peak",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.resident",
+      "actualCheck": false,
+      "failedChecks": [
+        "resident"
+      ]
+    },
+    {
+      "name": "stationary-missing-initial",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.frames",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "stationary-first-interval-not-null",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.frames",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "stationary-first-time-gap",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.frames",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "stationary-first-triangles",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.drawingTriangles",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "stationary-first-drawCalls",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.drawingCalls",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "stationary-first-estimatedResidentBytes",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.resident",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "stationary-first-nearGeometryArrayBytes",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.resourceEvidence",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "stationary-first-near-total",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.nearDetails",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "stationary-first-near-total-mismatch",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.resourceEvidence",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "stationary-sample-resident-over-limit",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.resident",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "stationary-sample-resident-over-final-peak",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.resident",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "away-frames",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.unloads",
+      "actualCheck": false,
+      "failedChecks": [
+        "unloads"
+      ]
+    },
+    {
+      "name": "away-crownClusters",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.unloads",
+      "actualCheck": false,
+      "failedChecks": [
+        "unloads"
+      ]
+    },
+    {
+      "name": "away-branches",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.unloads",
+      "actualCheck": false,
+      "failedChecks": [
+        "unloads"
+      ]
+    },
+    {
+      "name": "away-profiles",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.unloads",
+      "actualCheck": false,
+      "failedChecks": [
+        "unloads"
+      ]
+    },
+    {
+      "name": "negative-near-component",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.resourceEvidence",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "sample-near-total-mismatch",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.resourceEvidence",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "sample-near-bytes-over-total",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.resourceEvidence",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "missing-sample-render",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.resourceEvidence",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "peak-below-raw-max",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.resident",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "end-above-peak",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.resident",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "two-frame-stationary",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.frames",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "duplicate-t13-identity",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.stationary",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "baseline-budget",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.defaultBudget",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "end-budget",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.defaultBudget",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "actual-camera-baselineView",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.camera",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "actual-camera-actualView",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.camera",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "actual-camera-mid-sample",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.camera",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "hidden-repeated-requests",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.requestEvidence",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "short-epoch",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "stationary.0.checks.duration",
+      "actualCheck": false,
+      "failedChecks": [
+        "stationary"
+      ]
+    },
+    {
+      "name": "raw-40ms-hidden-by-old-aggregate",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.p95",
+      "actualCheck": false,
+      "failedChecks": [
+        "p95"
+      ]
+    },
+    {
+      "name": "gpu-missing-raw",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.samples",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-truncated-window",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.window",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-wrong-sample-count",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.samples",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-negative-ms",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.samples",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-nonfinite-ms",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.samples",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-nonfinite-time",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.samples",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-duplicate-first-frame",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.timestamps",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-outside-window",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.timestamps",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-wrong-aggregate",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.aggregate",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-negative-pending",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.window",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-fractional-pending",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.window",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-pending-over-capacity",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.window",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-active-not-boolean",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.window",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-unreleased-over-bound",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.queries",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-unreleased-below-in-flight",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.queries",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "unsupported-gpu-fake-ms",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "checks.gpuTiming",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    },
+    {
+      "name": "gpu-raised-capacity-hides-almost-all-samples",
+      "rejected": true,
+      "status": "fail",
+      "expectedCheck": "gpu.checks.window",
+      "actualCheck": false,
+      "failedChecks": [
+        "gpuTiming"
+      ]
+    }
+  ],
+  "actualSmoke": {
+    "status": "pass",
+    "file": "work/remediation-raw-producer-smoke.json",
+    "note": "Real production SDK/real synthetic CINK/WebGL, 3 seconds only; not a formal performance case.",
+    "physicalFrames": 361,
+    "intervalFrames": 360,
+    "frameCount": 361,
+    "gpu": {
+      "required": true,
+      "statistics": {
+        "count": 360,
+        "p50": 3.078144,
+        "p95": 4.192256,
+        "p99": 4.51584,
+        "max": 5.417984
+      },
+      "pending": 1,
+      "active": false,
+      "checks": {
+        "available": true,
+        "samples": true,
+        "window": true,
+        "timestamps": true,
+        "aggregate": true,
+        "queries": true
+      }
+    },
+    "resources": {
+      "resident": {
+        "count": 361,
+        "p50": 166628,
+        "p95": 166628,
+        "p99": 166628,
+        "max": 166628
+      },
+      "sampleResident": {
+        "count": 1,
+        "p50": 166628,
+        "p95": 166628,
+        "p99": 166628,
+        "max": 166628
+      },
+      "nearDetails": {
+        "count": 361,
+        "p50": 295,
+        "p95": 295,
+        "p99": 295,
+        "max": 295
+      },
+      "peakEstimatedResidentBytes": 166628,
+      "residentFramesOver": 0,
+      "residentDurationOverMs": 0,
+      "nearFramesOver": 0,
+      "checks": {
+        "resourceEvidence": true,
+        "resident": true,
+        "nearDetails": true
+      }
+    },
+    "formalPerformanceAcceptance": false
+  },
+  "rejected": 59,
+  "acceptedInvalid": [],
+  "status": "pass"
+}
