@@ -1,5 +1,5 @@
 import './style.css';
-import {createStudioApi, areaAround, validateArea, isTerminal} from './api.js';
+import {createStudioApi, areaAround, validateArea, isTerminal, viewsForBounds} from './api.js';
 import {createCityViewer} from '../src/sdk/index.js';
 
 const $ = id => document.getElementById(id), api = createStudioApi();
@@ -54,6 +54,7 @@ async function preview() {
   const viewer=await createCityViewer({container:$('viewport'),manifestUrl,style:{id:$('style').value,parameters:state.config.style?.parameters || {}},quality:$('quality').value,onProgress:progress=>{$('job-status').textContent=`加载场景：${progress.stage || json(progress)}`;},onDiagnostic:diagnostic,onSelect:value=>{$('selection').textContent=json(value);}});
   state.viewer=viewer; $('empty').hidden=true;
   if(state.config.camera) viewer.setView(state.config.camera);
+  $('fov').value=viewer.getView().fov;
   enabled();
   const report=await fetch(`/projects/${encodeURIComponent(state.project.id)}/dist/city.build-lock.json`);
   const lock=report.ok?await report.json():null;
@@ -117,8 +118,7 @@ $('quality').addEventListener('change',action(async()=>{if(state.project) {await
 $('fov').addEventListener('input',()=>{if(state.viewer) state.viewer.setView({...state.viewer.getView(),fov:Number($('fov').value)});});
 $('camera').addEventListener('change',()=>{
   if(!state.viewer) return;
-  const bounds=state.manifest?.bounds, scale=Array.isArray(bounds)?Math.max(bounds[3]-bounds[0],bounds[5]-bounds[2],100):800;
-  const views={overview:{position:[scale*.8,scale*.8,scale*.8],target:[0,20,0]},street:{position:[50,12,100],target:[0,18,0]},skyline:{position:[0,80,scale],target:[0,40,0]}};
+  const views=viewsForBounds(state.manifest.bounds);
   state.viewer.setView({...views[$('camera').value],fov:Number($('fov').value)});
 });
 function download(data,name,type) {const url=URL.createObjectURL(data instanceof Blob?data:new Blob([data],{type})); const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}

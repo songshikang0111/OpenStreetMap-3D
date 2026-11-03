@@ -49,3 +49,16 @@ export function validateArea(area) {
   if (Object.values(result).some(x => !Number.isFinite(x)) || result.south >= result.north || result.west >= result.east || result.south <= -80 || result.north >= 80 || result.west < -180 || result.east > 180) throw new Error('范围无效：南须小于北，西须小于东；不支持跨日期变更线或极区。');
   return result;
 }
+
+export function viewsForBounds(bounds) {
+  let box=bounds;
+  if(!Array.isArray(box))box=[...bounds.min,...bounds.max];
+  if(box.length===4)box=[box[0],0,box[1],box[2],100,box[3]];
+  if(box.length!==6||!box.every(Number.isFinite))throw new Error('场景 bounds 无效。');
+  const [x0,y0,z0,x1,y1,z1]=box,cx=(x0+x1)/2,cz=(z0+z1)/2,span=Math.max(x1-x0,z1-z0,100),focus=y0+Math.min(80,Math.max(8,(y1-y0)*.2));
+  return {
+    overview:{position:[cx+span*.8,y0+span*.8,cz+span*.8],target:[cx,focus,cz]},
+    street:{position:[cx+span*.1,y0+12,cz+span*.2],target:[cx,y0+18,cz]},
+    skyline:{position:[cx,y0+Math.max(40,(y1-y0)*.3),cz+span],target:[cx,focus,cz]},
+  };
+}
