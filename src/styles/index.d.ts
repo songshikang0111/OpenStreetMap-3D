@@ -13,3 +13,9 @@ export function createFoliageMaterial(source?:Material):Material;
 export function annotateSceneSemantics<T extends Object3D>(group:T):T;
 export function bindSceneStyle(group:Group,{style,shared}?:{style?:StyleSelection;shared?:SharedUniforms}):StyleBinding;
 export function createStylePipeline(options:{renderer:WebGLRenderer;scene:Scene;camera:Camera;style?:StyleSelection;shared?:SharedUniforms}):StylePipeline & {style:StylePack;shared:SharedUniforms};
+
+export type {ProjectStyleConfig,PublishedStyleModule} from './project-contract.js';
+export {OFFICIAL_STYLE_IDS,validateProjectStyleConfig} from './project-contract.js';
+export {loadProjectStyle} from './project-loader.js';
+export type {LoadedProjectStyle} from './project-loader.js';
+export function resolveStyleSelection(selection?:StyleSelection):{style:StylePack;parameters:Record<string,unknown>};

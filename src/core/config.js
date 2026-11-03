@@ -1,4 +1,5 @@
 import { projection } from '../osm.js';
+import {validateProjectStyleConfig} from '../styles/project-contract.js';
 
 export const MAX_AREA_SPAN_METERS = 10000;
 
@@ -31,6 +32,7 @@ export function validateProjectConfig(config) {
   if(config.quality !== undefined && !['draft','low','balanced','high'].includes(config.quality)) error('quality','Expected low, balanced or high (draft is a legacy alias).');
   if(config.style !== undefined && (!config.style || typeof config.style.id!=='string' || !config.style.id)) error('style','Style requires id.');
   if(config.style?.parameters !== undefined && (!config.style.parameters || typeof config.style.parameters!=='object' || Array.isArray(config.style.parameters))) error('style.parameters','Expected a parameter object.');
+  if(config.style!==undefined)try{validateProjectStyleConfig(config.style);}catch(e){error('style',e.message);}
   if(config.camera!==undefined){
     if(!config.camera||typeof config.camera!=='object'||Array.isArray(config.camera))error('camera','Expected an object.');
     else{

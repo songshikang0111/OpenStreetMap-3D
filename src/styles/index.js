@@ -22,7 +22,7 @@ export function validateStyle(style) {
 export function registerStyle(style){validateStyle(style);styles.set(style.id,style);return style;}
 for(const style of officialStyles)registerStyle(style);
 export function getStyle(id='comic'){const style=typeof id==='string'?styles.get(id):validateStyle(id);if(!style)throw new TypeError(`Unknown style: ${id}`);return style;}
-function resolveStyle(selection) {
+export function resolveStyleSelection(selection) {
   const style=getStyle(selection&&typeof selection==='object'&&typeof selection.createMaterial!=='function'?selection.id:selection||'comic');
   const given=selection?.parameters||{},parameters={};
   for(const key of Object.keys(given))if(!Object.hasOwn(style.parametersSchema.properties||{},key))throw new TypeError(`Unknown style parameter: ${key}`);
@@ -76,7 +76,7 @@ function disposeMaterial(material) {
 }
 /** Restores procedural shaders after decoding. Owns only materials it creates, never geometry. */
 export function bindSceneStyle(group,{style:selection='comic',shared:createShared}={}) {
-  const {style,parameters}=resolveStyle(selection),shared=createStyleShared(createShared);
+  const {style,parameters}=resolveStyleSelection(selection),shared=createStyleShared(createShared);
   const previous=bindings.get(group);previous?.dispose();
   const changes=[],owned=new Set(),diagnostics=[];
   try {
@@ -125,10 +125,13 @@ export function bindSceneStyle(group,{style:selection='comic',shared:createShare
   bindings.set(group,binding);return binding;
 }
 export function createStylePipeline({renderer,scene,camera,style:selection='comic',shared:createShared}={}) {
-  const {style,parameters}=resolveStyle(selection),shared=createStyleShared(createShared);
+  const {style,parameters}=resolveStyleSelection(selection),shared=createStyleShared(createShared);
   for(const [key,value] of Object.entries(parameters))if(shared[key])shared[key].value=value;
   const pipeline=style.createPipeline({renderer,scene,camera,style,shared,parameters,services});
   if(!pipeline||['render','resize','dispose'].some(key=>typeof pipeline[key]!=='function'))throw new TypeError('Style pipeline requires render/resize/dispose');
   let disposed=false;const release=acquireStyle(style);
   return {...pipeline,style,shared,render(){if(!disposed)pipeline.render();},resize(w,h){if(!disposed)pipeline.resize(w,h);},dispose(){if(disposed)return;disposed=true;try{pipeline.dispose();}finally{release();}}};
 }
+
+export {loadProjectStyle} from './project-loader.js';
+export {OFFICIAL_STYLE_IDS,validateProjectStyleConfig} from './project-contract.js';

@@ -8,7 +8,7 @@ export interface ProjectConfig {
   source: {kind: 'overpass' | 'osm-map' | 'local' | 'import' | 'sample'; file: string; [key:string]:unknown};
   generation?: {landscapeEnabled?: boolean; inferRoofs?: boolean};
   tiling?: {sizeMeters?: number; /** Fixed-area comparison: N×N cells. */ divisions?: number};
-  quality?: 'draft' | 'low' | 'balanced' | 'high'; style?: {id: string; parameters?: Record<string,unknown>};
+  quality?: 'draft' | 'low' | 'balanced' | 'high'; style?: import('../styles/project-contract.js').ProjectStyleConfig;
   landmarks?: {enabled?: boolean; policy?:'strict'|'degraded'; packages?: Array<string|{path:string;hash?:string;recipes?:Array<{id:string;version:string}>}>};
   camera?: {position?:number[];target?:number[];fov?:number;near?:number};
 }

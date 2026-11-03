@@ -4,28 +4,61 @@
 
 ## 添加画风
 
-将 [独立 sepia 画风](../examples/quickstart/sepia-style.js) 复制到自己的 `styles/sepia.js`。它覆盖建筑、玻璃、屋顶、结构、道路、水、树、地面、设施、地标，并声明兼容范围、参数 Schema、回退角色和资源释放。加入自己应用：
+将 [独立 sepia 画风](../examples/quickstart/sepia-style.js) 复制到自己的项目 `styles/sepia.js`，在 `city.config.json` 保存明确入口：
+
+```json
+{
+  "style": {
+    "id": "project-sepia",
+    "entry": "styles/sepia.js",
+    "parameters": {},
+    "dependencies": {},
+    "assets": []
+  }
+}
+```
+
+`entry` 是项目内 ESM `.js/.mjs/.ts`，必须 default export 兼容 StylePack，id 与配置一致；模块顶层必须能在 Node 和浏览器求值，DOM/renderer 工作放在工厂内。模块是受信任本地代码。相对 JS/JSON/CSS import 自动跟随；裸 import 除 `three`、`three/*` 与 `beijing-city-ink/styles` 外，须在 `dependencies` 显式映射到项目相对模块文件，例如 `"local-palette":"styles/vendor/palette.js"`。这是离线模块映射，不是自动下载或版本范围；安装依赖由开发者先完成，子依赖也要显式映射。全部文件必须在项目边界内，无软链接逃逸。
+
+图片/字体/二进制文件列入 `assets`，通过静态 import 使用，例如：
+
+```js
+import paperUrl from './paper.svg'; // assets: ["styles/paper.svg"]
+import {tint} from './palette.js';
+// 在工厂内 fetch(paperUrl) / TextureLoader.load(paperUrl)，不要手工拼网页路径。
+```
+
+打包器将资产 URL 绑定到输出模块的 import.meta.url；CSS url() 也本地打包。v1 不支持变量动态 import、隐式 Node/网络依赖或 `new URL('./paper.svg',import.meta.url)` 字面量项目路径；后者改为静态 import。所有声明资产都会本地携带。不要在风格运行时代码中另行访问 CDN；任意受信任 JavaScript 的网络行为不是沙箱所能保证，正式离线验收须拦截外网。
+
+```sh
+city build --project ./my-city --offline --json
+city export web --project ./my-city --output exports/demo --offline --json
+city export png --project ./my-city --offline --json
+city export glb --project ./my-city --offline --json
+```
+
+标准导出使用同一 SDK/注册表，打包所有风格模块、相对依赖、CSS/资产并验证 metadata、id、兼容性及参数；未知 id 必须声明入口。无效入口或参数会在发布前失败，已有站点保留。`viewer-config.json` 记录参数与 `styleModule`，`style-build.json` 记录输入/输出哈希；产物可放在任意 HTTP 子路径，无 CDN/本地服务运行时依赖。PNG/GLB CLI 也先导出同一标准页面再加载画风。GLB 仍只保留基础材质/几何，不保证移植程序后处理。
+
+手工 SDK 集成保留直接 `registerStyle(sepia)` 能力；消费标准打包 descriptor 时可用同一公开解析器：
 
 ```js
 import {createCityViewer} from 'beijing-city-ink';
-import {registerStyle} from 'beijing-city-ink/styles';
-import sepia from './styles/sepia.js';
-
-registerStyle(sepia);
-const viewer = await createCityViewer({
-  container: document.getElementById('city'),
-  manifestUrl: './scene/manifest.json',
-  style: 'project-sepia',
+import {loadProjectStyle} from 'beijing-city-ink/styles';
+const config = await fetch('./viewer-config.json').then(r => r.json());
+const loaded = await loadProjectStyle(config.style, {
+  module: config.styleModule,
+  baseUrl: new URL('./viewer-config.json', document.baseURI),
 });
-await viewer.whenIdle();
-await viewer.setStyle('comic');
+const viewer = await createCityViewer({container, manifestUrl:'./scene/manifest.json', style:loaded});
+// 导出 PNG/GLB 与 setStyle 使用同一个已注册 StylePack。
+await viewer.exportPNG();
+await viewer.dispose();
+loaded.dispose(); // 释放这次加载创建的 CSS；切换项目/重复打开时必须调用。
 ```
 
-使用 Vite 等打包器运行上述顶层 `await` 示例时，将 `build.target` 设为 `es2022`；也可以把初始化包在异步函数中。页面容器需要明确宽高。
+不要把项目文件 `entry` 直接当浏览器 URL 导入；先由本地 `bundleProjectStyle(root, config.style)` 生成 descriptor/assets。该可复用 Node helper 位于 `src/styles/project-bundle.js`，返回 Map，不直接发布或覆盖站点。Studio 接线与缓存/路由说明见 [修复交接](phase1-evidence/remediation/styles/handoff.md)。加载器以传入 descriptor 的 baseUrl 解析所有相对模块/CSS；外部模块必须同站点 origin。`LoadedProjectStyle.dispose()` 只移除该句柄拥有的 CSS，不销毁别的 viewer 的链接，重复调用安全。Studio 应先 `await oldViewer.dispose(); oldLoaded.dispose()` 再切换项目，并在预览失败时也释放句柄。
 
-风格不重新下载数据。仅材质、灯光、后处理变化可实时绑定；改变密度/几何必须声明 `rebuildParameters`，修改项目生成配置后重建。创建的材质、纹理和 render target 需要由绑定或管线的 `dispose` 释放，不释放调用者共享资源。使用原有程序立面时保留语义角色和 `facade-v6` 属性。
-
-验证：用相同清单在 comic/line/color/white/自定义画风间切换，检查所有角色、近远景和连续五次切换后的资源数；SDK 与工作台不能各自维护一套生成规则。
+画风覆盖建筑、玻璃、屋顶、结构、道路、水、树、地面、设施和地标，声明兼容范围、参数 Schema、回退角色与释放。风格不重新下载数据；几何变化应声明 rebuildParameters。保留原有程序立面时使用 `facade-v6` 属性和语义角色。验证相同清单的四官方+自定义画风、保存/重开参数、非根路径、阻外网和至少五次打开/释放，SDK 与工作台共用同一注册表/加载器。
 
 ## 添加地标配方
 
