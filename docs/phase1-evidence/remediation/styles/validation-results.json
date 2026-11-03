@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-03",
+  "functionalCommit": "5c204b212395d357daeb7cf286db6a39d846cd9d",
+  "branch": "codex/phase1-styles-repair",
+  "baseline": "dee3cc8",
+  "component": "C project styles/static export",
+  "checks": {
+    "npm test": {
+      "status": "pass",
+      "tests": 270,
+      "note": "Final independent reviewer rerun; implementation full run before final Schema-only commit:269/269; final six targeted tests pass."
+    },
+    "npm run build": {
+      "status": "pass",
+      "notes": "Old demo/Studio/SDK; existing >500kB warning"
+    },
+    "npm run test:types": {
+      "status": "pass"
+    },
+    "strict C type consumer": {
+      "status": "pass",
+      "command": "node node_modules/typescript/bin/tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 docs/phase1-evidence/remediation/styles/typecheck.ts"
+    },
+    "standard CLI browser": {
+      "status": "pass",
+      "command": "node docs/phase1-evidence/remediation/styles/verify-standard-export.mjs",
+      "nonRoot": "/exports/nonroot/city/index.html",
+      "network": "loopback-only",
+      "styles": [
+        "comic",
+        "line",
+        "color",
+        "white",
+        "project-sepia"
+      ],
+      "assets": "JS import + CSS url + descriptor; hash/percent names; HTTP200",
+      "exports": [
+        "web",
+        "png",
+        "glb"
+      ],
+      "failureRetainsSite": true,
+      "cssLifecycle": "five load/dispose + initialization failure clean"
+    }
+  },
+  "integrationNotRun": [
+    "E production esbuild dependency and optional public Node bundle export",
+    "E Studio style route/config preservation/lifecycle wiring",
+    "D actual SDK AO parameter fix",
+    "Root final integrated acceptance"
+  ],
+  "noPublish": true
+}

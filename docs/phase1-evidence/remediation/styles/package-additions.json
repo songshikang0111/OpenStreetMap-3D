@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "esbuild": "0.25.12"
+  },
+  "exports": {
+    "./styles/project-bundle": {
+      "types": "./src/styles/project-bundle.d.ts",
+      "import": "./src/styles/project-bundle.js"
+    }
+  },
+  "note": "Merge these fields into the E-owned root package.json; update package-lock.json, then repeat production-only offline package installation/export checks."
+}

@@ -1,6 +1,6 @@
 # C 修复交接：标准网页携带项目画风
 
-2026-11-03，分支 `codex/phase1-styles-repair`，从 `dee3cc8` 新建，原 `codex/phase1-landmarks` 保留。此处不合并旧组件历史。最终提交与独立复验结果在结尾更新。
+2026-11-03，分支 `codex/phase1-styles-repair`，从 `dee3cc8` 新建，原 `codex/phase1-landmarks` 保留。此处不合并旧组件历史。功能提交：`599c4486b86d4e28917526463b64cca49b51addf`；独立审查修复 `1e4296fba480d7028fa2ec1b706da7ae74e25738`；Schema 对齐 `5c204b212395d357daeb7cf286db6a39d846cd9d`。后续证据文档提交见分支日志。
 
 ## 契约与改动
 
@@ -17,7 +17,7 @@
 
 ## E 必须接入的依赖与路由（不改 B 主文件）
 
-**根 package.json/lock 由 E 所有：将 `esbuild: "0.25.12"` 加入 production dependencies 并更新 lock。** 目前仓库通过 Vite dev dependency 已有该版本；标准导出现在在运行时本地打包，安装包仅装生产依赖也必须具备 esbuild。缺失时明确 STYLE_BUNDLER_MISSING，无 CDN fallback。C 未修改根 package/lock。建议 E 同时加入公共 Node export `"./styles/project-bundle":{"types":"./src/styles/project-bundle.d.ts","import":"./src/styles/project-bundle.js"}`；源码内部已可复用。
+**根 package.json/lock 由 E 所有：将 `esbuild: "0.25.12"` 加入 production dependencies 并更新 lock。** 目前仓库通过 Vite dev dependency 已有该版本；标准导出现在在运行时本地打包，安装包仅装生产依赖也必须具备 esbuild。缺失时明确 STYLE_BUNDLER_MISSING，无 CDN fallback。C 未修改根 package/lock。精确字段见 [package-additions.json](package-additions.json)。建议 E 同时加入公共 Node export `"./styles/project-bundle":{"types":"./src/styles/project-bundle.d.ts","import":"./src/styles/project-bundle.js"}`；源码内部已可复用。
 
 Studio 接线建议（由 E 在 B 合并后实施）：
 
@@ -32,3 +32,34 @@ Studio 接线建议（由 E 在 B 合并后实施）：
 新增 test/phase1-styles-export.test.js 覆盖模块/依赖/CSS/资产打包、参数、无效声明/导入、失败保旧站点、重复加载 CSS 释放。真实标准 CLI export 验证脚本：`node docs/phase1-evidence/remediation/styles/verify-standard-export.mjs`。它使用明确标注的合成离线样例，实际运行 city build/export web；打开 `/exports/nonroot/city/index.html`，浏览器请求只允许 loopback，验证 comic/line/color/white/project-sepia、相对模块/依赖/SVG/CSS、参数 .23、刷新、五轮 CSS load/dispose、真实 viewer PNG/GLB 和正式 CLI PNG/GLB，再检查未知画风失败保留旧站点。不是手工 consumer/app，也不是 GPU 基准。
 
 当前修复不触碰 AO 覆盖逻辑：D 负责合法 AO 参数；C 的 config/bundle/loader 保留参数且管线层可验证，但此基线 SDK 仍有 R4，不能宣告整期 AC24 已通过。Studio 真实服务路由/保存/切换需 E 集成；正式安装包生产依赖与新公开 Node export 需 E 接入后复验。AC21 的本组件标准静态导出修复可独立验证；总验收由主对话在 E 冻结提交后执行。
+
+
+## 验收结果与可集成提交
+
+E 在自己的集成分支按序 cherry-pick **599c448 → 1e4296f → 5c204b2 → 最终证据文档提交**，不要 cherry-pick 老 C 组件历史。边界仅风格契约/helper、标准导出、静态查看器、类型/Schema style 字段和教程测试；没有改 SDK/runtime/AO、local-server、根 package/lock、其他 worktree。
+
+最终功能 5c204b2：独立重跑 **270/270 npm test**、三套 build、test:types、新 C 严格类型消费均通过。实现者也运行全部回归（Schema 小修前269/269，修后六项针对性测试通过）。真实标准 CLI web/png/glb 与 loopback-only 子路径五风格通过，见 [browser-results.json](browser-results.json)、[cli-results.json](cli-results.json)；[validation-results.json](validation-results.json) 汇总命令与边界。输入明确为合成离线 sample，不是 live 地图下载；不是 GPU 基准。浏览器与预览临时 profile 已关闭，完整产物留在 ignored work。
+
+独立审查发现并修复：
+
+1. P2：loadProjectStyle 成功但 viewer 初始化/相机设置失败，旧 catch 未释放 CSS。1e4296f 将句柄提升作用域，catch 释放 viewer 与 CSS；pagehide 用 finally 保证 viewer.dispose 抛错也释放 CSS。
+2. P2：声明资产文件名含 #/% 时 URL 未逐段编码导致404。1e4296f 对 JS/descriptor URL 编码，CSS输出资源用纯hash名称；三路独立 HTTP200；不把声明的原始 CSS 当另一份样式重复加载。
+3. P3：dependencies propertyNames Schema 允许 foo/. 或 foo/..，运行时拒绝。5c204b2 同步负向段校验并补合法/非法标识符对照测试。
+
+| 范围 | 状态 | 依据与限制 |
+| --- | --- | --- |
+| AC21 C 标准静态导出 | pass | 真实 city export web，四官方+外部、保存参数/刷新、相对JS/映射依赖/CSS/SVG、子路径、拒绝外网、坏入口/未知id保留旧站点 |
+| AC22 C 共用导出解析 | pass | 标准产物 viewer PNG/GLB 与正式 CLI PNG/GLB，签名/哈希；GLB效果边界仍有说明 |
+| AC24 C 风格契约 | pass | 类型/Schema/纯校验/helper/教程与行为一致；全项 AO SDK R4 仍归 D，不在C宣布通过 |
+| AC27 C 独立审查 | pass（组件） | 非实现者 gpt-6.1-sol / xhigh / fork none，审查599c448，发现3项，复验5c204b2，最终无未解决C缺陷 |
+| E 安装包/Studio真实接线 | not-run | 生产 esbuild/Node export、路由/保存/切换/lifecycle由E合入后验证 |
+| D AO与全期最终矩阵 | not-run | 未修改也未冒充修复；主对话最终独立整体验收 |
+
+当前没有职责内后置的功能缺口。E 的依赖声明和服务/UI接线是集成动作，已给出具体代码契约与释放顺序；未把源码目录的成功测试宣称为已完成生产安装包验证。
+
+
+## 独立报告归档
+
+[原样独立审查报告](independent-review.json) 包含首轮三个发现、最终实际提交、两轮原始浏览器结果、CSS正常/失败/pagehide/并存句柄、特殊文件名三路径HTTP状态、CLI产物与剩余集成依赖。审查者 `/root/styles_repair_review`，明确 gpt-6.1-sol / xhigh / fork_turns none，未编辑受跟踪文件或创建提交。最终功能5c204b2无未解决C组件缺陷。完整独立270项TAP见 [independent-tests.tap](independent-tests.tap)。
+
+最终证据文档提交不改变产品代码。独立通过只限以上C责任范围；根验收历史失败报告保持原样，不能凭此提前把全期矩阵改成通过。
