@@ -2,7 +2,7 @@ import type {Object3D,Material,Scene,Camera,WebGLRenderer} from 'three';
 export type SharedUniforms=Record<string,{value:unknown}>;
 export interface StylePipeline {render():void;resize(width:number,height:number):void;dispose():void}
 export interface StyleContext {renderer:WebGLRenderer;scene:Scene;camera:Camera;shared:SharedUniforms;parameters:Record<string,unknown>;services:StyleServices}
-export interface StyleServices {createFacadeMaterial(shared:SharedUniforms,source?:Material):Material;createInkPipeline(context:StyleContext & {mode:number}):StylePipeline}
+export interface StyleServices {createFacadeMaterial(shared:SharedUniforms,source?:Material):Material;createFoliageMaterial(source?:Material):Material;createInkPipeline(context:StyleContext & {mode:number}):StylePipeline}
 export interface StylePack {
   schemaVersion:1;id:string;version:string;engineCompatibility:string;styleContractVersion:1;
   parametersSchema:{type:'object';additionalProperties:false;properties:Record<string,{type:string;minimum?:number;maximum?:number;default?:unknown;enum?:unknown[]}>};

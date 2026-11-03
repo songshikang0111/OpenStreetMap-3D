@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {officialStyles} from '../../packages/styles/index.js';
 import {installFacadeShader,facadeAttributeDefaults} from '../facade-shader.js';
 import {InkRenderer} from '../ink-renderer.js';
+import {foliageMaterial} from '../foliage.js';
 import {satisfies,versionTuple} from '../generators/compatibility.js';
 
 export const STYLE_CONTRACT_VERSION=1;
@@ -14,8 +15,8 @@ export function validateStyle(style) {
   versionTuple(style.version);
   if(!satisfies('1.0.0',style.engineCompatibility))throw new TypeError(`Style ${style.id} is incompatible`);
   if(typeof style.createMaterial!=='function'||typeof style.createPipeline!=='function'||typeof style.dispose!=='function')throw new TypeError('Style requires createMaterial/createPipeline/dispose');
-  if(!Array.isArray(style.materialRoles)||!style.materialRoles.includes(style.fallbackRole)||!Array.isArray(style.rebuildParameters)||!style.qualityHints)throw new TypeError('Style roles, fallbackRole, rebuildParameters and qualityHints required');
-  if(style.parametersSchema?.type!=='object'||style.parametersSchema.additionalProperties!==false)throw new TypeError('Style parametersSchema must be a closed object');
+  if(!Array.isArray(style.materialRoles)||style.materialRoles.some(r=>typeof r!=='string'||!r)||!style.materialRoles.includes(style.fallbackRole)||!Array.isArray(style.rebuildParameters)||style.rebuildParameters.some(r=>typeof r!=='string')||!style.qualityHints||typeof style.qualityHints!=='object'||Array.isArray(style.qualityHints))throw new TypeError('Style roles, fallbackRole, rebuildParameters and qualityHints required');
+  if(style.parametersSchema?.type!=='object'||style.parametersSchema.additionalProperties!==false||!style.parametersSchema.properties||typeof style.parametersSchema.properties!=='object'||Array.isArray(style.parametersSchema.properties))throw new TypeError('Style parametersSchema must be a closed object with properties');
   return style;
 }
 export function registerStyle(style){validateStyle(style);styles.set(style.id,style);return style;}
@@ -44,6 +45,13 @@ export function createFacadeMaterial(shared,source) {
   material.customProgramCacheKey=()=> 'city-ink-facade-v6-materials';
   return material;
 }
+export function createFoliageMaterial(source) {
+  const material=foliageMaterial(source?.color?.isColor?source.color:'#ffffff');
+  if(source?.isMeshStandardMaterial){const compile=material.onBeforeCompile,key=material.customProgramCacheKey;material.copy(source);material.onBeforeCompile=compile;material.customProgramCacheKey=key;}
+  else if(source)for(const key of ['side','transparent','opacity','alphaTest','depthWrite','depthTest','map'])if(source[key]!==undefined)material[key]=source[key];
+  delete material.userData.cityOwnedTextures;
+  return material;
+}
 /** Adapt legacy objects once. Core codecs should preserve this data, not infer it on load. */
 export function annotateSceneSemantics(group) {
   group.traverse(o=>{
@@ -53,11 +61,11 @@ export function annotateSceneSemantics(group) {
     while(node&&!Number.isFinite(inkClass)){inkClass=node.userData.inkClass;node=node.parent;}
     const kind=Math.floor(inkClass||4),role=f?'wall':kind===2?'foliage':kind===3?'road':kind===6?'water':kind===5?'ground':'facility';
     o.userData.city={schemaVersion:1,featureId:f?String(f.id):`generated:${o.name}`,sourceIds:f?[`${f.osmType}/${f.osmId}`]:[],kind:f?'building':role,materialRole:role,lodRole:'body',inkClass:inkClass??4,
-      ...(o.userData.generatedFacade?{shader:'facade-v6'}:{}),...(f?{height:f.height,minHeight:f.minHeight,heightSource:f.source}:{})};
+      ...(o.userData.generatedFacade?{shader:'facade-v6'}:role==='foliage'?{shader:'foliage-v1'}:{}),...(f?{height:f.height,minHeight:f.minHeight,heightSource:f.source}:{})};
   });
   return group;
 }
-const services={createFacadeMaterial,createInkPipeline({renderer,scene,camera,shared,mode,parameters}){
+const services={createFacadeMaterial,createFoliageMaterial,createInkPipeline({renderer,scene,camera,shared,mode,parameters}){
   const ink=new InkRenderer(renderer,scene,camera,shared);ink.material.uniforms.mode.value=mode;
   for(const [key,value] of Object.entries(parameters))if(ink.material.uniforms[key])ink.material.uniforms[key].value=value;
   return {render:()=>ink.render(),resize:(w,h)=>ink.resize(w,h),dispose:()=>ink.dispose(),ink};
@@ -78,7 +86,7 @@ export function bindSceneStyle(group,{style:selection='comic',shared:createShare
       const semantic=object.userData.city;
       if(!semantic?.materialRole)throw new TypeError(`Missing userData.city.materialRole on ${object.name}`);
       if(semantic.schemaVersion!==1)throw new TypeError('Unsupported city material semantic version');
-      if(semantic.shader&&semantic.shader!=='facade-v6')throw new TypeError(`Unsupported procedural shader ${semantic.shader}`);
+      if(semantic.shader&&!['facade-v6','foliage-v1'].includes(semantic.shader))throw new TypeError(`Unsupported procedural shader ${semantic.shader}`);
       if(semantic.shader==='facade-v6') {
         for(const [name,size] of Object.entries({aFacade:4,aStyle:2,aLayout:4,aSurface:2,objectId:3})){
           const attr=object.geometry.attributes[name];
@@ -91,6 +99,16 @@ export function bindSceneStyle(group,{style:selection='comic',shared:createShare
       const original=object.material;
       // Role groups are optional: a single semantic role is sufficient for unbatched meshes.
       const roles=object.geometry.userData.city?.materialRoles;
+      if(roles!==undefined){
+        const groups=object.geometry.groups,total=object.geometry.index?.count??object.geometry.attributes.position?.count;
+        if(!Array.isArray(roles)||!roles.length||roles.some(r=>typeof r!=='string'||!r)||!groups.length)throw new TypeError(`Invalid material role table on ${object.name}`);
+        let end=0;
+        for(const part of [...groups].sort((a,b)=>a.start-b.start)){
+          if(!Number.isSafeInteger(part.start)||!Number.isSafeInteger(part.count)||part.count<=0||part.start!==end||!Number.isSafeInteger(part.materialIndex)||part.materialIndex<0||part.materialIndex>=roles.length)throw new TypeError(`Invalid material role group on ${object.name}`);
+          end=part.start+part.count;
+        }
+        if(end!==total)throw new TypeError(`Material role groups do not cover geometry on ${object.name}`);
+      }
       const multi=roles?.length && object.geometry.groups.length;
       const create=(role,index)=>{
         if(!style.materialRoles.includes(role)){diagnostics.push({code:'STYLE_ROLE_FALLBACK',stage:'style',featureId:semantic.featureId,message:`${role} uses ${style.fallbackRole}`});role=style.fallbackRole;}

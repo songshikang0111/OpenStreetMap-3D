@@ -21,8 +21,11 @@ try{
     for(const role of ['road','water','foliage','glass'])assert(result.roles.includes(role),`Missing ${role}`);
     results.push(result);await page.screenshot({path:path.join(here,`${id}.png`)});
   }
+  const lifecycle=[];
+  for(let cycle=0;cycle<5;cycle++)for(const id of ['comic','external-cel'])lifecycle.push({cycle,...await page.evaluate(id=>window.runStyle(id),id)});
+  for(const id of ['comic','external-cel']){const samples=lifecycle.filter(s=>s.id===id);assert.equal(new Set(samples.map(s=>s.geometries)).size,1,`${id} geometry growth`);assert.equal(new Set(samples.map(s=>s.textures)).size,1,`${id} texture growth`);}
   assert.deepEqual(errors,[],'Browser/shader errors');
-  const report={date:'2026-11-03',commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),environment:{...(await page.evaluate(()=>window.environment)),platform:os.platform(),cpu:os.cpus()[0]?.model},results,errors,warnings:consoleWarnings,scope:'Component WebGL/decoded shader acceptance, not full-city GPU performance or SDK integration'};
+  const report={date:'2026-11-03',commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),environment:{...(await page.evaluate(()=>window.environment)),platform:os.platform(),cpu:os.cpus()[0]?.model},results,lifecycle,errors,warnings:consoleWarnings,scope:'Component WebGL/decoded shader acceptance, not full-city GPU performance or SDK integration'};
   fs.writeFileSync(path.join(here,'browser-results.json'),JSON.stringify(report,null,2));
   await page.evaluate(()=>window.finish());console.log(JSON.stringify(report,null,2));
 }finally{await browser.close();}

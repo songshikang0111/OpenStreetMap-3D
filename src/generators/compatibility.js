@@ -9,10 +9,13 @@ export function satisfies(version, range) {
   const current = versionTuple(version);
   const compare = target => {const t = versionTuple(target); return current[0]-t[0] || current[1]-t[1] || current[2]-t[2];};
   if (typeof range !== 'string' || !range.trim()) throw new TypeError('A compatibility range is required');
-  return range.trim().split(/\s*\|\|\s*/).some(branch => branch.split(/\s+/).every(token => {
+  const branches=range.trim().split(/\s*\|\|\s*/).map(branch=>branch.split(/\s+/).map(token=>{
     const m = /^(>=|<=|>|<|=|\^|~)?(\d+\.\d+\.\d+)$/.exec(token);
     if (!m) throw new TypeError(`Unsupported compatibility range token: ${token}`);
-    const op=m[1]||'=', cmp=compare(m[2]), t=versionTuple(m[2]);
+    return {op:m[1]||'=',version:m[2],tuple:versionTuple(m[2])};
+  }));
+  return branches.some(branch=>branch.every(({op,version,tuple:t})=>{
+    const cmp=compare(version);
     if(op==='^') return cmp>=0 && (t[0]>0 ? current[0]===t[0] : t[1]>0 ? current[0]===0&&current[1]===t[1] : current[0]===0&&current[1]===0&&current[2]===t[2]);
     if(op==='~') return cmp>=0&&current[0]===t[0]&&current[1]===t[1];
     return op==='>='?cmp>=0:op==='<='?cmp<=0:op==='>'?cmp>0:op==='<'?cmp<0:cmp===0;

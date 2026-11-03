@@ -87,4 +87,3 @@ export function addBeam(writer,a,b,width,color,id=0){
   const ref=Math.abs(y.z)<.9?new THREE.Vector3(0,0,1):new THREE.Vector3(1,0,0),x=new THREE.Vector3().crossVectors(y,ref).normalize(),z=new THREE.Vector3().crossVectors(x,y).normalize();
   orientedBox(writer,a.map((v,i)=>(v+b[i])/2),[x.toArray(),y.toArray(),z.toArray()],[width,length,width],color,id);
 }
-

@@ -27,7 +27,7 @@ const {group,claimedFeatureIds,provenance,diagnostics} = registry.generate(match
 
 把 `packages/styles/cel.js` 复制到项目外目录，改 ID，再 `const {default:style}=await import(pathToFileURL(path))`（Node）或用网页可访问 URL 动态导入（浏览器），然后 `registerStyle(style)`。`bindSceneStyle(group,{style,shared})` 和 `createStylePipeline({renderer,scene,camera,style,shared})` 无需修改核心。完整用例与生命周期见 `packages/styles/README.md`。本例真正替换材质类型、渐变纹理、雾和渲染管线，并覆盖道路、水、树和地标。
 
-场景编解码必须保存 mesh.userData.city、geometry.userData.city、groups、实例矩阵/颜色以及程序属性；解码后调用 bindSceneStyle。`annotateSceneSemantics` 仅是旧 buildCity 的一次性适配，不应替代新场景协议的语义记录。示例不依赖 A 的未合并 codec；组件测试使用 Three ObjectLoader 验证序列化后重新绑定，A/D/E 集成时必须通过实际 codec 复验。静态网页应打包样式模块及 Three.js，不能要求生产访客连接本机服务。
+场景编解码必须保存 mesh.userData.city、geometry.userData.city、groups、facade-v6/foliage-v1 shader 标记、实例矩阵/颜色以及程序属性；解码后调用 bindSceneStyle。`annotateSceneSemantics` 仅是旧 buildCity 的一次性适配，不应替代新场景协议的语义记录。示例不依赖 A 的未合并 codec；组件测试使用 Three ObjectLoader 验证序列化后重新绑定，A/D/E 集成时必须通过实际 codec 复验。静态网页应打包样式模块及 Three.js，不能要求生产访客连接本机服务。
 
 ## 更新与回退
 

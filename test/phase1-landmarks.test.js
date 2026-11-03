@@ -5,9 +5,11 @@ import {createHash} from 'node:crypto';
 import * as THREE from 'three';
 import {parseOSM} from '../src/osm.js';
 import {buildCity} from '../src/city.js';
-import {landmarkKind} from '../src/building-rules.js';
+import {landmarkKind,buildingStyle} from '../src/building-rules.js';
 import {createLandmarkRegistry,checkLandmarkPackage,validateLandmarkRecipe} from '../src/landmark-registry.js';
 import pack from '../packages/landmarks/index.js';
+import {cctvRing} from '../src/landmarks.js';
+import {satisfies} from '../src/generators/compatibility.js';
 const raw=JSON.parse(fs.readFileSync(new URL('../public/data/beijing-cbd.json',import.meta.url)));
 const all=parseOSM(raw),features=all.buildings.filter(landmarkKind);
 const data={...all,buildings:features,roads:[],greens:[],water:[],trees:[],streetNodes:[],treeRows:[],landscapes:[],landscapeContexts:[]};
@@ -40,6 +42,7 @@ test('independent groups retain source heights, geometry role batches and serial
       assert.equal(mesh.userData.city.height,source.height);assert.equal(mesh.userData.city.heightSource,source.source);
       assert(mesh.geometry.groups.length<=3);assert(mesh.geometry.userData.city.materialRoles.includes('glass'));
       for(const name of ['aFacade','aStyle','aLayout','aSurface','objectId'])assert(mesh.geometry.attributes[name]);
+      assert(Math.abs(mesh.geometry.attributes.aStyle.getY(0)-buildingStyle(source,1).variant)<1e-6,'preserve original seeded glass variant');
     }
   }
   assert.equal(JSON.stringify(features),original);
@@ -92,4 +95,28 @@ test('explicit overrides win, duplicate claims diagnose, failed external generat
   assert.equal(result.landmarkGroups.length,1);assert.equal(result.buildings.length,2,'one China Zun generic plus one external group mesh');
   const invalid=createLandmarkRegistry({recipes:[{...pack.recipes[0],parameters:{steps:0}}]});
   const fallback=buildCity(data,{registry:invalid});assert.equal(fallback.buildings.length,5);assert.equal(fallback.landmarkGroups.length,0);
+});
+
+test('external generator may use an uncoloured mesh with the claimed feature ID',()=>{
+  const registry=createLandmarkRegistry({recipes:[{...pack.recipes[0],generator:'uncoloured'}],generators:{uncoloured:match=>{
+    const group=new THREE.Group(),mesh=new THREE.Mesh(new THREE.BoxGeometry(10,100,10),new THREE.MeshStandardMaterial({color:'red'}));
+    mesh.userData.city={schemaVersion:1,featureId:match.claimedFeatureIds[0],materialRole:'structure'};group.add(mesh);
+    return {group,claimedFeatureIds:match.claimedFeatureIds,provenance:{kind:'fixture'},diagnostics:[]};
+  }}});
+  const city=buildCity(data,{registry});assert.equal(city.buildings.length,5);assert.equal(city.landmarkGroups.length,1);
+  city.setProvenance(true);city.setProvenance(false);
+});
+
+test('editable CCTV lean shifts also update the connecting cantilever',()=>{
+  const connector=features.find(f=>f.osmId===547523487);
+  assert.deepEqual(cctvRing(connector,234,{'548126516':[0,0],'548126517':[0,0]}),connector.outer);
+  const moved=cctvRing(connector,234,{'548126516':[7,9],'548126517':[7,9]});
+  assert.deepEqual(moved,connector.outer.map(p=>[p[0]+7,p[1]+9]));
+});
+
+test('compatibility parses every branch and runtime validation agrees with metadata field shapes',()=>{
+  for(const range of ['>=1.0.0 || latest','<0.1.0 latest','>=1.0.0 ||','>=1.0.0 <2.0.0 nonsense'])assert.throws(()=>satisfies('1.0.0',range),/Unsupported/);
+  assert(!checkLandmarkPackage({...pack,engineCompatibility:'>=1.0.0 || latest'}).valid);
+  assert(!validateLandmarkRecipe({...pack.recipes[0],parameters:42,source:'wrong',provenance:'wrong',materialRoles:[1]}).valid);
+  for(const change of [{parameters:[]},{source:[]},{provenance:null},{materialRoles:['glass',4]}])assert(!validateLandmarkRecipe({...pack.recipes[0],...change}).valid);
 });

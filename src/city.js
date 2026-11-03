@@ -57,7 +57,9 @@ export function buildCity(data, { landscapeEnabled = false, inferRoofs = false, 
     if(claimedIds.has(String(building.id))){
       if(!claimedMesh)return;
       const profile=claimedMesh.userData.landmark||{kind:'external',name:claimedMesh.name};
-      claimedMesh.userData.originalColors=claimedMesh.geometry.attributes.color.array.slice();claimedMesh.userData.sourceColor=new THREE.Color(sourceColors[building.source]||sourceColors.estimated);
+      if(claimedMesh.userData.facadeFamily)familyCounts[claimedMesh.userData.facadeFamily]=(familyCounts[claimedMesh.userData.facadeFamily]||0)+1;
+      if(claimedMesh.userData.facadeSurface)surfaceCounts[claimedMesh.userData.facadeSurface]=(surfaceCounts[claimedMesh.userData.facadeSurface]||0)+1;
+      claimedMesh.userData.originalColors=claimedMesh.geometry.attributes.color?.array.slice();claimedMesh.userData.sourceColor=new THREE.Color(sourceColors[building.source]||sourceColors.estimated);
       buildings.push(claimedMesh);landmarks.push({...profile,osmId:building.osmId});return;
     }
     const writer=new MeshWriter(),id=index+1,style=buildingStyle(building,data.seed||1);

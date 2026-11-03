@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import {parseOSM} from '../src/osm.js';
 import {buildCity} from '../src/city.js';
 import {landmarkKind} from '../src/building-rules.js';
-import {getStyle,registerStyle,bindSceneStyle,createStylePipeline,createStyleShared} from '../src/styles/index.js';
+import {getStyle,registerStyle,bindSceneStyle,createStylePipeline,createStyleShared,createFoliageMaterial} from '../src/styles/index.js';
 import cel from '../packages/styles/cel.js';
 import {InkRenderer} from '../src/ink-renderer.js';
 const all=parseOSM(JSON.parse(fs.readFileSync(new URL('../public/data/beijing-cbd.json',import.meta.url))));
@@ -25,6 +25,9 @@ test('official styles bind and dispose; decoded procedural panes/glass use the o
       material.onBeforeCompile(shader);
       assert.equal(shader.uniforms.uGlassReflection,shared.glassReflection);assert.equal(shader.uniforms.uWindows,shared.windows);
       assert(shader.fragmentShader.includes('vFacade'));assert(mesh.geometry.attributes.aStyle);
+      const leaves=decoded.getObjectByName('Distant tree crowns'),leafShader={uniforms:{},vertexShader:THREE.ShaderLib.standard.vertexShader,fragmentShader:THREE.ShaderLib.standard.fragmentShader};
+      assert.equal(leaves.userData.city.shader,'foliage-v1');leaves.material.onBeforeCompile(leafShader);
+      assert(leafShader.fragmentShader.includes('leafTexture(vLeafWorld'),'restore serialized foliage shader');
     }
     binding.dispose();binding.dispose();
   }
@@ -68,5 +71,51 @@ test('repeated ink pipelines isolate shared geometry classifications and release
     assert.deepEqual(scene.children.map(o=>o.geometry.attributes.inkClass.getX(0)),[2,4,1]);
     let released=0;owned.forEach(g=>g.addEventListener('dispose',()=>released++));ink.dispose();ink.dispose();
     assert.equal(released,2);assert(scene.children.every(o=>o.geometry===geometry));
+  }
+});
+
+test('official clones retain borrowed source textures without taking ownership',()=>{
+  const texture=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1),material=new THREE.MeshStandardMaterial({map:texture});
+  material.userData.cityOwnedTextures=['map'];
+  const group=new THREE.Group(),mesh=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),material);
+  mesh.userData.city={schemaVersion:1,featureId:'fixture',materialRole:'ground'};group.add(mesh);
+  let released=0;texture.addEventListener('dispose',()=>released++);
+  const binding=bindSceneStyle(group);assert.equal(mesh.material.map,texture);binding.dispose();
+  assert.equal(released,0);assert.equal(mesh.material,material);
+});
+
+test('damaged role tables/groups cannot silently omit geometry',()=>{
+  const geometry=new THREE.BoxGeometry(1,1,1),group=new THREE.Group(),mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial());
+  mesh.userData.city={schemaVersion:1,featureId:'fixture',materialRole:'wall'};group.add(mesh);
+  geometry.userData.city={schemaVersion:1,materialRoles:['wall']};
+  assert.throws(()=>bindSceneStyle(group),/Invalid material role group/);
+  geometry.userData.city.materialRoles=Array(6).fill('wall');
+  const binding=bindSceneStyle(group);assert.equal(mesh.material.length,6);binding.dispose();
+  geometry.groups[0].count=5;assert.throws(()=>bindSceneStyle(group),/Invalid material role group/);
+});
+
+test('reused ink renderer releases classification clones when a city is removed',()=>{
+  const scene=new THREE.Scene(),geometry=new THREE.BoxGeometry(1,1,1),material=new THREE.MeshStandardMaterial();
+  const a=new THREE.Mesh(geometry,material),b=new THREE.Mesh(geometry,material);a.userData.inkClass=2;b.userData.inkClass=4;scene.add(a,b);
+  const ink=new InkRenderer({},scene,new THREE.PerspectiveCamera());const clone=b.geometry;let freed=0;clone.addEventListener('dispose',()=>freed++);
+  scene.remove(b);ink.prepareScene();assert.equal(freed,1);assert.equal(b.geometry,geometry);assert.equal(ink._classificationClones.size,0);
+  ink.dispose();assert.equal(freed,1);
+});
+
+test('classification follows replacement geometry and never restores an obsolete source',()=>{
+  const scene=new THREE.Scene(),source=new THREE.BoxGeometry(1,1,1),mesh=new THREE.Mesh(source,new THREE.MeshStandardMaterial());mesh.userData.inkClass=2;scene.add(mesh);
+  const ink=new InkRenderer({},scene,new THREE.PerspectiveCamera());
+  const replacement=new THREE.BoxGeometry(2,2,2);mesh.geometry=replacement;ink.prepareScene();assert.equal(replacement.attributes.inkClass.getX(0),2);
+  mesh.userData.inkClass=4;ink.prepareScene();const firstClone=mesh.geometry;assert.notEqual(firstClone,replacement);
+  let freed=0;firstClone.addEventListener('dispose',()=>freed++);
+  const finalSource=new THREE.BoxGeometry(3,3,3);finalSource.userData.inkClass=1;
+  mesh.geometry=finalSource;mesh.userData.inkClass=3;ink.prepareScene();assert.equal(freed,1);assert.notEqual(mesh.geometry,finalSource);
+  ink.dispose();assert.equal(mesh.geometry,finalSource);assert.notEqual(mesh.geometry,replacement);
+});
+
+test('foliage material service supports a generic material source safely',()=>{
+  for(const source of [new THREE.MeshBasicMaterial({color:'green'}),new THREE.ShaderMaterial(),new THREE.Material()]){
+    const material=createFoliageMaterial(source);assert(Number.isFinite(material.roughness));assert(Number.isFinite(material.metalness));assert(material.color.isColor);
+    const shader={uniforms:{},vertexShader:THREE.ShaderLib.standard.vertexShader,fragmentShader:THREE.ShaderLib.standard.fragmentShader};material.onBeforeCompile(shader);assert(shader.fragmentShader.includes('leafTexture(vLeafWorld'));material.dispose();
   }
 });

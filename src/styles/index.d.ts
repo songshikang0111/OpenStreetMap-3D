@@ -9,6 +9,7 @@ export function registerStyle(style:StylePack):StylePack;
 export function validateStyle(style:unknown):StylePack;
 export function createStyleShared(values?:Record<string,unknown>):SharedUniforms;
 export function createFacadeMaterial(shared:SharedUniforms,source?:Material):Material;
+export function createFoliageMaterial(source?:Material):Material;
 export function annotateSceneSemantics<T extends Object3D>(group:T):T;
 export function bindSceneStyle(group:Group,{style,shared}?:{style?:StyleSelection;shared?:SharedUniforms}):StyleBinding;
 export function createStylePipeline(options:{renderer:WebGLRenderer;scene:Scene;camera:Camera;style?:StyleSelection;shared?:SharedUniforms}):StylePipeline & {style:StylePack;shared:SharedUniforms};

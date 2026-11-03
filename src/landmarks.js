@@ -53,7 +53,8 @@ export function cctvRing(building,y,shifts=cctvShifts){
   if(building.osmId===547523487){
     // Connect the sloping legs at the cantilever. The six-point OSM L-shaped part
     // supplies the topology; this interpolation supplies the missing sloped form.
-    return building.outer.map(p=>{const t=Math.max(0,Math.min(1,(p[0]-Math.min(...building.outer.map(p=>p[0])))/105));return[p[0]+13*(1-t)-21*t,p[1]+23*(1-t)-11*t];});
+    const left=shifts[548126516]||[0,0],right=shifts[548126517]||[0,0];
+    return building.outer.map(p=>{const t=Math.max(0,Math.min(1,(p[0]-Math.min(...building.outer.map(p=>p[0])))/105));return[p[0]+left[0]*(1-t)+right[0]*t,p[1]+left[1]*(1-t)+right[1]*t];});
   }
   return building.outer;
 }

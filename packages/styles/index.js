@@ -13,8 +13,12 @@ export function createOfficialStyle(id,mode) {
     createMaterial({object,role,sourceMaterial,services,shared}) {
       if(id==='white')return new THREE.MeshStandardMaterial({color:'#e5e5df',roughness:1,side:sourceMaterial?.side??THREE.FrontSide});
       if(object.userData.city?.shader==='facade-v6')return services.createFacadeMaterial(shared,sourceMaterial);
+      if(object.userData.city?.shader==='foliage-v1'||role==='foliage')return services.createFoliageMaterial(sourceMaterial);
       // Preserve vertex/instance colours, transparency, and material-specific road/foliage settings.
       const material=sourceMaterial?.clone?.()||new THREE.MeshStandardMaterial({vertexColors:!!object.geometry.attributes.color,roughness:.98});
+      // Cloned maps still belong to the source, even if its prior creator marked
+      // them as owned. This new binding must not inherit that ownership claim.
+      delete material.userData.cityOwnedTextures;
       if(role==='water'){material.roughness=.35;material.metalness=.12;}
       return material;
     },

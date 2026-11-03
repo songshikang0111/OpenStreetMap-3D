@@ -6,6 +6,7 @@ import {satisfies, versionTuple} from './generators/compatibility.js';
 
 export const LANDMARK_ENGINE_VERSION = '1.0.0';
 const clone = value => JSON.parse(JSON.stringify(value));
+const isObject=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const sourceKey = f => `${f.osmType}/${f.osmId}`;
 const error = (code,message,recipeId,featureIds=[]) => ({code,stage:'landmarks',recipeId,featureIds,message,hint:'Check recipe identity, required parts, generator and engine compatibility; degraded mode preserves generic source geometry.'});
 
@@ -20,7 +21,8 @@ export function validateLandmarkRecipe(recipe) {
     const b=recipe.match.bounds;
     if(b && (![b.south,b.west,b.north,b.east].every(Number.isFinite)||b.south>=b.north||b.west>=b.east||b.south< -90||b.north>90||b.west< -180||b.east>180)) throw new Error('Invalid geographic match.bounds');
     if(recipe.anchor?.kind!=='source-footprint'||recipe.orientation?.kind!=='source'||recipe.orientation.radians!==0) throw new Error('v1 supports source-footprint anchors and source orientation (radians: 0)');
-    if(!recipe.parameters||!Array.isArray(recipe.materialRoles)||!recipe.materialRoles.length||!recipe.source||!recipe.provenance) throw new Error('Recipe parameters/materialRoles/source/provenance required');
+    if(!isObject(recipe.parameters)||!Array.isArray(recipe.materialRoles)||!recipe.materialRoles.length||recipe.materialRoles.some(r=>typeof r!=='string'||!r)||!isObject(recipe.source)||!isObject(recipe.provenance)) throw new Error('Recipe parameters/source/provenance must be objects and materialRoles nonempty strings');
+    if(recipe.priority!==undefined&&!Number.isFinite(recipe.priority))throw new Error('Recipe priority must be finite');
     clone(recipe);
   } catch(e) {errors.push(error('LANDMARK_RECIPE_INVALID',e.message,recipe?.id));}
   return {valid:!errors.length,diagnostics:errors};
