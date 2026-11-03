@@ -1,0 +1,285 @@
+{
+  "date": "2026-11-03T15:09:02.981Z",
+  "head": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "root": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink",
+  "output": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-geometry\\final-runs\\2026-11-03T15-08-52-090Z-55862f0a2649",
+  "status": "pass",
+  "items": [
+    {
+      "path": "verify-boundaries.mjs",
+      "sha256": "d600512fcec829d31c1d71b3381e5f8a115df6893ee6fa7891c8e6893b1646a9",
+      "bytes": 6949
+    },
+    {
+      "path": "verify-frozen-additions.mjs",
+      "sha256": "9c4fa92a566019377370b59b02a3f2685be03cd93bb6855e1d18bffc1576d72b",
+      "bytes": 2203
+    },
+    {
+      "path": "verify-vertical-boundary.mjs",
+      "sha256": "18837a84d6714fc7531efdd1a524cae5899a3cf9d923fe07f16dbc06e1a7836f",
+      "bytes": 4409
+    },
+    {
+      "path": "sweep-mixed-ground.mjs",
+      "sha256": "df89c01bd2ef334f69c03a0a5db96975173a047eddb9e3a11548aa0d217dee3a",
+      "bytes": 3310
+    },
+    {
+      "path": "sweep-mixed-road.mjs",
+      "sha256": "2a2ca4b2550546a190707f01bbca4532a13066139a9c99bb6a7c45f6925501ad",
+      "bytes": 3478
+    },
+    {
+      "path": "repro-mixed-lod-bridge.mjs",
+      "sha256": "430289a559e71898234701b5269d817f9f2dcf512ae948261c239a611f7ef10f",
+      "bytes": 3010
+    },
+    {
+      "path": "verify-mixed-water.mjs",
+      "sha256": "4048e03994f9aeb5137d0e9202989ef62bac34efe5d5737cd54343b30a0b5830",
+      "bytes": 2279
+    },
+    {
+      "path": "verify-near-contract.mjs",
+      "sha256": "88452fc2ef2d00255ec847162db2e99fa8bec5e14ed3b5bd05049d03e8b017cd",
+      "bytes": 2515
+    },
+    {
+      "path": "verify-world-atomic-domain.mjs",
+      "sha256": "957630bbd4e3c457fe3321c94b26a7341bdcda554d528e33dd2f55ca7e1deef7",
+      "bytes": 7285
+    },
+    {
+      "path": "verify-internal-identities.mjs",
+      "sha256": "7afb5670cf56c79d24dad10c8563d320f84634d33199c563402b67490fd929d1",
+      "bytes": 6439
+    },
+    {
+      "path": "repro-rounded-boundary.mjs",
+      "sha256": "789d48b0d2b9affc080b18ccde0a11993fc205fc7f05d61743e54ad4d50f8428",
+      "bytes": 2094
+    },
+    {
+      "path": "diagnose-guardrail-domain.mjs",
+      "sha256": "807f9c12a8cfc20592cb425a7fc54691e5602ec7b9e68db6c4d521672cdaa93b",
+      "bytes": 3924
+    },
+    {
+      "path": "identity-requests-boundary-fixed.json",
+      "sha256": "e255a243d478ea7e73305413c2cbdf1dce227706231365682334145781198411",
+      "bytes": 4506
+    },
+    {
+      "path": "guardrail-domain-diagnostic.json",
+      "sha256": "1dfef909b45adc19edb380c10232e11c91a5df91b9d69705529bfa49b31def09",
+      "bytes": 6477
+    },
+    {
+      "path": "finding-rounded-boundary.md",
+      "sha256": "5b66b40aef0155ee2b3b4127bd477bd715c38ddc89e009a2664ccf7546465e89",
+      "bytes": 3058
+    },
+    {
+      "path": "failure-archive-manifest.json",
+      "sha256": "c453ffa48756e40444300f4dbba8cf14bf2f26e146be761db5680ee31387a8b7",
+      "bytes": 1571
+    },
+    {
+      "path": "runner-before-rounded-boundary-fix.mjs",
+      "sha256": "78ce8f8eea56b6254d04cfffcdccae44bf0d3c37e9107a20ab9ef5a1ff152109",
+      "bytes": 6678
+    },
+    {
+      "path": "run-final-geometry.mjs",
+      "sha256": "37dbff0d1dafbf1bbea0e21b058e29d4cd67814c2dacdee07d860600251402f7",
+      "bytes": 8136
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/boundary-results.json",
+      "sha256": "2351e16317cd64a1a0063c2220b39dd6004c6654cacf78f67b296a75e8065f54",
+      "bytes": 1046
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/diagnose-guardrail-domain.mjs",
+      "sha256": "fbc1e0ce0d251c538e43fb8b5b34658214233e05feedaee9181fde37ac852aa8",
+      "bytes": 4550
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/diagnose-guardrail-domain.mjs.log",
+      "sha256": "b5b1463983f4ce9f70bc3a882877094f9edbd1f25fb41b1780813728899d3fe2",
+      "bytes": 1178
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/frozen-addition-results.json",
+      "sha256": "c911727a6c49b6ee1c6e41648468d8bd450c51bbc3012b82ad7aa209f9d6008c",
+      "bytes": 458
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/guardrail-domain-diagnostic.json",
+      "sha256": "137ec7fba227ed80ad6dc27abcaca7d1cbf6a1efb9c0f6fd82b85fb34d216782",
+      "bytes": 976
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/identity-proof-results.json",
+      "sha256": "4f85679c1d9e98eb86992fa189b3a2dbab23c9a8467dad814998a9a2b28ccc8a",
+      "bytes": 4554
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/mixed-lod-bridge-results.json",
+      "sha256": "245a4f355c455f634a3975c623254e7fbba8306a0f4ff248d6e04f481a3e1ff3",
+      "bytes": 502
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/mixed-lod-sweep-ground-results.json",
+      "sha256": "88c74b224a690f0c6e1a71cab6348ba52a0c5b4a297d8fd535befdfdba5c2348",
+      "bytes": 18429
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/mixed-lod-sweep-road-results.json",
+      "sha256": "d489bbca679337fbe68edc2c9e3a32e9ace34f63025e552f3d2d87a63c867731",
+      "bytes": 17738
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/near-contract-results.json",
+      "sha256": "32fdd70ad39e8734316cab459ec784afc648f95c3b7d4db46efc14cabf6a138c",
+      "bytes": 596
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/repro-mixed-lod-bridge.mjs",
+      "sha256": "44e63df9aab864e7c584ef3f0b36fc39766d3911340907df82ee838b41de8d1e",
+      "bytes": 3413
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/repro-mixed-lod-bridge.mjs.log",
+      "sha256": "5a69a785515692f1abe3c7370c56e128c9ba5d9df8892e46c5bf2377f25e916e",
+      "bytes": 643
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/repro-rounded-boundary.mjs",
+      "sha256": "1ae414173c965929160783d308538a3016ff42a9fc938d0e451a665544e69b16",
+      "bytes": 2319
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/repro-rounded-boundary.mjs.log",
+      "sha256": "f6cc8eaa6343b8bea6ac97254b66ac2cc76c7fa7340519231210e93e620bd827",
+      "bytes": 631
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/rounded-boundary-results.json",
+      "sha256": "ed0ce4b90e4cf9de5e83d79027e63f4219530563d46f983ccf89fe947b27fd4b",
+      "bytes": 498
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/summary.json",
+      "sha256": "0c892cf37060154b616e980f1971d724d88fc21424bc084d9516268c10b0ca96",
+      "bytes": 43530
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/sweep-mixed-ground.mjs",
+      "sha256": "3a0a1fcadee46e0e65fb335831a1780d9bc64f6a5a2f0410a969e4f695807c66",
+      "bytes": 3713
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/sweep-mixed-ground.mjs.log",
+      "sha256": "3fafe50142b649e629aa351308861265402732f961f0aaafbff0b39300c75fa8",
+      "bytes": 550
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/sweep-mixed-road.mjs",
+      "sha256": "72fbc79d8772691b0305463e3eb8984e9ee1793c9bda9dcfdcf1bd3bd9e94343",
+      "bytes": 3881
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/sweep-mixed-road.mjs.log",
+      "sha256": "a3ebfa7f02631be10f10385bb219d885492f1de769682260861cd8b802d47e79",
+      "bytes": 546
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-boundaries.mjs",
+      "sha256": "6523037855644e5ad8f8451f135cbdfb810274c267ca7f1ae6708e67594c9667",
+      "bytes": 7536
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-boundaries.mjs.log",
+      "sha256": "cf0dfe65e09ac82b35e5d848f71c1276ffff80773fc99893b78538a47ccefa74",
+      "bytes": 1214
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-frozen-additions.mjs",
+      "sha256": "d9b7ebf5783d90c45243c35b5b6ea609cd8bfea39b74bd46b26676917e76fa50",
+      "bytes": 2612
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-frozen-additions.mjs.log",
+      "sha256": "b87320ae99b89de5ecd631c0308c6e33c640ab6605c8b618b06f92c850a9f0f2",
+      "bytes": 595
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-internal-identities.mjs",
+      "sha256": "e91a2eb35f241cd4d6e65d85cda47f3d6bd42e1d29ca4f82b2ef427dac120be9",
+      "bytes": 7356
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-internal-identities.mjs.log",
+      "sha256": "705a59a16ac0060b3e34d844a796777d1193ac498d4abbc241c30a58e0fac4d4",
+      "bytes": 463
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-mixed-water.mjs",
+      "sha256": "4a5820dd3ef0dc4b6d1e6cebde59d213a490e01fbe4d048705419991bd294bef",
+      "bytes": 2682
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-mixed-water.mjs.log",
+      "sha256": "00de64d151d488799c185c7279209b3ad35c39b0cb620d83994788e7d91dc18e",
+      "bytes": 367
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-near-contract.mjs",
+      "sha256": "0e7650168bf9eb98314fc9c355755d8872d33c95e272ecec6942a06d41f6ff62",
+      "bytes": 2918
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-near-contract.mjs.log",
+      "sha256": "3aedff12c25a01c267d47573f4f6fe16a5beabc30495660765153466f5f71641",
+      "bytes": 720
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-vertical-boundary.mjs",
+      "sha256": "763fa884f9acd142b47b2a11ceaad15fc4ae31283f975d0219a765fbae9549cd",
+      "bytes": 4738
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-vertical-boundary.mjs.log",
+      "sha256": "9ed0bca4d4a33aa444ff989fc6acfffe4c43e077b41edfc9f345bb107a484cfd",
+      "bytes": 737
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-world-atomic-domain.mjs",
+      "sha256": "aba77f4e7f26daed78f4417b042d0bf8e677911d1e2141b9b64261c1a802af7f",
+      "bytes": 7688
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/verify-world-atomic-domain.mjs.log",
+      "sha256": "0681ebff7b0de0d8a7e0f98d26fc9fd4d798eb649f33b55ed77fd8f67e482336",
+      "bytes": 12685
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/vertical-boundary-results.json",
+      "sha256": "5c7da9ac6285eaa878c6e96641371b389596780d96b84a02663efff06a266617",
+      "bytes": 582
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/water-mixed-results.json",
+      "sha256": "b5074d299b1728876a64baa7938293d3e730c6ae1ea76dd7b6b052df9cca7524",
+      "bytes": 8017
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/world-atomic-domain-results.json",
+      "sha256": "4943b471539e1d1f47de7bdd37d8650b9611de6f390147421839fdd7f6372c99",
+      "bytes": 24564
+    }
+  ],
+  "instructions": "Archive canonical scripts, identity-requests.json, this runner and this exact final-runs folder. Run from the repository checkout: node <runner> --run --assets-root=<frozen or regenerated official cases directory>. The runner verifies integrated patches/frozen core and creates fresh evidence; it does not reuse dirty-source pass data."
+}

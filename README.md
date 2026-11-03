@@ -2,7 +2,7 @@
 
 本地城市生成工具链与 Three.js / WebGL 2 SDK：定位地点、确定范围、下载或导入 OSM、离线构建连续区域、预览画风，并交付可复现项目和静态网页。维护者不运营地图或构建服务器。包名暂沿用 `beijing-city-ink`，本轮仅本地打包，不远端发布。
 
-工具链已在集成分支交付：264项测试、类型检查、生产构建和隔离安装包验证通过。主对话已补齐独立工作台UI验收，但真实下载、默认绘制预算、LOD稳定性、自定义风格静态导出和风格参数一致性仍有缺口，一期整体验收不通过。逐项结果与修复后的放行条件见 [最新整体验收](docs/phase1-evidence/root-acceptance/acceptance.md)；RTX4090的12组60秒帧统计及历史证据见 [集成验收](docs/phase1-evidence/integration/acceptance.md)，完整约定见 [一期规划](docs/phase1-plan.md)。历史版本与视觉研究保留在本文后半部分。
+一期已在集成分支完成，AC01–AC27 独立验收全部通过：344项测试、严格类型、三套构建和140文件生产安装包验证通过。参考RTX4090上的北京/京都12组60秒路径及60轮资源往返通过，默认整帧预算不变；实际支持范围、下载源限制和可复跑证据见 [最新整体验收](docs/phase1-evidence/remediation/root-acceptance/acceptance.md)。[首次失败报告](docs/phase1-evidence/root-acceptance/acceptance.md)与旧原始记录保留，完整约定见 [一期规划](docs/phase1-plan.md)。历史版本与视觉研究保留在本文后半部分。
 
 ## 快速开始
 
@@ -133,7 +133,7 @@ npm run build     # 生成 dist/
 npm run preview   # 预览生产构建；请先停止同端口的 dev 服务
 ```
 
-当前通过121项完整自动测试与生产构建。v0.2的历史截图和评分见 [对比验收报告](docs/comparison-report.md)；依据见 [需求与评分约定](docs/comparison-requirements.md)及[原项目证据研究](docs/research-evidence.md)。构建仍会提示 Three.js 分包超过500kB，这是体积提示，不是失败。
+该历史阶段记录为121项完整自动测试与生产构建通过；当前一期结果见本文开头。v0.2的历史截图和评分见 [对比验收报告](docs/comparison-report.md)；依据见 [需求与评分约定](docs/comparison-requirements.md)及[原项目证据研究](docs/research-evidence.md)。构建仍会提示 Three.js 分包超过500kB，这是体积提示，不是失败。
 
 ## v0.2 已实现
 

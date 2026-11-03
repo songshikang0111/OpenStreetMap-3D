@@ -1,0 +1,1069 @@
+{
+  "date": "2026-11-03T15:07:12.740Z",
+  "status": "pass",
+  "archive": {
+    "filename": "beijing-city-ink-0.8.1.tgz",
+    "size": 560316,
+    "unpackedSize": 2057327,
+    "integrity": "sha512-HReBDX0ozFiTqVJB0qLuV83TP85UJFmZsKEG+vFeEytYRCv9Z4+vtvHRo6m40HOskw3OITxveFJWy0oxFkEVSg==",
+    "shasum": "8e6fd20e4ced3c9a354493fdbe7a6d29cfeb0f0f",
+    "files": [
+      {
+        "path": "CONTRIBUTING.md",
+        "size": 1698,
+        "mode": 420
+      },
+      {
+        "path": "DATA_LICENSE.md",
+        "size": 1138,
+        "mode": 420
+      },
+      {
+        "path": "LICENSE",
+        "size": 1267,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 23161,
+        "mode": 420
+      },
+      {
+        "path": "bin/city.js",
+        "size": 417,
+        "mode": 420
+      },
+      {
+        "path": "dist-sdk/city-ink.js",
+        "size": 1129728,
+        "mode": 420
+      },
+      {
+        "path": "docs/extensions.md",
+        "size": 10598,
+        "mode": 420
+      },
+      {
+        "path": "docs/phase1-plan.md",
+        "size": 39949,
+        "mode": 420
+      },
+      {
+        "path": "docs/support.md",
+        "size": 4869,
+        "mode": 420
+      },
+      {
+        "path": "examples/quickstart/index.html",
+        "size": 821,
+        "mode": 420
+      },
+      {
+        "path": "examples/quickstart/main.js",
+        "size": 1016,
+        "mode": 420
+      },
+      {
+        "path": "examples/quickstart/make-recipe-package.mjs",
+        "size": 613,
+        "mode": 420
+      },
+      {
+        "path": "examples/quickstart/sepia-style.js",
+        "size": 931,
+        "mode": 420
+      },
+      {
+        "path": "examples/quickstart/typecheck.ts",
+        "size": 2480,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 2604,
+        "mode": 420
+      },
+      {
+        "path": "packages/landmarks/index.d.ts",
+        "size": 773,
+        "mode": 420
+      },
+      {
+        "path": "packages/landmarks/index.js",
+        "size": 1623,
+        "mode": 420
+      },
+      {
+        "path": "packages/landmarks/LICENSE",
+        "size": 1267,
+        "mode": 420
+      },
+      {
+        "path": "packages/landmarks/package.json",
+        "size": 373,
+        "mode": 420
+      },
+      {
+        "path": "packages/landmarks/README.md",
+        "size": 2374,
+        "mode": 420
+      },
+      {
+        "path": "packages/styles/cel.d.ts",
+        "size": 99,
+        "mode": 420
+      },
+      {
+        "path": "packages/styles/cel.js",
+        "size": 1624,
+        "mode": 420
+      },
+      {
+        "path": "packages/styles/index.d.ts",
+        "size": 1995,
+        "mode": 420
+      },
+      {
+        "path": "packages/styles/index.js",
+        "size": 2269,
+        "mode": 420
+      },
+      {
+        "path": "packages/styles/LICENSE",
+        "size": 1267,
+        "mode": 420
+      },
+      {
+        "path": "packages/styles/package.json",
+        "size": 492,
+        "mode": 420
+      },
+      {
+        "path": "packages/styles/README.md",
+        "size": 5062,
+        "mode": 420
+      },
+      {
+        "path": "schemas/landmark-recipe.schema.json",
+        "size": 1822,
+        "mode": 420
+      },
+      {
+        "path": "schemas/project.schema.json",
+        "size": 5041,
+        "mode": 420
+      },
+      {
+        "path": "schemas/scene.schema.json",
+        "size": 7556,
+        "mode": 420
+      },
+      {
+        "path": "schemas/style.schema.json",
+        "size": 5616,
+        "mode": 420
+      },
+      {
+        "path": "scripts/serve-static.mjs",
+        "size": 1953,
+        "mode": 420
+      },
+      {
+        "path": "src/baseline/city-v1.js",
+        "size": 14091,
+        "mode": 420
+      },
+      {
+        "path": "src/baseline/ink-v1.js",
+        "size": 6182,
+        "mode": 420
+      },
+      {
+        "path": "src/building-envelope.js",
+        "size": 3903,
+        "mode": 420
+      },
+      {
+        "path": "src/building-rules.js",
+        "size": 4236,
+        "mode": 420
+      },
+      {
+        "path": "src/city.js",
+        "size": 15264,
+        "mode": 420
+      },
+      {
+        "path": "src/cli/browser-export.js",
+        "size": 2921,
+        "mode": 420
+      },
+      {
+        "path": "src/cli/browser-session.js",
+        "size": 6535,
+        "mode": 420
+      },
+      {
+        "path": "src/cli/export.js",
+        "size": 3305,
+        "mode": 420
+      },
+      {
+        "path": "src/cli/index.d.ts",
+        "size": 772,
+        "mode": 420
+      },
+      {
+        "path": "src/cli/index.js",
+        "size": 13646,
+        "mode": 420
+      },
+      {
+        "path": "src/cli/jobs.js",
+        "size": 9240,
+        "mode": 420
+      },
+      {
+        "path": "src/cli/landmarks.js",
+        "size": 5980,
+        "mode": 420
+      },
+      {
+        "path": "src/cli/project-lock.js",
+        "size": 2287,
+        "mode": 420
+      },
+      {
+        "path": "src/cli/project.js",
+        "size": 6789,
+        "mode": 420
+      },
+      {
+        "path": "src/cli/tasks.js",
+        "size": 12631,
+        "mode": 420
+      },
+      {
+        "path": "src/cli/worker.js",
+        "size": 1304,
+        "mode": 420
+      },
+      {
+        "path": "src/core/config.js",
+        "size": 6192,
+        "mode": 420
+      },
+      {
+        "path": "src/core/contract.js",
+        "size": 3669,
+        "mode": 420
+      },
+      {
+        "path": "src/core/geometry.js",
+        "size": 15785,
+        "mode": 420
+      },
+      {
+        "path": "src/core/index.d.ts",
+        "size": 5035,
+        "mode": 420
+      },
+      {
+        "path": "src/core/index.js",
+        "size": 32368,
+        "mode": 420
+      },
+      {
+        "path": "src/core/lod-batching.js",
+        "size": 7395,
+        "mode": 420
+      },
+      {
+        "path": "src/core/lod-simplify.js",
+        "size": 2568,
+        "mode": 420
+      },
+      {
+        "path": "src/core/lod-surfaces.js",
+        "size": 13065,
+        "mode": 420
+      },
+      {
+        "path": "src/core/scene-codec.d.ts",
+        "size": 474,
+        "mode": 420
+      },
+      {
+        "path": "src/core/scene-codec.js",
+        "size": 13762,
+        "mode": 420
+      },
+      {
+        "path": "src/core/scene-manifest.d.ts",
+        "size": 160,
+        "mode": 420
+      },
+      {
+        "path": "src/core/scene-manifest.js",
+        "size": 7329,
+        "mode": 420
+      },
+      {
+        "path": "src/core/spatial-partition.js",
+        "size": 4785,
+        "mode": 420
+      },
+      {
+        "path": "src/data/common.js",
+        "size": 4278,
+        "mode": 420
+      },
+      {
+        "path": "src/data/errors.js",
+        "size": 279,
+        "mode": 420
+      },
+      {
+        "path": "src/data/http.js",
+        "size": 4908,
+        "mode": 420
+      },
+      {
+        "path": "src/data/index.d.ts",
+        "size": 3584,
+        "mode": 420
+      },
+      {
+        "path": "src/data/index.js",
+        "size": 420,
+        "mode": 420
+      },
+      {
+        "path": "src/data/normalize.js",
+        "size": 3792,
+        "mode": 420
+      },
+      {
+        "path": "src/data/overpass.js",
+        "size": 5813,
+        "mode": 420
+      },
+      {
+        "path": "src/data/search.js",
+        "size": 5146,
+        "mode": 420
+      },
+      {
+        "path": "src/data/source.js",
+        "size": 5495,
+        "mode": 420
+      },
+      {
+        "path": "src/depth-policy.js",
+        "size": 975,
+        "mode": 420
+      },
+      {
+        "path": "src/distance-style.js",
+        "size": 1360,
+        "mode": 420
+      },
+      {
+        "path": "src/facade-layout.js",
+        "size": 5765,
+        "mode": 420
+      },
+      {
+        "path": "src/facade-loft.js",
+        "size": 1313,
+        "mode": 420
+      },
+      {
+        "path": "src/facade-shader.js",
+        "size": 12742,
+        "mode": 420
+      },
+      {
+        "path": "src/foliage.js",
+        "size": 13757,
+        "mode": 420
+      },
+      {
+        "path": "src/generators/compatibility.js",
+        "size": 1461,
+        "mode": 420
+      },
+      {
+        "path": "src/generators/mesh-tools.js",
+        "size": 5785,
+        "mode": 420
+      },
+      {
+        "path": "src/generators/official.js",
+        "size": 2573,
+        "mode": 420
+      },
+      {
+        "path": "src/halftone.js",
+        "size": 1219,
+        "mode": 420
+      },
+      {
+        "path": "src/ink-renderer.js",
+        "size": 24481,
+        "mode": 420
+      },
+      {
+        "path": "src/landmark-registry.d.ts",
+        "size": 2170,
+        "mode": 420
+      },
+      {
+        "path": "src/landmark-registry.js",
+        "size": 10226,
+        "mode": 420
+      },
+      {
+        "path": "src/landmarks.js",
+        "size": 5536,
+        "mode": 420
+      },
+      {
+        "path": "src/landscape-markings.js",
+        "size": 2589,
+        "mode": 420
+      },
+      {
+        "path": "src/landscape-plan.js",
+        "size": 29080,
+        "mode": 420
+      },
+      {
+        "path": "src/landscape-tags.js",
+        "size": 4575,
+        "mode": 420
+      },
+      {
+        "path": "src/landscape.js",
+        "size": 6270,
+        "mode": 420
+      },
+      {
+        "path": "src/local-server/index.d.ts",
+        "size": 1097,
+        "mode": 420
+      },
+      {
+        "path": "src/local-server/index.js",
+        "size": 16720,
+        "mode": 420
+      },
+      {
+        "path": "src/local-server/project-styles.js",
+        "size": 1325,
+        "mode": 420
+      },
+      {
+        "path": "src/locations.js",
+        "size": 3701,
+        "mode": 420
+      },
+      {
+        "path": "src/main.js",
+        "size": 28520,
+        "mode": 420
+      },
+      {
+        "path": "src/osm.js",
+        "size": 12674,
+        "mode": 420
+      },
+      {
+        "path": "src/paint-inlay.js",
+        "size": 1244,
+        "mode": 420
+      },
+      {
+        "path": "src/road-grade.js",
+        "size": 14821,
+        "mode": 420
+      },
+      {
+        "path": "src/road-stairs.js",
+        "size": 9030,
+        "mode": 420
+      },
+      {
+        "path": "src/road-structures.js",
+        "size": 10883,
+        "mode": 420
+      },
+      {
+        "path": "src/road-surface.js",
+        "size": 27251,
+        "mode": 420
+      },
+      {
+        "path": "src/roofs.js",
+        "size": 5640,
+        "mode": 420
+      },
+      {
+        "path": "src/runtime/camera.js",
+        "size": 1281,
+        "mode": 420
+      },
+      {
+        "path": "src/runtime/gpu-timer.js",
+        "size": 10022,
+        "mode": 420
+      },
+      {
+        "path": "src/runtime/integrations.js",
+        "size": 406,
+        "mode": 420
+      },
+      {
+        "path": "src/runtime/manifest.js",
+        "size": 4194,
+        "mode": 420
+      },
+      {
+        "path": "src/runtime/near-details.js",
+        "size": 9823,
+        "mode": 420
+      },
+      {
+        "path": "src/runtime/policy.js",
+        "size": 6092,
+        "mode": 420
+      },
+      {
+        "path": "src/runtime/render-cost.js",
+        "size": 5379,
+        "mode": 420
+      },
+      {
+        "path": "src/runtime/resources.js",
+        "size": 3700,
+        "mode": 420
+      },
+      {
+        "path": "src/runtime/statistics.js",
+        "size": 2026,
+        "mode": 420
+      },
+      {
+        "path": "src/runtime/streamer.js",
+        "size": 21454,
+        "mode": 420
+      },
+      {
+        "path": "src/runtime/style-quality.js",
+        "size": 287,
+        "mode": 420
+      },
+      {
+        "path": "src/sdk/exports.js",
+        "size": 8887,
+        "mode": 420
+      },
+      {
+        "path": "src/sdk/index.d.ts",
+        "size": 3853,
+        "mode": 420
+      },
+      {
+        "path": "src/sdk/index.js",
+        "size": 20245,
+        "mode": 420
+      },
+      {
+        "path": "src/streetlife.js",
+        "size": 43179,
+        "mode": 420
+      },
+      {
+        "path": "src/style.css",
+        "size": 11465,
+        "mode": 420
+      },
+      {
+        "path": "src/styles/index.d.ts",
+        "size": 1870,
+        "mode": 420
+      },
+      {
+        "path": "src/styles/index.js",
+        "size": 10463,
+        "mode": 420
+      },
+      {
+        "path": "src/styles/parameters.js",
+        "size": 4209,
+        "mode": 420
+      },
+      {
+        "path": "src/styles/project-bundle.d.ts",
+        "size": 435,
+        "mode": 420
+      },
+      {
+        "path": "src/styles/project-bundle.js",
+        "size": 8971,
+        "mode": 420
+      },
+      {
+        "path": "src/styles/project-contract.d.ts",
+        "size": 534,
+        "mode": 420
+      },
+      {
+        "path": "src/styles/project-contract.js",
+        "size": 2271,
+        "mode": 420
+      },
+      {
+        "path": "src/styles/project-loader.d.ts",
+        "size": 554,
+        "mode": 420
+      },
+      {
+        "path": "src/styles/project-loader.js",
+        "size": 2452,
+        "mode": 420
+      },
+      {
+        "path": "src/styles/viewer-entry.js",
+        "size": 302,
+        "mode": 420
+      },
+      {
+        "path": "src/tree-clearance.js",
+        "size": 6563,
+        "mode": 420
+      },
+      {
+        "path": "src/vegetation-rules.js",
+        "size": 2276,
+        "mode": 420
+      },
+      {
+        "path": "src/view-state.js",
+        "size": 1768,
+        "mode": 420
+      },
+      {
+        "path": "studio/api.js",
+        "size": 5305,
+        "mode": 420
+      },
+      {
+        "path": "studio/dist/assets/index-Cv6U9Mg_.css",
+        "size": 4435,
+        "mode": 420
+      },
+      {
+        "path": "studio/dist/assets/index-DHnQN-zn.js",
+        "size": 22007,
+        "mode": 420
+      },
+      {
+        "path": "studio/dist/index.html",
+        "size": 8309,
+        "mode": 420
+      },
+      {
+        "path": "studio/index.html",
+        "size": 8204,
+        "mode": 420
+      },
+      {
+        "path": "studio/main.js",
+        "size": 18248,
+        "mode": 420
+      },
+      {
+        "path": "studio/project-settings.js",
+        "size": 3484,
+        "mode": 420
+      },
+      {
+        "path": "studio/settings.js",
+        "size": 2741,
+        "mode": 420
+      },
+      {
+        "path": "studio/static-viewer.html",
+        "size": 818,
+        "mode": 420
+      },
+      {
+        "path": "studio/static-viewer.js",
+        "size": 1706,
+        "mode": 420
+      },
+      {
+        "path": "studio/style.css",
+        "size": 4442,
+        "mode": 420
+      }
+    ]
+  },
+  "consumer": {
+    "offlineInstall": true,
+    "strictTypes": true,
+    "cli": [
+      {
+        "args": [
+          "--help",
+          "--json"
+        ],
+        "result": {
+          "schemaVersion": 1,
+          "status": "succeeded",
+          "artifacts": [],
+          "diagnostics": [],
+          "help": "City Ink — local city toolchain\nUsage: city <command> [options]\n  init [path] --sample | --area south,west,north,east [--name text]\n  search <query> [--offline] [--photon-url URL]\n  data fetch --project path [--endpoint URL] [--transport post|get] [--refresh] [--offline]\n  data import <file.json> --project path\n  data providers (list presets, transport and coverage; supports --json)\n  build --project path [--resume JOB_ID] [--offline]\n  batch <list.json> [--concurrency 1..4] [--resume]\n  validate --project path [--offline]\n  studio [--workspace path | --project path] [--port 4178]\n  preview --project path [--port 4178]\n  export web|png|glb --project path [--output relative/path]\n  landmarks check <package-dir>\n  landmarks update <package-dir> --project path [--rollback]\n  jobs status|cancel|resume <JOB_ID> --project path\nCommon: --json (one structured stdout result), --help, --offline, --project path\nData source options (init/search/data fetch/batch/studio): --endpoint URL --transport post|get\n  --provider overpass-main|private-coffee|vk-maps|dresel-europe (presets set URL + transport)\n  --fallback-endpoint URL (repeat at most twice; opts into unavailable fallback)\n  --fallback-policy none|unavailable (default none). No fallback on 429/406, invalid data or cancellation.\n  Precedence: command/job override > project source > studio defaults > built-in FOSSGIS POST.\n  init saves source options; fetch overrides only that persisted job. Batch source flags affect fetch entries.\nExit codes: 0 success; 1 failed input/task; 2 partial/failed batch; 130 cancelled.\nBatch file: {\"projects\":[{\"project\":\"relative/path\",\"kind\":\"build\",\"parameters\":{}}]}\nSearch coordinates: latitude,longitude. OSM: way/123 or https://openstreetmap.org/way/123.\nSample data is synthetic and explicitly labeled. Fetch is bounded to 5 km/side, 16 km².\nPNG/GLB use installed Chrome/Edge (CITY_BROWSER override); GLB exports the complete area within its budget.\nOrdinary build/export/validate never refreshes network data. --resume retries failed/cancelled jobs.\n"
+        },
+        "progressOnStderr": false
+      },
+      {
+        "args": [
+          "init",
+          "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-DQtETL\\consumer\\city",
+          "--sample",
+          "--json"
+        ],
+        "result": {
+          "schemaVersion": 1,
+          "status": "succeeded",
+          "artifacts": [
+            "city.config.json",
+            "city.lock.json",
+            "data/source.json"
+          ],
+          "diagnostics": [],
+          "project": "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-DQtETL\\consumer\\city",
+          "config": {
+            "schemaVersion": 1,
+            "name": "city",
+            "area": {
+              "south": 39.908,
+              "west": 116.459,
+              "north": 39.91,
+              "east": 116.462
+            },
+            "origin": {
+              "lat": 39.909,
+              "lon": 116.4605
+            },
+            "seed": 1,
+            "source": {
+              "kind": "sample",
+              "file": "data/source.json"
+            },
+            "generation": {
+              "landscapeEnabled": false,
+              "inferRoofs": false
+            },
+            "tiling": {
+              "sizeMeters": 500
+            },
+            "quality": "balanced",
+            "style": {
+              "id": "comic",
+              "parameters": {}
+            },
+            "landmarks": {
+              "enabled": true,
+              "packages": []
+            }
+          }
+        },
+        "progressOnStderr": false
+      },
+      {
+        "args": [
+          "build",
+          "--project",
+          "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-DQtETL\\consumer\\city",
+          "--offline",
+          "--json"
+        ],
+        "result": {
+          "schemaVersion": 1,
+          "status": "succeeded",
+          "artifacts": [
+            "dist/manifest.json",
+            "city.lock.json"
+          ],
+          "diagnostics": [],
+          "job": {
+            "schemaVersion": 1,
+            "id": "07a6a12e-e329-4fc3-b823-99faeb8cd925",
+            "kind": "build",
+            "project": "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-DQtETL\\consumer\\city",
+            "parameters": {},
+            "status": "succeeded",
+            "stage": "complete",
+            "progress": 1,
+            "artifacts": [
+              "dist/manifest.json",
+              "city.lock.json"
+            ],
+            "diagnostics": [],
+            "attempt": 1,
+            "createdAt": "2026-11-03T15:07:10.134Z",
+            "startedAt": "2026-11-03T15:07:10.137Z",
+            "result": {
+              "schemaVersion": 1,
+              "status": "succeeded",
+              "artifacts": [
+                "dist/manifest.json",
+                "city.lock.json"
+              ],
+              "diagnostics": [],
+              "contentHash": "f4ae962e2169444e042d2f68574fb20172f3b02608c82e43bb08d8d2079de938",
+              "report": {
+                "schemaVersion": 1,
+                "status": "succeeded",
+                "diagnostics": [],
+                "hashes": {
+                  "config": "58cff823aeba86339a9237823b263edd86d55dee6793d4cd1d6b9d5a728bdac0",
+                  "source": "7d47fcb8bb191cd93e8a944cb63349be2697ec915138e06f034734cb356b7885",
+                  "world": "c6a0f2257c63fb92cf312e1b38948d515e964dd86ccb4d144c2d54f3c5be8aa6"
+                },
+                "counts": {
+                  "inputElements": 3,
+                  "features": 7,
+                  "buildings": 1,
+                  "trees": 1,
+                  "chunks": 1
+                },
+                "road": {
+                  "sourceRoads": 1,
+                  "segments": 1,
+                  "driveSegments": 1,
+                  "walkSegments": 0,
+                  "miterJoins": 0,
+                  "bevelJoins": 0,
+                  "duplicateSegments": 0,
+                  "clippedOverlaps": 0,
+                  "junctions": 0,
+                  "crossingExclusions": 0,
+                  "dashes": 0,
+                  "stopLines": 0,
+                  "drivePolygons": 1,
+                  "walkPolygons": 0,
+                  "pavingPolygons": 2,
+                  "surfaceTriangles": 6,
+                  "roadArea": 1332.4074902206153,
+                  "pavementArea": 777.2377026286922,
+                  "observedSidewalkWays": 0,
+                  "observedCrossingWays": 0,
+                  "inferredMarginWays": 1,
+                  "pavementBuildingBlockers": 2,
+                  "gradeSource": "OSM connectivity + inferred layer heights",
+                  "gradeOriginalDiscontinuities": 0,
+                  "gradeResolvedConnections": 0,
+                  "gradeChangedWays": 0,
+                  "gradeMaxVehicleSlope": 0,
+                  "gradeSteepVehicleRuns": 0,
+                  "gradeCrossingConstraints": 0,
+                  "gradeRemainingDiscontinuities": 0,
+                  "gradeConstraintIterations": 0,
+                  "gradeConstraintConflicts": 0,
+                  "gradeAmbiguousCrossings": 0,
+                  "stairFlights": 0,
+                  "gradeSteepWalkingWays": 0,
+                  "gradeMaxWalkingSlope": 0,
+                  "renderedTriangles": 6,
+                  "bridgeWays": 0,
+                  "bridgeSegments": 0,
+                  "bridgeDecks": 0,
+                  "bridgePiers": 0,
+                  "bridgeSupportCandidates": 0,
+                  "bridgeGuardrailSegments": 0,
+                  "bridgeRailInteriorSkipped": 0,
+                  "bridgeRejectedSupports": {},
+                  "unsupportedBridgeWays": 0,
+                  "bridgeHeightSource": "inferred-layer-times-7m",
+                  "bridgeGradeConnectionsUnresolved": 0,
+                  "bridgeStructureTriangles": 0,
+                  "stairTreads": 0,
+                  "stairPosts": 0,
+                  "stairTriangles": 0,
+                  "stairSkippedFlights": 0,
+                  "stairSteepFlights": 0,
+                  "stairHeightSource": "shared-road-grade-inference"
+                },
+                "landscape": {
+                  "observedFeatures": 0,
+                  "observedSurfaceArea": 0,
+                  "inferredSites": 0,
+                  "inferredPavedArea": 0,
+                  "inferredPlantedArea": 0,
+                  "rejectedCandidates": 0,
+                  "rejectedGeometry": 0,
+                  "templates": {},
+                  "layouts": {},
+                  "kindAreas": {},
+                  "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+                  "availableTreeCandidates": 0,
+                  "availablePropCandidates": 0,
+                  "treesByTemplate": {},
+                  "commonCandidates": 0,
+                  "treeCandidates": 0,
+                  "props": 0,
+                  "surfaces": 0,
+                  "inferredArea": 0,
+                  "inferredFraction": 0,
+                  "knownGroundFraction": 0,
+                  "unfilledBeforeFraction": 0.9223057644110275,
+                  "unfilledAfterFraction": 0.9223057644110275,
+                  "coverageSampleSpacing": 12,
+                  "coverageSamples": 399,
+                  "markingStrips": 0,
+                  "markingPrecisionRetries": 0,
+                  "omittedMarkingStrips": 0,
+                  "renderedTriangles": 0,
+                  "drawMeshes": 0
+                },
+                "roof": {
+                  "tagged": 0,
+                  "inferred": 0,
+                  "unsupported": 0
+                },
+                "determinism": {
+                  "timestampsExcluded": true,
+                  "uuidExcluded": true,
+                  "worldHashExcludesTiling": true
+                }
+              }
+            },
+            "finishedAt": "2026-11-03T15:07:10.417Z"
+          }
+        },
+        "progressOnStderr": true
+      },
+      {
+        "args": [
+          "validate",
+          "--project",
+          "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-DQtETL\\consumer\\city",
+          "--offline",
+          "--json"
+        ],
+        "result": {
+          "schemaVersion": 1,
+          "status": "succeeded",
+          "artifacts": [
+            "dist/manifest.json"
+          ],
+          "diagnostics": []
+        },
+        "progressOnStderr": false
+      },
+      {
+        "args": [
+          "export",
+          "web",
+          "--project",
+          "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-DQtETL\\consumer\\city",
+          "--json"
+        ],
+        "result": {
+          "schemaVersion": 1,
+          "status": "succeeded",
+          "artifacts": [
+            "site/index.html"
+          ],
+          "diagnostics": [],
+          "job": {
+            "schemaVersion": 1,
+            "id": "22b3086e-109f-4e23-8791-bfd66bd20881",
+            "kind": "export-web",
+            "project": "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-DQtETL\\consumer\\city",
+            "parameters": {},
+            "status": "succeeded",
+            "stage": "complete",
+            "progress": 1,
+            "artifacts": [
+              "site/index.html"
+            ],
+            "diagnostics": [],
+            "attempt": 1,
+            "createdAt": "2026-11-03T15:07:10.747Z",
+            "startedAt": "2026-11-03T15:07:10.749Z",
+            "result": {
+              "schemaVersion": 1,
+              "status": "succeeded",
+              "artifacts": [
+                "site/index.html"
+              ],
+              "diagnostics": [],
+              "scope": "complete-area",
+              "attribution": "© OpenStreetMap contributors; ODbL"
+            },
+            "finishedAt": "2026-11-03T15:07:11.343Z"
+          }
+        },
+        "progressOnStderr": true
+      }
+    ],
+    "builtStudio": true,
+    "staticSdk": true,
+    "projectChunks": 1,
+    "productionDependenciesOnly": true,
+    "esbuildVersion": "0.25.12",
+    "externalStyle": {
+      "standardCli": true,
+      "nonRootOutput": "exports/nonroot/city",
+      "style": {
+        "id": "project-sepia",
+        "parameters": {
+          "aoStrength": 0.12
+        }
+      },
+      "module": {
+        "assets": {
+          "styles/paper #1.svg": "./assets/style-files/styles/paper%20%231.svg"
+        },
+        "entry": "./assets/project-style.js",
+        "hash": "01c921a86a2ee755561f9700e4edbb9e74602b8b72e9363bbcccc4163c661534",
+        "id": "project-sepia",
+        "schemaVersion": 1,
+        "stylesheets": [
+          "./assets/project-style.css"
+        ],
+        "version": "1.0.0"
+      },
+      "build": {
+        "files": [
+          "assets/city-ink.js",
+          "assets/project-style.js",
+          "assets/chunks/chunk-7DCK7U4C.js",
+          "assets/resources/WNVYBOFW.svg",
+          "assets/project-style.css",
+          "assets/style-files/styles/paper #1.svg"
+        ],
+        "hash": "01c921a86a2ee755561f9700e4edbb9e74602b8b72e9363bbcccc4163c661534",
+        "inputs": {
+          "styles/palette.js": "9f45f22402d8e55e89a20c617fecbcd5b4e077bd7d08f7f80c60ad82f40b0d3b",
+          "styles/paper #1.svg": "437ee613687b95a62e09b702ee54da975d83d4fcdb8106ada63b95a3ecc5d4ea",
+          "styles/sepia.js": "2d8743cac32df55c153df18d2ed968a9440034db23d1ff60fb075e150d2b5a7f",
+          "styles/theme.css": "5f743dcf4c3ac1f9a1b582a65ba9889c3a540dd9ebdd729d8a98d7d0046b36dc"
+        },
+        "schemaVersion": 1
+      },
+      "invalidEntryPreservesOldSite": true
+    }
+  },
+  "notes": [
+    "Temporary package installed offline from local npm cache.",
+    "No npm publish, push or external deployment.",
+    "Browser rendering is validated separately; this check verifies installed entry points, worker compiler and local server."
+  ],
+  "commit": "e11990c5dc6175dbdae7c2789b2c3a4e4f7f0a9c"
+}

@@ -1,0 +1,127 @@
+{
+  "date": "2026-11-03T14:18:04.786Z",
+  "commit": "d028e7e",
+  "status": "pass",
+  "png": {
+    "source": "C:\\Users\\宋世康\\Downloads\\city-ink (5).png",
+    "bytes": 180059,
+    "width": 2400,
+    "height": 760,
+    "sha256": "d65d3351d6179a7a3d14a0809da303e9bd066e010e6c553e9e9441b4db9926ec"
+  },
+  "glb": {
+    "source": "C:\\Users\\宋世康\\Downloads\\city-ink (4).glb",
+    "bytes": 101728,
+    "version": 2,
+    "meshes": 7,
+    "sha256": "5d2ab47ecafe7526ff3171b0df72c5a29739e069a6786ce7f586e05312156f1b",
+    "scope": "complete (observed in UI)"
+  },
+  "config": {
+    "area": {
+      "east": 116.462,
+      "north": 39.91,
+      "south": 39.908,
+      "west": 116.459
+    },
+    "camera": {
+      "fov": 55,
+      "near": 0.25,
+      "position": [
+        25.652154541015626,
+        12,
+        51.30430908203125
+      ],
+      "target": [
+        0,
+        18,
+        0
+      ]
+    },
+    "generation": {
+      "inferRoofs": false,
+      "landscapeEnabled": false
+    },
+    "landmarks": {
+      "enabled": true,
+      "packages": []
+    },
+    "name": "Project sepia / declared JS CSS SVG",
+    "origin": {
+      "lat": 39.909,
+      "lon": 116.4605
+    },
+    "quality": "low",
+    "schemaVersion": 1,
+    "seed": 1,
+    "source": {
+      "endpoint": "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+      "fallbackEndpoints": [],
+      "fallbackPolicy": "none",
+      "file": "data/source.json",
+      "kind": "sample",
+      "provider": "vk-maps",
+      "transport": "get"
+    },
+    "style": {
+      "assets": [
+        "styles/paper #1%25.svg"
+      ],
+      "dependencies": {
+        "local-palette": "styles/vendor.js"
+      },
+      "entry": "styles/sepia.js",
+      "id": "project-sepia",
+      "parameters": {
+        "aoStrength": 0.12,
+        "warmth": 0.31
+      }
+    },
+    "tiling": {
+      "sizeMeters": 500
+    }
+  },
+  "site": {
+    "camera": {
+      "fov": 55,
+      "near": 0.25,
+      "position": [
+        25.652154541015626,
+        12,
+        51.30430908203125
+      ],
+      "target": [
+        0,
+        18,
+        0
+      ]
+    },
+    "quality": "low",
+    "style": {
+      "id": "project-sepia",
+      "parameters": {
+        "aoStrength": 0.12,
+        "warmth": 0.31
+      }
+    },
+    "styleModule": {
+      "assets": {
+        "styles/paper #1%25.svg": "./assets/style-files/styles/paper%20%231%2525.svg"
+      },
+      "entry": "./assets/project-style.js",
+      "hash": "ab842ee5ee76beb84e51f11dbefbea19f9a16fd3de4bd1093c71db6f5d706dec",
+      "id": "project-sepia",
+      "schemaVersion": 1,
+      "stylesheets": [
+        "./assets/project-style.css"
+      ],
+      "version": "1.0.0"
+    }
+  },
+  "notes": [
+    "Real user-visible Studio download buttons; CUA download event timed out, then exact new filenames and timestamps were verified on disk.",
+    "This synthetic project did not issue a live network fetch when its provider preference was saved.",
+    "Rapid per-style screenshots can capture the previous compositor frame; final settled screenshots must not use these hashes as style-parameter effect evidence.",
+    "Generated GLB stays in ignored work, not Git."
+  ]
+}

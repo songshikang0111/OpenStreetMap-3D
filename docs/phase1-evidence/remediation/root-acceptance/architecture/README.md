@@ -1,0 +1,29 @@
+# Architecture acceptance evidence
+
+Prepared by the independent architecture reviewer on 2026-11-03 and archived at `docs/phase1-evidence/remediation/root-acceptance/architecture/`. This directory contains selected small scripts, immutable recorded results and review prose. The final overall decision is recorded in the parent acceptance report; the provisional draft matrix is excluded.
+
+No acceptance script, CLI, build, test, browser or GPU process was run while staging. JSON/TAP and review/preflight prose were copied byte for byte. `staging-manifest.json` records every original source SHA-256 and staged/final target SHA-256; adapted scripts intentionally have different hashes. Source files and result bytes remain unchanged.
+
+Only path/I/O adaptations were made to scripts: source/scripts/examples/test relative imports use the final five-directory depth; temporary outputs and generated probe projects use ignored `work/root-remediation-architecture/replay/`; the formal CLI audit reads the same recorded JSON next to its archived script and writes a new audit to ignored replay. Its acceptance rules, source hashes, cases, budget limits and assertions were not changed. The formal CLI target remains the `work/root-remediation-acceptance/live-rebuild` copy. The audit creates its replay output directory, as does the historical data/AO output writer. Syntax checks and actual replay were completed after the exclusive GPU run finished.
+
+After GPU measurement finished, root replayed the adapted parameter26/source-lock9/formal-CLI audit scripts from this final archive, all passed. Recorded outputs are `archived-parameter-retest.json`, `archived-source-lock-results.json` and `archived-formal-cli-audit.json`. Preparation-time SHA mappings remain as provenance; the tests' assertions were not changed.
+
+Run from the repository root when no GPU measurement is active:
+
+- `node docs/phase1-evidence/remediation/root-acceptance/architecture/verify-parameters.mjs` replays integer/null/default/enum/sparse rules and invalid export preserving an existing site. It performs small synthetic Node compilations/exports, without browser/GPU/network.
+- `node docs/phase1-evidence/remediation/root-acceptance/architecture/verify-source-build.mjs` replays source policy versus locked snapshot identity/bytes. It also creates one small synthetic project under ignored replay.
+- `node docs/phase1-evidence/remediation/root-acceptance/architecture/audit-formal-cli.mjs` only reads the recorded completed five commands and actual existing snapshot/cache/manifest/assets, the moved copied queue and final-checks records. It does not invoke the city CLI.
+- `node docs/phase1-evidence/remediation/root-acceptance/architecture/verify-live-cli.mjs --preflight` only checks the fixed copied real snapshot. Actual formal commands require a separate explicit `--run --freeze <full HEAD>`; do not run them during GPU measurement or merely to view these records.
+
+Recorded product context:
+
+- `style-before-fix.json` preserves the fdf2d0b invalid-integer false success. The old `style-probe.mjs` intentionally throws at the now-invalid value under fixed code; it is a historical reproducer, not the passing retest runner. Use `verify-parameters.mjs` for the passing 29a2e36 retest (26 assertions).
+- `source-lock-results.json` records the e5a7de4 nine-case lock check. `formal-live-cli-results.json` is root's five-command e11990c offline execution; this reviewer rehashed its actual files in `formal-cli-audit.json`. Two builds have identical content/manifest/asset/input hashes. The original live download is separately evidenced by B; this offline run is not a new download.
+- `cli-copied-job-store-rejected.json` is the preserved first failure. Three copied jobs retained the original B absolute project path and correctly triggered JOB_PROJECT_ESCAPE. Root moved only that copied jobs directory intact to `work/root-remediation-acceptance/copied-original-machine-job-store`; original B input/config/cache were not changed. This queue is machine/project-bound local operation/recovery state, distinct from the map snapshot and data cache.
+- The formal audit requires the fixed copied `live-rebuild` project with its source/data cache/dist, the moved copied job-store directory, and the original B source/config at the absolute path recorded in those jobs. It also reads `docs/phase1-evidence/remediation/integration/final-checks/` for e11990c. These inputs are deliberately not archived here. If absent on another machine, recreate and verify the fixed-hash input before attempting replay; retain the original failure history and do not report a pass without these inputs. The final read-only replay passed on root's current machine with these inputs present.
+- `data-and-ao-probe.mjs` is a historical helper with an explicit original Windows B-worktree path. It reads that worktree's formal provider report and source/config. The dependency is retained rather than silently substituting another dataset; it is optional for final replay because the formal CLI audit already rechecks the locked real snapshot. Its recorded JSON remains useful provenance and actual AO-helper evidence.
+- Review prose using “this directory” refers to its original ignored execution directory, not an assertion that generated projects are included in this archive.
+
+Excluded: the draft acceptance matrix; duplicate `style-findings.json`; all synthetic and real project directories; source map elements; `.city-cache`, dist/site/CINK/GLB; node_modules; moved machine job stores; browser profiles/cache; generated resources. The only archived map information is small metadata/count/hash/licence evidence. Preserve OSM attribution/ODbL when using the separately retained input.
+
+Overall AC01–AC27, final geometry closure and the complete GPU/raw matrix remain the root report's responsibility. Do not infer overall success from component checks or staged files.

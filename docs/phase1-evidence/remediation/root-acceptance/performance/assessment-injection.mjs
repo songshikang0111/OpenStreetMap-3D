@@ -1,0 +1,17 @@
+// Constructed integrity examples, not browser or GPU measurements.
+import fs from 'node:fs/promises';
+import {assessStationary,assessCase,STATIONARY_VIEWS} from '../../../../../scripts/benchmark-integration/assessment.mjs';
+const directory=new URL('../../../../../docs/phase1-evidence/integration/performance/',import.meta.url),raw=JSON.parse(await fs.readFile(new URL('beijing-cbd-grow-1.json',directory))),stats=structuredClone(raw.path.stats);
+const frames=Array.from({length:1500},(_,i)=>({time:10+i*10,intervalMs:10,triangles:100,drawCalls:2,estimatedResidentBytes:stats.runtime.estimatedResidentBytes,bodyNearDetails:stats.runtime.nearDetails,nearAttachmentDetails:stats.nearAttachments.nearDetails,totalNearDetails:stats.runtime.nearDetails+stats.nearAttachments.nearDetails,nearGeometryArrayBytes:stats.nearAttachments.geometryArrayBytes}));
+Object.assign(stats,{paused:false,disposed:false,diagnostics:[]});Object.assign(stats.rendering,{frames,frameCount:1501,windowFrames:1500});
+const phase={...STATIONARY_VIEWS[0],timeOrigin:100000,measurementEpochMs:100000,endedEpochMs:115000,durationSeconds:15,baseline:structuredClone(stats),stats,samples:Array.from({length:151},(_,i)=>({second:i/10,runtime:structuredClone(stats.runtime),nearAttachments:structuredClone(stats.nearAttachments),render:{...frames[0]}})),measuredRequests:[],phaseRequests:[]};
+phase.baselineView=phase.actualView=phase.view;phase.samples.forEach(item=>item.view=phase.view);
+const valid=assessStationary(phase),residentOver=structuredClone(phase),nearOver=structuredClone(phase);
+for(const s of [residentOver.baseline,residentOver.stats]){s.runtime.estimatedResidentBytes=s.budget.residentBytes+1;s.runtime.peakEstimatedResidentBytes=s.budget.residentBytes+1;}
+residentOver.stats.rendering.frames.forEach(f=>f.estimatedResidentBytes=residentOver.stats.budget.residentBytes+1);residentOver.samples.forEach(s=>s.runtime.estimatedResidentBytes=residentOver.stats.budget.residentBytes+1);
+for(const s of [nearOver.baseline,nearOver.stats]){s.runtime.nearDetails=100;s.nearAttachments.nearDetails=s.budget.nearDetails+1;}
+nearOver.stats.rendering.frames.forEach(f=>{f.bodyNearDetails=100;f.nearAttachmentDetails=18001;f.totalNearDetails=18101;});
+nearOver.samples.forEach(s=>{s.runtime.nearDetails=100;s.nearAttachments.nearDetails=nearOver.stats.budget.nearDetails+1;s.render.bodyNearDetails=100;s.render.nearAttachmentDetails=18001;s.render.totalNearDetails=18101;});
+const result={mode:'Synthetic assertion injection, not measured product behavior',baselineChecks:valid.checks,residentOverChecks:assessStationary(residentOver).checks,nearOverChecks:assessStationary(nearOver).checks,residentOverPassed:Object.values(assessStationary(residentOver).checks).every(Boolean),nearOverPassed:Object.values(assessStationary(nearOver).checks).every(Boolean),oldFailures:[]};
+for(const name of ['beijing-cbd-grow-4','kyoto-gion-grow-1']){const data=JSON.parse(await fs.readFile(new URL(name+'.json',directory))),a=assessCase(data);result.oldFailures.push({name,status:a.status,triangles:a.checks.drawingTriangles,drawCalls:a.checks.drawingCalls,triangleFramesOver:a.drawing.triangleFramesOver,drawCallFramesOver:a.drawing.drawCallFramesOver});}
+const rerunDirectory=new URL('../../../../../work/root-remediation-performance-rerun/',import.meta.url);await fs.mkdir(rerunDirectory,{recursive:true});await fs.writeFile(new URL('assessment-injection-after.json',rerunDirectory),JSON.stringify(result,null,2));console.log(JSON.stringify(result));

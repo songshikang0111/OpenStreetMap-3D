@@ -1,0 +1,719 @@
+{
+  "status": "pass",
+  "date": "2026-11-03T15:53:57.354Z",
+  "command": "npm.cmd pack --ignore-scripts --dry-run --json",
+  "scope": "Final documentation changes only; full production installation checks remain in package-results.json",
+  "id": "beijing-city-ink@0.8.1",
+  "name": "beijing-city-ink",
+  "version": "0.8.1",
+  "size": 560808,
+  "unpackedSize": 2058603,
+  "shasum": "ceabc21d3beb98aa52cd204af05817ee22cde450",
+  "integrity": "sha512-BxRX35n2qEVpAPYr9SHYzUTnP33msPi9QgD/hjdFhVfqyNq2iBwoC0k2J1hLZDmxOEsGtx2YZ1GVH97mthHIhQ==",
+  "filename": "beijing-city-ink-0.8.1.tgz",
+  "files": [
+    {
+      "path": "CONTRIBUTING.md",
+      "size": 1698,
+      "mode": 420
+    },
+    {
+      "path": "DATA_LICENSE.md",
+      "size": 1138,
+      "mode": 420
+    },
+    {
+      "path": "LICENSE",
+      "size": 1267,
+      "mode": 420
+    },
+    {
+      "path": "README.md",
+      "size": 23183,
+      "mode": 420
+    },
+    {
+      "path": "bin/city.js",
+      "size": 417,
+      "mode": 420
+    },
+    {
+      "path": "dist-sdk/city-ink.js",
+      "size": 1129728,
+      "mode": 420
+    },
+    {
+      "path": "docs/extensions.md",
+      "size": 10598,
+      "mode": 420
+    },
+    {
+      "path": "docs/phase1-plan.md",
+      "size": 39949,
+      "mode": 420
+    },
+    {
+      "path": "docs/support.md",
+      "size": 6123,
+      "mode": 420
+    },
+    {
+      "path": "examples/quickstart/index.html",
+      "size": 821,
+      "mode": 420
+    },
+    {
+      "path": "examples/quickstart/main.js",
+      "size": 1016,
+      "mode": 420
+    },
+    {
+      "path": "examples/quickstart/make-recipe-package.mjs",
+      "size": 613,
+      "mode": 420
+    },
+    {
+      "path": "examples/quickstart/sepia-style.js",
+      "size": 931,
+      "mode": 420
+    },
+    {
+      "path": "examples/quickstart/typecheck.ts",
+      "size": 2480,
+      "mode": 420
+    },
+    {
+      "path": "package.json",
+      "size": 2604,
+      "mode": 420
+    },
+    {
+      "path": "packages/landmarks/index.d.ts",
+      "size": 773,
+      "mode": 420
+    },
+    {
+      "path": "packages/landmarks/index.js",
+      "size": 1623,
+      "mode": 420
+    },
+    {
+      "path": "packages/landmarks/LICENSE",
+      "size": 1267,
+      "mode": 420
+    },
+    {
+      "path": "packages/landmarks/package.json",
+      "size": 373,
+      "mode": 420
+    },
+    {
+      "path": "packages/landmarks/README.md",
+      "size": 2374,
+      "mode": 420
+    },
+    {
+      "path": "packages/styles/cel.d.ts",
+      "size": 99,
+      "mode": 420
+    },
+    {
+      "path": "packages/styles/cel.js",
+      "size": 1624,
+      "mode": 420
+    },
+    {
+      "path": "packages/styles/index.d.ts",
+      "size": 1995,
+      "mode": 420
+    },
+    {
+      "path": "packages/styles/index.js",
+      "size": 2269,
+      "mode": 420
+    },
+    {
+      "path": "packages/styles/LICENSE",
+      "size": 1267,
+      "mode": 420
+    },
+    {
+      "path": "packages/styles/package.json",
+      "size": 492,
+      "mode": 420
+    },
+    {
+      "path": "packages/styles/README.md",
+      "size": 5062,
+      "mode": 420
+    },
+    {
+      "path": "schemas/landmark-recipe.schema.json",
+      "size": 1822,
+      "mode": 420
+    },
+    {
+      "path": "schemas/project.schema.json",
+      "size": 5041,
+      "mode": 420
+    },
+    {
+      "path": "schemas/scene.schema.json",
+      "size": 7556,
+      "mode": 420
+    },
+    {
+      "path": "schemas/style.schema.json",
+      "size": 5616,
+      "mode": 420
+    },
+    {
+      "path": "scripts/serve-static.mjs",
+      "size": 1953,
+      "mode": 420
+    },
+    {
+      "path": "src/baseline/city-v1.js",
+      "size": 14091,
+      "mode": 420
+    },
+    {
+      "path": "src/baseline/ink-v1.js",
+      "size": 6182,
+      "mode": 420
+    },
+    {
+      "path": "src/building-envelope.js",
+      "size": 3903,
+      "mode": 420
+    },
+    {
+      "path": "src/building-rules.js",
+      "size": 4236,
+      "mode": 420
+    },
+    {
+      "path": "src/city.js",
+      "size": 15264,
+      "mode": 420
+    },
+    {
+      "path": "src/cli/browser-export.js",
+      "size": 2921,
+      "mode": 420
+    },
+    {
+      "path": "src/cli/browser-session.js",
+      "size": 6535,
+      "mode": 420
+    },
+    {
+      "path": "src/cli/export.js",
+      "size": 3305,
+      "mode": 420
+    },
+    {
+      "path": "src/cli/index.d.ts",
+      "size": 772,
+      "mode": 420
+    },
+    {
+      "path": "src/cli/index.js",
+      "size": 13646,
+      "mode": 420
+    },
+    {
+      "path": "src/cli/jobs.js",
+      "size": 9240,
+      "mode": 420
+    },
+    {
+      "path": "src/cli/landmarks.js",
+      "size": 5980,
+      "mode": 420
+    },
+    {
+      "path": "src/cli/project-lock.js",
+      "size": 2287,
+      "mode": 420
+    },
+    {
+      "path": "src/cli/project.js",
+      "size": 6789,
+      "mode": 420
+    },
+    {
+      "path": "src/cli/tasks.js",
+      "size": 12631,
+      "mode": 420
+    },
+    {
+      "path": "src/cli/worker.js",
+      "size": 1304,
+      "mode": 420
+    },
+    {
+      "path": "src/core/config.js",
+      "size": 6192,
+      "mode": 420
+    },
+    {
+      "path": "src/core/contract.js",
+      "size": 3669,
+      "mode": 420
+    },
+    {
+      "path": "src/core/geometry.js",
+      "size": 15785,
+      "mode": 420
+    },
+    {
+      "path": "src/core/index.d.ts",
+      "size": 5035,
+      "mode": 420
+    },
+    {
+      "path": "src/core/index.js",
+      "size": 32368,
+      "mode": 420
+    },
+    {
+      "path": "src/core/lod-batching.js",
+      "size": 7395,
+      "mode": 420
+    },
+    {
+      "path": "src/core/lod-simplify.js",
+      "size": 2568,
+      "mode": 420
+    },
+    {
+      "path": "src/core/lod-surfaces.js",
+      "size": 13065,
+      "mode": 420
+    },
+    {
+      "path": "src/core/scene-codec.d.ts",
+      "size": 474,
+      "mode": 420
+    },
+    {
+      "path": "src/core/scene-codec.js",
+      "size": 13762,
+      "mode": 420
+    },
+    {
+      "path": "src/core/scene-manifest.d.ts",
+      "size": 160,
+      "mode": 420
+    },
+    {
+      "path": "src/core/scene-manifest.js",
+      "size": 7329,
+      "mode": 420
+    },
+    {
+      "path": "src/core/spatial-partition.js",
+      "size": 4785,
+      "mode": 420
+    },
+    {
+      "path": "src/data/common.js",
+      "size": 4278,
+      "mode": 420
+    },
+    {
+      "path": "src/data/errors.js",
+      "size": 279,
+      "mode": 420
+    },
+    {
+      "path": "src/data/http.js",
+      "size": 4908,
+      "mode": 420
+    },
+    {
+      "path": "src/data/index.d.ts",
+      "size": 3584,
+      "mode": 420
+    },
+    {
+      "path": "src/data/index.js",
+      "size": 420,
+      "mode": 420
+    },
+    {
+      "path": "src/data/normalize.js",
+      "size": 3792,
+      "mode": 420
+    },
+    {
+      "path": "src/data/overpass.js",
+      "size": 5813,
+      "mode": 420
+    },
+    {
+      "path": "src/data/search.js",
+      "size": 5146,
+      "mode": 420
+    },
+    {
+      "path": "src/data/source.js",
+      "size": 5495,
+      "mode": 420
+    },
+    {
+      "path": "src/depth-policy.js",
+      "size": 975,
+      "mode": 420
+    },
+    {
+      "path": "src/distance-style.js",
+      "size": 1360,
+      "mode": 420
+    },
+    {
+      "path": "src/facade-layout.js",
+      "size": 5765,
+      "mode": 420
+    },
+    {
+      "path": "src/facade-loft.js",
+      "size": 1313,
+      "mode": 420
+    },
+    {
+      "path": "src/facade-shader.js",
+      "size": 12742,
+      "mode": 420
+    },
+    {
+      "path": "src/foliage.js",
+      "size": 13757,
+      "mode": 420
+    },
+    {
+      "path": "src/generators/compatibility.js",
+      "size": 1461,
+      "mode": 420
+    },
+    {
+      "path": "src/generators/mesh-tools.js",
+      "size": 5785,
+      "mode": 420
+    },
+    {
+      "path": "src/generators/official.js",
+      "size": 2573,
+      "mode": 420
+    },
+    {
+      "path": "src/halftone.js",
+      "size": 1219,
+      "mode": 420
+    },
+    {
+      "path": "src/ink-renderer.js",
+      "size": 24481,
+      "mode": 420
+    },
+    {
+      "path": "src/landmark-registry.d.ts",
+      "size": 2170,
+      "mode": 420
+    },
+    {
+      "path": "src/landmark-registry.js",
+      "size": 10226,
+      "mode": 420
+    },
+    {
+      "path": "src/landmarks.js",
+      "size": 5536,
+      "mode": 420
+    },
+    {
+      "path": "src/landscape-markings.js",
+      "size": 2589,
+      "mode": 420
+    },
+    {
+      "path": "src/landscape-plan.js",
+      "size": 29080,
+      "mode": 420
+    },
+    {
+      "path": "src/landscape-tags.js",
+      "size": 4575,
+      "mode": 420
+    },
+    {
+      "path": "src/landscape.js",
+      "size": 6270,
+      "mode": 420
+    },
+    {
+      "path": "src/local-server/index.d.ts",
+      "size": 1097,
+      "mode": 420
+    },
+    {
+      "path": "src/local-server/index.js",
+      "size": 16720,
+      "mode": 420
+    },
+    {
+      "path": "src/local-server/project-styles.js",
+      "size": 1325,
+      "mode": 420
+    },
+    {
+      "path": "src/locations.js",
+      "size": 3701,
+      "mode": 420
+    },
+    {
+      "path": "src/main.js",
+      "size": 28520,
+      "mode": 420
+    },
+    {
+      "path": "src/osm.js",
+      "size": 12674,
+      "mode": 420
+    },
+    {
+      "path": "src/paint-inlay.js",
+      "size": 1244,
+      "mode": 420
+    },
+    {
+      "path": "src/road-grade.js",
+      "size": 14821,
+      "mode": 420
+    },
+    {
+      "path": "src/road-stairs.js",
+      "size": 9030,
+      "mode": 420
+    },
+    {
+      "path": "src/road-structures.js",
+      "size": 10883,
+      "mode": 420
+    },
+    {
+      "path": "src/road-surface.js",
+      "size": 27251,
+      "mode": 420
+    },
+    {
+      "path": "src/roofs.js",
+      "size": 5640,
+      "mode": 420
+    },
+    {
+      "path": "src/runtime/camera.js",
+      "size": 1281,
+      "mode": 420
+    },
+    {
+      "path": "src/runtime/gpu-timer.js",
+      "size": 10022,
+      "mode": 420
+    },
+    {
+      "path": "src/runtime/integrations.js",
+      "size": 406,
+      "mode": 420
+    },
+    {
+      "path": "src/runtime/manifest.js",
+      "size": 4194,
+      "mode": 420
+    },
+    {
+      "path": "src/runtime/near-details.js",
+      "size": 9823,
+      "mode": 420
+    },
+    {
+      "path": "src/runtime/policy.js",
+      "size": 6092,
+      "mode": 420
+    },
+    {
+      "path": "src/runtime/render-cost.js",
+      "size": 5379,
+      "mode": 420
+    },
+    {
+      "path": "src/runtime/resources.js",
+      "size": 3700,
+      "mode": 420
+    },
+    {
+      "path": "src/runtime/statistics.js",
+      "size": 2026,
+      "mode": 420
+    },
+    {
+      "path": "src/runtime/streamer.js",
+      "size": 21454,
+      "mode": 420
+    },
+    {
+      "path": "src/runtime/style-quality.js",
+      "size": 287,
+      "mode": 420
+    },
+    {
+      "path": "src/sdk/exports.js",
+      "size": 8887,
+      "mode": 420
+    },
+    {
+      "path": "src/sdk/index.d.ts",
+      "size": 3853,
+      "mode": 420
+    },
+    {
+      "path": "src/sdk/index.js",
+      "size": 20245,
+      "mode": 420
+    },
+    {
+      "path": "src/streetlife.js",
+      "size": 43179,
+      "mode": 420
+    },
+    {
+      "path": "src/style.css",
+      "size": 11465,
+      "mode": 420
+    },
+    {
+      "path": "src/styles/index.d.ts",
+      "size": 1870,
+      "mode": 420
+    },
+    {
+      "path": "src/styles/index.js",
+      "size": 10463,
+      "mode": 420
+    },
+    {
+      "path": "src/styles/parameters.js",
+      "size": 4209,
+      "mode": 420
+    },
+    {
+      "path": "src/styles/project-bundle.d.ts",
+      "size": 435,
+      "mode": 420
+    },
+    {
+      "path": "src/styles/project-bundle.js",
+      "size": 8971,
+      "mode": 420
+    },
+    {
+      "path": "src/styles/project-contract.d.ts",
+      "size": 534,
+      "mode": 420
+    },
+    {
+      "path": "src/styles/project-contract.js",
+      "size": 2271,
+      "mode": 420
+    },
+    {
+      "path": "src/styles/project-loader.d.ts",
+      "size": 554,
+      "mode": 420
+    },
+    {
+      "path": "src/styles/project-loader.js",
+      "size": 2452,
+      "mode": 420
+    },
+    {
+      "path": "src/styles/viewer-entry.js",
+      "size": 302,
+      "mode": 420
+    },
+    {
+      "path": "src/tree-clearance.js",
+      "size": 6563,
+      "mode": 420
+    },
+    {
+      "path": "src/vegetation-rules.js",
+      "size": 2276,
+      "mode": 420
+    },
+    {
+      "path": "src/view-state.js",
+      "size": 1768,
+      "mode": 420
+    },
+    {
+      "path": "studio/api.js",
+      "size": 5305,
+      "mode": 420
+    },
+    {
+      "path": "studio/dist/assets/index-Cv6U9Mg_.css",
+      "size": 4435,
+      "mode": 420
+    },
+    {
+      "path": "studio/dist/assets/index-DHnQN-zn.js",
+      "size": 22007,
+      "mode": 420
+    },
+    {
+      "path": "studio/dist/index.html",
+      "size": 8309,
+      "mode": 420
+    },
+    {
+      "path": "studio/index.html",
+      "size": 8204,
+      "mode": 420
+    },
+    {
+      "path": "studio/main.js",
+      "size": 18248,
+      "mode": 420
+    },
+    {
+      "path": "studio/project-settings.js",
+      "size": 3484,
+      "mode": 420
+    },
+    {
+      "path": "studio/settings.js",
+      "size": 2741,
+      "mode": 420
+    },
+    {
+      "path": "studio/static-viewer.html",
+      "size": 818,
+      "mode": 420
+    },
+    {
+      "path": "studio/static-viewer.js",
+      "size": 1706,
+      "mode": 420
+    },
+    {
+      "path": "studio/style.css",
+      "size": 4442,
+      "mode": 420
+    }
+  ],
+  "entryCount": 140,
+  "bundled": [],
+  "prohibitedEntries": []
+}

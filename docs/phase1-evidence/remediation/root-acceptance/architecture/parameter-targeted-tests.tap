@@ -1,0 +1,65 @@
+TAP version 13
+# Subtest: SDK quality preserves validated AO strengths and disables only the AO pass
+ok 1 - SDK quality preserves validated AO strengths and disables only the AO pass
+  ---
+  duration_ms: 7.8153
+  ...
+# Subtest: all four primitive types apply defaults only to omitted keys and validate supplied values
+ok 2 - all four primitive types apply defaults only to omitted keys and validate supplied values
+  ---
+  duration_ms: 5.684
+  ...
+# Subtest: registration rejects unsupported schema rules and inconsistent bounds/defaults/enums
+ok 3 - registration rejects unsupported schema rules and inconsistent bounds/defaults/enums
+  ---
+  duration_ms: 3.024
+  ...
+# Subtest: loader rejects invalid integer values/defaults before replacing a registered style
+ok 4 - loader rejects invalid integer values/defaults before replacing a registered style
+  ---
+  duration_ms: 1.2848
+  ...
+# Subtest: real bundle/export rejects illegal saved integer parameters and schema while retaining the old site
+ok 5 - real bundle/export rejects illegal saved integer parameters and schema while retaining the old site
+  ---
+  duration_ms: 3287.2085
+  ...
+# Subtest: project style bundles relative ESM, explicit dependency, CSS and asset; loader preserves saved parameters
+ok 6 - project style bundles relative ESM, explicit dependency, CSS and asset; loader preserves saved parameters
+  ---
+  duration_ms: 1449.2544
+  ...
+# Subtest: unknown or broken project styles fail before replacing an existing standard site
+ok 7 - unknown or broken project styles fail before replacing an existing standard site
+  ---
+  duration_ms: 1303.3016
+  ...
+# Subtest: style configuration paths and import graph are explicit and cannot escape the project
+ok 8 - style configuration paths and import graph are explicit and cannot escape the project
+  ---
+  duration_ms: 640.2778
+  ...
+# Subtest: project loader CSS ownership supports repeated opens and releases a previous project
+ok 9 - project loader CSS ownership supports repeated opens and releases a previous project
+  ---
+  duration_ms: 1.1685
+  ...
+# Subtest: JS, CSS and descriptor asset URLs preserve hash/percent filename characters
+ok 10 - JS, CSS and descriptor asset URLs preserve hash/percent filename characters
+  ---
+  duration_ms: 284.4249
+  ...
+# Subtest: dependency specifier Schema and runtime agree on dot segments and engine aliases
+ok 11 - dependency specifier Schema and runtime agree on dot segments and engine aliases
+  ---
+  duration_ms: 0.9451
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4020.2799

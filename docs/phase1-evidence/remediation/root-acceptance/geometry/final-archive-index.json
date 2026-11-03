@@ -1,0 +1,196 @@
+{
+  "status": "pass",
+  "acceptedHead": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "productCommit": "e11990c",
+  "frozenSourceCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
+  "acceptedArchiveManifest": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/archive-manifest.json",
+  "preservedFailedArchiveManifest": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/archive-manifest.json",
+  "items": [
+    {
+      "path": "final-review.md",
+      "sha256": "67679a24a763d7bbab6402c9ae501b2b794976fe6507183c327a09034704591d",
+      "bytes": 5088
+    },
+    {
+      "path": "final-runs/2026-11-03T15-08-52-090Z-55862f0a2649/archive-manifest.json",
+      "sha256": "49c30146ea2293bfe6688b2cd19659e0d414ec5814e2a166cba07545f35d9dd8",
+      "bytes": 11484
+    },
+    {
+      "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/archive-manifest.json",
+      "sha256": "69524c2ed07e133f32957d0f3a334ce63af602b156bc25ff1c12ec8fad370a18",
+      "bytes": 8980
+    },
+    {
+      "path": "failure-archive-manifest.json",
+      "sha256": "c453ffa48756e40444300f4dbba8cf14bf2f26e146be761db5680ee31387a8b7",
+      "bytes": 1571
+    },
+    {
+      "path": "finding-rounded-boundary.md",
+      "sha256": "5b66b40aef0155ee2b3b4127bd477bd715c38ddc89e009a2664ccf7546465e89",
+      "bytes": 3058
+    },
+    {
+      "path": "runner-before-rounded-boundary-fix.mjs",
+      "sha256": "78ce8f8eea56b6254d04cfffcdccae44bf0d3c37e9107a20ab9ef5a1ff152109",
+      "bytes": 6678
+    }
+  ],
+  "preservation": {
+    "oldRun": [
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/boundary-results.json",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/frozen-addition-results.json",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/identity-proof-results.json",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/mixed-lod-bridge-results.json",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/mixed-lod-sweep-ground-results.json",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/mixed-lod-sweep-road-results.json",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/near-contract-results.json",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/repro-mixed-lod-bridge.mjs",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/repro-mixed-lod-bridge.mjs.log",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/summary.json",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/sweep-mixed-ground.mjs",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/sweep-mixed-ground.mjs.log",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/sweep-mixed-road.mjs",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/sweep-mixed-road.mjs.log",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-boundaries.mjs",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-boundaries.mjs.log",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-frozen-additions.mjs",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-frozen-additions.mjs.log",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-internal-identities.mjs",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-internal-identities.mjs.log",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-mixed-water.mjs",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-mixed-water.mjs.log",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-near-contract.mjs",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-near-contract.mjs.log",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-vertical-boundary.mjs",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-vertical-boundary.mjs.log",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-world-atomic-domain.mjs",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/verify-world-atomic-domain.mjs.log",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/vertical-boundary-results.json",
+        "unchanged": true
+      },
+      {
+        "path": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/water-mixed-results.json",
+        "unchanged": true
+      }
+    ],
+    "oldFindingAndRaw": [
+      {
+        "path": "finding-rounded-boundary.md",
+        "unchanged": true
+      },
+      {
+        "path": "repro-rounded-boundary.mjs",
+        "unchanged": true
+      },
+      {
+        "path": "rounded-boundary-results.json",
+        "unchanged": true
+      },
+      {
+        "path": "diagnose-world-area.mjs",
+        "unchanged": true
+      },
+      {
+        "path": "area-diagnostic-results.json",
+        "unchanged": true
+      },
+      {
+        "path": "diagnose-guardrail-domain.mjs",
+        "unchanged": true
+      },
+      {
+        "path": "guardrail-domain-diagnostic.json",
+        "unchanged": true
+      }
+    ],
+    "oldRunnerSnapshotMatchesRecordedHash": true
+  },
+  "instructions": "Archive all accepted-manifest canonical scripts/raw/source hashes, final-review.md, this index, and the preserved failed run/failure-manifest artifacts. Product source was read-only. No GPU or overall AC01-27 claim."
+}

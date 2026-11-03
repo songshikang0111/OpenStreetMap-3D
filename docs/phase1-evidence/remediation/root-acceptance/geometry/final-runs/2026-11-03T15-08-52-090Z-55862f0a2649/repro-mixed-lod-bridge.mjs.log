@@ -1,0 +1,5 @@
+{
+  "name": "repro-mixed-lod-bridge.mjs",
+  "status": "pass",
+  "stdout": "{\n  \"date\": \"2026-11-03T15:08:54.845Z\",\n  \"commit\": \"55862f0a2649fb9289331c9ea19b2325f35f3037\",\n  \"input\": \"synthetic single straight 12m bridge plus two grade-connected ground extensions, seed71, divisions4\",\n  \"samplePlane\": {\n    \"x\": 104,\n    \"description\": \"external side shell, sampled in z/y\"\n  },\n  \"baselineLowTriangles\": 14,\n  \"baselineHighTriangles\": 14,\n  \"baselineAgreementPoints\": 400,\n  \"lowOwners\": [\n    \"2_0\",\n    \"2_1\",\n    \"2_2\",\n    \"2_3\"\n  ],\n  \"results\": [],\n  \"status\": \"pass\"\n}\n"
+}

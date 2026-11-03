@@ -1,0 +1,5 @@
+{
+  "name": "verify-internal-identities.mjs",
+  "status": "pass",
+  "stdout": "{\n  \"commit\": \"55862f0a2649fb9289331c9ea19b2325f35f3037\",\n  \"status\": \"pass\",\n  \"cases\": [\n    {\n      \"name\": \"beijing-cbd-grow-4\",\n      \"proved\": [\n        \"w547523487\",\n        \"w548126517\"\n      ]\n    },\n    {\n      \"name\": \"kyoto-gion-grow-9\",\n      \"proved\": [\n        \"w879306473\",\n        \"w879306475\"\n      ]\n    }\n  ]\n}\n"
+}

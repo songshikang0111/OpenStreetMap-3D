@@ -1,0 +1,30 @@
+TAP version 13
+# Subtest: all four primitive types apply defaults only to omitted keys and validate supplied values
+ok 1 - all four primitive types apply defaults only to omitted keys and validate supplied values
+  ---
+  duration_ms: 8.7842
+  ...
+# Subtest: registration rejects unsupported schema rules and inconsistent bounds/defaults/enums
+ok 2 - registration rejects unsupported schema rules and inconsistent bounds/defaults/enums
+  ---
+  duration_ms: 2.996
+  ...
+# Subtest: loader rejects invalid integer values/defaults before replacing a registered style
+ok 3 - loader rejects invalid integer values/defaults before replacing a registered style
+  ---
+  duration_ms: 12.7182
+  ...
+# Subtest: real bundle/export rejects illegal saved integer parameters and schema while retaining the old site
+ok 4 - real bundle/export rejects illegal saved integer parameters and schema while retaining the old site
+  ---
+  duration_ms: 5580.3823
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5963.6428

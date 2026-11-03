@@ -1,0 +1,35 @@
+{
+  "commit": "fdf2d0bb5bcb5272262950c5f3632c03cd267da0",
+  "pure": {
+    "validStyle": "integer-style",
+    "resolved": {
+      "count": 1.25
+    }
+  },
+  "bundleResult": {
+    "status": "succeeded",
+    "style": {
+      "id": "integer-style",
+      "parameters": {
+        "count": -2.75
+      }
+    },
+    "module": {
+      "schemaVersion": 1,
+      "id": "integer-style",
+      "version": "1.0.0",
+      "entry": "./assets/project-style.js",
+      "stylesheets": [],
+      "assets": {},
+      "hash": "c778d5d2eeabf3069b6590d9ec28ba395b4df2282b49aea49f565ffb74ca18b9"
+    },
+    "files": [
+      "assets/city-ink.js",
+      "assets/project-style.js",
+      "assets/chunks/chunk-UV7IOE7I.js"
+    ]
+  },
+  "packageHelper": {
+    "status": "succeeded"
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "frozenSourceCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
+  "cases": [
+    {
+      "name": "beijing-cbd-grow-4",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "beijing-cbd",
+        "origin": {
+          "lat": 39.909499999999994,
+          "lon": 116.4605
+        },
+        "area": {
+          "south": 39.90499687349826,
+          "west": 116.45465249567025,
+          "north": 39.914003126501726,
+          "east": 116.46634750432975
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 500
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "sourceInternalFeatures": [
+        {
+          "featureId": "w547523487",
+          "sourceIds": [
+            "way/547523487"
+          ],
+          "reason": "Original whole-region envelope has zero exposed faces; source identity remains in featureIndex.",
+          "wallSpans": 0,
+          "roofPolygons": 0,
+          "bottomPolygons": 0,
+          "visibleEnclosers": [
+            "r7820447-0"
+          ],
+          "levels": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "featureId": "w548126517",
+          "sourceIds": [
+            "way/548126517"
+          ],
+          "reason": "Original whole-region envelope has zero exposed faces; source identity remains in featureIndex.",
+          "wallSpans": 0,
+          "roofPolygons": 0,
+          "bottomPolygons": 0,
+          "visibleEnclosers": [
+            "r7820447-0"
+          ],
+          "levels": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "kyoto-gion-grow-9",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "kyoto-gion",
+        "origin": {
+          "lat": 35.00365,
+          "lon": 135.775
+        },
+        "area": {
+          "south": 34.99959380885612,
+          "west": 135.77007034083243,
+          "north": 35.00770619114388,
+          "east": 135.77992965916758
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 300
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "sourceInternalFeatures": [
+        {
+          "featureId": "w879306473",
+          "sourceIds": [
+            "way/879306473"
+          ],
+          "reason": "Original whole-region envelope has zero exposed faces; source identity remains in featureIndex.",
+          "wallSpans": 0,
+          "roofPolygons": 0,
+          "bottomPolygons": 0,
+          "visibleEnclosers": [
+            "w879306476"
+          ],
+          "levels": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "featureId": "w879306475",
+          "sourceIds": [
+            "way/879306475"
+          ],
+          "reason": "Original whole-region envelope has zero exposed faces; source identity remains in featureIndex.",
+          "wallSpans": 0,
+          "roofPolygons": 0,
+          "bottomPolygons": 0,
+          "visibleEnclosers": [
+            "w879306476"
+          ],
+          "levels": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ]
+    }
+  ]
+}

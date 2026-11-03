@@ -1,0 +1,837 @@
+{
+  "date": "2026-11-03T15:08:53.975Z",
+  "commit": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "input": "explicit synthetic ground coverage, seed71, divisions4",
+  "patterns": 53,
+  "status": "pass",
+  "results": [
+    {
+      "name": "all-low",
+      "levels": {},
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "all-medium",
+      "levels": {
+        "0_0": "medium",
+        "1_0": "medium",
+        "2_0": "medium",
+        "3_0": "medium",
+        "0_1": "medium",
+        "1_1": "medium",
+        "2_1": "medium",
+        "3_1": "medium",
+        "0_2": "medium",
+        "1_2": "medium",
+        "2_2": "medium",
+        "3_2": "medium",
+        "0_3": "medium",
+        "1_3": "medium",
+        "2_3": "medium",
+        "3_3": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "all-high",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-0_0-medium",
+      "levels": {
+        "0_0": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-0_0-high",
+      "levels": {
+        "0_0": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-0_0-low",
+      "levels": {
+        "0_0": "low",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-1_0-medium",
+      "levels": {
+        "1_0": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-1_0-high",
+      "levels": {
+        "1_0": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-1_0-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "low",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-2_0-medium",
+      "levels": {
+        "2_0": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-2_0-high",
+      "levels": {
+        "2_0": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-2_0-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "low",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-3_0-medium",
+      "levels": {
+        "3_0": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-3_0-high",
+      "levels": {
+        "3_0": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-3_0-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "low",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-0_1-medium",
+      "levels": {
+        "0_1": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-0_1-high",
+      "levels": {
+        "0_1": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-0_1-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "low",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-1_1-medium",
+      "levels": {
+        "1_1": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-1_1-high",
+      "levels": {
+        "1_1": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-1_1-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "low",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-2_1-medium",
+      "levels": {
+        "2_1": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-2_1-high",
+      "levels": {
+        "2_1": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-2_1-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "low",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-3_1-medium",
+      "levels": {
+        "3_1": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-3_1-high",
+      "levels": {
+        "3_1": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-3_1-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "low",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-0_2-medium",
+      "levels": {
+        "0_2": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-0_2-high",
+      "levels": {
+        "0_2": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-0_2-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "low",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-1_2-medium",
+      "levels": {
+        "1_2": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-1_2-high",
+      "levels": {
+        "1_2": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-1_2-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "low",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-2_2-medium",
+      "levels": {
+        "2_2": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-2_2-high",
+      "levels": {
+        "2_2": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-2_2-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "low",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-3_2-medium",
+      "levels": {
+        "3_2": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-3_2-high",
+      "levels": {
+        "3_2": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-3_2-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "low",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-0_3-medium",
+      "levels": {
+        "0_3": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-0_3-high",
+      "levels": {
+        "0_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-0_3-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "low",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-1_3-medium",
+      "levels": {
+        "1_3": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-1_3-high",
+      "levels": {
+        "1_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-1_3-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "low",
+        "2_3": "high",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-2_3-medium",
+      "levels": {
+        "2_3": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-2_3-high",
+      "levels": {
+        "2_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-2_3-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "low",
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-3_3-medium",
+      "levels": {
+        "3_3": "medium"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "low-with-3_3-high",
+      "levels": {
+        "3_3": "high"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "high-with-3_3-low",
+      "levels": {
+        "0_0": "high",
+        "1_0": "high",
+        "2_0": "high",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "high",
+        "2_1": "high",
+        "3_1": "high",
+        "0_2": "high",
+        "1_2": "high",
+        "2_2": "high",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "high",
+        "2_3": "high",
+        "3_3": "low"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "checker-low-high",
+      "levels": {
+        "0_0": "low",
+        "1_0": "high",
+        "2_0": "low",
+        "3_0": "high",
+        "0_1": "high",
+        "1_1": "low",
+        "2_1": "high",
+        "3_1": "low",
+        "0_2": "low",
+        "1_2": "high",
+        "2_2": "low",
+        "3_2": "high",
+        "0_3": "high",
+        "1_3": "low",
+        "2_3": "high",
+        "3_3": "low"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    },
+    {
+      "name": "three-level-stripes",
+      "levels": {
+        "0_0": "low",
+        "1_0": "medium",
+        "2_0": "high",
+        "3_0": "low",
+        "0_1": "low",
+        "1_1": "medium",
+        "2_1": "high",
+        "3_1": "low",
+        "0_2": "low",
+        "1_2": "medium",
+        "2_2": "high",
+        "3_2": "low",
+        "0_3": "low",
+        "1_3": "medium",
+        "2_3": "high",
+        "3_3": "low"
+      },
+      "triangleArea": 359999.9999999998,
+      "samplePoints": 900,
+      "holePoints": 0,
+      "overlapPoints": 0
+    }
+  ]
+}

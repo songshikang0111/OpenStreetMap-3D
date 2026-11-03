@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-03T15:08:34.004Z",
+  "commit": "e11990c5dc6175dbdae7c2789b2c3a4e4f7f0a9c",
+  "file": "work/root-remediation-acceptance/live-rebuild/dist/manifest.json",
+  "status": "pass",
+  "results": [
+    {
+      "label": "negative",
+      "rejected": true,
+      "diagnostics": [
+        {
+          "code": "INVALID_SCENE_MANIFEST",
+          "stage": "manifest",
+          "path": "chunks.0.lods.0.drawUnits",
+          "message": "Invalid drawUnits caster cost."
+        }
+      ]
+    },
+    {
+      "label": "nonfinite",
+      "rejected": true,
+      "diagnostics": [
+        {
+          "code": "INVALID_SCENE_MANIFEST",
+          "stage": "manifest",
+          "path": "chunks.0.lods.0.drawUnits",
+          "message": "Invalid drawUnits caster cost."
+        }
+      ]
+    },
+    {
+      "label": "unsafe",
+      "rejected": true,
+      "diagnostics": [
+        {
+          "code": "INVALID_SCENE_MANIFEST",
+          "stage": "manifest",
+          "path": "chunks.0.lods.0.drawUnits",
+          "message": "Invalid drawUnits caster cost."
+        }
+      ]
+    },
+    {
+      "label": "calls-negative",
+      "rejected": true,
+      "diagnostics": [
+        {
+          "code": "INVALID_SCENE_MANIFEST",
+          "stage": "manifest",
+          "path": "chunks.0.lods.0.drawUnits",
+          "message": "Invalid drawUnits caster cost."
+        }
+      ]
+    }
+  ],
+  "legacyWithoutCasterFieldsValid": true
+}

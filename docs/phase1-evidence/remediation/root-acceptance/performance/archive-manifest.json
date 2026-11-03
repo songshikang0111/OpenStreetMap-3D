@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-03T15:14:46.780Z",
+  "mode": "File inventory and archive planning only; no tests/builds/GPU/browser run",
+  "sourceDirectory": "work/root-remediation-performance",
+  "destinationDirectory": "docs/phase1-evidence/remediation/root-acceptance/performance",
+  "sourceDepth": 2,
+  "destinationDepth": 5,
+  "repositoryPrefixAfterMove": "../../../../../",
+  "copyPerformed": false,
+  "productOrDocsEdited": false,
+  "preservationRules": [
+    "Copy JSON results byte-for-byte. Absolute historical file URLs/commit labels inside evidence are historical data and must not be rewritten.",
+    "sourceSha256 values refer to the current ignored source bytes before any archive path adaptation. Record new target SHA after adapting scripts; do not silently replace historical SHA metadata.",
+    "Preserve recorded review commands as historical provenance. Add a separate archive rerun command mapping instead of rewriting what was actually executed.",
+    "All .mjs outputs must go to ignored work rerun paths, never over immutable committed evidence.",
+    "No generated CINK models, source map snapshots, node_modules, or other cache payloads are selected.",
+    "Final12-case raw was independently recomputed: pass/errors=[], measured commit55862f0; historical negative evidence is preserved."
+  ],
+  "legacyFixture": {
+    "usedBy": [
+      "near-global-budget.mjs",
+      "stationary.mjs"
+    ],
+    "directory": "work/integration-scenes/beijing-cbd-grow-1/",
+    "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+    "inputIdentity": "docs/phase1-evidence/remediation/runtime/near-budget/input.json",
+    "expectedManifestSha256": "47afbd8d545f60db3121006cdc84fcd0d2416cfb01d73871b019f23bcb63a043",
+    "recipe": "Prepare dependencies in an isolated checkout of the recorded compiler commit and run node scripts/phase1-build-cases.mjs work/integration-scenes beijing-cbd-grow-1. Reuse/copy that generated ignored fixture with the reviewed runtime; verify recorded manifest/LOD hashes before comparing410+195/410+10. Do not regenerate it with the latest simplified compiler and claim the same input."
+  },
+  "existingCommittedDependencies": [
+    "docs/phase1-evidence/integration/performance/*.json (preserved original12-case failed evidence)",
+    "docs/phase1-evidence/remediation/runtime/browser-after.json",
+    "docs/phase1-evidence/remediation/runtime/near-budget/input.json",
+    "test/phase1-runtime-near-budget.test.js (double-block delayed fallback CPU regression)",
+    "test/phase1-remediation-assessment.test.js and test/phase1-runtime.test.js (targeted integrity regressions)"
+  ],
+  "runDirectory": "repository root",
+  "proposedArchivedCommands": [
+    "node docs/phase1-evidence/remediation/root-acceptance/performance/initial-gpu-audit-selftest.mjs",
+    ".\\node_modules\\.bin\\tsc.cmd --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 docs/phase1-evidence/remediation/root-acceptance/performance/frame-types.ts",
+    "node docs/phase1-evidence/remediation/root-acceptance/performance/audit-results.mjs docs/phase1-evidence/remediation/integration/performance work/root-remediation-performance-rerun/performance-audit.json",
+    "node docs/phase1-evidence/remediation/root-acceptance/performance/near-global-budget.mjs",
+    "node docs/phase1-evidence/remediation/root-acceptance/performance/stationary.mjs 420",
+    "node docs/phase1-evidence/remediation/root-acceptance/performance/stationary.mjs 400",
+    "node docs/phase1-evidence/remediation/root-acceptance/performance/stationary.mjs 0"
+  ],
+  "excluded": [
+    {
+      "source": "work/root-remediation-performance/audit-results-before-initial-frame.mjs",
+      "reason": "Redundant full old implementation backup; source SHA/provenance is retained, while current audit + explicit17-case probes + historical failed JSON are enough to reproduce the required gates."
+    }
+  ],
+  "pendingFinalArtifacts": [],
+  "entries": [
+    {
+      "source": "work/root-remediation-performance/preflight-review.md",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/preflight-review.md",
+      "role": "review",
+      "purpose": "D首轮修复独审、near共同预算与E断言缺口的原发现",
+      "bytes": 7209,
+      "sourceSha256": "d1d35e9b22f5d71951904b9d54e495b08722cc83f131fa2285e860ff353c450b",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/near-followup-review.md",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/near-followup-review.md",
+      "role": "review",
+      "purpose": "29a2e36 near与断言修复复验",
+      "bytes": 5032,
+      "sourceSha256": "cda5553eac32dd527f85198e6e85646c6f1860314cadd9149348cc366215ccad",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/fallback-frame-followup.md",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/fallback-frame-followup.md",
+      "role": "review",
+      "purpose": "868d9b1双块fallback与fef2f01实际逐帧字段/类型复核",
+      "bytes": 2993,
+      "sourceSha256": "30dbbb72e2a4d79ab63afc824242084de0d3640dc13cde69de6afb25d1e1f57d",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/initial-gpu-window-review.md",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/initial-gpu-window-review.md",
+      "role": "review",
+      "purpose": "首物理帧、GPU窗口、生产容量8及root独立auditor修改记录",
+      "bytes": 4413,
+      "sourceSha256": "b2eaf67aa254c099de69ad71a0952386f1ee5d8f0465924250776ee8ef78da51",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/near-global-budget.mjs",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/near-global-budget.mjs",
+      "role": "repro",
+      "purpose": "同一旧CINK的420预算最小复现，当前源码产生after结果",
+      "bytes": 3354,
+      "sourceSha256": "d667eecceee54d01a1215a87ebe4453a5c694f283cf1eeb271cdc9153215d797",
+      "pathRewrites": [
+        {
+          "from": "../../src/",
+          "to": "../../../../../src/",
+          "kind": "static imports"
+        },
+        {
+          "from": "../../scripts/benchmark-integration/assessment.mjs",
+          "to": "../../../../../scripts/benchmark-integration/assessment.mjs",
+          "kind": "fixed-view import"
+        },
+        {
+          "from": "../integration-scenes/beijing-cbd-grow-1/",
+          "to": "../../../../../work/integration-scenes/beijing-cbd-grow-1/",
+          "kind": "legacy generated CINK fixture"
+        }
+      ],
+      "rerunOutputPolicy": "Rewrite new URL(local-result, import.meta.url) outputs into ignored work/root-remediation-performance-rerun/, resolved from repository root; create that directory before writing. Do not overwrite archived JSON."
+    },
+    {
+      "source": "work/root-remediation-performance/near-global-budget.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/near-global-budget.json",
+      "role": "before_result",
+      "purpose": "原420预算410+195=605失败，原样保留",
+      "bytes": 395,
+      "sourceSha256": "6d7f94ed522c8681b9258299a7c696a20baa0367c80b4ba265185c48bbc757e7",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/near-global-budget-after.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/near-global-budget-after.json",
+      "role": "after_result",
+      "purpose": "同输入420预算410+10=420通过",
+      "bytes": 393,
+      "sourceSha256": "14faf3ed0da9105397df1301da0adc24be5fd5aa0652a205404ece63ed02acc2",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/stationary.mjs",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/stationary.mjs",
+      "role": "repro",
+      "purpose": "旧真实CINK固定t13/t19与420/400/0预算的生产CPU调度复现",
+      "bytes": 5669,
+      "sourceSha256": "806adfc498ba41a6333ec7ab03984abb0e70359b195e4daf790bee5fdf8b2c62",
+      "pathRewrites": [
+        {
+          "from": "../../src/",
+          "to": "../../../../../src/",
+          "kind": "static imports"
+        },
+        {
+          "from": "../../scripts/benchmark-integration/assessment.mjs",
+          "to": "../../../../../scripts/benchmark-integration/assessment.mjs",
+          "kind": "fixed-view import"
+        },
+        {
+          "from": "../integration-scenes/beijing-cbd-grow-1/",
+          "to": "../../../../../work/integration-scenes/beijing-cbd-grow-1/",
+          "kind": "legacy generated CINK fixture"
+        }
+      ],
+      "rerunOutputPolicy": "Rewrite new URL(local-result, import.meta.url) outputs into ignored work/root-remediation-performance-rerun/, resolved from repository root; create that directory before writing. Do not overwrite archived JSON."
+    },
+    {
+      "source": "work/root-remediation-performance/stationary.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/stationary.json",
+      "role": "after_result",
+      "purpose": "D首轮修复后两个原机位固定15秒CPU结果",
+      "bytes": 5599,
+      "sourceSha256": "f577232d5cdd30b3accc6029542c7c1e2f4c752053174091c12ac4ac3d958c84",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/near-streamer-420.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/near-streamer-420.json",
+      "role": "after_result",
+      "purpose": "旧metadata缺省下high与10个附件共享420预算",
+      "bytes": 3262,
+      "sourceSha256": "befc924a6dc870439339dc44de07148c49650bb4aa53f73ff12f264558a89b14",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/near-streamer-400.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/near-streamer-400.json",
+      "role": "after_result",
+      "purpose": "低于主体410时单次探测后稳定medium",
+      "bytes": 3439,
+      "sourceSha256": "344e81151509debe29d0d95953dd6084a02166300fd3f8fee23c3cd759637cb0",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/near-streamer-0.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/near-streamer-0.json",
+      "role": "after_result",
+      "purpose": "0预算的单次纠正、无重复请求和释放归零",
+      "bytes": 3437,
+      "sourceSha256": "ecdf82a0ffaa3b6153e97b379092409b9d86699cf4214a228fb0b36efd68eede",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/assessment-injection.mjs",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/assessment-injection.mjs",
+      "role": "historical_integrity_probe",
+      "purpose": "E近景/驻留断言注入探针；按29a2e36时代协议运行",
+      "bytes": 3346,
+      "sourceSha256": "878b8865c75e6dd5fd3f3d04a791d675a7091ab92d0691327d93229175a2c3c2",
+      "pathRewrites": [
+        {
+          "from": "../../scripts/benchmark-integration/assessment.mjs",
+          "to": "../../../../../scripts/benchmark-integration/assessment.mjs",
+          "kind": "historical publisher assertion import; pin29a2e36"
+        },
+        {
+          "from": "../../docs/phase1-evidence/integration/performance/",
+          "to": "../../../../../docs/phase1-evidence/integration/performance/",
+          "kind": "preserved failed historical browser raw"
+        }
+      ],
+      "rerunOutputPolicy": "Rewrite new URL(local-result, import.meta.url) outputs into ignored work/root-remediation-performance-rerun/, resolved from repository root; create that directory before writing. Do not overwrite archived JSON.",
+      "compatibility": "Historical executable pinned to29a2e36: later first-frame protocol requires initialFrame and would reject its old positive fixture. Preserve historical results; use initial-gpu-audit-selftest.mjs for current assertion integrity. Do not present a current rerun of this old probe as an equivalent positive test."
+    },
+    {
+      "source": "work/root-remediation-performance/assessment-injection.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/assessment-injection.json",
+      "role": "before_result",
+      "purpose": "驻留/near溢出在旧断言中误通过的构造记录",
+      "bytes": 1669,
+      "sourceSha256": "f39281bba510dcd53e4d23250fa7d8b1cdbbb141b3bf66ca2346d542c6a2d326",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/assessment-injection-after.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/assessment-injection-after.json",
+      "role": "after_result",
+      "purpose": "完整新资源字段正样本通过，resident/near溢出由对应门槛拒绝",
+      "bytes": 1904,
+      "sourceSha256": "e4f3efaf6ed4732219a4aa137a5b1bd206902a2aa8ad1bb4346030c49937ccbf",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/audit-runtime-evidence.mjs",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/audit-runtime-evidence.mjs",
+      "role": "recompute",
+      "purpose": "独立重算D已提交browser-after原始证据",
+      "bytes": 2438,
+      "sourceSha256": "f5c66b3ab0eb682894973009cff3689972b2cc48df1c18f0d63614496bcb5ef8",
+      "pathRewrites": [
+        {
+          "from": "../../docs/phase1-evidence/remediation/runtime/browser-after.json",
+          "to": "../../../../../docs/phase1-evidence/remediation/runtime/browser-after.json",
+          "kind": "already committed D raw evidence"
+        }
+      ],
+      "rerunOutputPolicy": "Rewrite new URL(local-result, import.meta.url) outputs into ignored work/root-remediation-performance-rerun/, resolved from repository root; create that directory before writing. Do not overwrite archived JSON."
+    },
+    {
+      "source": "work/root-remediation-performance/runtime-evidence-audit.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/runtime-evidence-audit.json",
+      "role": "recomputed_result",
+      "purpose": "D四机位与AO已有硬件raw的只读独立核算",
+      "bytes": 2142,
+      "sourceSha256": "09d36db2d060d0a7edb88c3ca1527bf3f0b03e758d2ea11e1e2211a6cc48d53f",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/initial-gpu-audit-selftest.mjs",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/initial-gpu-audit-selftest.mjs",
+      "role": "current_integrity_probe",
+      "purpose": "root auditor完整首帧/GPU窗口/8容量/commit校验17项独立自测",
+      "bytes": 3453,
+      "sourceSha256": "fa0c612586a7610ce4d609a06b96a65295637bd8eb8304a5d4be71c2fa20eb3c",
+      "pathRewrites": [
+        {
+          "from": "../root-remediation-acceptance/audit-results.mjs",
+          "to": "./audit-results.mjs",
+          "kind": "copy final root auditor into same archive folder"
+        }
+      ],
+      "rerunOutputPolicy": "Rewrite new URL(local-result, import.meta.url) outputs into ignored work/root-remediation-performance-rerun/, resolved from repository root; create that directory before writing. Do not overwrite archived JSON."
+    },
+    {
+      "source": "work/root-remediation-performance/initial-gpu-audit-selftest.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/initial-gpu-audit-selftest.json",
+      "role": "current_integrity_result",
+      "purpose": "17项正负构造测试全部符合预期，非GPU测量",
+      "bytes": 4284,
+      "sourceSha256": "94cee7b1c58922ad23a192a589abdb3615e4b43155c5a0792ad0c7299a8c2e02",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/frame-types.ts",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/frame-types.ts",
+      "role": "type_probe",
+      "purpose": "包根严格消费逐帧字段及optional initialFrame，不用cast/skipLibCheck",
+      "bytes": 782,
+      "sourceSha256": "f7e322ce853d76f79b8f41488723da58cb02ac0dca869854edaaacb5667fb0ec",
+      "pathRewrites": [],
+      "rerunOutputPolicy": "No source rewrite: package self-reference beijing-city-ink resolves within repository; run tsc with --noEmit from repository root."
+    },
+    {
+      "source": "work/root-remediation-performance/auditor-initial-gpu-update.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/auditor-initial-gpu-update.json",
+      "role": "provenance",
+      "purpose": "root auditor修改前后SHA与当时验证摘要，属于历史快照",
+      "bytes": 549,
+      "sourceSha256": "12d04d5353dfabf4c774354ad2157cf932bfff37007d8247a112d1a44c38b60a",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/baseline-initial-gpu-audit.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/baseline-initial-gpu-audit.json",
+      "role": "negative_control",
+      "purpose": "原12案历史raw被新协议/硬预算拒绝的独立负面对照",
+      "bytes": 32158,
+      "sourceSha256": "2b470fa41b66201838c308c30844733626646e47d2755a51c5138d0c4efd1a17",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-acceptance/audit-results.mjs",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/audit-results.mjs",
+      "role": "required_external_dependency",
+      "purpose": "root自有独立12案审计器，selftest依赖；不导入E assessment",
+      "bytes": 17062,
+      "sourceSha256": "dfb0afd069f4fcd64ba5dc0599647220701473376e72e23e88e7fb9988864a32",
+      "pathRewrites": [],
+      "rerunOutputPolicy": "All filesystem inputs are relative to process.cwd(); execute from repository root. Default output already points to ignored work/root-remediation-acceptance/performance-audit.json, or supply CLI third argument. No depth rewrite required."
+    },
+    {
+      "source": "work/root-remediation-performance/final-performance-review.mjs",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/final-performance-review.mjs",
+      "role": "final_recompute_script",
+      "purpose": "Final frozen55862f0 independent12-case review; no new GPU measurement",
+      "bytes": 12518,
+      "sourceSha256": "38d3f5c1ac802bd4481b6d8812b5de41dce8ff5a241f35a776c280865a7b5fc0",
+      "pathRewrites": [
+        {
+          "from": "../root-remediation-acceptance/audit-results.mjs",
+          "to": "./audit-results.mjs",
+          "kind": "same archive directory independent helper"
+        },
+        {
+          "from": "new URL('../../',import.meta.url)",
+          "to": "new URL('../../../../../',import.meta.url)",
+          "kind": "repository root from final depth5"
+        }
+      ]
+    },
+    {
+      "source": "work/root-remediation-performance/final-performance-review.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/final-performance-review.json",
+      "role": "final_result",
+      "purpose": "Final frozen55862f0 independent12-case review; no new GPU measurement",
+      "bytes": 31637,
+      "sourceSha256": "dc8210fd0f8e74f4490a3bef6a8fb07f949b24b26130e3f10ca3a32b76cd5bb5",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/final-performance-review.md",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/final-performance-review.md",
+      "role": "final_review",
+      "purpose": "Final frozen55862f0 independent12-case review; no new GPU measurement",
+      "bytes": 5649,
+      "sourceSha256": "32c3b91f700224aca02529f348c2813d0c89df0654bf2c72ef58f67b6577ed8a",
+      "pathRewrites": []
+    },
+    {
+      "source": "work/root-remediation-performance/performance-audit.json",
+      "destination": "docs/phase1-evidence/remediation/root-acceptance/performance/performance-audit.json",
+      "role": "final_result",
+      "purpose": "Final frozen55862f0 independent12-case review; no new GPU measurement",
+      "bytes": 30759,
+      "sourceSha256": "0a6f391af59fd5d5fc14feac9deef564c6ab8f01493917ca78bd1cca979c7c94",
+      "pathRewrites": []
+    }
+  ],
+  "totalFiles": 27,
+  "totalBytes": 195545,
+  "final12CaseStatus": "pass",
+  "measuredCommit": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "finalArtifacts": [
+    "docs/phase1-evidence/remediation/root-acceptance/performance/final-performance-review.mjs",
+    "docs/phase1-evidence/remediation/root-acceptance/performance/final-performance-review.json",
+    "docs/phase1-evidence/remediation/root-acceptance/performance/final-performance-review.md",
+    "docs/phase1-evidence/remediation/root-acceptance/performance/performance-audit.json"
+  ]
+}

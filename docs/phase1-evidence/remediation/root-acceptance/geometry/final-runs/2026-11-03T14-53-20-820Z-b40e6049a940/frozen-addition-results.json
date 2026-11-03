@@ -1,0 +1,21 @@
+{
+  "status": "pass",
+  "cases": [
+    {
+      "name": "atomic copy preserves both claimed identities through codec",
+      "featureIds": [
+        "a",
+        "b"
+      ],
+      "status": "pass"
+    },
+    {
+      "name": "same-facing overlapping slab boundaries preserve outward envelope",
+      "sideArea": 5.2239990234375,
+      "expectedArea": 5.224,
+      "bottom": 6.349999904632568,
+      "top": 7.002999782562256,
+      "status": "pass"
+    }
+  ]
+}

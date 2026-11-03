@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-03T14:47:03.987Z",
+  "reviewedHead": "112ae159ad6d5b867d7f3dbe9a48ded2e3c5d23b",
+  "auditorPath": "work/root-remediation-acceptance/audit-results.mjs",
+  "auditorSha256": "dfb0afd069f4fcd64ba5dc0599647220701473376e72e23e88e7fb9988864a32",
+  "beforeSha256": "884ef9da1d892f1cd5d813ab397750fc826e72a738aad428dfa70113ef4884eb",
+  "independentSelfTests": 17,
+  "independentSelfTestsPassed": 17,
+  "baselineStatus": "fail",
+  "baselineCases": 12,
+  "baselineErrorCount": 136,
+  "productEdits": false,
+  "browserOrGpuStarted": false
+}

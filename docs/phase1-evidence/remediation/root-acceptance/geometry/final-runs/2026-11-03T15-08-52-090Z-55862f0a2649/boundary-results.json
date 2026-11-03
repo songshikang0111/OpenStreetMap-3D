@@ -1,0 +1,30 @@
+{
+  "commit": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "date": "2026-11-03T15:08:52.270Z",
+  "command": "node work/root-remediation-geometry/verify-boundaries.mjs",
+  "cases": [
+    {
+      "name": "external multi-material / normalized attribute / reflected transform / repeated and divided instance attributes (low)",
+      "status": "pass"
+    },
+    {
+      "name": "external multi-material / normalized attribute / reflected transform / repeated and divided instance attributes (medium)",
+      "status": "pass"
+    },
+    {
+      "name": "external multi-material / normalized attribute / reflected transform / repeated and divided instance attributes (high)",
+      "status": "pass"
+    },
+    {
+      "name": "close courtyard survives rejected exterior simplification",
+      "status": "pass",
+      "roofArea": 100.54999998770654
+    },
+    {
+      "name": "bridge non-planar underside retains the internal slope break",
+      "status": "pass"
+    }
+  ],
+  "status": "pass",
+  "endCommit": "55862f0a2649fb9289331c9ea19b2325f35f3037"
+}

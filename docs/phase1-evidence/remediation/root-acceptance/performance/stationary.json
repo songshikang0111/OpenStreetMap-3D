@@ -1,0 +1,220 @@
+[
+  {
+    "targetTime": 13,
+    "view": {
+      "position": [
+        -54.465855332583416,
+        26.25,
+        -52.10670670317487
+      ],
+      "target": [
+        0.5427259487235006,
+        19.5,
+        -6.486136335879564
+      ],
+      "fov": 55
+    },
+    "mode": "CPU scheduler only, default budget, 15000ms synthetic time, original CINK assets; no hardware timing",
+    "sourceCompilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+    "stats": {
+      "loads": 2,
+      "unloads": 0,
+      "cancelled": 0,
+      "failures": 0,
+      "fetchedBytes": 12964152,
+      "swaps": 1,
+      "peakConcurrentLoads": 1,
+      "peakEstimatedResidentBytes": 13439492,
+      "geometries": 50,
+      "textures": 0,
+      "materials": 92,
+      "geometryArrayBytes": 13389564,
+      "estimatedResidentBytes": 13439492,
+      "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+      "currentChunks": 1,
+      "pendingLoads": 0,
+      "visibleChunks": 1,
+      "missingChunks": [],
+      "visibleIds": [
+        "0_0"
+      ],
+      "levels": {
+        "2": 1
+      },
+      "visibleTriangles": 115628,
+      "sceneDrawCalls": 44,
+      "nearDetails": 410,
+      "frameCost": {
+        "triangles": 578654,
+        "calls": 242
+      },
+      "desiredLods": [
+        {
+          "tileId": "0_0",
+          "index": 0,
+          "level": 2
+        }
+      ],
+      "currentLods": [
+        {
+          "tileId": "0_0",
+          "index": 0,
+          "level": 2
+        }
+      ],
+      "standbyChunks": 1,
+      "settled": true,
+      "firstUsableMs": 32.732299999999995
+    },
+    "maxPredictedTriangles": 590354,
+    "maxPredictedCalls": 247,
+    "requests": {
+      "file:///C:/Users/%E5%AE%8B%E4%B8%96%E5%BA%B7/.codex/worktrees/phase1-integration/beijing-city-ink/work/integration-scenes/beijing-cbd-grow-1/chunks/0_0.low.f9edc29720a11a9c.cink": 1,
+      "file:///C:/Users/%E5%AE%8B%E4%B8%96%E5%BA%B7/.codex/worktrees/phase1-integration/beijing-city-ink/work/integration-scenes/beijing-cbd-grow-1/chunks/0_0.high.fbe8aba94c60aa49.cink": 1
+    },
+    "transitions": [
+      {
+        "time": 0,
+        "desired": 0,
+        "mainCost": {
+          "triangles": 6,
+          "calls": 3
+        },
+        "nearTriangles": 0,
+        "nearDraws": 0
+      },
+      {
+        "time": 320,
+        "level": "low",
+        "desired": 0,
+        "mainCost": {
+          "triangles": 158144,
+          "calls": 94
+        },
+        "nearTriangles": 0,
+        "nearDraws": 0
+      },
+      {
+        "time": 640,
+        "level": "high",
+        "desired": 0,
+        "mainCost": {
+          "triangles": 578654,
+          "calls": 242
+        },
+        "nearTriangles": 2340,
+        "nearDraws": 1
+      }
+    ],
+    "disposedRefs": 0
+  },
+  {
+    "targetTime": 19,
+    "view": {
+      "position": [
+        81.62020458277061,
+        28.75,
+        65.20333138415589
+      ],
+      "target": [
+        0.5427259487235006,
+        18.5,
+        -6.486136335879564
+      ],
+      "fov": 55
+    },
+    "mode": "CPU scheduler only, default budget, 15000ms synthetic time, original CINK assets; no hardware timing",
+    "sourceCompilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+    "stats": {
+      "loads": 2,
+      "unloads": 0,
+      "cancelled": 0,
+      "failures": 0,
+      "fetchedBytes": 12964152,
+      "swaps": 1,
+      "peakConcurrentLoads": 1,
+      "peakEstimatedResidentBytes": 13436420,
+      "geometries": 50,
+      "textures": 0,
+      "materials": 92,
+      "geometryArrayBytes": 13389564,
+      "estimatedResidentBytes": 13436420,
+      "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+      "currentChunks": 1,
+      "pendingLoads": 0,
+      "visibleChunks": 1,
+      "missingChunks": [],
+      "visibleIds": [
+        "0_0"
+      ],
+      "levels": {
+        "2": 1
+      },
+      "visibleTriangles": 116929,
+      "sceneDrawCalls": 56,
+      "nearDetails": 410,
+      "frameCost": {
+        "triangles": 583858,
+        "calls": 290
+      },
+      "desiredLods": [
+        {
+          "tileId": "0_0",
+          "index": 0,
+          "level": 2
+        }
+      ],
+      "currentLods": [
+        {
+          "tileId": "0_0",
+          "index": 0,
+          "level": 2
+        }
+      ],
+      "standbyChunks": 1,
+      "settled": true,
+      "firstUsableMs": 19.7467000000006
+    },
+    "maxPredictedTriangles": 592678,
+    "maxPredictedCalls": 295,
+    "requests": {
+      "file:///C:/Users/%E5%AE%8B%E4%B8%96%E5%BA%B7/.codex/worktrees/phase1-integration/beijing-city-ink/work/integration-scenes/beijing-cbd-grow-1/chunks/0_0.low.f9edc29720a11a9c.cink": 1,
+      "file:///C:/Users/%E5%AE%8B%E4%B8%96%E5%BA%B7/.codex/worktrees/phase1-integration/beijing-city-ink/work/integration-scenes/beijing-cbd-grow-1/chunks/0_0.high.fbe8aba94c60aa49.cink": 1
+    },
+    "transitions": [
+      {
+        "time": 0,
+        "desired": 0,
+        "mainCost": {
+          "triangles": 6,
+          "calls": 3
+        },
+        "nearTriangles": 0,
+        "nearDraws": 0
+      },
+      {
+        "time": 160,
+        "level": "low",
+        "desired": 0,
+        "mainCost": {
+          "triangles": 158144,
+          "calls": 94
+        },
+        "nearTriangles": 0,
+        "nearDraws": 0
+      },
+      {
+        "time": 480,
+        "level": "high",
+        "desired": 0,
+        "mainCost": {
+          "triangles": 583858,
+          "calls": 290
+        },
+        "nearTriangles": 1764,
+        "nearDraws": 1
+      }
+    ],
+    "disposedRefs": 0
+  }
+]

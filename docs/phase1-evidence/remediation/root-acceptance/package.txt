@@ -1,0 +1,5 @@
+
+> beijing-city-ink@0.8.1 check:package
+> node scripts/phase1-package-check.mjs
+
+{"status":"pass","files":140,"archiveBytes":560316,"unpackedBytes":2057327,"offlineInstall":true,"strictTypes":true,"builtStudio":true}

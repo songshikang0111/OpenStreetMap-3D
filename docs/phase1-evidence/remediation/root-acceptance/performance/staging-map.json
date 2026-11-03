@@ -1,0 +1,533 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-03T15:18:12.665Z",
+  "mode": "File copying and literal path adaptation only; no staged script/test/build/browser/GPU executed",
+  "stagedDirectory": "work/root-remediation-staged/performance",
+  "finalDirectory": "docs/phase1-evidence/remediation/root-acceptance/performance",
+  "intentionallyNotRunnableUntilCopiedToFinalDepth": true,
+  "sourceManifest": "work/root-remediation-performance/archive-manifest.json",
+  "sourceManifestSha256": "5498cce3814caf805a9e07ae28cabcff04f58eb28c9f724a12b7f719f22eed15",
+  "evidenceFiles": 27,
+  "jsonFiles": 14,
+  "allJsonBytePreserved": true,
+  "allManifestSourceHashesMatch": true,
+  "readmeSha256": "42474d6d0bfadb0c9dc10553c0b04fec19835bee15ca85b5747e76e7543c4658",
+  "final12CaseStatus": "pass",
+  "mappings": [
+    {
+      "source": "work/root-remediation-performance/preflight-review.md",
+      "stagedTarget": "work/root-remediation-staged/performance/preflight-review.md",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/preflight-review.md",
+      "role": "review",
+      "sourceBytes": 7209,
+      "targetBytes": 7209,
+      "sourceSha256": "d1d35e9b22f5d71951904b9d54e495b08722cc83f131fa2285e860ff353c450b",
+      "manifestDeclaredSourceSha256": "d1d35e9b22f5d71951904b9d54e495b08722cc83f131fa2285e860ff353c450b",
+      "manifestShaMatches": true,
+      "targetSha256": "d1d35e9b22f5d71951904b9d54e495b08722cc83f131fa2285e860ff353c450b",
+      "jsonBytePreserved": null,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/near-followup-review.md",
+      "stagedTarget": "work/root-remediation-staged/performance/near-followup-review.md",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/near-followup-review.md",
+      "role": "review",
+      "sourceBytes": 5032,
+      "targetBytes": 5032,
+      "sourceSha256": "cda5553eac32dd527f85198e6e85646c6f1860314cadd9149348cc366215ccad",
+      "manifestDeclaredSourceSha256": "cda5553eac32dd527f85198e6e85646c6f1860314cadd9149348cc366215ccad",
+      "manifestShaMatches": true,
+      "targetSha256": "cda5553eac32dd527f85198e6e85646c6f1860314cadd9149348cc366215ccad",
+      "jsonBytePreserved": null,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/fallback-frame-followup.md",
+      "stagedTarget": "work/root-remediation-staged/performance/fallback-frame-followup.md",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/fallback-frame-followup.md",
+      "role": "review",
+      "sourceBytes": 2993,
+      "targetBytes": 2993,
+      "sourceSha256": "30dbbb72e2a4d79ab63afc824242084de0d3640dc13cde69de6afb25d1e1f57d",
+      "manifestDeclaredSourceSha256": "30dbbb72e2a4d79ab63afc824242084de0d3640dc13cde69de6afb25d1e1f57d",
+      "manifestShaMatches": true,
+      "targetSha256": "30dbbb72e2a4d79ab63afc824242084de0d3640dc13cde69de6afb25d1e1f57d",
+      "jsonBytePreserved": null,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/initial-gpu-window-review.md",
+      "stagedTarget": "work/root-remediation-staged/performance/initial-gpu-window-review.md",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/initial-gpu-window-review.md",
+      "role": "review",
+      "sourceBytes": 4413,
+      "targetBytes": 4413,
+      "sourceSha256": "b2eaf67aa254c099de69ad71a0952386f1ee5d8f0465924250776ee8ef78da51",
+      "manifestDeclaredSourceSha256": "b2eaf67aa254c099de69ad71a0952386f1ee5d8f0465924250776ee8ef78da51",
+      "manifestShaMatches": true,
+      "targetSha256": "b2eaf67aa254c099de69ad71a0952386f1ee5d8f0465924250776ee8ef78da51",
+      "jsonBytePreserved": null,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/near-global-budget.mjs",
+      "stagedTarget": "work/root-remediation-staged/performance/near-global-budget.mjs",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/near-global-budget.mjs",
+      "role": "repro",
+      "sourceBytes": 3354,
+      "targetBytes": 3601,
+      "sourceSha256": "d667eecceee54d01a1215a87ebe4453a5c694f283cf1eeb271cdc9153215d797",
+      "manifestDeclaredSourceSha256": "d667eecceee54d01a1215a87ebe4453a5c694f283cf1eeb271cdc9153215d797",
+      "manifestShaMatches": true,
+      "targetSha256": "ddfd4ba876b90f9dcf3e185fe119fc748376472a3b781526b655df80843fcf0f",
+      "jsonBytePreserved": null,
+      "adaptations": [
+        {
+          "from": "../../src/",
+          "to": "../../../../../src/",
+          "kind": "static imports",
+          "occurrences": 8
+        },
+        {
+          "from": "../../scripts/benchmark-integration/assessment.mjs",
+          "to": "../../../../../scripts/benchmark-integration/assessment.mjs",
+          "kind": "fixed-view import",
+          "occurrences": 1
+        },
+        {
+          "from": "../integration-scenes/beijing-cbd-grow-1/",
+          "to": "../../../../../work/integration-scenes/beijing-cbd-grow-1/",
+          "kind": "legacy generated CINK fixture",
+          "occurrences": 1
+        },
+        {
+          "kind": "rerun output",
+          "from": "./near-global-budget-after.json relative to import.meta.url",
+          "to": "ignored work/root-remediation-performance-rerun/near-global-budget-after.json"
+        }
+      ],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/near-global-budget.json",
+      "stagedTarget": "work/root-remediation-staged/performance/near-global-budget.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/near-global-budget.json",
+      "role": "before_result",
+      "sourceBytes": 395,
+      "targetBytes": 395,
+      "sourceSha256": "6d7f94ed522c8681b9258299a7c696a20baa0367c80b4ba265185c48bbc757e7",
+      "manifestDeclaredSourceSha256": "6d7f94ed522c8681b9258299a7c696a20baa0367c80b4ba265185c48bbc757e7",
+      "manifestShaMatches": true,
+      "targetSha256": "6d7f94ed522c8681b9258299a7c696a20baa0367c80b4ba265185c48bbc757e7",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/near-global-budget-after.json",
+      "stagedTarget": "work/root-remediation-staged/performance/near-global-budget-after.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/near-global-budget-after.json",
+      "role": "after_result",
+      "sourceBytes": 393,
+      "targetBytes": 393,
+      "sourceSha256": "14faf3ed0da9105397df1301da0adc24be5fd5aa0652a205404ece63ed02acc2",
+      "manifestDeclaredSourceSha256": "14faf3ed0da9105397df1301da0adc24be5fd5aa0652a205404ece63ed02acc2",
+      "manifestShaMatches": true,
+      "targetSha256": "14faf3ed0da9105397df1301da0adc24be5fd5aa0652a205404ece63ed02acc2",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/stationary.mjs",
+      "stagedTarget": "work/root-remediation-staged/performance/stationary.mjs",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/stationary.mjs",
+      "role": "repro",
+      "sourceBytes": 5669,
+      "targetBytes": 5914,
+      "sourceSha256": "806adfc498ba41a6333ec7ab03984abb0e70359b195e4daf790bee5fdf8b2c62",
+      "manifestDeclaredSourceSha256": "806adfc498ba41a6333ec7ab03984abb0e70359b195e4daf790bee5fdf8b2c62",
+      "manifestShaMatches": true,
+      "targetSha256": "74bace445f5c51227c5f6523a67a2ddb855743dcf6e8ac4b45f0baca600851cd",
+      "jsonBytePreserved": null,
+      "adaptations": [
+        {
+          "from": "../../src/",
+          "to": "../../../../../src/",
+          "kind": "static imports",
+          "occurrences": 8
+        },
+        {
+          "from": "../../scripts/benchmark-integration/assessment.mjs",
+          "to": "../../../../../scripts/benchmark-integration/assessment.mjs",
+          "kind": "fixed-view import",
+          "occurrences": 1
+        },
+        {
+          "from": "../integration-scenes/beijing-cbd-grow-1/",
+          "to": "../../../../../work/integration-scenes/beijing-cbd-grow-1/",
+          "kind": "legacy generated CINK fixture",
+          "occurrences": 1
+        },
+        {
+          "kind": "rerun output",
+          "from": "local stationary/near-streamer JSON",
+          "to": "ignored work/root-remediation-performance-rerun/"
+        }
+      ],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/stationary.json",
+      "stagedTarget": "work/root-remediation-staged/performance/stationary.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/stationary.json",
+      "role": "after_result",
+      "sourceBytes": 5599,
+      "targetBytes": 5599,
+      "sourceSha256": "f577232d5cdd30b3accc6029542c7c1e2f4c752053174091c12ac4ac3d958c84",
+      "manifestDeclaredSourceSha256": "f577232d5cdd30b3accc6029542c7c1e2f4c752053174091c12ac4ac3d958c84",
+      "manifestShaMatches": true,
+      "targetSha256": "f577232d5cdd30b3accc6029542c7c1e2f4c752053174091c12ac4ac3d958c84",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/near-streamer-420.json",
+      "stagedTarget": "work/root-remediation-staged/performance/near-streamer-420.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/near-streamer-420.json",
+      "role": "after_result",
+      "sourceBytes": 3262,
+      "targetBytes": 3262,
+      "sourceSha256": "befc924a6dc870439339dc44de07148c49650bb4aa53f73ff12f264558a89b14",
+      "manifestDeclaredSourceSha256": "befc924a6dc870439339dc44de07148c49650bb4aa53f73ff12f264558a89b14",
+      "manifestShaMatches": true,
+      "targetSha256": "befc924a6dc870439339dc44de07148c49650bb4aa53f73ff12f264558a89b14",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/near-streamer-400.json",
+      "stagedTarget": "work/root-remediation-staged/performance/near-streamer-400.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/near-streamer-400.json",
+      "role": "after_result",
+      "sourceBytes": 3439,
+      "targetBytes": 3439,
+      "sourceSha256": "344e81151509debe29d0d95953dd6084a02166300fd3f8fee23c3cd759637cb0",
+      "manifestDeclaredSourceSha256": "344e81151509debe29d0d95953dd6084a02166300fd3f8fee23c3cd759637cb0",
+      "manifestShaMatches": true,
+      "targetSha256": "344e81151509debe29d0d95953dd6084a02166300fd3f8fee23c3cd759637cb0",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/near-streamer-0.json",
+      "stagedTarget": "work/root-remediation-staged/performance/near-streamer-0.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/near-streamer-0.json",
+      "role": "after_result",
+      "sourceBytes": 3437,
+      "targetBytes": 3437,
+      "sourceSha256": "ecdf82a0ffaa3b6153e97b379092409b9d86699cf4214a228fb0b36efd68eede",
+      "manifestDeclaredSourceSha256": "ecdf82a0ffaa3b6153e97b379092409b9d86699cf4214a228fb0b36efd68eede",
+      "manifestShaMatches": true,
+      "targetSha256": "ecdf82a0ffaa3b6153e97b379092409b9d86699cf4214a228fb0b36efd68eede",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/assessment-injection.mjs",
+      "stagedTarget": "work/root-remediation-staged/performance/assessment-injection.mjs",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/assessment-injection.mjs",
+      "role": "historical_integrity_probe",
+      "sourceBytes": 3346,
+      "targetBytes": 3513,
+      "sourceSha256": "878b8865c75e6dd5fd3f3d04a791d675a7091ab92d0691327d93229175a2c3c2",
+      "manifestDeclaredSourceSha256": "878b8865c75e6dd5fd3f3d04a791d675a7091ab92d0691327d93229175a2c3c2",
+      "manifestShaMatches": true,
+      "targetSha256": "b8af9421e299ff355a54056ce1e5f94c44679d69fe0fe96cd08001216ed4c1e8",
+      "jsonBytePreserved": null,
+      "adaptations": [
+        {
+          "from": "../../scripts/benchmark-integration/assessment.mjs",
+          "to": "../../../../../scripts/benchmark-integration/assessment.mjs",
+          "kind": "historical publisher assertion import; pin29a2e36",
+          "occurrences": 1
+        },
+        {
+          "from": "../../docs/phase1-evidence/integration/performance/",
+          "to": "../../../../../docs/phase1-evidence/integration/performance/",
+          "kind": "preserved failed historical browser raw",
+          "occurrences": 1
+        },
+        {
+          "kind": "rerun output",
+          "from": "./assessment-injection-after.json relative to import.meta.url",
+          "to": "ignored work/root-remediation-performance-rerun/assessment-injection-after.json"
+        }
+      ],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/assessment-injection.json",
+      "stagedTarget": "work/root-remediation-staged/performance/assessment-injection.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/assessment-injection.json",
+      "role": "before_result",
+      "sourceBytes": 1669,
+      "targetBytes": 1669,
+      "sourceSha256": "f39281bba510dcd53e4d23250fa7d8b1cdbbb141b3bf66ca2346d542c6a2d326",
+      "manifestDeclaredSourceSha256": "f39281bba510dcd53e4d23250fa7d8b1cdbbb141b3bf66ca2346d542c6a2d326",
+      "manifestShaMatches": true,
+      "targetSha256": "f39281bba510dcd53e4d23250fa7d8b1cdbbb141b3bf66ca2346d542c6a2d326",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/assessment-injection-after.json",
+      "stagedTarget": "work/root-remediation-staged/performance/assessment-injection-after.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/assessment-injection-after.json",
+      "role": "after_result",
+      "sourceBytes": 1904,
+      "targetBytes": 1904,
+      "sourceSha256": "e4f3efaf6ed4732219a4aa137a5b1bd206902a2aa8ad1bb4346030c49937ccbf",
+      "manifestDeclaredSourceSha256": "e4f3efaf6ed4732219a4aa137a5b1bd206902a2aa8ad1bb4346030c49937ccbf",
+      "manifestShaMatches": true,
+      "targetSha256": "e4f3efaf6ed4732219a4aa137a5b1bd206902a2aa8ad1bb4346030c49937ccbf",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/audit-runtime-evidence.mjs",
+      "stagedTarget": "work/root-remediation-staged/performance/audit-runtime-evidence.mjs",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/audit-runtime-evidence.mjs",
+      "role": "recompute",
+      "sourceBytes": 2438,
+      "targetBytes": 2596,
+      "sourceSha256": "f5c66b3ab0eb682894973009cff3689972b2cc48df1c18f0d63614496bcb5ef8",
+      "manifestDeclaredSourceSha256": "f5c66b3ab0eb682894973009cff3689972b2cc48df1c18f0d63614496bcb5ef8",
+      "manifestShaMatches": true,
+      "targetSha256": "65cce8681001fa167875d77ad043f832dad1784e7f2446b000ba20911332da35",
+      "jsonBytePreserved": null,
+      "adaptations": [
+        {
+          "from": "../../docs/phase1-evidence/remediation/runtime/browser-after.json",
+          "to": "../../../../../docs/phase1-evidence/remediation/runtime/browser-after.json",
+          "kind": "already committed D raw evidence",
+          "occurrences": 1
+        },
+        {
+          "kind": "rerun output",
+          "from": "./runtime-evidence-audit.json relative to import.meta.url",
+          "to": "ignored work/root-remediation-performance-rerun/runtime-evidence-audit.json"
+        }
+      ],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/runtime-evidence-audit.json",
+      "stagedTarget": "work/root-remediation-staged/performance/runtime-evidence-audit.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/runtime-evidence-audit.json",
+      "role": "recomputed_result",
+      "sourceBytes": 2142,
+      "targetBytes": 2142,
+      "sourceSha256": "09d36db2d060d0a7edb88c3ca1527bf3f0b03e758d2ea11e1e2211a6cc48d53f",
+      "manifestDeclaredSourceSha256": "09d36db2d060d0a7edb88c3ca1527bf3f0b03e758d2ea11e1e2211a6cc48d53f",
+      "manifestShaMatches": true,
+      "targetSha256": "09d36db2d060d0a7edb88c3ca1527bf3f0b03e758d2ea11e1e2211a6cc48d53f",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/initial-gpu-audit-selftest.mjs",
+      "stagedTarget": "work/root-remediation-staged/performance/initial-gpu-audit-selftest.mjs",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/initial-gpu-audit-selftest.mjs",
+      "role": "current_integrity_probe",
+      "sourceBytes": 3453,
+      "targetBytes": 3573,
+      "sourceSha256": "fa0c612586a7610ce4d609a06b96a65295637bd8eb8304a5d4be71c2fa20eb3c",
+      "manifestDeclaredSourceSha256": "fa0c612586a7610ce4d609a06b96a65295637bd8eb8304a5d4be71c2fa20eb3c",
+      "manifestShaMatches": true,
+      "targetSha256": "7104b5ec26f897e52f7026020be7c22d3e42348211e61b2c911d25fdf3e30887",
+      "jsonBytePreserved": null,
+      "adaptations": [
+        {
+          "from": "../root-remediation-acceptance/audit-results.mjs",
+          "to": "./audit-results.mjs",
+          "kind": "copy final root auditor into same archive folder",
+          "occurrences": 1
+        },
+        {
+          "kind": "rerun output",
+          "from": "./initial-gpu-audit-selftest.json relative to import.meta.url",
+          "to": "ignored work/root-remediation-performance-rerun/initial-gpu-audit-selftest.json"
+        }
+      ],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/initial-gpu-audit-selftest.json",
+      "stagedTarget": "work/root-remediation-staged/performance/initial-gpu-audit-selftest.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/initial-gpu-audit-selftest.json",
+      "role": "current_integrity_result",
+      "sourceBytes": 4284,
+      "targetBytes": 4284,
+      "sourceSha256": "94cee7b1c58922ad23a192a589abdb3615e4b43155c5a0792ad0c7299a8c2e02",
+      "manifestDeclaredSourceSha256": "94cee7b1c58922ad23a192a589abdb3615e4b43155c5a0792ad0c7299a8c2e02",
+      "manifestShaMatches": true,
+      "targetSha256": "94cee7b1c58922ad23a192a589abdb3615e4b43155c5a0792ad0c7299a8c2e02",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/frame-types.ts",
+      "stagedTarget": "work/root-remediation-staged/performance/frame-types.ts",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/frame-types.ts",
+      "role": "type_probe",
+      "sourceBytes": 782,
+      "targetBytes": 782,
+      "sourceSha256": "f7e322ce853d76f79b8f41488723da58cb02ac0dca869854edaaacb5667fb0ec",
+      "manifestDeclaredSourceSha256": "f7e322ce853d76f79b8f41488723da58cb02ac0dca869854edaaacb5667fb0ec",
+      "manifestShaMatches": true,
+      "targetSha256": "f7e322ce853d76f79b8f41488723da58cb02ac0dca869854edaaacb5667fb0ec",
+      "jsonBytePreserved": null,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/auditor-initial-gpu-update.json",
+      "stagedTarget": "work/root-remediation-staged/performance/auditor-initial-gpu-update.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/auditor-initial-gpu-update.json",
+      "role": "provenance",
+      "sourceBytes": 549,
+      "targetBytes": 549,
+      "sourceSha256": "12d04d5353dfabf4c774354ad2157cf932bfff37007d8247a112d1a44c38b60a",
+      "manifestDeclaredSourceSha256": "12d04d5353dfabf4c774354ad2157cf932bfff37007d8247a112d1a44c38b60a",
+      "manifestShaMatches": true,
+      "targetSha256": "12d04d5353dfabf4c774354ad2157cf932bfff37007d8247a112d1a44c38b60a",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/baseline-initial-gpu-audit.json",
+      "stagedTarget": "work/root-remediation-staged/performance/baseline-initial-gpu-audit.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/baseline-initial-gpu-audit.json",
+      "role": "negative_control",
+      "sourceBytes": 32158,
+      "targetBytes": 32158,
+      "sourceSha256": "2b470fa41b66201838c308c30844733626646e47d2755a51c5138d0c4efd1a17",
+      "manifestDeclaredSourceSha256": "2b470fa41b66201838c308c30844733626646e47d2755a51c5138d0c4efd1a17",
+      "manifestShaMatches": true,
+      "targetSha256": "2b470fa41b66201838c308c30844733626646e47d2755a51c5138d0c4efd1a17",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-acceptance/audit-results.mjs",
+      "stagedTarget": "work/root-remediation-staged/performance/audit-results.mjs",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/audit-results.mjs",
+      "role": "required_external_dependency",
+      "sourceBytes": 17062,
+      "targetBytes": 17062,
+      "sourceSha256": "dfb0afd069f4fcd64ba5dc0599647220701473376e72e23e88e7fb9988864a32",
+      "manifestDeclaredSourceSha256": "dfb0afd069f4fcd64ba5dc0599647220701473376e72e23e88e7fb9988864a32",
+      "manifestShaMatches": true,
+      "targetSha256": "dfb0afd069f4fcd64ba5dc0599647220701473376e72e23e88e7fb9988864a32",
+      "jsonBytePreserved": null,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/final-performance-review.mjs",
+      "stagedTarget": "work/root-remediation-staged/performance/final-performance-review.mjs",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/final-performance-review.mjs",
+      "role": "final_recompute_script",
+      "sourceBytes": 12518,
+      "targetBytes": 12627,
+      "sourceSha256": "38d3f5c1ac802bd4481b6d8812b5de41dce8ff5a241f35a776c280865a7b5fc0",
+      "manifestDeclaredSourceSha256": "38d3f5c1ac802bd4481b6d8812b5de41dce8ff5a241f35a776c280865a7b5fc0",
+      "manifestShaMatches": true,
+      "targetSha256": "74e7804ed08ae567d2a834504a1a43ad022c3fee32319690d3b9f30a9f18801b",
+      "jsonBytePreserved": null,
+      "adaptations": [
+        {
+          "from": "../root-remediation-acceptance/audit-results.mjs",
+          "to": "./audit-results.mjs",
+          "kind": "same archive directory independent helper"
+        },
+        {
+          "from": "new URL('../../',import.meta.url)",
+          "to": "new URL('../../../../../',import.meta.url)",
+          "kind": "repository root from final depth5"
+        },
+        {
+          "kind": "ignored output",
+          "to": "work/root-remediation-performance-rerun/final-performance-review.json"
+        }
+      ],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/final-performance-review.json",
+      "stagedTarget": "work/root-remediation-staged/performance/final-performance-review.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/final-performance-review.json",
+      "role": "final_result",
+      "sourceBytes": 31637,
+      "targetBytes": 31637,
+      "sourceSha256": "dc8210fd0f8e74f4490a3bef6a8fb07f949b24b26130e3f10ca3a32b76cd5bb5",
+      "manifestDeclaredSourceSha256": "dc8210fd0f8e74f4490a3bef6a8fb07f949b24b26130e3f10ca3a32b76cd5bb5",
+      "manifestShaMatches": true,
+      "targetSha256": "dc8210fd0f8e74f4490a3bef6a8fb07f949b24b26130e3f10ca3a32b76cd5bb5",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/final-performance-review.md",
+      "stagedTarget": "work/root-remediation-staged/performance/final-performance-review.md",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/final-performance-review.md",
+      "role": "final_review",
+      "sourceBytes": 5649,
+      "targetBytes": 5649,
+      "sourceSha256": "32c3b91f700224aca02529f348c2813d0c89df0654bf2c72ef58f67b6577ed8a",
+      "manifestDeclaredSourceSha256": "32c3b91f700224aca02529f348c2813d0c89df0654bf2c72ef58f67b6577ed8a",
+      "manifestShaMatches": true,
+      "targetSha256": "32c3b91f700224aca02529f348c2813d0c89df0654bf2c72ef58f67b6577ed8a",
+      "jsonBytePreserved": null,
+      "adaptations": [],
+      "executionPerformed": false
+    },
+    {
+      "source": "work/root-remediation-performance/performance-audit.json",
+      "stagedTarget": "work/root-remediation-staged/performance/performance-audit.json",
+      "finalTarget": "docs/phase1-evidence/remediation/root-acceptance/performance/performance-audit.json",
+      "role": "final_result",
+      "sourceBytes": 30759,
+      "targetBytes": 30759,
+      "sourceSha256": "0a6f391af59fd5d5fc14feac9deef564c6ab8f01493917ca78bd1cca979c7c94",
+      "manifestDeclaredSourceSha256": "0a6f391af59fd5d5fc14feac9deef564c6ab8f01493917ca78bd1cca979c7c94",
+      "manifestShaMatches": true,
+      "targetSha256": "0a6f391af59fd5d5fc14feac9deef564c6ab8f01493917ca78bd1cca979c7c94",
+      "jsonBytePreserved": true,
+      "adaptations": [],
+      "executionPerformed": false
+    }
+  ],
+  "measuredCommit": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "finalReviewStatus": "pass",
+  "finalRootAuditSource": "work/root-remediation-acceptance/performance-audit.json",
+  "finalRootAuditSha256": "0a6f391af59fd5d5fc14feac9deef564c6ab8f01493917ca78bd1cca979c7c94",
+  "finalReviewExecution": "Original ignored source script executed once before summary augmentation and once after adding auto/high/long-frame checks; staged adaptations were not executed."
+}

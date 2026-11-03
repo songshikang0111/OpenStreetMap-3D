@@ -1,0 +1,24 @@
+{
+  "source": "Synthetic external vertical wall with IEEE-sized near-grid-plane tilt, matching observed high guardrail endcap signed z~1e-17",
+  "sourceArea": 32,
+  "emittedArea": 32,
+  "worldZRange": [
+    -9.99999983775159e-18,
+    9.99999983775159e-18
+  ],
+  "computedOwnersForRange": [
+    "0_1",
+    "1_1"
+  ],
+  "pieces": [
+    "0_0",
+    "1_1"
+  ],
+  "sourceInteriorPoint": [
+    -4,
+    2,
+    -5e-18
+  ],
+  "nearestEmittedSurfaceDistanceMeters": 8.112420523638183e-26,
+  "status": "pass"
+}

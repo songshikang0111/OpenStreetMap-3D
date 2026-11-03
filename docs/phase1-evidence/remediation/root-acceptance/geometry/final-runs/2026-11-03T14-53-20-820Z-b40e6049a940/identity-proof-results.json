@@ -1,0 +1,149 @@
+{
+  "date": "2026-11-03T14:53:27.788Z",
+  "commit": "b40e6049a94075d34c11b8c946df33445bb5e3f6",
+  "status": "pass",
+  "cases": [
+    {
+      "name": "beijing-cbd-grow-4",
+      "assetCompilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "manifestHash": "1fa9ef82fc1b254081e704754fc8bc592d1874b1f9e60f1e456afddc35b05544",
+      "proofs": [
+        {
+          "featureId": "w547523487",
+          "sourceIds": [
+            "way/547523487"
+          ],
+          "height": 234,
+          "minHeight": 161,
+          "outerPoints": 6,
+          "footprintArea": 9304.778645413193,
+          "originalExposedWallSpans": 0,
+          "originalRoofPolygons": 0,
+          "originalBottomPolygons": 0,
+          "isolatedWallSpans": 6,
+          "isolatedRoofPolygons": 1,
+          "maskedLowVertices": 0,
+          "unmaskedLowVertices": 60,
+          "covers": [
+            {
+              "featureId": "r7820447-0",
+              "height": 245,
+              "minHeight": 0,
+              "footprintDifferencePolygons": 0,
+              "actualTriangles": {
+                "low": 27,
+                "medium": 1260,
+                "high": 1620
+              }
+            }
+          ]
+        },
+        {
+          "featureId": "w548126517",
+          "sourceIds": [
+            "way/548126517"
+          ],
+          "height": 234,
+          "minHeight": 0,
+          "outerPoints": 4,
+          "footprintArea": 3196.7419746262094,
+          "originalExposedWallSpans": 0,
+          "originalRoofPolygons": 0,
+          "originalBottomPolygons": 0,
+          "isolatedWallSpans": 4,
+          "isolatedRoofPolygons": 1,
+          "maskedLowVertices": 0,
+          "unmaskedLowVertices": 30,
+          "covers": [
+            {
+              "featureId": "r7820447-0",
+              "height": 245,
+              "minHeight": 0,
+              "footprintDifferencePolygons": 0,
+              "actualTriangles": {
+                "low": 27,
+                "medium": 1260,
+                "high": 1620
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "kyoto-gion-grow-9",
+      "assetCompilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "manifestHash": "36237df6dd952242b3effe5aa11a84f7cdae4ed3e1070add0f3ba2589aab2c30",
+      "proofs": [
+        {
+          "featureId": "w879306473",
+          "sourceIds": [
+            "way/879306473"
+          ],
+          "height": 9.3,
+          "minHeight": 0,
+          "outerPoints": 22,
+          "footprintArea": 872.4899415151958,
+          "originalExposedWallSpans": 0,
+          "originalRoofPolygons": 0,
+          "originalBottomPolygons": 0,
+          "isolatedWallSpans": 22,
+          "isolatedRoofPolygons": 1,
+          "maskedLowVertices": 0,
+          "unmaskedLowVertices": 174,
+          "covers": [
+            {
+              "featureId": "w879306476",
+              "height": 24.8,
+              "minHeight": 0,
+              "footprintDifferencePolygons": 0,
+              "actualTriangles": {
+                "low": 79,
+                "medium": 2419,
+                "high": 2479
+              }
+            }
+          ]
+        },
+        {
+          "featureId": "w879306475",
+          "sourceIds": [
+            "way/879306475"
+          ],
+          "height": 6.2,
+          "minHeight": 0,
+          "outerPoints": 8,
+          "footprintArea": 282.3197670469963,
+          "originalExposedWallSpans": 0,
+          "originalRoofPolygons": 0,
+          "originalBottomPolygons": 0,
+          "isolatedWallSpans": 8,
+          "isolatedRoofPolygons": 1,
+          "maskedLowVertices": 0,
+          "unmaskedLowVertices": 66,
+          "covers": [
+            {
+              "featureId": "w879306476",
+              "height": 24.8,
+              "minHeight": 0,
+              "footprintDifferencePolygons": 0,
+              "actualTriangles": {
+                "low": 79,
+                "medium": 2419,
+                "high": 2479
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Uses two already-built official cases; does not regenerate a city or measure GPU performance.",
+    "Source volume containment and zero original envelope are checked independently before accepting missing drawables."
+  ]
+}

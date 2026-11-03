@@ -1,0 +1,126 @@
+{
+  "commit": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "records": [
+    {
+      "name": "integer valid 0",
+      "status": "pass"
+    },
+    {
+      "name": "integer valid 1",
+      "status": "pass"
+    },
+    {
+      "name": "integer valid 5",
+      "status": "pass"
+    },
+    {
+      "name": "integer invalid -1",
+      "status": "pass"
+    },
+    {
+      "name": "integer invalid 6",
+      "status": "pass"
+    },
+    {
+      "name": "integer invalid 1.25",
+      "status": "pass"
+    },
+    {
+      "name": "integer invalid null",
+      "status": "pass"
+    },
+    {
+      "name": "integer invalid \"1\"",
+      "status": "pass"
+    },
+    {
+      "name": "integer invalid true",
+      "status": "pass"
+    },
+    {
+      "name": "integer default is retained",
+      "status": "pass"
+    },
+    {
+      "name": "invalid rule {\"type\":\"array\"}",
+      "status": "pass"
+    },
+    {
+      "name": "invalid rule {\"type\":\"object\"}",
+      "status": "pass"
+    },
+    {
+      "name": "invalid rule {\"type\":\"nonsense\"}",
+      "status": "pass"
+    },
+    {
+      "name": "invalid rule {\"type\":\"integer\",\"default\":1.25}",
+      "status": "pass"
+    },
+    {
+      "name": "invalid rule {\"type\":\"integer\",\"minimum\":0,\"default\":-1}",
+      "status": "pass"
+    },
+    {
+      "name": "invalid rule {\"type\":\"number\",\"default\":null}",
+      "status": "pass"
+    },
+    {
+      "name": "invalid rule {\"type\":\"integer\",\"enum\":[1,\"2\"]}",
+      "status": "pass"
+    },
+    {
+      "name": "invalid rule {\"type\":\"number\",\"minimum\":2,\"maximum\":1}",
+      "status": "pass"
+    },
+    {
+      "name": "sparse enum Array(1)",
+      "status": "pass"
+    },
+    {
+      "name": "sparse enum [1,,]",
+      "status": "pass"
+    },
+    {
+      "name": "valid primitive number",
+      "status": "pass"
+    },
+    {
+      "name": "valid primitive boolean",
+      "status": "pass"
+    },
+    {
+      "name": "valid primitive string",
+      "status": "pass"
+    },
+    {
+      "name": "official null does not silently default",
+      "status": "pass"
+    },
+    {
+      "name": "invalid standard export preserves existing site",
+      "status": "pass",
+      "value": {
+        "code": "STYLE_MODULE_INVALID",
+        "message": "Invalid style parameter count: expected integer within its bounds/enum."
+      }
+    },
+    {
+      "name": "sparse enum module exports fail and preserve existing site",
+      "status": "pass",
+      "value": [
+        {
+          "expression": "Array(1)",
+          "code": "STYLE_MODULE_INVALID",
+          "message": "Invalid style parameter schema count.enum: Every value must match the type and bounds."
+        },
+        {
+          "expression": "[1,,]",
+          "code": "STYLE_MODULE_INVALID",
+          "message": "Invalid style parameter schema count.enum: Every value must match the type and bounds."
+        }
+      ]
+    }
+  ],
+  "failures": 0
+}

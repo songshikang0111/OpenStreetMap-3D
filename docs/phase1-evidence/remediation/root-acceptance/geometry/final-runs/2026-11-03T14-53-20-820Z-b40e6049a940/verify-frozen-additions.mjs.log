@@ -1,0 +1,5 @@
+{
+  "name": "verify-frozen-additions.mjs",
+  "status": "pass",
+  "stdout": "{\n  \"status\": \"pass\",\n  \"cases\": [\n    {\n      \"name\": \"atomic copy preserves both claimed identities through codec\",\n      \"featureIds\": [\n        \"a\",\n        \"b\"\n      ],\n      \"status\": \"pass\"\n    },\n    {\n      \"name\": \"same-facing overlapping slab boundaries preserve outward envelope\",\n      \"sideArea\": 5.2239990234375,\n      \"expectedArea\": 5.224,\n      \"bottom\": 6.349999904632568,\n      \"top\": 7.002999782562256,\n      \"status\": \"pass\"\n    }\n  ]\n}\n"
+}

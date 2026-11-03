@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-03",
+  "componentCommit": "a6b9292",
+  "file": "src/core/scene-manifest.js",
+  "fixture": "work/core-repair-scenes/beijing-cbd-fixed-1/manifest.json",
+  "sourceWorktree": "phase1-core",
+  "operation": "delete first LOD aggregate shadowTriangles/shadowDrawCalls, then set its first drawUnit.shadowTriangles to -1",
+  "beforeValid": true,
+  "afterValid": true,
+  "diagnostics": [],
+  "mode": "Actual validateSceneManifest call by independent primary reviewer; no GPU test",
+  "reportedTo": ["A", "E"]
+}

@@ -1,0 +1,108 @@
+{
+  "recordedComponentCommit": "cf3863eded0f48db510173c827c3ed8e6c3f7e0a",
+  "formalLiveRecords": [
+    {
+      "command": "init",
+      "action": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-data-cli\\beijing-city-ink\\work\\data-remediation\\live-Slwqd9",
+      "status": "succeeded"
+    },
+    {
+      "command": "data",
+      "action": "fetch",
+      "status": "succeeded",
+      "cacheHit": false
+    },
+    {
+      "command": "data",
+      "action": "fetch",
+      "status": "succeeded",
+      "cacheHit": true
+    },
+    {
+      "command": "build",
+      "action": "--project",
+      "status": "succeeded"
+    },
+    {
+      "command": "validate",
+      "action": "--project",
+      "status": "succeeded"
+    }
+  ],
+  "source": {
+    "elements": 1111,
+    "buildings": 5,
+    "parts": 21,
+    "sourceFileHash": "cc8d7da7f9059f9705091995c348c57cf9a656cc48de42a21fd2ab50a319e4a6",
+    "sourceFileMatches": true,
+    "elementHash": "69427e177a82fc1671deee1230ff438bccf6482af014e350dce82859c1c11aab",
+    "elementHashMatches": true,
+    "lockMatches": true,
+    "provider": {
+      "provider": "dresel-europe",
+      "endpoint": "https://ovp.dresel.systems/api/interpreter",
+      "transport": "get",
+      "fallbackEndpoints": [],
+      "fallbackPolicy": "none"
+    },
+    "metadataEndpoint": "https://ovp.dresel.systems/api/interpreter",
+    "metadataRetrievedAt": "2026-11-03T12:48:21.266Z",
+    "upstreamSourceHash": "caa4e0dc9c7e4a493f5ba6fd688cdbf9e8c7f4759d04d4b0ed9690a58cc5d880"
+  },
+  "ao": [
+    {
+      "strength": 0,
+      "aoQuality": 0,
+      "actual": 0,
+      "enabled": false
+    },
+    {
+      "strength": 0,
+      "aoQuality": 1,
+      "actual": 0,
+      "enabled": true
+    },
+    {
+      "strength": 0,
+      "aoQuality": 2,
+      "actual": 0,
+      "enabled": true
+    },
+    {
+      "strength": 0.12,
+      "aoQuality": 0,
+      "actual": 0.12,
+      "enabled": false
+    },
+    {
+      "strength": 0.12,
+      "aoQuality": 1,
+      "actual": 0.12,
+      "enabled": true
+    },
+    {
+      "strength": 0.12,
+      "aoQuality": 2,
+      "actual": 0.12,
+      "enabled": true
+    },
+    {
+      "strength": 1,
+      "aoQuality": 0,
+      "actual": 1,
+      "enabled": false
+    },
+    {
+      "strength": 1,
+      "aoQuality": 1,
+      "actual": 1,
+      "enabled": true
+    },
+    {
+      "strength": 1,
+      "aoQuality": 2,
+      "actual": 1,
+      "enabled": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+Replay workspace: C:\Users\宋世康\.codex\worktrees\phase1-integration\beijing-city-ink\work\root-remediation-geometry-replay-L9HbME
+{"name":"verify-boundaries.mjs","status":"pass"}
+{"name":"verify-frozen-additions.mjs","status":"pass"}
+{"name":"verify-vertical-boundary.mjs","status":"pass"}
+{"name":"sweep-mixed-ground.mjs","status":"pass"}
+{"name":"sweep-mixed-road.mjs","status":"pass"}
+{"name":"repro-mixed-lod-bridge.mjs","status":"pass"}
+{"name":"verify-mixed-water.mjs","status":"pass"}
+{"name":"verify-near-contract.mjs","status":"pass"}
+{"name":"verify-world-atomic-domain.mjs","status":"pass"}
+{"name":"verify-internal-identities.mjs","status":"pass"}
+{"name":"repro-rounded-boundary.mjs","status":"pass"}
+{"name":"diagnose-guardrail-domain.mjs","status":"pass"}
+{
+  "head": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "output": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-geometry-replay-L9HbME\\final-runs\\2026-11-03T15-41-46-317Z-55862f0a2649",
+  "status": "pass",
+  "sourceStable": true,
+  "changed": [],
+  "failed": []
+}

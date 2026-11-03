@@ -1,0 +1,5 @@
+{
+  "name": "verify-near-contract.mjs",
+  "status": "pass",
+  "stdout": "{\n  \"date\": \"2026-11-03T15:08:55.788Z\",\n  \"commit\": \"55862f0a2649fb9289331c9ea19b2325f35f3037\",\n  \"status\": \"pass\",\n  \"command\": \"node work/root-remediation-geometry/verify-near-contract.mjs\",\n  \"cases\": [\n    \"detail/near instances count bycount and ordinary mesh by1; body ignored\",\n    \"hidden parent ignored\",\n    \"core/runtime counters agree\",\n    \"descriptor truthful8 accepted, seven false/invalid values rejected\",\n    \"legacy field omission accepted\",\n    \"standby root invisible is0; explicit hidden-root accounting restores8 without mutating final visibility\"\n  ],\n  \"nearDetails\": 8\n}\n"
+}

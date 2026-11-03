@@ -1,0 +1,131 @@
+{
+  "mode": "Constructed audit integrity examples; not browser or GPU measurements",
+  "tests": 17,
+  "passed": 17,
+  "results": [
+    {
+      "name": "positive complete physical frame + GPU query window",
+      "accepted": true,
+      "errors": []
+    },
+    {
+      "name": "missing initial physical frame",
+      "accepted": false,
+      "errors": [
+        "missing initial physical frame: missing/invalid initial physical frame",
+        "missing initial physical frame: truncated physical-frame window",
+        "missing initial physical frame: initial/interval frame chronology mismatch",
+        "missing initial physical frame: short physical-frame measurement window",
+        "missing initial physical frame GPU: GPU sample outside this physical-frame window"
+      ]
+    },
+    {
+      "name": "initial-only triangle/draw overflow",
+      "accepted": false,
+      "errors": [
+        "initial-only triangle/draw overflow: drawing cap exceeded, including initial frame"
+      ]
+    },
+    {
+      "name": "initial-only resident overflow",
+      "accepted": false,
+      "errors": [
+        "initial-only resident overflow: resident cap exceeded, including initial frame"
+      ]
+    },
+    {
+      "name": "initial-only shared near overflow",
+      "accepted": false,
+      "errors": [
+        "initial-only shared near overflow: near/bytes evidence invalid or exceeds cap, including initial frame"
+      ]
+    },
+    {
+      "name": "initial-only array bytes inconsistent",
+      "accepted": false,
+      "errors": [
+        "initial-only array bytes inconsistent: near/bytes evidence invalid or exceeds cap, including initial frame"
+      ]
+    },
+    {
+      "name": "first interval detached from initial physical frame",
+      "accepted": false,
+      "errors": [
+        "first interval detached from initial physical frame: initial/interval frame chronology mismatch",
+        "first interval detached from initial physical frame GPU: GPU sample outside this physical-frame window"
+      ]
+    },
+    {
+      "name": "GPU samples truncated but header count adjusted",
+      "accepted": false,
+      "errors": [
+        "GPU samples truncated but header count adjusted GPU: truncated GPU measurement window",
+        "GPU samples truncated but header count adjusted GPU: GPU raw aggregate mismatch"
+      ]
+    },
+    {
+      "name": "GPU repeated timestamp",
+      "accepted": false,
+      "errors": [
+        "GPU repeated timestamp GPU: invalid or repeated/unordered GPU samples"
+      ]
+    },
+    {
+      "name": "GPU timestamp outside physical window",
+      "accepted": false,
+      "errors": [
+        "GPU timestamp outside physical window GPU: GPU sample outside this physical-frame window"
+      ]
+    },
+    {
+      "name": "GPU incorrect percentile",
+      "accepted": false,
+      "errors": [
+        "GPU incorrect percentile GPU: GPU raw aggregate mismatch"
+      ]
+    },
+    {
+      "name": "GPU invalid ownership counts",
+      "accepted": false,
+      "errors": [
+        "GPU invalid ownership counts GPU: query ownership is not closed"
+      ]
+    },
+    {
+      "name": "GPU pending over bound",
+      "accepted": false,
+      "errors": [
+        "GPU pending over bound GPU: invalid in-flight query bound",
+        "GPU pending over bound GPU: truncated GPU measurement window",
+        "GPU pending over bound GPU: query ownership is not closed"
+      ]
+    },
+    {
+      "name": "GPU arbitrary declared capacity increase",
+      "accepted": false,
+      "errors": [
+        "GPU arbitrary declared capacity increase GPU: query capacity differs from production SDK capacity 8"
+      ]
+    },
+    {
+      "name": "GPU active query is not boolean",
+      "accepted": false,
+      "errors": [
+        "GPU active query is not boolean GPU: invalid in-flight query bound",
+        "GPU active query is not boolean GPU: truncated GPU measurement window",
+        "GPU active query is not boolean GPU: query ownership is not closed"
+      ]
+    },
+    {
+      "name": "positive explicitly unavailable GPU",
+      "accepted": true
+    },
+    {
+      "name": "build commit differs from measurement commit",
+      "accepted": false,
+      "errors": [
+        "mismatch: build compiler commit differs from summary measurement commit"
+      ]
+    }
+  ]
+}
