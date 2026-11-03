@@ -1,0 +1,11 @@
+{
+  "name": "@city-ink/styles",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "City Ink semantic style packs and an independent cel-shaded example",
+  "license": "MIT",
+  "exports": {".": {"types": "./index.d.ts", "import": "./index.js"}, "./cel": {"types": "./cel.d.ts", "import": "./cel.js"}},
+  "files": ["index.js", "index.d.ts", "cel.js", "cel.d.ts", "README.md", "LICENSE"],
+  "peerDependencies": {"three": ">=0.186.0 <0.187.0"},
+  "engines": {"node": ">=18"}
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@city-ink/landmarks",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Editable City Ink landmark recipes; geometry is generated locally by the engine",
+  "license": "MIT",
+  "exports": {".": {"types": "./index.d.ts", "import": "./index.js"}},
+  "files": ["index.js", "index.d.ts", "README.md", "LICENSE"],
+  "engines": {"node": ">=18"}
+}

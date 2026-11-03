@@ -1,0 +1,54 @@
+{
+  "date": "2026-11-03",
+  "reviewedCommit": "ce9c40c4d5d7b8040e49aa6192f704424c22284c",
+  "actualCommit": "ce9c40c4d5d7b8040e49aa6192f704424c22284c",
+  "checks": [
+    {
+      "id": "R1-uncoloured-external-generator",
+      "status": "pass",
+      "detail": "Claimed featureId with BoxGeometry succeeds; provenance toggles remain safe."
+    },
+    {
+      "id": "R2-role-table-groups",
+      "status": "pass",
+      "detail": "Invalid indices rejected, complete six-role groups accepted."
+    },
+    {
+      "id": "R3-serialized-foliage",
+      "status": "pass",
+      "detail": "foliage-v1 and leaf shader restored after ObjectLoader for comic/line/color."
+    },
+    {
+      "id": "R4-generic-foliage-material",
+      "status": "pass",
+      "detail": "MeshBasicMaterial, ShaderMaterial and MeshStandardMaterial sources all produce finite standard shader materials."
+    },
+    {
+      "id": "R5-borrowed-texture",
+      "status": "pass",
+      "detail": "Binding disposal does not release caller-owned map copied from marked source."
+    },
+    {
+      "id": "R6-landmark-seeded-attributes",
+      "status": "pass",
+      "detail": "All five landmark parts preserve baseline glass variant and surface-scale Float32 values."
+    },
+    {
+      "id": "R7-compatibility-and-shapes",
+      "status": "pass",
+      "detail": "All range branches parsed; invalid metadata field shapes rejected."
+    },
+    {
+      "id": "R8-geometry-replacement",
+      "status": "pass",
+      "detail": "Same-kind replacements classified, old clones freed, changed-kind source geometry restored correctly."
+    },
+    {
+      "id": "R9-schemas",
+      "status": "pass",
+      "detail": "Ajv2020 validates two recipes, four official styles and external cel metadata."
+    }
+  ],
+  "unresolvedFindings": [],
+  "note": "Historical successful ce9c40c run preserved from the preceding tool transcript; checks were also rerun unchanged at 307c9b4."
+}

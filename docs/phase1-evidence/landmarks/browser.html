@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><link rel="icon" href="data:,"><title>Landmark and style browser acceptance</title>
+<style>html,body{margin:0;background:#eef0ee;font-family:system-ui}#label{position:absolute;top:12px;left:16px;padding:8px;background:#ffffffe0}canvas{display:block}</style>
+<div id="label"></div>
+<script type="module">
+import * as THREE from 'three';
+import {parseOSM} from '/src/osm.js';
+import {buildCity} from '/src/city.js';
+import {landmarkKind} from '/src/building-rules.js';
+import {bindSceneStyle,createStylePipeline,createStyleShared,registerStyle} from '/src/styles/index.js';
+import cel from '/packages/styles/cel.js';
+const raw=await (await fetch('/data/beijing-cbd.json')).json(),all=parseOSM(raw);
+const data={...all,buildings:all.buildings.filter(landmarkKind),roads:all.roads.slice(0,5),
+  water:[{id:'fixture-water',outer:[[-160,-70],[-40,-70],[-40,-10],[-160,-10]],holes:[]}],
+  trees:[{id:1,point:[-150,10],height:18,tags:{}}],greens:[],landscapes:[],landscapeContexts:[]};
+const city=buildCity(data),json=JSON.parse(JSON.stringify(city.group.toJSON()));
+const group=new THREE.ObjectLoader().parse(json),scene=new THREE.Scene();scene.background=new THREE.Color('white');scene.add(group);
+scene.add(new THREE.AmbientLight('white',2));const light=new THREE.DirectionalLight('white',3);light.position.set(400,1000,-500);scene.add(light);
+const camera=new THREE.PerspectiveCamera(44,960/640,.5,8000);
+const bounds=new THREE.Box3();for(const mesh of city.buildings)bounds.union(new THREE.Box3().setFromObject(mesh));
+const center=bounds.getCenter(new THREE.Vector3());camera.position.copy(center).add(new THREE.Vector3(950,650,-900));camera.lookAt(center.x,200,center.z);
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(1);renderer.setSize(960,640);renderer.info.autoReset=false;document.body.append(renderer.domElement);
+registerStyle(cel);const shared=createStyleShared();let binding,pipeline;
+const context=renderer.getContext(),debug=context.getExtension('WEBGL_debug_renderer_info');
+window.environment={userAgent:navigator.userAgent,webgl:context.getParameter(context.VERSION),renderer:debug?context.getParameter(debug.UNMASKED_RENDERER_WEBGL):context.getParameter(context.RENDERER),vendor:debug?context.getParameter(debug.UNMASKED_VENDOR_WEBGL):context.getParameter(context.VENDOR),viewport:[960,640],dpr:1,origin:raw.metadata.center,seed:1,source:'public/data/beijing-cbd.json plus explicit water/tree fixtures'};
+window.runStyle=async(id)=>{
+  pipeline?.dispose();binding?.dispose();binding=bindSceneStyle(group,{style:id,shared});pipeline=createStylePipeline({renderer,scene,camera,style:id,shared});pipeline.resize(960,640);
+  renderer.info.reset();pipeline.render();await new Promise(resolve=>requestAnimationFrame(resolve));renderer.info.reset();pipeline.render();
+  const pixels=new Uint8Array(960*640*4);context.readPixels(0,0,960,640,context.RGBA,context.UNSIGNED_BYTE,pixels);
+  let nonWhite=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i]<245||pixels[i+1]<245||pixels[i+2]<245)nonWhite++;
+  const roles=new Set();group.traverse(o=>{if(o.isMesh)roles.add(o.userData.city.materialRole);});
+  document.querySelector('#label').textContent=`${id} · © OpenStreetMap contributors · fixture water/tree · decoded shaders`;
+  return {id,nonWhitePixels:nonWhite,roles:[...roles],calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures};
+};
+window.finish=()=>{pipeline?.dispose();binding?.dispose();renderer.dispose();};
+window.ready=true;
+</script></html>

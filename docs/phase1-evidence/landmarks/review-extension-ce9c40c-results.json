@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-03",
+  "commit": "ce9c40c4d5d7b8040e49aa6192f704424c22284c",
+  "externalDirectory": "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-ink-independent-extension-9V9fZ2",
+  "externalStyle": "review-teal",
+  "recipe": {
+    "id": "review-zun",
+    "version": "1.0.1",
+    "claimed": [
+      "w599547918"
+    ]
+  },
+  "roles": [
+    "ground",
+    "water",
+    "road",
+    "glass",
+    "facility",
+    "foliage"
+  ],
+  "materialCount": 40,
+  "disposedMaterials": 40,
+  "disposedTextures": 40,
+  "draws": 1,
+  "coreSourceEdited": false
+}

@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-03",
+  "commit": "307c9b48838be620cd4827164d67e783266ee9b6",
+  "node": "v22.11.0",
+  "checked": [
+    {
+      "schema": "landmark-recipe",
+      "id": "china-zun"
+    },
+    {
+      "schema": "landmark-recipe",
+      "id": "cctv-headquarters"
+    },
+    {
+      "schema": "style",
+      "id": "comic"
+    },
+    {
+      "schema": "style",
+      "id": "line"
+    },
+    {
+      "schema": "style",
+      "id": "color"
+    },
+    {
+      "schema": "style",
+      "id": "white"
+    },
+    {
+      "schema": "style",
+      "id": "external-cel"
+    }
+  ],
+  "strictTypeConsumer": "pass"
+}

@@ -1,0 +1,595 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-03",
+  "reviewer": "独立只读审查subagent landmarks_review",
+  "scope": "一期C地标与风格组件；非整期完成声明",
+  "baseline": "ed0820b02761ca918508c3d8c25af1e936e433c8",
+  "initialReviewedCommit": "09a08cbffe434dd88b0b4f9de0bd1a6261677039",
+  "retestedCommits": [
+    "ce9c40c4d5d7b8040e49aa6192f704424c22284c",
+    "307c9b48838be620cd4827164d67e783266ee9b6"
+  ],
+  "finalReviewedFunctionalCommit": "307c9b48838be620cd4827164d67e783266ee9b6",
+  "worktree": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink",
+  "branch": "codex/phase1-landmarks",
+  "environment": {
+    "platform": "win32",
+    "release": "10.0.26300",
+    "node": "v22.11.0",
+    "npm": "10.9.0",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13600KF"
+  },
+  "reviewerTrackedFilesModified": false,
+  "conclusion": "组件审查通过；已发现问题均修复并复验，无未解决组件缺陷。完整一期及A/B/D/E集成验收保持未运行。",
+  "validation": [
+    {
+      "command": "npm test",
+      "result": "pass",
+      "tests": 157,
+      "failures": 0,
+      "log": "work/independent-final-tests.log"
+    },
+    {
+      "command": "npm run build",
+      "result": "pass",
+      "notes": "既有Three.js分包>500kB提示；无构建错误。"
+    },
+    {
+      "command": "node work/review-reverify.mjs",
+      "result": "pass"
+    },
+    {
+      "command": "node work/review-ordinary-roles.mjs",
+      "result": "pass",
+      "roles": [
+        "glass",
+        "structure",
+        "roof"
+      ],
+      "ordinaryFeature": "r13613470-0"
+    },
+    {
+      "command": "node work/review-browser.mjs",
+      "result": "pass",
+      "notes": "真实Edge/WebGL，五风格及五轮往返；errors/warnings为空。"
+    },
+    {
+      "command": "node work/review-extension.mjs",
+      "result": "pass"
+    },
+    {
+      "command": "node work/browser/node_modules/typescript/bin/tsc -p work/tsconfig.json",
+      "result": "pass"
+    },
+    {
+      "command": "git diff --check 307c9b48838be620cd4827164d67e783266ee9b6 -- src packages schemas test",
+      "result": "pass"
+    }
+  ],
+  "findings": [
+    {
+      "id": "C-R01",
+      "severity": "P1",
+      "introducedCommit": "09a08cbffe434dd88b0b4f9de0bd1a6261677039",
+      "location": "src/city.js:60 (initial commit)",
+      "problem": "合法外部生成器返回带claimed featureId但无color属性的BoxGeometry时，buildCity无条件读取color.array并崩溃。",
+      "reproduction": "node work/review-boundaries.mjs（初审）；node work/review-reverify.mjs（修复复验）",
+      "resolutionCommit": "ce9c40c4d5d7b8040e49aa6192f704424c22284c",
+      "retest": "pass"
+    },
+    {
+      "id": "C-R02",
+      "severity": "P2",
+      "introducedCommit": "09a08cbffe434dd88b0b4f9de0bd1a6261677039",
+      "location": "src/styles/index.js role-table binding",
+      "problem": "损坏的单项materialRoles配六组BoxGeometry会被接受，生成长度1的材质数组，其他五组被Three.js静默略过。",
+      "reproduction": "node work/review-boundaries.mjs；修复后无效表明确抛TypeError，完整六组通过。",
+      "resolutionCommit": "ce9c40c4d5d7b8040e49aa6192f704424c22284c",
+      "retest": "pass"
+    },
+    {
+      "id": "C-R03",
+      "severity": "P2",
+      "introducedCommit": "09a08cbffe434dd88b0b4f9de0bd1a6261677039",
+      "location": "packages/styles/index.js sourceMaterial.clone()",
+      "problem": "官方画风克隆树材质丢失onBeforeCompile，序列化后也没有恢复程序叶片着色。",
+      "reproduction": "node work/review-programs.mjs；修复后ObjectLoader重载并绑定comic/line/color均恢复foliage-v1。",
+      "resolutionCommit": "ce9c40c4d5d7b8040e49aa6192f704424c22284c",
+      "retest": "pass"
+    },
+    {
+      "id": "C-R04",
+      "severity": "P2",
+      "introducedCommit": "09a08cbffe434dd88b0b4f9de0bd1a6261677039",
+      "location": "src/generators/official.js MeshWriter initialization",
+      "problem": "五个地标分部的aStyle.y种子variant由原值变为0，改变原玻璃反射；原surfaceScale也未初始化。",
+      "reproduction": "node work/review-programs.mjs比较基线旧city与新city；修复后五分部Float32 variant及surfaceScale与基线一致。",
+      "resolutionCommit": "ce9c40c4d5d7b8040e49aa6192f704424c22284c",
+      "retest": "pass"
+    },
+    {
+      "id": "C-R05",
+      "severity": "P2",
+      "introducedCommit": "09a08cbffe434dd88b0b4f9de0bd1a6261677039",
+      "location": "src/generators/compatibility.js; src/landmark-registry.js",
+      "problem": "范围求值短路使>=1.0.0 || latest通过；runtime配方验证接受与Schema不符的数字parameters、字符串source/provenance和数字材质角色。",
+      "reproduction": "直接调用satisfies/checkLandmarkPackage/validateLandmarkRecipe；修复后非法范围全部分支先解析且错误字段被拒绝。",
+      "resolutionCommit": "ce9c40c4d5d7b8040e49aa6192f704424c22284c",
+      "retest": "pass"
+    },
+    {
+      "id": "C-R06",
+      "severity": "P2",
+      "introducedCommit": "09a08cbffe434dd88b0b4f9de0bd1a6261677039",
+      "location": "src/ink-renderer.js prepareScene()",
+      "problem": "存量mesh更换geometry但类别不变时跳过新属性；同时换geometry与类别时dispose可能恢复已被用户替换的旧geometry。",
+      "reproduction": "node work/review-geometry-replacement.mjs；修复后同类别新geometry被分类，旧clone释放，dispose恢复最新来源。",
+      "resolutionCommit": "ce9c40c4d5d7b8040e49aa6192f704424c22284c",
+      "retest": "pass"
+    },
+    {
+      "id": "C-R07",
+      "severity": "P2",
+      "introducedCommit": "ce9c40c4d5d7b8040e49aa6192f704424c22284c previous draft",
+      "location": "src/styles/index.js createFoliageMaterial()",
+      "problem": "修复草稿对通用Material直接调用MeshStandardMaterial.copy会对Basic写入undefined，对ShaderMaterial抛错；提交前已修复。",
+      "reproduction": "修复提交中独立测试MeshBasicMaterial、ShaderMaterial、MeshStandardMaterial均生成有限roughness/metalness并恢复叶片shader。",
+      "resolutionCommit": "ce9c40c4d5d7b8040e49aa6192f704424c22284c",
+      "retest": "pass"
+    },
+    {
+      "id": "C-R08",
+      "severity": "P2",
+      "introducedCommit": "09a08cbffe434dd88b0b4f9de0bd1a6261677039",
+      "location": "src/city.js ordinary writer.mesh()",
+      "problem": "普通建筑混合玻璃、屋顶与结构却只暴露wall，按角色定制的外部风格无法处理实际部位。",
+      "reproduction": "node work/review-ordinary-roles.mjs：真实非地标r13613470-0在ce9c40c仅收到wall，307c9b4后收到glass/structure/roof；新增普通砖楼+办公楼ObjectLoader测试覆盖wall/glass/roof/structure。",
+      "resolutionCommit": "307c9b48838be620cd4827164d67e783266ee9b6",
+      "retest": "pass"
+    },
+    {
+      "id": "C-R09",
+      "severity": "P2",
+      "foundBy": "implementation self-review; independently retested",
+      "location": "packages/styles/index.js copied texture ownership",
+      "problem": "官方clone复制cityOwnedTextures标记可能误释放调用者原纹理。",
+      "reproduction": "修复后带map和所有权标记的source材质通过bind/dispose，原Texture dispose事件为0，原材质被恢复。",
+      "resolutionCommit": "ce9c40c4d5d7b8040e49aa6192f704424c22284c",
+      "retest": "pass"
+    }
+  ],
+  "unresolvedFindings": [],
+  "acceptance": [
+    {
+      "id": "AC01",
+      "component": "pass",
+      "integration": "not-run",
+      "evidence": "原138项保持；最终157/157及生产build成功；最终实际WebGL五风格成功。",
+      "remaining": "E仍须在整合后做全北京关键机位比较。"
+    },
+    {
+      "id": "AC09",
+      "component": "pass",
+      "integration": "not-run",
+      "evidence": "ObjectLoader保留角色组、来源、feature ID、程序属性；facade-v6及foliage-v1重绑；损坏角色表和不兼容shader明确报错。",
+      "remaining": "A真实scene-codec与D加载器尚未集成到此worktree。"
+    },
+    {
+      "id": "AC11",
+      "component": "pass",
+      "integration": "not-run",
+      "evidence": "央视四分部整组一次认领；输入倒序结果稳定；缺件保留通用形体。",
+      "remaining": "跨块建筑、树和央视的全局归属由A集成复验。"
+    },
+    {
+      "id": "AC13",
+      "component": "pass",
+      "integration": "not-run",
+      "evidence": "外部Temp目录独立review-teal风格与review-zun配方实际导入；道路、水、树、地标覆盖；普通建筑序列化后按wall/glass/roof/structure调用工厂。",
+      "remaining": "D/E独立SDK与静态站点的同接口应用尚未集成。"
+    },
+    {
+      "id": "AC14",
+      "component": "pass",
+      "integration": "pass",
+      "evidence": "中国尊/央视原height/min_height/source保留；旧buildCity兼容；默认种子玻璃属性保留；关闭、缺件、未知生成器、版本不兼容、生成失败均回退。"
+    },
+    {
+      "id": "AC15",
+      "component": "pass",
+      "integration": "not-run",
+      "evidence": "npm pack两包真实离线安装；1.0.0→1.1.0改配方、写临时锁、真实北京重建几何变化，再装旧包恢复原锁及几何hash。",
+      "remaining": "checkLandmarkPackage的lock仅描述版本；归档内容hash、原子锁、更新范围和CLI由B负责，未把此项冒充完整CLI验收。"
+    },
+    {
+      "id": "AC24",
+      "component": "pass",
+      "integration": "not-run",
+      "evidence": "独立审查者按extensions.md在项目外创建并加载风格和配方；Ajv2020验证两配方/五风格；严格TS消费通过。",
+      "remaining": "全项目help/JSON及完整agent文档待B/E集成。"
+    },
+    {
+      "id": "AC26",
+      "component": "pass",
+      "integration": "not-run",
+      "evidence": "npm pack与真实安装检查入口、类型、README、LICENSE；子包无缓存、地图大样本、生成模型或私有文件。",
+      "remaining": "根公共包入口及最终发布包由E验收。"
+    },
+    {
+      "id": "AC27",
+      "component": "pass",
+      "integration": "not-run",
+      "evidence": "非实现者先读规划与实际代码；审查09a08cb，发现问题，复验ce9c40c和307c9b4；组件无未解决发现。",
+      "remaining": "E最终集成提交的两个独立角色验收仍未执行。"
+    },
+    {
+      "id": "AC19",
+      "component": "not-run",
+      "integration": "not-run",
+      "evidence": "仅组件五轮comic/cel往返资源稳定；没有以此替代整城SDK加载卸载性能实验。"
+    },
+    {
+      "id": "AC20",
+      "component": "not-run",
+      "integration": "not-run",
+      "evidence": "未执行扩区、固定60秒路径或GPU时长性能实验；属于D/E范围。"
+    }
+  ],
+  "reverify": {
+    "date": "2026-11-03",
+    "reviewedCommit": "307c9b48838be620cd4827164d67e783266ee9b6",
+    "actualCommit": "307c9b48838be620cd4827164d67e783266ee9b6",
+    "checks": [
+      {
+        "id": "R1-uncoloured-external-generator",
+        "status": "pass",
+        "detail": "Claimed featureId with BoxGeometry succeeds; provenance toggles remain safe."
+      },
+      {
+        "id": "R2-role-table-groups",
+        "status": "pass",
+        "detail": "Invalid indices rejected, complete six-role groups accepted."
+      },
+      {
+        "id": "R3-serialized-foliage",
+        "status": "pass",
+        "detail": "foliage-v1 and leaf shader restored after ObjectLoader for comic/line/color."
+      },
+      {
+        "id": "R4-generic-foliage-material",
+        "status": "pass",
+        "detail": "MeshBasicMaterial, ShaderMaterial and MeshStandardMaterial sources all produce finite standard shader materials."
+      },
+      {
+        "id": "R5-borrowed-texture",
+        "status": "pass",
+        "detail": "Binding disposal does not release caller-owned map copied from marked source."
+      },
+      {
+        "id": "R6-landmark-seeded-attributes",
+        "status": "pass",
+        "detail": "All five landmark parts preserve baseline glass variant and surface-scale Float32 values."
+      },
+      {
+        "id": "R7-compatibility-and-shapes",
+        "status": "pass",
+        "detail": "All range branches parsed; invalid metadata field shapes rejected."
+      },
+      {
+        "id": "R8-geometry-replacement",
+        "status": "pass",
+        "detail": "Same-kind replacements classified, old clones freed, changed-kind source geometry restored correctly."
+      },
+      {
+        "id": "R9-schemas",
+        "status": "pass",
+        "detail": "Ajv2020 validates two recipes, four official styles and external cel metadata."
+      }
+    ],
+    "unresolvedFindings": []
+  },
+  "browser": {
+    "date": "2026-11-03",
+    "reviewedCommit": "307c9b48838be620cd4827164d67e783266ee9b6",
+    "environment": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36 Edg/156.0.0.0",
+      "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4090 (0x00002684) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "vendor": "Google Inc. (NVIDIA)",
+      "viewport": [
+        960,
+        640
+      ],
+      "dpr": 1,
+      "origin": [
+        39.909499999999994,
+        116.4605
+      ],
+      "seed": 1,
+      "source": "public/data/beijing-cbd.json plus explicit water/tree fixtures"
+    },
+    "results": [
+      {
+        "id": "comic",
+        "nonWhitePixels": 29883,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 135,
+        "triangles": 106918,
+        "geometries": 22,
+        "textures": 8
+      },
+      {
+        "id": "line",
+        "nonWhitePixels": 11201,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 102,
+        "triangles": 80190,
+        "geometries": 22,
+        "textures": 7
+      },
+      {
+        "id": "color",
+        "nonWhitePixels": 320558,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 102,
+        "triangles": 80190,
+        "geometries": 22,
+        "textures": 7
+      },
+      {
+        "id": "white",
+        "nonWhitePixels": 23430,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 102,
+        "triangles": 80190,
+        "geometries": 22,
+        "textures": 7
+      },
+      {
+        "id": "external-cel",
+        "nonWhitePixels": 317386,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 33,
+        "triangles": 26728,
+        "geometries": 20,
+        "textures": 44
+      }
+    ],
+    "repeats": [
+      {
+        "id": "comic",
+        "nonWhitePixels": 29883,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 135,
+        "triangles": 106918,
+        "geometries": 22,
+        "textures": 8
+      },
+      {
+        "id": "external-cel",
+        "nonWhitePixels": 317386,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 33,
+        "triangles": 26728,
+        "geometries": 20,
+        "textures": 44
+      },
+      {
+        "id": "comic",
+        "nonWhitePixels": 29883,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 135,
+        "triangles": 106918,
+        "geometries": 22,
+        "textures": 8
+      },
+      {
+        "id": "external-cel",
+        "nonWhitePixels": 317386,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 33,
+        "triangles": 26728,
+        "geometries": 20,
+        "textures": 44
+      },
+      {
+        "id": "comic",
+        "nonWhitePixels": 29883,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 135,
+        "triangles": 106918,
+        "geometries": 22,
+        "textures": 8
+      },
+      {
+        "id": "external-cel",
+        "nonWhitePixels": 317386,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 33,
+        "triangles": 26728,
+        "geometries": 20,
+        "textures": 44
+      },
+      {
+        "id": "comic",
+        "nonWhitePixels": 29883,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 135,
+        "triangles": 106918,
+        "geometries": 22,
+        "textures": 8
+      },
+      {
+        "id": "external-cel",
+        "nonWhitePixels": 317386,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 33,
+        "triangles": 26728,
+        "geometries": 20,
+        "textures": 44
+      },
+      {
+        "id": "comic",
+        "nonWhitePixels": 29883,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 135,
+        "triangles": 106918,
+        "geometries": 22,
+        "textures": 8
+      },
+      {
+        "id": "external-cel",
+        "nonWhitePixels": 317386,
+        "roles": [
+          "ground",
+          "water",
+          "road",
+          "facility",
+          "glass",
+          "foliage"
+        ],
+        "calls": 33,
+        "triangles": 26728,
+        "geometries": 20,
+        "textures": 44
+      }
+    ],
+    "errors": [],
+    "warnings": []
+  },
+  "externalTutorial": {
+    "date": "2026-11-03",
+    "commit": "307c9b48838be620cd4827164d67e783266ee9b6",
+    "externalDirectory": "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-ink-independent-extension-js3sa8",
+    "externalStyle": "review-teal",
+    "recipe": {
+      "id": "review-zun",
+      "version": "1.0.1",
+      "claimed": [
+        "w599547918"
+      ]
+    },
+    "roles": [
+      "ground",
+      "water",
+      "road",
+      "glass",
+      "facility",
+      "foliage"
+    ],
+    "materialCount": 40,
+    "disposedMaterials": 40,
+    "disposedTextures": 40,
+    "draws": 1,
+    "coreSourceEdited": false
+  },
+  "preservedEarlierEvidence": [
+    "work/review-reverify-ce9c40c-results.json",
+    "work/review-browser-ce9c40c-results.json",
+    "work/review-extension-ce9c40c-results.json"
+  ],
+  "limits": [
+    "未修改或提交任何受跟踪源码；实现者自行完成修复提交。",
+    "组件浏览器page为北京地标子集与显式水/树fixture，非整城性能证据。",
+    "未执行npm publish、push、远端部署或真实网络地图获取。",
+    "此报告可原样归档；实际整合后必须复跑A/B/D/E依赖验收。"
+  ]
+}
