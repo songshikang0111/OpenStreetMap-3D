@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { CityError, atomicWrite, checkAbort, hash, readJSON, safePath, relativeFile } from '../data/common.js';
 import { normalizeOSM } from '../data/normalize.js';
 import { fetchArea } from '../data/overpass.js';
-import { dataSourceOverrides } from '../data/source.js';
+import { dataSourceOverrides,DATA_SOURCE_FIELDS } from '../data/source.js';
 import { readProject } from './project.js';
 import { projectRecipes, updateLandmarks } from './landmarks.js';
 
@@ -14,7 +14,12 @@ export async function loadCore() {
 }
 // Viewer settings are saved with the project, but do not alter scene geometry.
 // Keep the complete configHash in the lock for provenance and race detection.
-export function buildConfigHash({camera,style,quality,...geometryConfig}) {return hash(geometryConfig);}
+export function buildConfigHash({camera,style,quality,source,...geometryConfig}) {
+  // A service policy changes the next acquisition, not the already locked input.
+  // Source identity and the separate sourceFileHash/dataHash still invalidate geometry.
+  const sourceIdentity=Object.fromEntries(Object.entries(source||{}).filter(([key])=>!DATA_SOURCE_FIELDS.includes(key)));
+  return hash({...geometryConfig,source:sourceIdentity});
+}
 async function engineFingerprint() {
   const root = fileURLToPath(new URL('../', import.meta.url));
   const entries=[];
