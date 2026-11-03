@@ -6,7 +6,8 @@
 
 - C 已完成独立审查与交接，`8300ee7` 及其功能/修复提交已合入 E；C + E 的针对性测试 25/25 通过。组件报告：`docs/phase1-evidence/landmarks/handoff.md`。
 - E 工作台、包/构建入口、静态/浏览器导出、文档与验收脚本已提交；独立初阶段审查的四项 P2 已修复复验，记录于 `docs/phase1-evidence/integration/review-studio-initial.md`。
-- A/B/D 仍在独立复验与交接中；其初始功能提交不能代替最终完成状态。E 尚未执行整合后的真实端到端、全部性能矩阵和两个最终独立验收，当前不得宣称一期完成。
+- A `198a8e0`、B `e626097` 已完成组件独立审查与交接并合入 E。A/C 统一规划与 B 服务契约的实际联合缺陷已修复，证据见 `docs/phase1-evidence/integration/review-architecture-initial.md`。
+- D 在冻结生产包上跑 60 秒性能矩阵，尚待最终交接。E 尚未执行整合后的真实端到端、全部性能矩阵和两个最终独立验收，当前不得宣称一期完成。B/E 真实小范围下载仍 502/超时，AC04 保持 fail。
 - 已发现待集成处理：相机/实时画风的配置 hash 不应令几何构建过期；公共项目 Schema/类型与 CLI/runtime 的 low/import/规则包锁对象需要统一；SDK 必须实际打包 CINK 与风格默认适配器。最终以修复与原始验收证据为准。
 
 ## 已完成的规划准备
