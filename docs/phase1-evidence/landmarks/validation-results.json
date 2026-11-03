@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-03",
+  "commit": "307c9b48838be620cd4827164d67e783266ee9b6",
+  "commands": {
+    "npm test": {
+      "pass": 157,
+      "fail": 0,
+      "includesOriginalTests": 138
+    },
+    "npm run build": {
+      "status": "pass",
+      "warning": "Existing Three.js chunk >500 kB"
+    },
+    "git diff --check": {
+      "status": "pass"
+    },
+    "node docs/phase1-evidence/landmarks/verify-contracts.mjs": {
+      "status": "pass"
+    },
+    "node docs/phase1-evidence/landmarks/verify-browser.mjs": {
+      "status": "pass",
+      "styleCount": 5,
+      "resourceRoundTrips": 5
+    }
+  },
+  "environment": {
+    "os": "Windows",
+    "node": "v22.11.0"
+  },
+  "inputs": {
+    "source": "public/data/beijing-cbd.json",
+    "seed": 1,
+    "geometryCases": "CCTV/China Zun exact source OSM plus explicit fixture water/trees"
+  },
+  "scope": "Component verification only; A codec/B CLI/D SDK/E integration not yet merged"
+}

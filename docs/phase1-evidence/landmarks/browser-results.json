@@ -1,6 +1,6 @@
 {
   "date": "2026-11-03",
-  "commit": "ed0820b02761ca918508c3d8c25af1e936e433c8",
+  "commit": "307c9b48838be620cd4827164d67e783266ee9b6",
   "environment": {
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36 Edg/156.0.0.0",
     "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
@@ -23,7 +23,7 @@
   "results": [
     {
       "id": "comic",
-      "nonWhitePixels": 24839,
+      "nonWhitePixels": 29883,
       "roles": [
         "ground",
         "water",
@@ -32,14 +32,14 @@
         "glass",
         "foliage"
       ],
-      "calls": 103,
-      "triangles": 105622,
-      "geometries": 21,
+      "calls": 135,
+      "triangles": 106918,
+      "geometries": 22,
       "textures": 8
     },
     {
       "id": "line",
-      "nonWhitePixels": 11122,
+      "nonWhitePixels": 11201,
       "roles": [
         "ground",
         "water",
@@ -48,14 +48,14 @@
         "glass",
         "foliage"
       ],
-      "calls": 78,
-      "triangles": 79218,
-      "geometries": 21,
+      "calls": 102,
+      "triangles": 80190,
+      "geometries": 22,
       "textures": 7
     },
     {
       "id": "color",
-      "nonWhitePixels": 309145,
+      "nonWhitePixels": 320558,
       "roles": [
         "ground",
         "water",
@@ -64,14 +64,14 @@
         "glass",
         "foliage"
       ],
-      "calls": 78,
-      "triangles": 79218,
-      "geometries": 21,
+      "calls": 102,
+      "triangles": 80190,
+      "geometries": 22,
       "textures": 7
     },
     {
       "id": "white",
-      "nonWhitePixels": 17210,
+      "nonWhitePixels": 23430,
       "roles": [
         "ground",
         "water",
@@ -80,14 +80,14 @@
         "glass",
         "foliage"
       ],
-      "calls": 78,
-      "triangles": 79218,
-      "geometries": 21,
+      "calls": 102,
+      "triangles": 80190,
+      "geometries": 22,
       "textures": 7
     },
     {
       "id": "external-cel",
-      "nonWhitePixels": 307729,
+      "nonWhitePixels": 317386,
       "roles": [
         "ground",
         "water",
@@ -96,10 +96,182 @@
         "glass",
         "foliage"
       ],
-      "calls": 25,
-      "triangles": 26404,
-      "geometries": 19,
-      "textures": 36
+      "calls": 33,
+      "triangles": 26728,
+      "geometries": 20,
+      "textures": 44
+    }
+  ],
+  "lifecycle": [
+    {
+      "cycle": 0,
+      "id": "comic",
+      "nonWhitePixels": 29883,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 135,
+      "triangles": 106918,
+      "geometries": 22,
+      "textures": 8
+    },
+    {
+      "cycle": 0,
+      "id": "external-cel",
+      "nonWhitePixels": 317386,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 33,
+      "triangles": 26728,
+      "geometries": 20,
+      "textures": 44
+    },
+    {
+      "cycle": 1,
+      "id": "comic",
+      "nonWhitePixels": 29883,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 135,
+      "triangles": 106918,
+      "geometries": 22,
+      "textures": 8
+    },
+    {
+      "cycle": 1,
+      "id": "external-cel",
+      "nonWhitePixels": 317386,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 33,
+      "triangles": 26728,
+      "geometries": 20,
+      "textures": 44
+    },
+    {
+      "cycle": 2,
+      "id": "comic",
+      "nonWhitePixels": 29883,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 135,
+      "triangles": 106918,
+      "geometries": 22,
+      "textures": 8
+    },
+    {
+      "cycle": 2,
+      "id": "external-cel",
+      "nonWhitePixels": 317386,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 33,
+      "triangles": 26728,
+      "geometries": 20,
+      "textures": 44
+    },
+    {
+      "cycle": 3,
+      "id": "comic",
+      "nonWhitePixels": 29883,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 135,
+      "triangles": 106918,
+      "geometries": 22,
+      "textures": 8
+    },
+    {
+      "cycle": 3,
+      "id": "external-cel",
+      "nonWhitePixels": 317386,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 33,
+      "triangles": 26728,
+      "geometries": 20,
+      "textures": 44
+    },
+    {
+      "cycle": 4,
+      "id": "comic",
+      "nonWhitePixels": 29883,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 135,
+      "triangles": 106918,
+      "geometries": 22,
+      "textures": 8
+    },
+    {
+      "cycle": 4,
+      "id": "external-cel",
+      "nonWhitePixels": 317386,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 33,
+      "triangles": 26728,
+      "geometries": 20,
+      "textures": 44
     }
   ],
   "errors": [],
