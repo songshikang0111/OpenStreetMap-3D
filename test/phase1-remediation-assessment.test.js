@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {assessCase,assessStationary,assessResources,requestCounts,STATIONARY_VIEWS} from '../scripts/benchmark-integration/assessment.mjs';
+import {assessCase,assessStationary,assessResources,assessGpu,requestCounts,STATIONARY_VIEWS} from '../scripts/benchmark-integration/assessment.mjs';
 const historical=async name=>JSON.parse(await readFile(new URL(`../docs/phase1-evidence/integration/performance/${name}.json`,import.meta.url),'utf8'));
 
 test('new acceptance rejects historical triangle overflow despite its successful old frame-rate gates',async()=>{
@@ -17,10 +17,12 @@ test('stationary evidence requires a complete real-time window and both saved ca
   const frames=Array.from({length:1500},(_,i)=>({time:10+i*10,intervalMs:10,triangles:100,drawCalls:2,estimatedResidentBytes:1000,bodyNearDetails:0,nearAttachmentDetails:0,totalNearDetails:0,nearGeometryArrayBytes:0}));
   Object.assign(stats,{paused:false,disposed:false,diagnostics:[]});
   stats.runtime.nearDetails=0;stats.runtime.peakEstimatedResidentBytes=stats.runtime.estimatedResidentBytes=1000;
-  Object.assign(stats.rendering,{frames,frameCount:1501,windowFrames:1500});
+  Object.assign(stats.rendering,{frames,initialFrame:{...frames[0],time:0,intervalMs:null},frameCount:1501,windowFrames:1500});
   const phase={...STATIONARY_VIEWS[0],timeOrigin:100000,measurementEpochMs:100000,endedEpochMs:115000,durationSeconds:15,baseline:structuredClone(stats),stats,samples:Array.from({length:151},(_,i)=>({second:i/10,runtime:stats.runtime})),measuredRequests:[]};
   phase.baselineView=phase.actualView=phase.view;phase.samples.forEach(item=>{item.view=phase.view;item.nearAttachments={nearDetails:0,geometryArrayBytes:0};item.render=frames.at(-1);});phase.phaseRequests=[];
   assert.ok(Object.values(assessStationary(phase).checks).every(Boolean));
+  const missingFirst=structuredClone(phase);delete missingFirst.stats.rendering.initialFrame;assert.equal(assessStationary(missingFirst).checks.frames,false);
+  const firstOverflow=structuredClone(phase);Object.assign(firstOverflow.stats.rendering.initialFrame,{triangles:600001,drawCalls:1201,estimatedResidentBytes:128*1024*1024+1});const firstChecks=assessStationary(firstOverflow).checks;assert.equal(firstChecks.frames,true);assert.equal(firstChecks.drawingTriangles,false);assert.equal(firstChecks.drawingCalls,false);assert.equal(firstChecks.resident,false);
   const truncated=structuredClone(phase);truncated.stats.rendering.frames=frames.slice(0,2);truncated.stats.rendering.frameCount=3;truncated.stats.rendering.windowFrames=2;
   assert.equal(assessStationary(truncated).checks.frames,false);
   const sparse={...phase,samples:[phase.samples[0],phase.samples.at(-1)]};
@@ -40,6 +42,7 @@ test('stationary evidence requires a complete real-time window and both saved ca
   const hiddenRequests=structuredClone(phase);hiddenRequests.phaseRequests=[{url:'http://localhost/high.cink',observedAt:101000},{url:'http://localhost/high.cink',observedAt:102000}];
   assert.equal(assessStationary(hiddenRequests).checks.requestEvidence,false);assert.equal(assessStationary(hiddenRequests).checks.noRepeatedRequests,false);
   const forged=structuredClone(raw);forged.stationary=[phase,t19];forged.path.stats.rendering.frames=Array.from({length:1500},(_,i)=>({time:40+i*40,intervalMs:40,triangles:100,drawCalls:2}));forged.path.stats.rendering.frameCount=1501;forged.path.stats.rendering.windowFrames=1500;
+  forged.path.stats.rendering.initialFrame={...forged.path.stats.rendering.frames[0],time:0,intervalMs:null};
   assert.equal(assessCase(forged).checks.completeSamples,true);assert.equal(assessCase(forged).checks.p95,false);assert.equal(assessCase(forged).intervals.p95,40);
   const residency=structuredClone(phase);residency.stats.rendering.frames[40].estimatedResidentBytes=128*1024*1024+1;residency.stats.diagnostics=[{code:'TRANSITION_HEADROOM'}];
   assert.equal(assessStationary(residency).checks.resident,false);assert.equal(assessResources(residency.stats,residency.samples).residentFramesOver,1);
@@ -74,4 +77,15 @@ test('leaving the scene must also release near instances and cached profiles',as
     const changed=structuredClone(raw);changed.lifecycle[0].away.nearAttachments[key]=7;
     assert.equal(assessCase(changed).checks.unloads,false,key);
   }
+});
+
+test('GPU raw samples cover the measured frames plus bounded in-flight queries and reproduce their own aggregates',async()=>{
+  const raw=await historical('beijing-cbd-grow-1'),rendering=raw.path.stats.rendering;
+  assert.ok(Object.values(assessGpu(rendering,true).checks).every(Boolean));
+  const truncated=structuredClone(rendering);truncated.gpuTime.rawSamples=truncated.gpuTime.rawSamples.slice(0,1);truncated.gpuTime.samples=1;assert.equal(assessGpu(truncated,true).checks.window,false);
+  const duplicate=structuredClone(rendering);duplicate.gpuTime.rawSamples[1]=duplicate.gpuTime.rawSamples[0];assert.equal(assessGpu(duplicate,true).checks.timestamps,false);
+  const outside=structuredClone(rendering);outside.gpuTime.rawSamples[1].time+=1000000;assert.equal(assessGpu(outside,true).checks.timestamps,false);
+  const wrongAggregate=structuredClone(rendering);wrongAggregate.gpuTime.p95=.0001;assert.equal(assessGpu(wrongAggregate,true).checks.aggregate,false);
+  const malformed=structuredClone(rendering);malformed.gpuTime.rawSamples={};assert.equal(assessGpu(malformed,true).checks.samples,false);
+  const unsupported=assessGpu({gpuTime:{available:false,reason:'Extension unavailable',samples:0,rawSamples:[],p50:null,p95:null,p99:null,max:null}},false);assert.ok(Object.values(unsupported.checks).every(Boolean));assert.equal(unsupported.statistics.p95,null);
 });

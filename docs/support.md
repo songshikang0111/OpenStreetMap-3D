@@ -36,3 +36,4 @@ Windows / Chrome156 / RTX4090、1280×720/DPR1/balanced，真实北京与密集�
 
 修复中的 Studio 已加入“地图数据服务”设置：服务预设会同时设置端点与 GET/POST，并显示区域覆盖；也可输入自托管 HTTP(S) 端点。保存后项目定位和下载使用同一来源配置。故障回退必须显式打开并填写最多两个端点，只适用于网络、超时与 HTTP 502/503/504；不会绕过 429 限流或 406 拒绝。具体可用性以本轮真实下载证据为准。
 数据服务预设、端点、传输和回退设置只控制下一次获取；保存这些设置不使已有几何失效。现有场景仍保留其实际数据文件的来源、时间与哈希。重新获取后文件内容变化，或更改 source.kind / source.file，仍须重新构建并通过锁校验。
+SDK 的 getStats({raw:true}) 另返回 rendering.initialFrame（intervalMs 为 null），保存 reset 后首帧的实际绘制与资源成本；rendering.frames 保留具有帧间隔的后续记录。整段绘制/驻留/近景预算需合并这两部分，FPS 仍按非空 intervalMs 计算。GPU rawSamples 的时间戳对应这些提交帧，收集数加有界在途查询数应等于 frameCount。
