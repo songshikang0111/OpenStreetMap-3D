@@ -8,7 +8,7 @@ function attributionText(manifest) {
   const value = manifest.attribution;
   if (typeof value === 'string') return value;
   if (Array.isArray(value)) return value.map(x => typeof x === 'string' ? x : x.text || x.attribution || x.name).filter(Boolean).join(' · ');
-  if (value?.text) return value.text;
+  if (value?.text) return value.url && !value.text.includes(value.url) ? `${value.text} · ${value.url}` : value.text;
   return (manifest.sources || []).map(x => x.attribution).filter(Boolean).join(' · ') || '© OpenStreetMap contributors · openstreetmap.org/copyright';
 }
 

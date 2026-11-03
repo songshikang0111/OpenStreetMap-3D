@@ -33,7 +33,7 @@ try {
   const externalStyle=await page.evaluate(()=>viewer.getStats());await page.screenshot({path:path.join(output,'external-style.png')});
   let unknownRejected=false;try{await page.evaluate(()=>viewer.setStyle('missing-style'));}catch{unknownRejected=true;}assert(unknownRejected);await page.evaluate(()=>viewer.setStyle('comic'));
   const exports=await page.evaluate(async()=>{let rejected=false;try{await viewer.exportGLB();}catch(e){rejected=e.code==='EXPORT_SCOPE_REQUIRED';}const before=viewer.getStats().viewport,png=await viewer.exportPNG({width:1600,height:900}),glb=await viewer.exportGLB({scope:'complete'}),header=new DataView(await glb.blob.arrayBuffer()).getUint32(0,true);return {rejected,png:{bytes:png.blob.size,attribution:png.attribution,scope:png.scope},glb:{bytes:glb.blob.size,chunkIds:glb.chunkIds,limitations:glb.limitations,magic:header},before,after:viewer.getStats().viewport};});
-  assert(exports.rejected);assert.equal(exports.glb.magic,0x46546c67);assert.equal(exports.glb.chunkIds.length,4);assert.match(exports.png.attribution,/OpenStreetMap/);assert.deepEqual(exports.before,exports.after);
+  assert(exports.rejected);assert.equal(exports.glb.magic,0x46546c67);assert.equal(exports.glb.chunkIds.length,4);assert.match(exports.png.attribution,/OpenStreetMap/);assert.match(exports.png.attribution,/openstreetmap\.org\/copyright/);assert.deepEqual(exports.before,exports.after);
   const cycles=[],reloads=[];
   for(let i=0;i<5;i++){
     await page.evaluate(()=>{viewer.setLodMode('full');viewer.setView({position:[0,20,55],target:[0,20,0]});});await page.evaluate(()=>viewer.whenIdle());await page.waitForTimeout(250);const near=await page.evaluate(()=>viewer.getStats());
