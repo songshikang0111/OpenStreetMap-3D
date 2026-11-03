@@ -360,6 +360,19 @@ export class InkRenderer {
 
   setFacadeShared(shared){this.facadeSource=shared;}
 
+  prepareGroup(group){
+    group.traverse(object=>this._classification.delete(object));
+    const previous=this.scene;try{this.scene=group;this.prepareScene();}finally{this.scene=previous;}
+  }
+
+  releaseGroup(group){
+    group.traverse(object=>{
+      const owned=this._classificationClones.get(object);
+      if(owned){if(object.geometry===owned.clone)object.geometry=owned.original;owned.clone.dispose();this._classificationClones.delete(object);}
+      this._classification.delete(object);
+    });
+  }
+
   render(){
     // Use displayed pixels for the illustration LOD: devicePixelRatio must
     // not turn a distant facade back into a dense dot texture on a HiDPI screen.
@@ -380,7 +393,8 @@ export class InkRenderer {
       if(this.material.uniforms.mode.value===0){s.overrideMaterial=this.lightMaterial;r.setRenderTarget(this.light);r.clear();r.render(s,c);}
       s.overrideMaterial=this.normalMaterial;r.setRenderTarget(this.normal);r.clear();r.render(s,c);
       s.overrideMaterial=this.idMaterial;r.setRenderTarget(this.ids);r.clear();r.render(s,c);
-      this.screenMesh.material=this.aoMaterial;r.setRenderTarget(this.ao);r.clear();r.render(this.screen,this.screenCamera);
+      this.screenMesh.material=this.aoMaterial;r.setRenderTarget(this.ao);r.clear();
+      if(this.aoEnabled!==false)r.render(this.screen,this.screenCamera);
       this.screenMesh.material=this.material;r.setRenderTarget(this.composite);r.clear();r.render(this.screen,this.screenCamera);
       this.screenMesh.material=this.resolveMaterial;r.setRenderTarget(null);r.render(this.screen,this.screenCamera);
     }finally{

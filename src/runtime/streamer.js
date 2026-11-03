@@ -4,8 +4,8 @@ import { measureGroup, ResourceRegistry } from './resources.js';
 import { runtimeError } from './manifest.js';
 
 export class ChunkStreamer {
-  constructor({ manifest, readAsset, decodeChunk, budget, bindGroup = () => null, prepareGroup, onDiagnostic = () => {}, onProgress = () => {}, now = () => performance.now() }) {
-    Object.assign(this, { manifest, readAsset, decodeChunk, budget, bindGroup, prepareGroup, onDiagnostic, onProgress, now });
+  constructor({ manifest, readAsset, decodeChunk, budget, bindGroup = () => null, prepareGroup, releaseGroup = () => {}, onDiagnostic = () => {}, onProgress = () => {}, now = () => performance.now() }) {
+    Object.assign(this, { manifest, readAsset, decodeChunk, budget, bindGroup, prepareGroup, releaseGroup, onDiagnostic, onProgress, now });
     this.group = new Group(); this.group.name = 'City Ink streamed chunks';
     this.registry = new ResourceRegistry(); this.current = new Map(); this.pending = new Map(); this.desired = new Map();
     this.failures = new Map(); this.ready = []; this.disposed = false; this.epoch = 0; this.states = new Map();
@@ -20,7 +20,7 @@ export class ChunkStreamer {
   update(camera, height, time = this.now(), { forceLod } = {}) {
     if (this.disposed) return;
     const projected = projectChunks(this.manifest.chunks, camera, height, this.budget.prefetchMargin);
-    const plan = budgetPlan(projected, this.states, this.budget, time, this.passMultiplier);
+    const plan = budgetPlan(projected, this.states, { ...this.budget, residentBytes: Math.max(0, this.budget.residentBytes - (this.extraResidentBytes || 0)), visibleTriangles: Math.max(0, this.budget.visibleTriangles - (this.extraTriangles || 0) * this.passMultiplier), drawCalls: Math.max(0, this.budget.drawCalls - (this.extraCalls || 0) * this.passMultiplier), nearDetails: Math.max(0, this.budget.nearDetails - (this.extraDetails || 0)) }, time, this.passMultiplier);
     if (forceLod != null) for (const p of plan.requests) p.index = Math.min(p.chunk.lods.length - 1, forceLod);
     this.desired = new Map(plan.requests.map(p => [p.chunk.id, p])); this.plan = plan;
     if (plan.degraded) this.diagnostic('LOD_BUDGET_DOWNGRADE', 'Detail was reduced to preserve coverage within the configured resource budget.');
@@ -28,6 +28,7 @@ export class ChunkStreamer {
     for (const [id, entry] of this.current) {
       const desired = this.desired.get(id);
       entry.group.visible = !!desired;
+      entry.frameMetrics = desired?.costs?.[entry.index];
       if (desired) entry.lastVisible = time;
       else if (time - entry.lastVisible >= this.budget.unloadDelayMs) this.evict(id);
     }
@@ -96,11 +97,11 @@ export class ChunkStreamer {
       await this.prepareGroup?.(group, controller.signal);
       // Preparation may add renderer classification attributes or clone geometry.
       const prepared = this.registry.retain(group); this.registry.release(resources); resources = prepared;
-      if (controller.signal.aborted || this.disposed || task.epoch !== this.epoch) { binding?.dispose?.(); this.registry.release(resources); return; }
+      if (controller.signal.aborted || this.disposed || task.epoch !== this.epoch) { this.releaseGroup(group); binding?.dispose?.(); this.registry.release(resources); return; }
       this.ready.push({ ...task, group, binding, resources, metrics: measureGroup(group), estimatedBytes: Math.max(lod.residentBytes ?? lod.bytes, this.groupBytes(group)) });
       group = null;
     } catch (error) {
-      if (group) { binding?.dispose?.(); this.registry.release(resources || this.registry.retain(group)); }
+      if (group) { this.releaseGroup(group); binding?.dispose?.(); this.registry.release(resources || this.registry.retain(group)); }
       if (!controller.signal.aborted && !this.disposed) {
         const old = this.failures.get(key);
         this.failures.set(key, { attempts: (old?.attempts || 0) + 1, retryAt: this.now() + 1000, error });
@@ -123,9 +124,10 @@ export class ChunkStreamer {
     const entry = this.ready.shift(); if (!entry) return;
     this.pending.delete(entry.key);
     const desired = this.desired.get(entry.chunk.id);
-    if (!desired || entry.controller.signal.aborted || this.disposed) { entry.binding?.dispose?.(); this.registry.release(entry.resources); return; }
+    if (!desired || entry.controller.signal.aborted || this.disposed) { this.releaseGroup(entry.group); entry.binding?.dispose?.(); this.registry.release(entry.resources); return; }
     const previous = this.current.get(entry.chunk.id);
     entry.since = time; entry.lastVisible = time; entry.group.visible = true;
+    entry.frameMetrics = desired.costs?.[entry.index];
     this.group.add(entry.group); this.current.set(entry.chunk.id, entry);
     this.states.set(entry.chunk.id, { index: entry.index, since: !previous && desired.index < entry.index ? -Infinity : time });
     entry.resourcesDirty = true;
@@ -133,7 +135,7 @@ export class ChunkStreamer {
     this.counters.loads++;
     if (this.firstUsableMs == null) this.firstUsableMs = this.now() - this.started;
   }
-  release(entry) { entry.group.removeFromParent(); entry.binding?.dispose?.(); this.registry.release(entry.resources); this.counters.unloads++; }
+  release(entry) { entry.group.removeFromParent(); this.releaseGroup(entry.group); entry.binding?.dispose?.(); this.registry.release(entry.resources); this.counters.unloads++; }
   evict(id) { const entry = this.current.get(id); if (!entry) return; this.release(entry); this.current.delete(id); this.states.delete(id); }
   cancel(key) {
     const task = this.pending.get(key); if (!task || task.controller.signal.aborted) return;
@@ -141,10 +143,10 @@ export class ChunkStreamer {
     // Keep the slot until the transport / decoder acknowledges cancellation.
     // A reader that ignores AbortSignal cannot bypass the concurrency budget.
     const readyIndex = this.ready.findIndex(e => e.key === key);
-    if (readyIndex >= 0) { const [entry] = this.ready.splice(readyIndex, 1); entry.binding?.dispose?.(); this.registry.release(entry.resources); this.pending.delete(key); }
+    if (readyIndex >= 0) { const [entry] = this.ready.splice(readyIndex, 1); this.releaseGroup(entry.group); entry.binding?.dispose?.(); this.registry.release(entry.resources); this.pending.delete(key); }
   }
   estimatedBytes() {
-    let bytes = 0;
+    let bytes = this.extraResidentBytes || 0;
     for (const e of this.current.values()) bytes += e.estimatedBytes;
     for (const e of this.pending.values()) bytes += e.chunk.lods[e.index].residentBytes ?? e.chunk.lods[e.index].bytes;
     return bytes;
@@ -154,7 +156,7 @@ export class ChunkStreamer {
     const levels = {}, visibleIds = [], missingIds = []; let visibleTriangles = 0, sceneDrawCalls = 0, nearDetails = 0;
     for (const [id, e] of this.current) {
       const level = String(e.chunk.lods[e.index].level); levels[level] = (levels[level] || 0) + 1;
-      if (e.group.visible) { visibleIds.push(id); visibleTriangles += e.metrics.triangles; sceneDrawCalls += e.metrics.drawCalls; nearDetails += e.metrics.nearDetails; }
+      if (e.group.visible) { visibleIds.push(id); visibleTriangles += e.frameMetrics?.triangles ?? e.metrics.triangles; sceneDrawCalls += e.frameMetrics?.drawCalls ?? e.metrics.drawCalls; nearDetails += e.metrics.nearDetails; }
     }
     for (const id of this.desired.keys()) if (!this.current.has(id)) missingIds.push(id);
     return { ...this.counters, ...this.registry.stats(), estimatedResidentBytes: this.estimatedBytes(), byteMetric: 'CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory', currentChunks: this.current.size, pendingLoads: this.pending.size, visibleChunks: visibleIds.length, missingChunks: missingIds, visibleIds, levels, visibleTriangles, sceneDrawCalls, nearDetails, settled: this.isSettled(), firstUsableMs: this.firstUsableMs };
@@ -187,7 +189,7 @@ export class ChunkStreamer {
     for (const key of this.pending.keys()) this.cancel(key);
     for (const id of [...this.current.keys()]) this.evict(id);
     await Promise.allSettled([...this.pending.values()].map(p => p.promise));
-    for (const entry of this.ready.splice(0)) { entry.binding?.dispose?.(); this.registry.release(entry.resources); }
+    for (const entry of this.ready.splice(0)) { this.releaseGroup(entry.group); entry.binding?.dispose?.(); this.registry.release(entry.resources); }
     this.pending.clear(); this.desired.clear(); this.failures.clear(); this.group.removeFromParent();
   }
 }

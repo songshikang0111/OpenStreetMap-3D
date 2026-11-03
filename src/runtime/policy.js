@@ -24,7 +24,9 @@ export function projectChunks(chunks, camera, height, margin = 0) {
     chunk.box.getCenter(center); chunk.box.getSize(size);
     const distance = Math.max(.1, chunk.box.distanceToPoint(camera.position));
     const depth = Math.max(.1, -center.clone().applyMatrix4(camera.matrixWorldInverse).z);
-    return { chunk, visible: frustum.intersectsBox(chunk.box), pixels: size.length() * scale / Math.max(distance, depth), distance, scale };
+    const visible = frustum.intersectsBox(chunk.box);
+    const costs = visible ? chunk.lods.map(lod => lod.drawUnits ? lod.drawUnits.reduce((sum, unit) => { if (frustum.intersectsSphere(unit.sphere)) { sum.triangles += unit.triangles; sum.drawCalls += unit.drawCalls; } return sum; }, { triangles: 0, drawCalls: 0 }) : { triangles: lod.triangles, drawCalls: lod.drawCalls ?? 1 }) : [];
+    return { chunk, visible, pixels: size.length() * scale / Math.max(distance, depth), distance, scale, costs };
   });
 }
 
@@ -37,9 +39,10 @@ export function chooseLod(projected, state, budget, now) {
     const current = state?.index ?? chunk.lods.length - 1;
     const factor = i < current ? 1 + budget.hysteresis : 1 - budget.hysteresis;
     const next = chunk.lods[i + 1];
-    const error = next.geometricError ?? next.errorMeters;
-    const wantsDetail = Number.isFinite(error) && Number.isFinite(next.maxScreenError)
-      ? error * scale / Math.max(distance, .1) > next.maxScreenError * factor
+    const error = next.selection?.geometricErrorMeters ?? next.geometricError ?? next.errorMeters;
+    const maxError = next.selection?.maxScreenSpaceError ?? next.maxScreenError;
+    const wantsDetail = Number.isFinite(error) && Number.isFinite(maxError)
+      ? error * scale / Math.max(distance, .1) > maxError * factor
       : pixels > threshold * factor;
     if (wantsDetail) { index = i; break; }
   }
@@ -51,8 +54,9 @@ export function budgetPlan(projected, states, budget, now, passMultiplier = 1) {
   const requests = projected.filter(p => p.visible).map(p => ({ ...p, index: chooseLod(p, states.get(p.chunk.id), budget, now) }));
   const total = () => requests.reduce((sum, p) => {
     const lod = p.chunk.lods[p.index];
-    sum.bytes += lod.residentBytes ?? lod.bytes; sum.triangles += lod.triangles;
-    sum.calls += (lod.drawCalls ?? 1) * passMultiplier; sum.details += lod.nearDetails ?? 0;
+    const cost = p.costs?.[p.index];
+    sum.bytes += lod.residentBytes ?? lod.bytes; sum.triangles += cost?.triangles ?? lod.triangles;
+    sum.calls += (cost?.drawCalls ?? lod.drawCalls ?? 1) * passMultiplier; sum.details += lod.nearDetails ?? 0;
     return sum;
   }, { bytes: 0, triangles: 0, calls: 0, details: 0 });
   const over = s => s.bytes > budget.residentBytes || s.triangles * passMultiplier > budget.visibleTriangles || s.calls > budget.drawCalls || s.details > budget.nearDetails;

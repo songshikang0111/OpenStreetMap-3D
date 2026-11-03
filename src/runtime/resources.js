@@ -53,8 +53,9 @@ export function measureGroup(group) {
   group.traverseVisible(object => {
     if (!object.isMesh || !object.geometry?.attributes.position) return;
     const geometry = object.geometry, count = object.isInstancedMesh ? object.count : 1;
-    triangles += (geometry.index?.count || geometry.attributes.position.count) / 3 * count;
-    drawCalls += Array.isArray(object.material) ? geometry.groups.length : 1;
+    const vertices = geometry.index?.count || geometry.attributes.position.count;
+    triangles += Math.max(0, Math.min(geometry.drawRange.count, vertices - geometry.drawRange.start)) / 3 * count;
+    if (count > 0) drawCalls += Array.isArray(object.material) ? geometry.groups.length : 1;
     if (object.userData.city?.lodRole === 'detail' || object.userData.city?.lodRole === 'near') nearDetails += count;
   });
   return { triangles, drawCalls, nearDetails };

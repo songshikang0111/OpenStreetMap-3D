@@ -220,9 +220,15 @@ export async function compileScene(raw, inputConfig, options = {}) {
         if(!group.children.length)continue;
         if(level.level===0){mergeLowBuildings(group);remember(group);}
         group.userData={city:{schemaVersion:1,chunkId:id,lod:level.id,origin:config.origin,coordinateSystem:'x-east-y-up-z-south-meters',featureIndexVersion:1}};
+        if(level.level===2 && city.runtimeDetails){
+          group.userData.city.nearDetails={schemaVersion:1,
+            facadeWalls:city.runtimeDetails.facadeWalls.filter(w=>owners.get(w.key.slice(0,w.key.lastIndexOf(':')))===id).map(w=>({...w,featureId:w.key.slice(0,w.key.lastIndexOf(':'))})),
+            trees:city.runtimeDetails.trees.filter(t=>owners.get(`tree:${t.key}`)===id).map(({key,x,z,h,seed,rotation,variation,shape})=>({key,x,z,h,seed,rotation,variation,shape,featureId:`tree:${key}`}))};
+        }
         const chunk=chunkMap.get(id),bounds=boundsOf(group),stats=sceneStats(group),payload=encodeChunk(group),hash=await sha256(payload),uri=`chunks/${id}.${level.id}.${hash.slice(0,16)}.cink`;
         assets[uri]=payload;chunk.contentBounds=unionBounds(chunk.contentBounds,bounds);
-        chunk.lods.push({...level,uri,hash,bytes:payload.byteLength,...stats,bounds,selection:{metric:'screen-space-error',geometricErrorMeters:level.geometricError,maxScreenSpaceError:level.maxScreenSpaceError}});
+        const drawUnits=group.children.filter(o=>o.isMesh&&o.visible&&(!o.isInstancedMesh||o.count)).map(object=>{const cost=sceneStats(object);return {bounds:boundsOf(object),triangles:cost.triangles,drawCalls:cost.drawCalls};});
+        chunk.lods.push({...level,uri,hash,bytes:payload.byteLength,...stats,bounds,drawUnits,selection:{metric:'screen-space-error',geometricErrorMeters:level.geometricError,maxScreenSpaceError:level.maxScreenSpaceError}});
         group.traverse(o=>{for(const featureId of o.userData.city?.featureIds||[])if(!featureIndex[featureId].chunkIds.includes(id))featureIndex[featureId].chunkIds.push(id);});
       }
       await progress('encode',.45+level.level*.2);

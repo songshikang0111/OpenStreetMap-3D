@@ -6,12 +6,12 @@ import { chromium } from 'playwright';
 
 const args=process.argv.slice(2), get=(key,fallback)=>args.find(a=>a.startsWith(`--${key}=`))?.slice(key.length+3)||fallback;
 const base=get('url','http://127.0.0.1:5184'), output=path.resolve(get('output','docs/phase1-evidence/runtime/browser'));
-const seconds=Number(get('seconds','60')), names=get('fixtures','synthetic-fixed-1,synthetic-fixed-4,synthetic-fixed-16,synthetic-grow-1,synthetic-grow-4,synthetic-grow-9,beijing-cbd-grow-1,beijing-cbd-grow-4,beijing-cbd-grow-9,kyoto-gion-grow-1,kyoto-gion-grow-4,kyoto-gion-grow-9').split(',');
+const seconds=Number(get('seconds','60')), names=get('fixtures','core-synthetic-fixed-1,core-synthetic-fixed-4,core-synthetic-fixed-16,core-beijing-cbd-fixed-1,core-beijing-cbd-fixed-4,core-beijing-cbd-fixed-16,core-beijing-cbd-grow-1,core-beijing-cbd-grow-4,core-beijing-cbd-grow-9,core-kyoto-gion-fixed-1,core-kyoto-gion-fixed-4,core-kyoto-gion-fixed-16,core-kyoto-gion-grow-1,core-kyoto-gion-grow-4,core-kyoto-gion-grow-9').split(',');
 await fs.mkdir(output,{recursive:true});
 const executablePath=get('browser',process.env.CITY_BENCHMARK_BROWSER);
 const browser=await chromium.launch({headless:true,...(executablePath?{executablePath}:{}),args:['--disable-background-timer-throttling','--disable-renderer-backgrounding','--disable-backgrounding-occluded-windows']});
 const commit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-const environment={date:new Date().toISOString(),commit,platform:os.platform(),release:os.release(),arch:os.arch(),cpu:os.cpus()[0].model,cpuLogicalCount:os.cpus().length,totalMemory:os.totalmem(),browserVersion:browser.version(),viewport:{width:1280,height:720},devicePixelRatio:1,quality:'balanced',seconds,acceptanceDuration:seconds>=60,notes:['GPU memory is not measurable through WebGL. Resident byte values are estimates and CPU array counts.','Runtime-fixture codec and legacy OSM adapter are explicitly separate from full A/C integration.','Frames include every renderer pass, shadows, AO, composite and resolve. GPU timer queries not collected.']};
+const environment={date:new Date().toISOString(),commit,platform:os.platform(),release:os.release(),arch:os.arch(),cpu:os.cpus()[0].model,cpuLogicalCount:os.cpus().length,totalMemory:os.totalmem(),browserVersion:browser.version(),viewport:{width:1280,height:720},devicePixelRatio:1,quality:'balanced',seconds,acceptanceDuration:seconds>=60,notes:['GPU memory is not measurable through WebGL. Resident byte values are estimates and CPU array counts.','Names prefixed core- use the real A CINK codec and C official styles. Others use the explicitly labelled fixture adapter.','Frames include every renderer pass, shadows, AO, composite and resolve. GPU timer queries not collected.']};
 const results=[];
 for(const name of names) {
   const context=await browser.newContext({viewport:{width:1280,height:794},deviceScaleFactor:1});const page=await context.newPage();
@@ -50,10 +50,11 @@ for(const name of names) {
       comparisons[mode==='far'&&comparisons.far?'farAfterRoundTrip':mode]=await page.evaluate(()=>viewer.getStats());
     }
     const lifecycle=[];
+    await page.evaluate(()=>viewer.setLodMode('auto'));
     for(let cycle=0;cycle<5;cycle++) {
       await page.evaluate(({cx,cz,span})=>viewer.setView({position:[cx+span*6,span*.7,cz+span*6],target:[cx+span*9,span*.7,cz+span*9]}),{cx,cz,span});await page.waitForTimeout(650);
       const away=await page.evaluate(()=>viewer.getStats());
-      await page.evaluate(view=>viewer.setView(view),{position:keys[0].p,target:keys[0].q,fov:45});await page.waitForTimeout(650);await page.evaluate(()=>viewer.whenIdle());
+      await page.evaluate(view=>viewer.setView(view),{position:keys[0].p,target:keys[0].q,fov:45});await page.waitForTimeout(1250);await page.evaluate(()=>viewer.whenIdle());
       lifecycle.push({cycle,away,returned:await page.evaluate(()=>viewer.getStats())});
     }
     const summary={name,...build,hardware,cold,measured,samples,path:{durationSeconds:seconds,keys},comparisons,lifecycle,errors,failedRequests:requests,elapsedMs:Date.now()-started,checks:{duration:seconds>=60,p95:measured.rendering.intervalsMs.p95<=33.3,concurrency:measured.runtime.peakConcurrentLoads<=measured.budget.concurrentLoads,farDrawReduction:comparisons.far.rendering.triangles.p50<comparisons.full.rendering.triangles.p50,farResidentReduction:comparisons.far.runtime.geometryArrayBytes<comparisons.full.runtime.geometryArrayBytes,lifecycle:Math.max(...lifecycle.map(x=>x.away.runtime.geometries))===0&&lifecycle.every(x=>x.returned.runtime.geometryArrayBytes===lifecycle[0].returned.runtime.geometryArrayBytes),errors:errors.length===0}};

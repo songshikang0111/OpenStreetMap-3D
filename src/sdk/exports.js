@@ -60,7 +60,7 @@ export async function exportViewerGLB(ctx, { scope, lod = 0, signal, maxBytes = 
   check(ctx);
   if (!['loaded', 'complete'].includes(scope)) throw runtimeError('EXPORT_SCOPE_REQUIRED', 'export', 'Specify GLB scope: "loaded" for current loaded LODs, or "complete" for every manifest chunk.');
   const group = new Group(), registry = new ResourceRegistry(), retained = [], materials = new Set(), bindings = [];
-  const chunkIds = [], limitations = 'Standard colors and geometry only. Procedural windows, glass shaders, ink and postprocessing are not portable GLB effects.';
+  const chunkIds = [], limitations = 'Standard colors and geometry only. Procedural windows, glass shaders, ink and postprocessing are not portable GLB effects. Camera-dependent near attachments are included only with scope loaded; complete exports every persisted LOD chunk.';
   const aborted = () => { check(ctx); if (signal?.aborted) throw new DOMException('Export cancelled', 'AbortError'); };
   try {
     if (scope === 'complete') {
@@ -83,6 +83,7 @@ export async function exportViewerGLB(ctx, { scope, lod = 0, signal, maxBytes = 
     } else {
       // A clone shares geometry; no mutation or disposal of live scene assets.
       for (const [id, entry] of ctx.streamer.current) { group.add(portableClone(entry.group, materials)); chunkIds.push(id); }
+      if (ctx.nearGroup) group.add(portableClone(ctx.nearGroup, materials));
     }
     aborted();
     group.userData = { attribution: attributionText(ctx.manifest), license: 'See source manifest', scope, chunkIds, limitations, origin: ctx.manifest.origin, coordinateSystem: ctx.manifest.coordinateSystem };
