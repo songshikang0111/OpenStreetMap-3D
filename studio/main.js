@@ -3,7 +3,7 @@ import {createStudioApi, areaAround, validateArea, isTerminal} from './api.js';
 import {createCityViewer} from '../src/sdk/index.js';
 
 const $ = id => document.getElementById(id), api = createStudioApi();
-const state = {project:null, config:null, viewer:null, manifest:null, job:null, polling:0, location:{lat:39.9095, lon:116.4605}, lastKind:'build'};
+const state = {project:null, config:null, viewer:null, manifest:null, job:null, polling:0, disconnected:false, location:{lat:39.9095, lon:116.4605}, lastKind:'build'};
 const json = value => JSON.stringify(value, null, 2);
 const unwrap = (value, key) => value[key] ?? value.data?.[key] ?? value.data ?? value;
 function diagnostic(error) { $('diagnostics').textContent = error.diagnostics?.length ? json(error.diagnostics) : String(error.message || error); $('diagnostics').classList.add('error'); }
@@ -14,7 +14,7 @@ function remember() {localStorage.setItem('city-ink-studio', json({projectId:sta
 function enabled() {
   const busy = state.job && !isTerminal(state.job);
   for(const id of ['fetch','build','save','web']) $(id).disabled = !state.project || busy;
-  $('cancel').disabled = !busy; $('retry').disabled = !state.project || busy;
+  $('cancel').disabled = !busy; $('retry').disabled = !state.project || (busy && !state.disconnected);
   for(const id of ['png','glb']) $(id).disabled = !state.viewer || busy;
   for(const id of ['sample','create','projects','relative-path']) $(id).disabled=!!busy;
 }
@@ -65,7 +65,7 @@ async function pollJob() {
   clearTimeout(state.polling);
   if(!state.job) return;
   try {
-    state.job=unwrap(await api.job(state.job.id),'job'); const job=state.job;
+    state.job=unwrap(await api.job(state.job.id),'job'); state.disconnected=false; const job=state.job;
     const progress=typeof job.progress==='number' ? job.progress : job.progress?.fraction || 0;
     $('progress').value=Math.min(1,progress>1 ? progress/100 : progress);
     $('job-status').textContent=`${job.kind || state.lastKind} · ${job.status} · ${job.stage || job.progress?.stage || ''}`;
@@ -74,7 +74,7 @@ async function pollJob() {
     remember(); enabled();
     if(!isTerminal(job)) state.polling=setTimeout(pollJob,500);
     else if(job.status==='succeeded' && (job.kind || state.lastKind)==='build') await preview();
-  } catch(error) {diagnostic(error); $('job-status').textContent='服务连接中断；恢复后点击“恢复 / 重试任务”。'; enabled();}
+  } catch(error) {state.disconnected=true;diagnostic(error); $('job-status').textContent='服务连接中断；恢复后点击“恢复 / 重试任务”。'; enabled();}
 }
 async function start(kind,parameters={},resume) {
   await save(); state.lastKind=kind;
