@@ -7,11 +7,11 @@ import { FrameStatistics } from '../runtime/statistics.js';
 import { GpuFrameTimer } from '../runtime/gpu-timer.js';
 import { loadDefaultAdapters } from '../runtime/integrations.js';
 import { NearDetails } from '../runtime/near-details.js';
+import { applyView } from '../runtime/camera.js';
 import { exportViewerPNG, exportViewerGLB } from './exports.js';
 
 const QUALITY = { low: { pixelRatio: 1, shadowQuality: 0, aoQuality: 0 }, balanced: { pixelRatio: 1, shadowQuality: 1, aoQuality: 1 }, high: { pixelRatio: 2, shadowQuality: 2, aoQuality: 2 } };
 QUALITY.draft = QUALITY.low;
-const vector = value => Array.isArray(value) && value.length === 3 && value.every(Number.isFinite);
 
 /** A static-asset WebGL2 viewer. No workbench endpoints or fixed DOM IDs. */
 export async function createCityViewer(options) {
@@ -32,7 +32,7 @@ export async function createCityViewer(options) {
   const scene = new THREE.Scene(); scene.background = new THREE.Color('#f6f5f1');
   const root = new THREE.Group(); scene.add(root);
   const camera = new THREE.PerspectiveCamera(45, 1, .25, 30000);
-  const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.dampingFactor = .12; controls.maxPolarAngle = Math.PI * .495;
+  const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.dampingFactor = .12; controls.maxPolarAngle = Math.PI;
   const ambient = new THREE.HemisphereLight('#ffffff', '#818b86', 2.3), sun = new THREE.DirectionalLight('#fff5e4', 2.4);
   sun.position.set(-400, 800, 350); sun.castShadow = budget.shadowQuality > 0;
   sun.shadow.mapSize.setScalar(budget.shadowQuality > 1 ? 2048 : 1024);
@@ -91,12 +91,7 @@ export async function createCityViewer(options) {
   }
   function setView(view) {
     if (disposed) throw runtimeError('VIEWER_DISPOSED', 'camera', 'Viewer is disposed.');
-    if (view.position && !vector(view.position) || view.target && !vector(view.target) || view.fov != null && (!Number.isFinite(view.fov) || view.fov < 5 || view.fov > 140)) throw new TypeError('View needs finite position/target and FOV in [5, 140].');
-    if (view.position) camera.position.fromArray(view.position);
-    if (view.target) controls.target.fromArray(view.target);
-    if (view.fov != null) camera.fov = view.fov;
-    if (view.near != null) { if (!Number.isFinite(view.near) || view.near <= 0) throw new TypeError('near must be positive.'); camera.near = view.near; }
-    camera.updateProjectionMatrix(); controls.update(); invalidateSchedule();
+    applyView(camera, controls, view); invalidateSchedule();
   }
   const getView = () => ({ position: camera.position.toArray(), target: controls.target.toArray(), fov: camera.fov, near: camera.near });
   function fitView() {
