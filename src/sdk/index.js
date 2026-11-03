@@ -153,7 +153,7 @@ export async function createCityViewer(options) {
       scheduledRevision = viewRevision;
       const main = streamer?.frameCost(), multiplier = profile.scenePasses + profile.shadowPasses;
       const mainResident = (streamer?.estimatedBytes() || 0) - (streamer?.extraResidentBytes || 0);
-      nearDetails?.update(streamer?.current.values() || [], camera, time, budget.visibleTriangles - (main?.triangles || 0), multiplier, { residentBytes: budget.residentBytes - mainResident, drawCalls: budget.drawCalls - (main?.calls || 0) });
+      nearDetails?.update(streamer?.current.values() || [], camera, time, budget.visibleTriangles - (main?.triangles || 0), multiplier, { residentBytes: budget.residentBytes - mainResident, drawCalls: budget.drawCalls - (main?.calls || 0), nearDetails: Math.max(0, budget.nearDetails - (main?.nearDetails || 0)) });
       renderer.info.reset(); gpuTimer.begin(time);
       try { observedProfile = renderWithProfile(renderer, pipeline, scene, camera, shadows); } finally { gpuTimer.end(); }
       streamer?.refreshResources(); nearDetails?.refreshResources();

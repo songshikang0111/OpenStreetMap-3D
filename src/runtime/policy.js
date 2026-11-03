@@ -63,7 +63,7 @@ export function budgetPlan(projected, states, budget, now, passMultiplier = 1) {
     const lod = p.chunk.lods[p.index];
     const cost = p.costs?.[p.index];
     sum.bytes += p.residentCosts?.[p.index] ?? lod.residentBytes ?? lod.bytes; sum.triangles += cost?.frameTriangles ?? (cost?.triangles ?? lod.triangles) * multiplier;
-    sum.calls += cost?.frameCalls ?? (cost?.drawCalls ?? lod.drawCalls ?? 1) * multiplier; sum.details += lod.nearDetails ?? 0;
+    sum.calls += cost?.frameCalls ?? (cost?.drawCalls ?? lod.drawCalls ?? 1) * multiplier; sum.details += p.detailCosts?.[p.index] ?? lod.nearDetails ?? 0;
     return sum;
   }, { bytes: 0, triangles: profile?.fixedTriangles || 0, calls: profile?.fixedCalls || 0, details: 0 });
   const over = s => s.bytes > budget.residentBytes || s.triangles > budget.visibleTriangles || s.calls > budget.drawCalls || s.details > budget.nearDetails;

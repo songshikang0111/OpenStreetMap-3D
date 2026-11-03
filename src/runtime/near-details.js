@@ -29,16 +29,20 @@ export class NearDetails {
     try { this.binding = this.bindGroup(this.group); if (this.binding?.then) throw new TypeError('Near attachment style binding must be synchronous.'); }
     finally { this.resources = this.registry.retain(this.group); this.registry.release(original); }
   }
-  update(entries, camera, time, availableTriangles, passMultiplier = 5, { residentBytes = Infinity, drawCalls = Infinity } = {}) {
-    const walls = [], treeMap = new Map();
+  update(entries, camera, time, availableTriangles, passMultiplier = 5, { residentBytes = Infinity, drawCalls = Infinity, nearDetails = Infinity } = {}) {
+    const walls = [], treeMap = new Map(); let bodyDetails = 0;
     for (const entry of entries) if (entry.group.visible) {
+      bodyDetails += entry.metrics?.nearDetails ?? measureGroup(entry.group).nearDetails;
       const details = entry.group.userData.city?.nearDetails;
       if (!details || details.schemaVersion !== 1) continue;
       walls.push(...details.facadeWalls);
       for (const tree of details.trees) treeMap.set(tree.featureId, tree);
     }
+    // The caller's headroom is an additional cap, not another budget to spend.
+    // Also enforce the global limit here for callers using the older signature.
+    const maxAttachments = Math.max(0, Math.floor(Math.min(this.budget.nearDetails - bodyDetails, nearDetails)));
+    if (!maxAttachments) { this.clear(); return; }
     const trees = [...treeMap.values()].sort((a, b) => a.featureId.localeCompare(b.featureId));
-    const maxAttachments = this.budget.nearDetails;
     const sceneTriangles = Math.max(0, availableTriangles) / Math.max(1, passMultiplier);
     const baseBytes = 40000, treeInstanceBytes = 18 * 76 + 6 * 64;
     const availableBytes = Math.max(0, residentBytes - baseBytes), availableCalls = Math.floor(drawCalls / Math.max(1, passMultiplier));

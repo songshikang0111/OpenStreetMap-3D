@@ -51,15 +51,19 @@ export class ResourceRegistry {
   }
 }
 
-export function measureGroup(group) {
+export function measureGroup(group, { includeHiddenRoot = false } = {}) {
+  const visible = group.visible;
+  if (includeHiddenRoot) group.visible = true;
   let triangles = 0, drawCalls = 0, nearDetails = 0;
-  group.traverseVisible(object => {
+  try { group.traverseVisible(object => {
     if (!object.isMesh || !object.geometry?.attributes.position) return;
     const geometry = object.geometry, count = object.isInstancedMesh ? object.count : 1;
     const vertices = geometry.index?.count || geometry.attributes.position.count;
     triangles += Math.max(0, Math.min(geometry.drawRange.count, vertices - geometry.drawRange.start)) / 3 * count;
     if (count > 0) drawCalls += Array.isArray(object.material) ? geometry.groups.length : 1;
+    // Full active-LOD geometry units: one per ordinary mesh, one per active
+    // instance, irrespective of material groups or camera-frustum culling.
     if (object.userData.city?.lodRole === 'detail' || object.userData.city?.lodRole === 'near') nearDetails += count;
-  });
+  }); } finally { group.visible = visible; }
   return { triangles, drawCalls, nearDetails };
 }

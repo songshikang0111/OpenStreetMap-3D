@@ -10,7 +10,7 @@ export class ChunkStreamer {
     this.group = new Group(); this.group.name = 'City Ink streamed chunks';
     this.registry = new ResourceRegistry(); this.current = new Map(); this.pending = new Map(); this.desired = new Map();
     this.failures = new Map(); this.ready = []; this.disposed = false; this.epoch = 0; this.states = new Map();
-    this.unitCache = new Map(); this.residentCache = new Map(); this.standby = new Map();
+    this.unitCache = new Map(); this.residentCache = new Map(); this.detailCache = new Map(); this.standby = new Map();
     this.counters = { loads: 0, unloads: 0, cancelled: 0, failures: 0, fetchedBytes: 0, swaps: 0, peakConcurrentLoads: 0, peakEstimatedResidentBytes: 0 };
     this.firstUsableMs = null; this.started = now(); this.warned = new Set(); this.passMultiplier = 1;
   }
@@ -28,6 +28,7 @@ export class ChunkStreamer {
       const resident = this.current.get(item.chunk.id);
       const coarse = this.standby.get(item.chunk.id) || (renderContext && resident?.index === item.chunk.lods.length - 1 ? resident : null);
       item.residentCosts = item.chunk.lods.map((lod, index) => (resident?.index === index ? resident.estimatedBytes : this.residentCache.get(`${item.chunk.id}:${lod.url}`) ?? Math.ceil((lod.residentBytes ?? lod.bytes) * 1.1)) + (coarse && coarse.index !== index ? coarse.estimatedBytes : 0));
+      item.detailCosts = item.chunk.lods.map(lod => this.detailCache.get(`${item.chunk.id}:${lod.url}`) ?? lod.nearDetails ?? 0);
     }
     const plan = budgetPlan(projected, this.states, this.budget, time, renderContext || this.passMultiplier);
     if (forceLod != null) for (const p of plan.requests) p.index = Math.min(p.chunk.lods.length - 1, forceLod);
@@ -125,7 +126,9 @@ export class ChunkStreamer {
       this.unitCache.set(`${chunk.id}:${lod.url}`, collectDrawUnits(group));
       const estimatedBytes = Math.max(lod.residentBytes ?? lod.bytes, this.groupBytes(group));
       this.residentCache.set(`${chunk.id}:${lod.url}`, estimatedBytes);
-      this.ready.push({ ...task, group, binding, resources, metrics: measureGroup(group), estimatedBytes });
+      const metrics = measureGroup(group, { includeHiddenRoot: true });
+      this.detailCache.set(`${chunk.id}:${lod.url}`, metrics.nearDetails);
+      this.ready.push({ ...task, group, binding, resources, metrics, estimatedBytes });
       this.failures.delete(key);
       group = null;
     } catch (error) {
@@ -172,17 +175,17 @@ export class ChunkStreamer {
   release(entry) { entry.group.removeFromParent(); this.releaseGroup(entry.group); entry.binding?.dispose?.(); this.registry.release(entry.resources); this.counters.unloads++; }
   evict(id) { const entry = this.current.get(id); if (!entry) return; this.release(entry); this.current.delete(id); const coarse = this.standby.get(id); if (coarse) { this.release(coarse); this.standby.delete(id); } this.states.delete(id); }
   frameCost() {
-    let triangles = this.renderContext?.fixedTriangles || 0, calls = this.renderContext?.fixedCalls || 0;
-    for (const e of this.current.values()) if (e.group.visible) { triangles += e.frameMetrics?.frameTriangles ?? e.metrics.triangles * this.passMultiplier; calls += e.frameMetrics?.frameCalls ?? e.metrics.drawCalls * this.passMultiplier; }
-    return { triangles, calls };
+    let triangles = this.renderContext?.fixedTriangles || 0, calls = this.renderContext?.fixedCalls || 0, nearDetails = 0;
+    for (const e of this.current.values()) if (e.group.visible) { triangles += e.frameMetrics?.frameTriangles ?? e.metrics.triangles * this.passMultiplier; calls += e.frameMetrics?.frameCalls ?? e.metrics.drawCalls * this.passMultiplier; nearDetails += e.metrics.nearDetails; }
+    return { triangles, calls, nearDetails };
   }
   enforceFrameBudget(time) {
     for (const desired of [...this.desired.values()].reverse()) {
-      const cost = this.frameCost(); if (cost.triangles <= this.budget.visibleTriangles && cost.calls <= this.budget.drawCalls) break;
+      const cost = this.frameCost(); if (cost.triangles <= this.budget.visibleTriangles && cost.calls <= this.budget.drawCalls && cost.nearDetails <= this.budget.nearDetails) break;
       const entry = this.current.get(desired.chunk.id), coarse = this.standby.get(desired.chunk.id);
       if (!entry || !coarse) continue;
       const coarseCost = desired.costs[coarse.index], entryCost = desired.costs[entry.index];
-      if (coarseCost.frameTriangles > entryCost.frameTriangles || coarseCost.frameCalls > entryCost.frameCalls) continue;
+      if (coarseCost.frameTriangles > entryCost.frameTriangles || coarseCost.frameCalls > entryCost.frameCalls || coarse.metrics.nearDetails > entry.metrics.nearDetails) continue;
       this.standby.delete(desired.chunk.id); this.release(entry);
       coarse.group.visible = true; coarse.lastVisible = time; coarse.frameMetrics = coarseCost;
       this.group.add(coarse.group); this.current.set(desired.chunk.id, coarse); this.counters.swaps++;
@@ -229,7 +232,7 @@ export class ChunkStreamer {
       const resources = this.registry.retain(entry.group); this.registry.release(entry.resources); entry.resources = resources;
       entry.estimatedBytes = Math.max(entry.chunk.lods[entry.index].residentBytes ?? entry.chunk.lods[entry.index].bytes, this.groupBytes(entry.group));
       this.residentCache.set(`${entry.chunk.id}:${entry.chunk.lods[entry.index].url}`, entry.estimatedBytes);
-      entry.metrics = measureGroup(entry.group); entry.resourcesDirty = false;
+      entry.metrics = measureGroup(entry.group, { includeHiddenRoot: true }); this.detailCache.set(`${entry.chunk.id}:${entry.chunk.lods[entry.index].url}`, entry.metrics.nearDetails); entry.resourcesDirty = false;
     }
   }
   async rebind(bindGroup, prepareGroup = this.prepareGroup) {
@@ -237,12 +240,12 @@ export class ChunkStreamer {
     // Do not mix asynchronous old-style results into the new pipeline.
     this.epoch++;
     for (const key of this.pending.keys()) this.cancel(key);
-    this.unitCache.clear(); this.residentCache.clear();
+    this.unitCache.clear(); this.residentCache.clear(); this.detailCache.clear();
     for (const entry of [...this.current.values(), ...this.standby.values()]) {
       entry.binding?.dispose?.(); entry.binding = await bindGroup(entry.group);
       await prepareGroup?.(entry.group);
       const resources = this.registry.retain(entry.group); this.registry.release(entry.resources); entry.resources = resources;
-      entry.metrics = measureGroup(entry.group); entry.estimatedBytes = Math.max(entry.chunk.lods[entry.index].residentBytes ?? entry.chunk.lods[entry.index].bytes, this.groupBytes(entry.group));
+      entry.metrics = measureGroup(entry.group, { includeHiddenRoot: true }); this.detailCache.set(`${entry.chunk.id}:${entry.chunk.lods[entry.index].url}`, entry.metrics.nearDetails); entry.estimatedBytes = Math.max(entry.chunk.lods[entry.index].residentBytes ?? entry.chunk.lods[entry.index].bytes, this.groupBytes(entry.group));
       entry.resourcesDirty = true;
       this.unitCache.set(`${entry.chunk.id}:${entry.chunk.lods[entry.index].url}`, collectDrawUnits(entry.group));
       this.residentCache.set(`${entry.chunk.id}:${entry.chunk.lods[entry.index].url}`, entry.estimatedBytes);
@@ -255,6 +258,6 @@ export class ChunkStreamer {
     for (const id of [...this.current.keys()]) this.evict(id);
     await Promise.allSettled([...this.pending.values()].map(p => p.promise));
     for (const entry of this.ready.splice(0)) { this.releaseGroup(entry.group); entry.binding?.dispose?.(); this.registry.release(entry.resources); }
-    this.pending.clear(); this.desired.clear(); this.failures.clear(); this.states.clear(); this.unitCache.clear(); this.residentCache.clear(); this.extraResidentBytes = this.extraTriangles = this.extraCalls = this.extraDetails = 0; this.group.removeFromParent();
+    this.pending.clear(); this.desired.clear(); this.failures.clear(); this.states.clear(); this.unitCache.clear(); this.residentCache.clear(); this.detailCache.clear(); this.extraResidentBytes = this.extraTriangles = this.extraCalls = this.extraDetails = 0; this.group.removeFromParent();
   }
 }

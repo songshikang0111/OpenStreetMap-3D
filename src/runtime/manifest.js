@@ -40,6 +40,7 @@ export function normalizeManifest(manifest, url) {
       }
       const unitsError = drawUnitsError(lod);
       if (unitsError) throw runtimeError('INVALID_LOD', 'manifest', unitsError, { tileId: chunk.id, url });
+      if (lod.nearDetails !== undefined && (!Number.isSafeInteger(lod.nearDetails) || lod.nearDetails < 0)) throw runtimeError('INVALID_LOD', 'manifest', 'nearDetails must be a non-negative safe integer.', { tileId: chunk.id, url });
       const detailRank = rank(lod.id ?? lod.level);
       const drawUnits = lod.drawUnits?.map(unit => ({ ...unit, sphere: boundsBox(unit.bounds).getBoundingSphere(new Sphere()) }));
       return { ...lod, drawUnits, level: lod.level ?? lod.id ?? i, rank: Number.isFinite(detailRank) ? detailRank : i, url: new URL(lod.uri, url).href };

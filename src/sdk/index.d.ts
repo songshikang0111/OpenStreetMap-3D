@@ -2,7 +2,9 @@ import type { Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import type { StyleSelection, SharedUniforms } from '../styles/index.js';
 export interface Diagnostic { code: string; stage: string; message: string; tileId?: string; url?: string; [key: string]: unknown }
 export interface View { position?: [number,number,number]; target?: [number,number,number]; fov?: number; near?: number }
-export interface Budget { residentBytes?: number; visibleTriangles?: number; drawCalls?: number; concurrentLoads?: number; pixelRatio?: number; nearDetails?: number; shadowQuality?: number; aoQuality?: number; hysteresis?: number; minResidenceMs?: number; unloadDelayMs?: number; prefetchMargin?: number }
+export interface Budget { residentBytes?: number; visibleTriangles?: number; drawCalls?: number; concurrentLoads?: number; pixelRatio?: number;
+  /** Shared limit for active LOD detail/near meshes (one unit per mesh or instance) plus runtime attachments. Hidden standby LODs do not consume this count. */
+  nearDetails?: number; shadowQuality?: number; aoQuality?: number; hysteresis?: number; minResidenceMs?: number; unloadDelayMs?: number; prefetchMargin?: number }
 export type ReadAsset = (url: string, options: {signal?: AbortSignal; responseType: 'json' | 'arrayBuffer'}) => Promise<unknown>;
 export interface StylePipeline { render(): void; resize(width: number, height: number): void; dispose(): void; prepareScene?(): void }
 export interface StyleAPI { getStyle(id: string): StyleSelection; bindSceneStyle(group: Group, context: {style: StyleSelection; shared: SharedUniforms}): {dispose(): void} | void; createStylePipeline(options: {renderer: WebGLRenderer; scene: Scene; camera: PerspectiveCamera; style: StyleSelection; shared: SharedUniforms; quality: Budget}): StylePipeline | Promise<StylePipeline> }
