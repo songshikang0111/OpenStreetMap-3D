@@ -59,3 +59,23 @@ test('real CINK facade and complete tree profiles share the remaining global nea
  budget.nearDetails=body+24;near.update([{group}],camera,160,900000,5);assert.equal(near.stats().nearDetails,24);assert.equal(near.stats().crownClusters,18);assert.equal(near.stats().branches,6);
  near.dispose();assert.equal(near.registry.refs.size,0);binding.dispose();group.traverse(o=>o.geometry?.dispose());
 });
+
+test('a feasible coarse standby retains both chunks within near budget while a non-dominating replacement is delayed',async()=>{
+ const manifest=normalizeManifest({schemaVersion:1,bounds:[-12,-2,-2,12,2,2],chunks:[
+  {id:'a',transform:{translation:[-10,0,0]},contentBounds:[-12,-2,-2,-8,2,2],lods:[{level:0,uri:'a-high',bytes:100,triangles:120,nearDetails:10,minScreenPixels:0},{level:1,uri:'a-mid',bytes:100,triangles:12,nearDetails:0,minScreenPixels:0},{level:2,uri:'a-low',bytes:100,triangles:528,nearDetails:0}]},
+  {id:'b',transform:{translation:[10,0,0]},contentBounds:[8,-2,-2,12,2,2],lods:[{level:0,uri:'b-only',bytes:100,triangles:120,nearDetails:10}]},
+ ]},'https://example.test/manifest.json');
+ const camera=new THREE.PerspectiveCamera(45,1,.1,200);camera.position.set(-10,0,10);camera.lookAt(-10,0,0);const both=camera.clone();both.position.set(0,0,40);both.lookAt(0,0,0);
+ const profile={scenePasses:1,colorPasses:1,shadowPasses:0,fixedCalls:0,fixedTriangles:0};let releaseMid;
+ const stream=new ChunkStreamer({manifest,budget:createBudget({nearDetails:10,minResidenceMs:0,unloadDelayMs:0,visibleTriangles:100000}),readAsset:async()=>new ArrayBuffer(0),decodeChunk:async(_bytes,lod)=>{
+  if(lod.uri==='a-mid')await new Promise(resolve=>{releaseMid=resolve;});
+  if(lod.uri==='a-high'||lod.uri==='b-only')return detailGroup(10);
+  const group=new THREE.Group();group.add(new THREE.Mesh(lod.uri==='a-low'?new THREE.SphereGeometry(1,24,12):new THREE.BoxGeometry(),new THREE.MeshBasicMaterial()));return group;
+ }});
+ let time=0;async function update(view){stream.update(view,720,time+=40,{renderContext:costContext(view,profile)});await tick();}
+ for(let i=0;i<10;i++)await update(camera);assert.equal(stream.current.get('a').index,0);assert.equal(stream.standby.size,1);
+ for(let i=0;i<6;i++){await update(both);assert(stream.frameCost().nearDetails<=10);assert(stream.frameCost().triangles<=100000);}
+ assert.equal(typeof releaseMid,'function');assert.equal(stream.current.size,2);assert.equal(stream.current.get('a').index,2);assert.equal(stream.stats().missingChunks.length,0);assert.equal(stream.frameCost().triangles,648);assert.equal(stream.frameCost().nearDetails,10);
+ releaseMid();await tick();for(let i=0;i<8;i++)await update(both);assert.equal(stream.current.get('a').index,1);assert(stream.isSettled());assert.equal(stream.frameCost().nearDetails,10);
+ await stream.dispose();assert.equal(stream.registry.refs.size,0);assert.equal(stream.estimatedBytes(),0);
+});

@@ -185,7 +185,15 @@ export class ChunkStreamer {
       const entry = this.current.get(desired.chunk.id), coarse = this.standby.get(desired.chunk.id);
       if (!entry || !coarse) continue;
       const coarseCost = desired.costs[coarse.index], entryCost = desired.costs[entry.index];
-      if (coarseCost.frameTriangles > entryCost.frameTriangles || coarseCost.frameCalls > entryCost.frameCalls || coarse.metrics.nearDetails > entry.metrics.nearDetails) continue;
+      const dimensions = [
+        [cost.triangles, cost.triangles - entryCost.frameTriangles + coarseCost.frameTriangles, this.budget.visibleTriangles],
+        [cost.calls, cost.calls - entryCost.frameCalls + coarseCost.frameCalls, this.budget.drawCalls],
+        [cost.nearDetails, cost.nearDetails - entry.metrics.nearDetails + coarse.metrics.nearDetails, this.budget.nearDetails],
+      ];
+      // A standby may trade some spare triangles for fewer near units. Admit
+      // the aggregate result if no cap becomes violated / more exceeded and
+      // at least one currently exceeded dimension improves.
+      if (dimensions.some(([before, after, limit]) => after > Math.max(before, limit)) || !dimensions.some(([before, after, limit]) => before > limit && after < before)) continue;
       this.standby.delete(desired.chunk.id); this.release(entry);
       coarse.group.visible = true; coarse.lastVisible = time; coarse.frameMetrics = coarseCost;
       this.group.add(coarse.group); this.current.set(desired.chunk.id, coarse); this.counters.swaps++;
