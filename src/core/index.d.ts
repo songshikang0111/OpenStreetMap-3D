@@ -40,7 +40,10 @@ export interface CompileOptions {
     generate(match:LandmarkMatch,context:Record<string,unknown>):{group:Group;claimedFeatureIds:string[];provenance?:Record<string,unknown>;diagnostics?:Diagnostic[]}|Promise<{group:Group;claimedFeatureIds:string[];provenance?:Record<string,unknown>;diagnostics?:Diagnostic[]}>;
   };
 }
-export class CityBuildError extends Error {code:string;stage:string;diagnostics:Diagnostic[]}
+export class CityBuildError extends Error {
+  constructor(code:string,message:string,stage?:string,details?:Record<string,unknown>);
+  code:string;stage:string;diagnostics:Diagnostic[];
+}
 export function validateProjectConfig(config:unknown):ValidationResult<ProjectConfig>;
 export function validateSceneManifest(manifest:unknown):ValidationResult<SceneManifest>;
 export function compileScene(raw:{elements:Record<string,unknown>[];metadata?:Record<string,unknown>},config:ProjectConfig,options?:CompileOptions):Promise<{
