@@ -1,0 +1,2576 @@
+{
+  "date": "2026-11-03T14:49:14.293Z",
+  "auditCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+  "auditScriptSHA256": "86d5a9706e45c2e583f84761ed8a9c212555dec5725734371d5792a8642d8c00",
+  "node": "v22.11.0",
+  "method": "CPU: decode every chunk/LOD, verify descriptor costs, bind comic materials and recount. No frustum culling, no runtime attachments. This is not measured whole-frame WebGL or AC18/20 acceptance.",
+  "frameAssumption": {
+    "triangles": "4 * main triangles + actual castShadow triangles + 6 fullscreen triangles",
+    "drawCalls": "4 * main draws + actual castShadow draws + 3 fullscreen draws",
+    "note": "Conservative comic pipeline submission bound before scene/light-frustum culling. A single-pass quantity must not be presented as an entire-frame measurement."
+  },
+  "budget": {
+    "triangles": 600000,
+    "drawCalls": 1200,
+    "residentBytes": 134217728
+  },
+  "cases": [
+    {
+      "name": "beijing-cbd-fixed-1",
+      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "beijing-cbd",
+        "origin": {
+          "lat": 39.909499999999994,
+          "lon": 116.4605
+        },
+        "area": {
+          "south": 39.9015,
+          "west": 116.449,
+          "north": 39.9175,
+          "east": 116.472
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "divisions": 1
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 1376,
+      "chunks": 1,
+      "features": 13293,
+      "counts": {
+        "inputElements": 1376,
+        "features": 13293,
+        "buildings": 477,
+        "trees": 3680,
+        "chunks": 1
+      },
+      "worldHash": "513785b3def511bdf8ddcf7e493a273fea3e5289daa5b25a915ffa5b7ed23878",
+      "identitySHA256": "cc3fce9b84ae30feff1ba46892220fd39bb9c6fec592eb47d7f49e81661deb32",
+      "buildMs": 12410.3642,
+      "maxRssKiB": 929244,
+      "packageBytes": 166607319,
+      "sourceInternalFeatures": [],
+      "lods": {
+        "low": {
+          "triangles": 101814,
+          "drawCalls": 14,
+          "shadowTriangles": 0,
+          "shadowDrawCalls": 0,
+          "nearDetails": 0,
+          "instances": 7360,
+          "residentBytes": 7975935,
+          "bytes": 8479524,
+          "comicFrameUpperBound": {
+            "triangles": 407262,
+            "drawCalls": 59
+          },
+          "atomicWorldGeometrySHA256": "cb0b4a7e208371eb437052881009cba3de5aee51d682b699f68cf51d3641149a",
+          "meshTriangles": {
+            "road/Far road batch": 61800,
+            "tree/Trunks": 14720,
+            "tree/Distant tree crowns": 14720,
+            "building/far": 6822,
+            "ground/Far ground batch": 3633,
+            "water/Far water batch": 119
+          },
+          "roadTriangles": {
+            "generated:bridge-deck-thickness-and-soffits": 18965,
+            "generated:continuous-carriageways": 13663,
+            "generated:stair-risers-sides-and-soffits": 9990,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 7654,
+            "generated:inferred-bridge-piers-outside-lower-routes": 5376,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 3024,
+            "generated:stair-treads-and-endpoint-landings": 2590,
+            "generated:continuous-stair-handrails-and-posts": 538
+          }
+        },
+        "medium": {
+          "triangles": 597727,
+          "drawCalls": 23,
+          "shadowTriangles": 524767,
+          "shadowDrawCalls": 14,
+          "nearDetails": 0,
+          "instances": 7756,
+          "residentBytes": 37046846,
+          "bytes": 37661776,
+          "comicFrameUpperBound": {
+            "triangles": 2915681,
+            "drawCalls": 109
+          },
+          "atomicWorldGeometrySHA256": "db7e0f51f402cd506cd72eb68a21cd77ae582b4d8242d5fde172add5a2cc1147",
+          "meshTriangles": {
+            "tree/Distant tree crowns": 290144,
+            "tree/Trunks": 103040,
+            "building/body": 90981,
+            "road/Continuous carriageways": 33498,
+            "road/Bridge deck thickness and soffits": 18965,
+            "road/Inferred roadside margins clipped at buildings": 11724,
+            "road/Stair risers, sides and soffits": 9990,
+            "road/OSM pedestrian paths and at-grade crossings": 9718,
+            "road/Junction-aware lane paint and inferred stop lines": 9635,
+            "road/Inferred bridge piers outside lower routes": 5376,
+            "road/Inferred zebra crossings": 4752,
+            "road/Bridge parapets and pedestrian guardrails": 3024,
+            "ground/Shared flat ground / no DEM": 2952,
+            "road/Stair treads and endpoint landings": 2590,
+            "ground/osm:park": 563,
+            "road/Continuous stair handrails and posts": 538,
+            "water/Land cover": 119,
+            "ground/osm:plaza": 78,
+            "ground/osm:lawn": 40
+          },
+          "roadTriangles": {
+            "generated:continuous-carriageways": 33498,
+            "generated:bridge-deck-thickness-and-soffits": 18965,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 11724,
+            "generated:stair-risers-sides-and-soffits": 9990,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 9718,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 9635,
+            "generated:inferred-bridge-piers-outside-lower-routes": 5376,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 3024,
+            "generated:stair-treads-and-endpoint-landings": 2590,
+            "generated:continuous-stair-handrails-and-posts": 538,
+            "undefined": 12
+          }
+        },
+        "high": {
+          "triangles": 1471289,
+          "drawCalls": 1222,
+          "shadowTriangles": 1398329,
+          "shadowDrawCalls": 1213,
+          "nearDetails": 7937,
+          "instances": 15692,
+          "residentBytes": 98892439,
+          "bytes": 104046864,
+          "comicFrameUpperBound": {
+            "triangles": 7283491,
+            "drawCalls": 6104
+          },
+          "atomicWorldGeometrySHA256": "7c2fa5c37e74d0910a92928ff323596c248790c6fe0bf87c5b66db7a1c7b5e57",
+          "meshTriangles": {
+            "tree/Distant tree crowns": 638460,
+            "road/Bridge parapets and pedestrian guardrails": 221208,
+            "tree/Trunks": 103040,
+            "building/body": 90981,
+            "facility/Raised road kerbs": 68676,
+            "road/Continuous stair handrails and posts": 56184,
+            "tree/Distant cypress crowns": 53676,
+            "tree/Distant conifer crowns": 46872,
+            "road/Continuous carriageways": 33498,
+            "facility/Procedural roof equipment groups": 31260,
+            "road/Bridge deck thickness and soffits": 18965,
+            "road/Inferred roadside margins clipped at buildings": 11724,
+            "road/Stair risers, sides and soffits": 9990,
+            "road/OSM pedestrian paths and at-grade crossings": 9718,
+            "road/Junction-aware lane paint and inferred stop lines": 9635,
+            "facility/Pedestrian heads": 9520,
+            "facility/Pedestrian legs": 9520,
+            "facility/Roadside lamp poles": 7140,
+            "facility/Lamp arms": 7140,
+            "road/Inferred bridge piers outside lower routes": 5376,
+            "facility/Vehicle wheels": 5280,
+            "facility/Inferred pedestrians": 4760,
+            "road/Inferred zebra crossings": 4752,
+            "facility/Lamp housings": 3060,
+            "ground/Shared flat ground / no DEM": 2952,
+            "road/Stair treads and endpoint landings": 2590,
+            "facility/Inferred parked vehicles": 1320,
+            "facility/Vehicle glass": 1320,
+            "facility/Inferred traffic signals": 1008,
+            "ground/osm:park": 563,
+            "facility/Signal housings": 432,
+            "facility/Signal lights": 432,
+            "water/Land cover": 119,
+            "ground/osm:plaza": 78,
+            "ground/osm:lawn": 40
+          },
+          "roadTriangles": {
+            "generated:bridge-parapets-and-pedestrian-guardrails": 221208,
+            "generated:continuous-stair-handrails-and-posts": 56184,
+            "generated:continuous-carriageways": 33498,
+            "generated:bridge-deck-thickness-and-soffits": 18965,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 11724,
+            "generated:stair-risers-sides-and-soffits": 9990,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 9718,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 9635,
+            "generated:inferred-bridge-piers-outside-lower-routes": 5376,
+            "generated:stair-treads-and-endpoint-landings": 2590,
+            "undefined": 12
+          }
+        }
+      }
+    },
+    {
+      "name": "beijing-cbd-fixed-4",
+      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "beijing-cbd",
+        "origin": {
+          "lat": 39.909499999999994,
+          "lon": 116.4605
+        },
+        "area": {
+          "south": 39.9015,
+          "west": 116.449,
+          "north": 39.9175,
+          "east": 116.472
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "divisions": 2
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 1376,
+      "chunks": 4,
+      "features": 13293,
+      "counts": {
+        "inputElements": 1376,
+        "features": 13293,
+        "buildings": 477,
+        "trees": 3680,
+        "chunks": 4
+      },
+      "worldHash": "513785b3def511bdf8ddcf7e493a273fea3e5289daa5b25a915ffa5b7ed23878",
+      "identitySHA256": "cc3fce9b84ae30feff1ba46892220fd39bb9c6fec592eb47d7f49e81661deb32",
+      "buildMs": 15116.1476,
+      "maxRssKiB": 961764,
+      "packageBytes": 168006412,
+      "sourceInternalFeatures": [],
+      "lods": {
+        "low": {
+          "triangles": 103050,
+          "drawCalls": 52,
+          "shadowTriangles": 0,
+          "shadowDrawCalls": 0,
+          "nearDetails": 0,
+          "instances": 7360,
+          "residentBytes": 7859659,
+          "bytes": 8527416,
+          "comicFrameUpperBound": {
+            "triangles": 412206,
+            "drawCalls": 211
+          },
+          "atomicWorldGeometrySHA256": "cb0b4a7e208371eb437052881009cba3de5aee51d682b699f68cf51d3641149a",
+          "meshTriangles": {
+            "road/Far road batch": 62580,
+            "tree/Trunks": 14720,
+            "tree/Distant tree crowns": 14720,
+            "building/far": 6822,
+            "ground/Far ground batch": 4065,
+            "water/Far water batch": 143
+          },
+          "roadTriangles": {
+            "generated:bridge-deck-thickness-and-soffits": 19081,
+            "generated:continuous-carriageways": 14059,
+            "generated:stair-risers-sides-and-soffits": 10002,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 7874,
+            "generated:inferred-bridge-piers-outside-lower-routes": 5376,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 3052,
+            "generated:stair-treads-and-endpoint-landings": 2594,
+            "generated:continuous-stair-handrails-and-posts": 542
+          }
+        },
+        "medium": {
+          "triangles": 599047,
+          "drawCalls": 87,
+          "shadowTriangles": 524955,
+          "shadowDrawCalls": 54,
+          "nearDetails": 0,
+          "instances": 7756,
+          "residentBytes": 36973262,
+          "bytes": 37917360,
+          "comicFrameUpperBound": {
+            "triangles": 2921149,
+            "drawCalls": 405
+          },
+          "atomicWorldGeometrySHA256": "db7e0f51f402cd506cd72eb68a21cd77ae582b4d8242d5fde172add5a2cc1147",
+          "meshTriangles": {
+            "tree/Distant tree crowns": 290144,
+            "tree/Trunks": 103040,
+            "building/body": 90981,
+            "road/Continuous carriageways": 33802,
+            "road/Bridge deck thickness and soffits": 19081,
+            "road/Inferred roadside margins clipped at buildings": 11926,
+            "road/Stair risers, sides and soffits": 10002,
+            "road/OSM pedestrian paths and at-grade crossings": 9864,
+            "road/Junction-aware lane paint and inferred stop lines": 9683,
+            "road/Inferred bridge piers outside lower routes": 5376,
+            "road/Inferred zebra crossings": 4752,
+            "ground/Shared flat ground / no DEM": 3258,
+            "road/Bridge parapets and pedestrian guardrails": 3052,
+            "road/Stair treads and endpoint landings": 2594,
+            "ground/osm:park": 683,
+            "road/Continuous stair handrails and posts": 542,
+            "water/Land cover": 143,
+            "ground/osm:plaza": 84,
+            "ground/osm:lawn": 40
+          },
+          "roadTriangles": {
+            "generated:continuous-carriageways": 33802,
+            "generated:bridge-deck-thickness-and-soffits": 19081,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 11926,
+            "generated:stair-risers-sides-and-soffits": 10002,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 9864,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 9683,
+            "generated:inferred-bridge-piers-outside-lower-routes": 5376,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 3052,
+            "generated:stair-treads-and-endpoint-landings": 2594,
+            "generated:continuous-stair-handrails-and-posts": 542,
+            "undefined": 48
+          }
+        },
+        "high": {
+          "triangles": 1473253,
+          "drawCalls": 1314,
+          "shadowTriangles": 1399161,
+          "shadowDrawCalls": 1281,
+          "nearDetails": 7940,
+          "instances": 15692,
+          "residentBytes": 99532483,
+          "bytes": 105055508,
+          "comicFrameUpperBound": {
+            "triangles": 7292179,
+            "drawCalls": 6540
+          },
+          "atomicWorldGeometrySHA256": "7c2fa5c37e74d0910a92928ff323596c248790c6fe0bf87c5b66db7a1c7b5e57",
+          "meshTriangles": {
+            "tree/Distant tree crowns": 638460,
+            "road/Bridge parapets and pedestrian guardrails": 221820,
+            "tree/Trunks": 103040,
+            "building/body": 90981,
+            "facility/Raised road kerbs": 68676,
+            "road/Continuous stair handrails and posts": 56248,
+            "tree/Distant cypress crowns": 53676,
+            "tree/Distant conifer crowns": 46872,
+            "road/Continuous carriageways": 33802,
+            "facility/Procedural roof equipment groups": 31260,
+            "road/Bridge deck thickness and soffits": 19081,
+            "road/Inferred roadside margins clipped at buildings": 11926,
+            "road/Stair risers, sides and soffits": 10002,
+            "road/OSM pedestrian paths and at-grade crossings": 9864,
+            "road/Junction-aware lane paint and inferred stop lines": 9683,
+            "facility/Pedestrian heads": 9520,
+            "facility/Pedestrian legs": 9520,
+            "facility/Roadside lamp poles": 7140,
+            "facility/Lamp arms": 7140,
+            "road/Inferred bridge piers outside lower routes": 5376,
+            "facility/Vehicle wheels": 5280,
+            "facility/Inferred pedestrians": 4760,
+            "road/Inferred zebra crossings": 4752,
+            "ground/Shared flat ground / no DEM": 3258,
+            "facility/Lamp housings": 3060,
+            "road/Stair treads and endpoint landings": 2594,
+            "facility/Inferred parked vehicles": 1320,
+            "facility/Vehicle glass": 1320,
+            "facility/Inferred traffic signals": 1008,
+            "ground/osm:park": 683,
+            "facility/Signal housings": 432,
+            "facility/Signal lights": 432,
+            "water/Land cover": 143,
+            "ground/osm:plaza": 84,
+            "ground/osm:lawn": 40
+          },
+          "roadTriangles": {
+            "generated:bridge-parapets-and-pedestrian-guardrails": 221820,
+            "generated:continuous-stair-handrails-and-posts": 56248,
+            "generated:continuous-carriageways": 33802,
+            "generated:bridge-deck-thickness-and-soffits": 19081,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 11926,
+            "generated:stair-risers-sides-and-soffits": 10002,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 9864,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 9683,
+            "generated:inferred-bridge-piers-outside-lower-routes": 5376,
+            "generated:stair-treads-and-endpoint-landings": 2594,
+            "undefined": 48
+          }
+        }
+      }
+    },
+    {
+      "name": "beijing-cbd-fixed-16",
+      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "beijing-cbd",
+        "origin": {
+          "lat": 39.909499999999994,
+          "lon": 116.4605
+        },
+        "area": {
+          "south": 39.9015,
+          "west": 116.449,
+          "north": 39.9175,
+          "east": 116.472
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "divisions": 4
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 1376,
+      "chunks": 16,
+      "features": 13293,
+      "counts": {
+        "inputElements": 1376,
+        "features": 13293,
+        "buildings": 477,
+        "trees": 3680,
+        "chunks": 16
+      },
+      "worldHash": "513785b3def511bdf8ddcf7e493a273fea3e5289daa5b25a915ffa5b7ed23878",
+      "identitySHA256": "cc3fce9b84ae30feff1ba46892220fd39bb9c6fec592eb47d7f49e81661deb32",
+      "buildMs": 15899.4822,
+      "maxRssKiB": 959080,
+      "packageBytes": 172958295,
+      "sourceInternalFeatures": [],
+      "lods": {
+        "low": {
+          "triangles": 105436,
+          "drawCalls": 175,
+          "shadowTriangles": 0,
+          "shadowDrawCalls": 0,
+          "nearDetails": 0,
+          "instances": 7360,
+          "residentBytes": 8012918,
+          "bytes": 9261552,
+          "comicFrameUpperBound": {
+            "triangles": 421750,
+            "drawCalls": 703
+          },
+          "atomicWorldGeometrySHA256": "cb0b4a7e208371eb437052881009cba3de5aee51d682b699f68cf51d3641149a",
+          "meshTriangles": {
+            "road/Far road batch": 64308,
+            "tree/Trunks": 14720,
+            "tree/Distant tree crowns": 14720,
+            "building/far": 6822,
+            "ground/Far ground batch": 4689,
+            "water/Far water batch": 177
+          },
+          "roadTriangles": {
+            "generated:bridge-deck-thickness-and-soffits": 19301,
+            "generated:continuous-carriageways": 15181,
+            "generated:stair-risers-sides-and-soffits": 10002,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 8120,
+            "generated:inferred-bridge-piers-outside-lower-routes": 5424,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 3144,
+            "generated:stair-treads-and-endpoint-landings": 2594,
+            "generated:continuous-stair-handrails-and-posts": 542
+          }
+        },
+        "medium": {
+          "triangles": 601785,
+          "drawCalls": 273,
+          "shadowTriangles": 525349,
+          "shadowDrawCalls": 167,
+          "nearDetails": 0,
+          "instances": 7756,
+          "residentBytes": 37293800,
+          "bytes": 39300960,
+          "comicFrameUpperBound": {
+            "triangles": 2932495,
+            "drawCalls": 1262
+          },
+          "atomicWorldGeometrySHA256": "db7e0f51f402cd506cd72eb68a21cd77ae582b4d8242d5fde172add5a2cc1147",
+          "meshTriangles": {
+            "tree/Distant tree crowns": 290144,
+            "tree/Trunks": 103040,
+            "building/body": 90981,
+            "road/Continuous carriageways": 34866,
+            "road/Bridge deck thickness and soffits": 19301,
+            "road/Inferred roadside margins clipped at buildings": 12364,
+            "road/OSM pedestrian paths and at-grade crossings": 10024,
+            "road/Stair risers, sides and soffits": 10002,
+            "road/Junction-aware lane paint and inferred stop lines": 9741,
+            "road/Inferred bridge piers outside lower routes": 5424,
+            "road/Inferred zebra crossings": 4752,
+            "ground/Shared flat ground / no DEM": 3882,
+            "road/Bridge parapets and pedestrian guardrails": 3144,
+            "road/Stair treads and endpoint landings": 2594,
+            "ground/osm:park": 683,
+            "road/Continuous stair handrails and posts": 542,
+            "water/Land cover": 177,
+            "ground/osm:plaza": 84,
+            "ground/osm:lawn": 40
+          },
+          "roadTriangles": {
+            "generated:continuous-carriageways": 34866,
+            "generated:bridge-deck-thickness-and-soffits": 19301,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 12364,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 10024,
+            "generated:stair-risers-sides-and-soffits": 10002,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 9741,
+            "generated:inferred-bridge-piers-outside-lower-routes": 5424,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 3144,
+            "generated:stair-treads-and-endpoint-landings": 2594,
+            "generated:continuous-stair-handrails-and-posts": 542,
+            "undefined": 108
+          }
+        },
+        "high": {
+          "triangles": 1476699,
+          "drawCalls": 1592,
+          "shadowTriangles": 1400263,
+          "shadowDrawCalls": 1486,
+          "nearDetails": 7952,
+          "instances": 15692,
+          "residentBytes": 100890733,
+          "bytes": 107618984,
+          "comicFrameUpperBound": {
+            "triangles": 7307065,
+            "drawCalls": 7857
+          },
+          "atomicWorldGeometrySHA256": "7c2fa5c37e74d0910a92928ff323596c248790c6fe0bf87c5b66db7a1c7b5e57",
+          "meshTriangles": {
+            "tree/Distant tree crowns": 638460,
+            "road/Bridge parapets and pedestrian guardrails": 222620,
+            "tree/Trunks": 103040,
+            "building/body": 90981,
+            "facility/Raised road kerbs": 68676,
+            "road/Continuous stair handrails and posts": 56248,
+            "tree/Distant cypress crowns": 53676,
+            "tree/Distant conifer crowns": 46872,
+            "road/Continuous carriageways": 34866,
+            "facility/Procedural roof equipment groups": 31260,
+            "road/Bridge deck thickness and soffits": 19301,
+            "road/Inferred roadside margins clipped at buildings": 12364,
+            "road/OSM pedestrian paths and at-grade crossings": 10024,
+            "road/Stair risers, sides and soffits": 10002,
+            "road/Junction-aware lane paint and inferred stop lines": 9741,
+            "facility/Pedestrian heads": 9520,
+            "facility/Pedestrian legs": 9520,
+            "facility/Roadside lamp poles": 7140,
+            "facility/Lamp arms": 7140,
+            "road/Inferred bridge piers outside lower routes": 5424,
+            "facility/Vehicle wheels": 5280,
+            "facility/Inferred pedestrians": 4760,
+            "road/Inferred zebra crossings": 4752,
+            "ground/Shared flat ground / no DEM": 3882,
+            "facility/Lamp housings": 3060,
+            "road/Stair treads and endpoint landings": 2594,
+            "facility/Inferred parked vehicles": 1320,
+            "facility/Vehicle glass": 1320,
+            "facility/Inferred traffic signals": 1008,
+            "ground/osm:park": 683,
+            "facility/Signal housings": 432,
+            "facility/Signal lights": 432,
+            "water/Land cover": 177,
+            "ground/osm:plaza": 84,
+            "ground/osm:lawn": 40
+          },
+          "roadTriangles": {
+            "generated:bridge-parapets-and-pedestrian-guardrails": 222620,
+            "generated:continuous-stair-handrails-and-posts": 56248,
+            "generated:continuous-carriageways": 34866,
+            "generated:bridge-deck-thickness-and-soffits": 19301,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 12364,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 10024,
+            "generated:stair-risers-sides-and-soffits": 10002,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 9741,
+            "generated:inferred-bridge-piers-outside-lower-routes": 5424,
+            "generated:stair-treads-and-endpoint-landings": 2594,
+            "undefined": 108
+          }
+        }
+      }
+    },
+    {
+      "name": "beijing-cbd-grow-1",
+      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "beijing-cbd",
+        "origin": {
+          "lat": 39.909499999999994,
+          "lon": 116.4605
+        },
+        "area": {
+          "south": 39.90724843674913,
+          "west": 116.45757624783512,
+          "north": 39.91175156325086,
+          "east": 116.46342375216487
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 500
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 1376,
+      "chunks": 1,
+      "features": 778,
+      "counts": {
+        "inputElements": 1376,
+        "features": 778,
+        "buildings": 14,
+        "trees": 265,
+        "chunks": 1
+      },
+      "worldHash": "417df84bb4765ef313300e1463982e073378e01e9dddbb3cb23c73ac0b596140",
+      "identitySHA256": "62d7f82ce8af552a49ec8c275c95e28caa72bd8e3cdbca7abde1b0bdce96f774",
+      "buildMs": 1090.1643000000001,
+      "maxRssKiB": 215348,
+      "packageBytes": 14157809,
+      "sourceInternalFeatures": [],
+      "lods": {
+        "low": {
+          "triangles": 5126,
+          "drawCalls": 12,
+          "shadowTriangles": 0,
+          "shadowDrawCalls": 0,
+          "nearDetails": 0,
+          "instances": 530,
+          "residentBytes": 355857,
+          "bytes": 407020,
+          "comicFrameUpperBound": {
+            "triangles": 20510,
+            "drawCalls": 51
+          },
+          "atomicWorldGeometrySHA256": "6899c5819ecea13af52a893e03b5f1f3909a5b87af0ecb80947f515ba65fc798",
+          "meshTriangles": {
+            "road/Far road batch": 2152,
+            "tree/Trunks": 1060,
+            "tree/Distant tree crowns": 1060,
+            "ground/Far ground batch": 455,
+            "building/far": 399
+          },
+          "roadTriangles": {
+            "generated:bridge-deck-thickness-and-soffits": 891,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 788,
+            "generated:inferred-bridge-piers-outside-lower-routes": 216,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 144,
+            "generated:continuous-carriageways": 113
+          }
+        },
+        "medium": {
+          "triangles": 47433,
+          "drawCalls": 18,
+          "shadowTriangles": 44861,
+          "shadowDrawCalls": 10,
+          "nearDetails": 0,
+          "instances": 562,
+          "residentBytes": 3893898,
+          "bytes": 3961324,
+          "comicFrameUpperBound": {
+            "triangles": 234599,
+            "drawCalls": 85
+          },
+          "atomicWorldGeometrySHA256": "69e20996264a5e11fd674d79c08f817c327f4a820f045542e4fb2188b0260360",
+          "meshTriangles": {
+            "tree/Distant tree crowns": 20240,
+            "building/body": 15950,
+            "tree/Trunks": 7420,
+            "road/Bridge deck thickness and soffits": 891,
+            "road/OSM pedestrian paths and at-grade crossings": 836,
+            "road/Continuous carriageways": 577,
+            "road/Inferred zebra crossings": 384,
+            "road/Junction-aware lane paint and inferred stop lines": 234,
+            "ground/Shared flat ground / no DEM": 229,
+            "road/Inferred bridge piers outside lower routes": 216,
+            "ground/osm:park": 192,
+            "road/Bridge parapets and pedestrian guardrails": 144,
+            "road/Inferred roadside margins clipped at buildings": 86,
+            "ground/osm:plaza": 34
+          },
+          "roadTriangles": {
+            "generated:bridge-deck-thickness-and-soffits": 891,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 836,
+            "generated:continuous-carriageways": 577,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 234,
+            "generated:inferred-bridge-piers-outside-lower-routes": 216,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 144,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 86,
+            "undefined": 12
+          }
+        },
+        "high": {
+          "triangles": 118117,
+          "drawCalls": 71,
+          "shadowTriangles": 115545,
+          "shadowDrawCalls": 63,
+          "nearDetails": 410,
+          "instances": 971,
+          "residentBytes": 8954155,
+          "bytes": 9223472,
+          "comicFrameUpperBound": {
+            "triangles": 588019,
+            "drawCalls": 350
+          },
+          "atomicWorldGeometrySHA256": "142e6187b80417e1d73bdc568044cf4574275af9d635c85826cfde1cfd935908",
+          "meshTriangles": {
+            "tree/Distant tree crowns": 42300,
+            "road/Bridge parapets and pedestrian guardrails": 18000,
+            "tree/Distant conifer crowns": 16632,
+            "building/body": 15950,
+            "tree/Trunks": 7420,
+            "tree/Distant cypress crowns": 6048,
+            "facility/Raised road kerbs": 3576,
+            "facility/Procedural roof equipment groups": 1740,
+            "road/Bridge deck thickness and soffits": 891,
+            "road/OSM pedestrian paths and at-grade crossings": 836,
+            "facility/Pedestrian heads": 672,
+            "facility/Pedestrian legs": 672,
+            "road/Continuous carriageways": 577,
+            "road/Inferred zebra crossings": 384,
+            "facility/Inferred pedestrians": 336,
+            "road/Junction-aware lane paint and inferred stop lines": 234,
+            "ground/Shared flat ground / no DEM": 229,
+            "facility/Roadside lamp poles": 224,
+            "facility/Lamp arms": 224,
+            "road/Inferred bridge piers outside lower routes": 216,
+            "ground/osm:park": 192,
+            "facility/Vehicle wheels": 192,
+            "facility/Inferred traffic signals": 140,
+            "facility/Lamp housings": 96,
+            "road/Inferred roadside margins clipped at buildings": 86,
+            "facility/Signal housings": 60,
+            "facility/Signal lights": 60,
+            "facility/Inferred parked vehicles": 48,
+            "facility/Vehicle glass": 48,
+            "ground/osm:plaza": 34
+          },
+          "roadTriangles": {
+            "generated:bridge-parapets-and-pedestrian-guardrails": 18000,
+            "generated:bridge-deck-thickness-and-soffits": 891,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 836,
+            "generated:continuous-carriageways": 577,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 234,
+            "generated:inferred-bridge-piers-outside-lower-routes": 216,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 86,
+            "undefined": 12
+          }
+        }
+      }
+    },
+    {
+      "name": "beijing-cbd-grow-4",
+      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "beijing-cbd",
+        "origin": {
+          "lat": 39.909499999999994,
+          "lon": 116.4605
+        },
+        "area": {
+          "south": 39.90499687349826,
+          "west": 116.45465249567025,
+          "north": 39.914003126501726,
+          "east": 116.46634750432975
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 500
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 1376,
+      "chunks": 4,
+      "features": 5476,
+      "counts": {
+        "inputElements": 1376,
+        "features": 5476,
+        "buildings": 92,
+        "trees": 1322,
+        "chunks": 4
+      },
+      "worldHash": "82e1bd742c669ffb5ccc664a89d44965d2be470b38df605aacd19dd7ff7e4791",
+      "identitySHA256": "dd4d0643f73976f811647555915e96020e40e7daf4d7de1efd3e3175a76327d1",
+      "buildMs": 3787.5173,
+      "maxRssKiB": 399624,
+      "packageBytes": 50551640,
+      "sourceInternalFeatures": [
+        {
+          "featureId": "w547523487",
+          "sourceIds": [
+            "way/547523487"
+          ],
+          "reason": "Original whole-region envelope has zero exposed faces; source identity remains in featureIndex.",
+          "wallSpans": 0,
+          "roofPolygons": 0,
+          "bottomPolygons": 0,
+          "visibleEnclosers": [
+            "r7820447-0"
+          ],
+          "levels": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "featureId": "w548126517",
+          "sourceIds": [
+            "way/548126517"
+          ],
+          "reason": "Original whole-region envelope has zero exposed faces; source identity remains in featureIndex.",
+          "wallSpans": 0,
+          "roofPolygons": 0,
+          "bottomPolygons": 0,
+          "visibleEnclosers": [
+            "r7820447-0"
+          ],
+          "levels": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "lods": {
+        "low": {
+          "triangles": 32964,
+          "drawCalls": 45,
+          "shadowTriangles": 0,
+          "shadowDrawCalls": 0,
+          "nearDetails": 0,
+          "instances": 2644,
+          "residentBytes": 2420487,
+          "bytes": 2693320,
+          "comicFrameUpperBound": {
+            "triangles": 131862,
+            "drawCalls": 183
+          },
+          "atomicWorldGeometrySHA256": "2571a6b7cef94c8b1250f0c96f67e8ebd0f1e7b9c0fcc32423c15063967249f6",
+          "meshTriangles": {
+            "road/Far road batch": 19751,
+            "tree/Trunks": 5288,
+            "tree/Distant tree crowns": 5288,
+            "building/far": 1395,
+            "ground/Far ground batch": 1242
+          },
+          "roadTriangles": {
+            "generated:bridge-deck-thickness-and-soffits": 5816,
+            "generated:continuous-carriageways": 4667,
+            "generated:stair-risers-sides-and-soffits": 3246,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2184,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 1864,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 986,
+            "generated:stair-treads-and-endpoint-landings": 836,
+            "generated:continuous-stair-handrails-and-posts": 152
+          }
+        },
+        "medium": {
+          "triangles": 206713,
+          "drawCalls": 74,
+          "shadowTriangles": 182626,
+          "shadowDrawCalls": 43,
+          "nearDetails": 0,
+          "instances": 2956,
+          "residentBytes": 11365976,
+          "bytes": 11774368,
+          "comicFrameUpperBound": {
+            "triangles": 1009484,
+            "drawCalls": 342
+          },
+          "atomicWorldGeometrySHA256": "86c60470fccb70754e5371911da1a7ac997f1dac67269a49d14974f5bfcba979",
+          "meshTriangles": {
+            "tree/Distant tree crowns": 104320,
+            "tree/Trunks": 37016,
+            "building/body": 28070,
+            "road/Continuous carriageways": 10644,
+            "road/Bridge deck thickness and soffits": 5816,
+            "road/Inferred zebra crossings": 3744,
+            "road/Stair risers, sides and soffits": 3246,
+            "road/Inferred roadside margins clipped at buildings": 3114,
+            "road/Junction-aware lane paint and inferred stop lines": 2939,
+            "road/OSM pedestrian paths and at-grade crossings": 2404,
+            "road/Inferred bridge piers outside lower routes": 2184,
+            "road/Bridge parapets and pedestrian guardrails": 986,
+            "ground/Shared flat ground / no DEM": 859,
+            "road/Stair treads and endpoint landings": 836,
+            "ground/osm:park": 320,
+            "road/Continuous stair handrails and posts": 152,
+            "ground/osm:plaza": 40,
+            "ground/osm:lawn": 23
+          },
+          "roadTriangles": {
+            "generated:continuous-carriageways": 10644,
+            "generated:bridge-deck-thickness-and-soffits": 5816,
+            "generated:stair-risers-sides-and-soffits": 3246,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 3114,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 2939,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 2404,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2184,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 986,
+            "generated:stair-treads-and-endpoint-landings": 836,
+            "generated:continuous-stair-handrails-and-posts": 152,
+            "undefined": 36
+          }
+        },
+        "high": {
+          "triangles": 506119,
+          "drawCalls": 345,
+          "shadowTriangles": 482032,
+          "shadowDrawCalls": 314,
+          "nearDetails": 3478,
+          "instances": 6430,
+          "residentBytes": 28816809,
+          "bytes": 30505096,
+          "comicFrameUpperBound": {
+            "triangles": 2506514,
+            "drawCalls": 1697
+          },
+          "atomicWorldGeometrySHA256": "6fa6197070ffdcd967a16c87cc8bd1aac0b40c009c21e56fcb752a10a2803688",
+          "meshTriangles": {
+            "tree/Distant tree crowns": 229860,
+            "road/Bridge parapets and pedestrian guardrails": 62224,
+            "tree/Trunks": 37016,
+            "building/body": 28070,
+            "tree/Distant conifer crowns": 24948,
+            "facility/Raised road kerbs": 24480,
+            "road/Continuous stair handrails and posts": 15040,
+            "road/Continuous carriageways": 10644,
+            "tree/Distant cypress crowns": 9072,
+            "facility/Pedestrian heads": 7056,
+            "facility/Pedestrian legs": 7056,
+            "facility/Procedural roof equipment groups": 6600,
+            "road/Bridge deck thickness and soffits": 5816,
+            "facility/Vehicle wheels": 4128,
+            "road/Inferred zebra crossings": 3744,
+            "facility/Inferred pedestrians": 3528,
+            "road/Stair risers, sides and soffits": 3246,
+            "road/Inferred roadside margins clipped at buildings": 3114,
+            "road/Junction-aware lane paint and inferred stop lines": 2939,
+            "facility/Roadside lamp poles": 2856,
+            "facility/Lamp arms": 2856,
+            "road/OSM pedestrian paths and at-grade crossings": 2404,
+            "road/Inferred bridge piers outside lower routes": 2184,
+            "facility/Lamp housings": 1224,
+            "facility/Inferred parked vehicles": 1032,
+            "facility/Vehicle glass": 1032,
+            "facility/Inferred traffic signals": 1008,
+            "ground/Shared flat ground / no DEM": 859,
+            "road/Stair treads and endpoint landings": 836,
+            "facility/Signal housings": 432,
+            "facility/Signal lights": 432,
+            "ground/osm:park": 320,
+            "ground/osm:plaza": 40,
+            "ground/osm:lawn": 23
+          },
+          "roadTriangles": {
+            "generated:bridge-parapets-and-pedestrian-guardrails": 62224,
+            "generated:continuous-stair-handrails-and-posts": 15040,
+            "generated:continuous-carriageways": 10644,
+            "generated:bridge-deck-thickness-and-soffits": 5816,
+            "generated:stair-risers-sides-and-soffits": 3246,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 3114,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 2939,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 2404,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2184,
+            "generated:stair-treads-and-endpoint-landings": 836,
+            "undefined": 36
+          }
+        }
+      }
+    },
+    {
+      "name": "beijing-cbd-grow-9",
+      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "beijing-cbd",
+        "origin": {
+          "lat": 39.909499999999994,
+          "lon": 116.4605
+        },
+        "area": {
+          "south": 39.9027453102474,
+          "west": 116.45172874350537,
+          "north": 39.91625468975259,
+          "east": 116.46927125649462
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 500
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 1376,
+      "chunks": 9,
+      "features": 9417,
+      "counts": {
+        "inputElements": 1376,
+        "features": 9417,
+        "buildings": 286,
+        "trees": 2518,
+        "chunks": 9
+      },
+      "worldHash": "15545a24af062492f46f809206d85b04eb84369a6c6227d0790fc329e1991318",
+      "identitySHA256": "3387bd2b39034c4bda9aa49e4cb7ec0521402db5ba853ca1ada1a83f362ded31",
+      "buildMs": 7801.8258,
+      "maxRssKiB": 644824,
+      "packageBytes": 110613462,
+      "sourceInternalFeatures": [],
+      "lods": {
+        "low": {
+          "triangles": 67771,
+          "drawCalls": 98,
+          "shadowTriangles": 0,
+          "shadowDrawCalls": 0,
+          "nearDetails": 0,
+          "instances": 5036,
+          "residentBytes": 5001145,
+          "bytes": 5641040,
+          "comicFrameUpperBound": {
+            "triangles": 271090,
+            "drawCalls": 395
+          },
+          "atomicWorldGeometrySHA256": "1929e564475aa42f7daa0ba409697745e0791be5433140c141bb5c4a5694ed3b",
+          "meshTriangles": {
+            "road/Far road batch": 40804,
+            "tree/Trunks": 10072,
+            "tree/Distant tree crowns": 10072,
+            "building/far": 4231,
+            "ground/Far ground batch": 2543,
+            "water/Far water batch": 49
+          },
+          "roadTriangles": {
+            "generated:bridge-deck-thickness-and-soffits": 11166,
+            "generated:continuous-carriageways": 9737,
+            "generated:stair-risers-sides-and-soffits": 8020,
+            "generated:inferred-bridge-piers-outside-lower-routes": 3976,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 3248,
+            "generated:stair-treads-and-endpoint-landings": 2260,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 2021,
+            "generated:continuous-stair-handrails-and-posts": 376
+          }
+        },
+        "medium": {
+          "triangles": 411877,
+          "drawCalls": 150,
+          "shadowTriangles": 365426,
+          "shadowDrawCalls": 91,
+          "nearDetails": 0,
+          "instances": 5346,
+          "residentBytes": 25572832,
+          "bytes": 26522596,
+          "comicFrameUpperBound": {
+            "triangles": 2012940,
+            "drawCalls": 694
+          },
+          "atomicWorldGeometrySHA256": "80e728f816ddfa10aa8bd5ce558301b6968c52c625e5b1ba7c7c142d9251cfaa",
+          "meshTriangles": {
+            "tree/Distant tree crowns": 199424,
+            "tree/Trunks": 70504,
+            "building/body": 67630,
+            "road/Continuous carriageways": 22732,
+            "road/Bridge deck thickness and soffits": 11166,
+            "road/Stair risers, sides and soffits": 8020,
+            "road/Inferred roadside margins clipped at buildings": 6797,
+            "road/Junction-aware lane paint and inferred stop lines": 6435,
+            "road/OSM pedestrian paths and at-grade crossings": 4224,
+            "road/Inferred bridge piers outside lower routes": 3976,
+            "road/Inferred zebra crossings": 3720,
+            "road/Stair treads and endpoint landings": 2260,
+            "ground/Shared flat ground / no DEM": 2247,
+            "road/Bridge parapets and pedestrian guardrails": 2021,
+            "road/Continuous stair handrails and posts": 376,
+            "ground/osm:park": 229,
+            "water/Land cover": 49,
+            "ground/osm:plaza": 34,
+            "ground/osm:lawn": 33
+          },
+          "roadTriangles": {
+            "generated:continuous-carriageways": 22732,
+            "generated:bridge-deck-thickness-and-soffits": 11166,
+            "generated:stair-risers-sides-and-soffits": 8020,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 6797,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 6435,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 4224,
+            "generated:inferred-bridge-piers-outside-lower-routes": 3976,
+            "generated:stair-treads-and-endpoint-landings": 2260,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 2021,
+            "generated:continuous-stair-handrails-and-posts": 376,
+            "undefined": 72
+          }
+        },
+        "high": {
+          "triangles": 975072,
+          "drawCalls": 972,
+          "shadowTriangles": 928621,
+          "shadowDrawCalls": 913,
+          "nearDetails": 5835,
+          "instances": 11172,
+          "residentBytes": 64662120,
+          "bytes": 68645384,
+          "comicFrameUpperBound": {
+            "triangles": 4828915,
+            "drawCalls": 4804
+          },
+          "atomicWorldGeometrySHA256": "3d1b857585904d0ae20a295ade985399862e5876138c2a3cded25e1eac26ea79",
+          "meshTriangles": {
+            "tree/Distant tree crowns": 441900,
+            "road/Bridge parapets and pedestrian guardrails": 124608,
+            "tree/Trunks": 70504,
+            "building/body": 67630,
+            "facility/Raised road kerbs": 45876,
+            "road/Continuous stair handrails and posts": 39360,
+            "tree/Distant conifer crowns": 31752,
+            "road/Continuous carriageways": 22732,
+            "facility/Procedural roof equipment groups": 19440,
+            "tree/Distant cypress crowns": 15876,
+            "road/Bridge deck thickness and soffits": 11166,
+            "facility/Pedestrian heads": 9520,
+            "facility/Pedestrian legs": 9520,
+            "road/Stair risers, sides and soffits": 8020,
+            "road/Inferred roadside margins clipped at buildings": 6797,
+            "road/Junction-aware lane paint and inferred stop lines": 6435,
+            "facility/Vehicle wheels": 5280,
+            "facility/Roadside lamp poles": 5236,
+            "facility/Lamp arms": 5236,
+            "facility/Inferred pedestrians": 4760,
+            "road/OSM pedestrian paths and at-grade crossings": 4224,
+            "road/Inferred bridge piers outside lower routes": 3976,
+            "road/Inferred zebra crossings": 3720,
+            "road/Stair treads and endpoint landings": 2260,
+            "ground/Shared flat ground / no DEM": 2247,
+            "facility/Lamp housings": 2244,
+            "facility/Inferred parked vehicles": 1320,
+            "facility/Vehicle glass": 1320,
+            "facility/Inferred traffic signals": 952,
+            "facility/Signal housings": 408,
+            "facility/Signal lights": 408,
+            "ground/osm:park": 229,
+            "water/Land cover": 49,
+            "ground/osm:plaza": 34,
+            "ground/osm:lawn": 33
+          },
+          "roadTriangles": {
+            "generated:bridge-parapets-and-pedestrian-guardrails": 124608,
+            "generated:continuous-stair-handrails-and-posts": 39360,
+            "generated:continuous-carriageways": 22732,
+            "generated:bridge-deck-thickness-and-soffits": 11166,
+            "generated:stair-risers-sides-and-soffits": 8020,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 6797,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 6435,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 4224,
+            "generated:inferred-bridge-piers-outside-lower-routes": 3976,
+            "generated:stair-treads-and-endpoint-landings": 2260,
+            "undefined": 72
+          }
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion-fixed-1",
+      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "kyoto-gion",
+        "origin": {
+          "lat": 35.00365,
+          "lon": 135.775
+        },
+        "area": {
+          "south": 34.9995,
+          "west": 135.7688,
+          "north": 35.0078,
+          "east": 135.7812
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "divisions": 1
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 7014,
+      "chunks": 1,
+      "features": 8281,
+      "counts": {
+        "inputElements": 7014,
+        "features": 8281,
+        "buildings": 4460,
+        "trees": 1467,
+        "chunks": 1
+      },
+      "worldHash": "890a0844ddb04b2277c4b584ef3d9a52ab0a2617a357030511c495e4f6bbdf5b",
+      "identitySHA256": "ead70b7180a38fc5638f4edf282f050abfc957d03f227bffcf34e656d03ff405",
+      "buildMs": 21230.8239,
+      "maxRssKiB": 1638408,
+      "packageBytes": 355455975,
+      "sourceInternalFeatures": [],
+      "lods": {
+        "low": {
+          "triangles": 145620,
+          "drawCalls": 12,
+          "shadowTriangles": 0,
+          "shadowDrawCalls": 0,
+          "nearDetails": 0,
+          "instances": 2934,
+          "residentBytes": 15642264,
+          "bytes": 16035852,
+          "comicFrameUpperBound": {
+            "triangles": 582486,
+            "drawCalls": 51
+          },
+          "atomicWorldGeometrySHA256": "e1a4dca603e6225b31504b8aacfe5fd6c870dfd771e071c25bff49d585254b63",
+          "meshTriangles": {
+            "road/Far road batch": 64184,
+            "building/far": 63572,
+            "tree/Trunks": 5868,
+            "tree/Distant tree crowns": 5868,
+            "ground/Far ground batch": 5678,
+            "water/Far water batch": 450
+          },
+          "roadTriangles": {
+            "generated:bridge-deck-thickness-and-soffits": 31822,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 13816,
+            "generated:continuous-carriageways": 9691,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 4785,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2928,
+            "generated:stair-risers-sides-and-soffits": 864,
+            "generated:stair-treads-and-endpoint-landings": 220,
+            "generated:continuous-stair-handrails-and-posts": 58
+          }
+        },
+        "medium": {
+          "triangles": 650692,
+          "drawCalls": 27,
+          "shadowTriangles": 570617,
+          "shadowDrawCalls": 13,
+          "nearDetails": 0,
+          "instances": 3503,
+          "residentBytes": 98694376,
+          "bytes": 99274876,
+          "comicFrameUpperBound": {
+            "triangles": 3173391,
+            "drawCalls": 124
+          },
+          "atomicWorldGeometrySHA256": "3ae7c571e6f6a07b1d306fa7cca53462071145fb1b69dfe92597928384ff9242",
+          "meshTriangles": {
+            "building/body": 378318,
+            "tree/Distant tree crowns": 110096,
+            "tree/Trunks": 41076,
+            "road/Inferred roadside margins clipped at buildings": 36572,
+            "road/Bridge deck thickness and soffits": 31822,
+            "road/OSM pedestrian paths and at-grade crossings": 19225,
+            "road/Continuous carriageways": 11328,
+            "road/Inferred zebra crossings": 6828,
+            "road/Bridge parapets and pedestrian guardrails": 4785,
+            "road/Inferred bridge piers outside lower routes": 2928,
+            "ground/osm:wood": 1432,
+            "ground/osm:parking": 1064,
+            "ground/osm:park": 1001,
+            "ground/osm:garden": 949,
+            "ground/Shared flat ground / no DEM": 874,
+            "road/Stair risers, sides and soffits": 864,
+            "water/Land cover": 450,
+            "road/Junction-aware lane paint and inferred stop lines": 444,
+            "road/Stair treads and endpoint landings": 220,
+            "ground/osm:lawn": 164,
+            "ground/osm:plaza": 157,
+            "road/Continuous stair handrails and posts": 58,
+            "ground/osm:sport": 33,
+            "ground/osm:construction": 4
+          },
+          "roadTriangles": {
+            "generated:inferred-roadside-margins-clipped-at-buildings": 36572,
+            "generated:bridge-deck-thickness-and-soffits": 31822,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 19225,
+            "generated:continuous-carriageways": 11328,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 4785,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2928,
+            "generated:stair-risers-sides-and-soffits": 864,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 444,
+            "generated:stair-treads-and-endpoint-landings": 220,
+            "generated:continuous-stair-handrails-and-posts": 58,
+            "undefined": 12
+          }
+        },
+        "high": {
+          "triangles": 1342117,
+          "drawCalls": 13354,
+          "shadowTriangles": 1262042,
+          "shadowDrawCalls": 13340,
+          "nearDetails": 734,
+          "instances": 4236,
+          "residentBytes": 199801967,
+          "bytes": 218010864,
+          "comicFrameUpperBound": {
+            "triangles": 6630516,
+            "drawCalls": 66759
+          },
+          "atomicWorldGeometrySHA256": "0fab45b33f5cacc13306675da5286d796dfe77b8fefb7a805b23f8888c2ba229",
+          "meshTriangles": {
+            "building/body": 378318,
+            "road/Bridge parapets and pedestrian guardrails": 367728,
+            "tree/Distant tree crowns": 223200,
+            "tree/Distant cypress crowns": 86184,
+            "tree/Distant conifer crowns": 85428,
+            "tree/Trunks": 41076,
+            "road/Inferred roadside margins clipped at buildings": 36572,
+            "road/Bridge deck thickness and soffits": 31822,
+            "facility/Procedural roof equipment groups": 27000,
+            "road/OSM pedestrian paths and at-grade crossings": 19225,
+            "road/Continuous carriageways": 11328,
+            "road/Inferred zebra crossings": 6828,
+            "facility/Raised road kerbs": 4704,
+            "road/Continuous stair handrails and posts": 4128,
+            "road/Inferred bridge piers outside lower routes": 2928,
+            "facility/Pedestrian heads": 1624,
+            "facility/Pedestrian legs": 1624,
+            "ground/osm:wood": 1432,
+            "ground/osm:parking": 1064,
+            "facility/Roadside lamp poles": 1008,
+            "facility/Lamp arms": 1008,
+            "ground/osm:park": 1001,
+            "ground/osm:garden": 949,
+            "ground/Shared flat ground / no DEM": 874,
+            "road/Stair risers, sides and soffits": 864,
+            "facility/Vehicle wheels": 816,
+            "facility/Inferred pedestrians": 812,
+            "water/Land cover": 450,
+            "road/Junction-aware lane paint and inferred stop lines": 444,
+            "facility/Lamp housings": 432,
+            "road/Stair treads and endpoint landings": 220,
+            "facility/Inferred parked vehicles": 204,
+            "facility/Vehicle glass": 204,
+            "ground/osm:lawn": 164,
+            "ground/osm:plaza": 157,
+            "facility/Inferred traffic signals": 140,
+            "facility/Signal housings": 60,
+            "facility/Signal lights": 60,
+            "ground/osm:sport": 33,
+            "ground/osm:construction": 4
+          },
+          "roadTriangles": {
+            "generated:bridge-parapets-and-pedestrian-guardrails": 367728,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 36572,
+            "generated:bridge-deck-thickness-and-soffits": 31822,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 19225,
+            "generated:continuous-carriageways": 11328,
+            "generated:continuous-stair-handrails-and-posts": 4128,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2928,
+            "generated:stair-risers-sides-and-soffits": 864,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 444,
+            "generated:stair-treads-and-endpoint-landings": 220,
+            "undefined": 12
+          }
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion-fixed-4",
+      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "kyoto-gion",
+        "origin": {
+          "lat": 35.00365,
+          "lon": 135.775
+        },
+        "area": {
+          "south": 34.9995,
+          "west": 135.7688,
+          "north": 35.0078,
+          "east": 135.7812
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "divisions": 2
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 7014,
+      "chunks": 4,
+      "features": 8281,
+      "counts": {
+        "inputElements": 7014,
+        "features": 8281,
+        "buildings": 4460,
+        "trees": 1467,
+        "chunks": 4
+      },
+      "worldHash": "890a0844ddb04b2277c4b584ef3d9a52ab0a2617a357030511c495e4f6bbdf5b",
+      "identitySHA256": "ead70b7180a38fc5638f4edf282f050abfc957d03f227bffcf34e656d03ff405",
+      "buildMs": 21970.8887,
+      "maxRssKiB": 1611988,
+      "packageBytes": 357477935,
+      "sourceInternalFeatures": [],
+      "lods": {
+        "low": {
+          "triangles": 146642,
+          "drawCalls": 48,
+          "shadowTriangles": 0,
+          "shadowDrawCalls": 0,
+          "nearDetails": 0,
+          "instances": 2934,
+          "residentBytes": 15132510,
+          "bytes": 15788164,
+          "comicFrameUpperBound": {
+            "triangles": 586574,
+            "drawCalls": 195
+          },
+          "atomicWorldGeometrySHA256": "e1a4dca603e6225b31504b8aacfe5fd6c870dfd771e071c25bff49d585254b63",
+          "meshTriangles": {
+            "road/Far road batch": 64746,
+            "building/far": 63572,
+            "ground/Far ground batch": 6078,
+            "tree/Trunks": 5868,
+            "tree/Distant tree crowns": 5868,
+            "water/Far water batch": 510
+          },
+          "roadTriangles": {
+            "generated:bridge-deck-thickness-and-soffits": 31988,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 13970,
+            "generated:continuous-carriageways": 9871,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 4847,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2928,
+            "generated:stair-risers-sides-and-soffits": 864,
+            "generated:stair-treads-and-endpoint-landings": 220,
+            "generated:continuous-stair-handrails-and-posts": 58
+          }
+        },
+        "medium": {
+          "triangles": 652016,
+          "drawCalls": 103,
+          "shadowTriangles": 570905,
+          "shadowDrawCalls": 52,
+          "nearDetails": 0,
+          "instances": 3503,
+          "residentBytes": 98952406,
+          "bytes": 100094268,
+          "comicFrameUpperBound": {
+            "triangles": 3178975,
+            "drawCalls": 467
+          },
+          "atomicWorldGeometrySHA256": "3ae7c571e6f6a07b1d306fa7cca53462071145fb1b69dfe92597928384ff9242",
+          "meshTriangles": {
+            "building/body": 378318,
+            "tree/Distant tree crowns": 110096,
+            "tree/Trunks": 41076,
+            "road/Inferred roadside margins clipped at buildings": 36866,
+            "road/Bridge deck thickness and soffits": 31988,
+            "road/OSM pedestrian paths and at-grade crossings": 19365,
+            "road/Continuous carriageways": 11530,
+            "road/Inferred zebra crossings": 6828,
+            "road/Bridge parapets and pedestrian guardrails": 4847,
+            "road/Inferred bridge piers outside lower routes": 2928,
+            "ground/osm:wood": 1536,
+            "ground/osm:parking": 1072,
+            "ground/osm:park": 1047,
+            "ground/Shared flat ground / no DEM": 1044,
+            "ground/osm:garden": 991,
+            "road/Stair risers, sides and soffits": 864,
+            "water/Land cover": 510,
+            "road/Junction-aware lane paint and inferred stop lines": 444,
+            "road/Stair treads and endpoint landings": 220,
+            "ground/osm:lawn": 184,
+            "ground/osm:plaza": 167,
+            "road/Continuous stair handrails and posts": 58,
+            "ground/osm:sport": 33,
+            "ground/osm:construction": 4
+          },
+          "roadTriangles": {
+            "generated:inferred-roadside-margins-clipped-at-buildings": 36866,
+            "generated:bridge-deck-thickness-and-soffits": 31988,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 19365,
+            "generated:continuous-carriageways": 11530,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 4847,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2928,
+            "generated:stair-risers-sides-and-soffits": 864,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 444,
+            "generated:stair-treads-and-endpoint-landings": 220,
+            "generated:continuous-stair-handrails-and-posts": 58,
+            "undefined": 48
+          }
+        },
+        "high": {
+          "triangles": 1344099,
+          "drawCalls": 13460,
+          "shadowTriangles": 1262988,
+          "shadowDrawCalls": 13409,
+          "nearDetails": 737,
+          "instances": 4236,
+          "residentBytes": 200591393,
+          "bytes": 219362212,
+          "comicFrameUpperBound": {
+            "triangles": 6639390,
+            "drawCalls": 67252
+          },
+          "atomicWorldGeometrySHA256": "0fab45b33f5cacc13306675da5286d796dfe77b8fefb7a805b23f8888c2ba229",
+          "meshTriangles": {
+            "building/body": 378318,
+            "road/Bridge parapets and pedestrian guardrails": 368448,
+            "tree/Distant tree crowns": 223200,
+            "tree/Distant cypress crowns": 86184,
+            "tree/Distant conifer crowns": 85428,
+            "tree/Trunks": 41076,
+            "road/Inferred roadside margins clipped at buildings": 36866,
+            "road/Bridge deck thickness and soffits": 31988,
+            "facility/Procedural roof equipment groups": 27000,
+            "road/OSM pedestrian paths and at-grade crossings": 19365,
+            "road/Continuous carriageways": 11530,
+            "road/Inferred zebra crossings": 6828,
+            "facility/Raised road kerbs": 4704,
+            "road/Continuous stair handrails and posts": 4128,
+            "road/Inferred bridge piers outside lower routes": 2928,
+            "facility/Pedestrian heads": 1624,
+            "facility/Pedestrian legs": 1624,
+            "ground/osm:wood": 1536,
+            "ground/osm:parking": 1072,
+            "ground/osm:park": 1047,
+            "ground/Shared flat ground / no DEM": 1044,
+            "facility/Roadside lamp poles": 1008,
+            "facility/Lamp arms": 1008,
+            "ground/osm:garden": 991,
+            "road/Stair risers, sides and soffits": 864,
+            "facility/Vehicle wheels": 816,
+            "facility/Inferred pedestrians": 812,
+            "water/Land cover": 510,
+            "road/Junction-aware lane paint and inferred stop lines": 444,
+            "facility/Lamp housings": 432,
+            "road/Stair treads and endpoint landings": 220,
+            "facility/Inferred parked vehicles": 204,
+            "facility/Vehicle glass": 204,
+            "ground/osm:lawn": 184,
+            "ground/osm:plaza": 167,
+            "facility/Inferred traffic signals": 140,
+            "facility/Signal housings": 60,
+            "facility/Signal lights": 60,
+            "ground/osm:sport": 33,
+            "ground/osm:construction": 4
+          },
+          "roadTriangles": {
+            "generated:bridge-parapets-and-pedestrian-guardrails": 368448,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 36866,
+            "generated:bridge-deck-thickness-and-soffits": 31988,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 19365,
+            "generated:continuous-carriageways": 11530,
+            "generated:continuous-stair-handrails-and-posts": 4128,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2928,
+            "generated:stair-risers-sides-and-soffits": 864,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 444,
+            "generated:stair-treads-and-endpoint-landings": 220,
+            "undefined": 48
+          }
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion-fixed-16",
+      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "kyoto-gion",
+        "origin": {
+          "lat": 35.00365,
+          "lon": 135.775
+        },
+        "area": {
+          "south": 34.9995,
+          "west": 135.7688,
+          "north": 35.0078,
+          "east": 135.7812
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "divisions": 4
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 7014,
+      "chunks": 16,
+      "features": 8281,
+      "counts": {
+        "inputElements": 7014,
+        "features": 8281,
+        "buildings": 4460,
+        "trees": 1467,
+        "chunks": 16
+      },
+      "worldHash": "890a0844ddb04b2277c4b584ef3d9a52ab0a2617a357030511c495e4f6bbdf5b",
+      "identitySHA256": "ead70b7180a38fc5638f4edf282f050abfc957d03f227bffcf34e656d03ff405",
+      "buildMs": 21532.4002,
+      "maxRssKiB": 1600340,
+      "packageBytes": 362922836,
+      "sourceInternalFeatures": [],
+      "lods": {
+        "low": {
+          "triangles": 149008,
+          "drawCalls": 173,
+          "shadowTriangles": 0,
+          "shadowDrawCalls": 0,
+          "nearDetails": 0,
+          "instances": 2934,
+          "residentBytes": 15329890,
+          "bytes": 16976112,
+          "comicFrameUpperBound": {
+            "triangles": 596038,
+            "drawCalls": 695
+          },
+          "atomicWorldGeometrySHA256": "e1a4dca603e6225b31504b8aacfe5fd6c870dfd771e071c25bff49d585254b63",
+          "meshTriangles": {
+            "road/Far road batch": 66362,
+            "building/far": 63572,
+            "ground/Far ground batch": 6706,
+            "tree/Trunks": 5868,
+            "tree/Distant tree crowns": 5868,
+            "water/Far water batch": 632
+          },
+          "roadTriangles": {
+            "generated:bridge-deck-thickness-and-soffits": 32522,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 14376,
+            "generated:continuous-carriageways": 10399,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 4995,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2928,
+            "generated:stair-risers-sides-and-soffits": 864,
+            "generated:stair-treads-and-endpoint-landings": 220,
+            "generated:continuous-stair-handrails-and-posts": 58
+          }
+        },
+        "medium": {
+          "triangles": 654824,
+          "drawCalls": 314,
+          "shadowTriangles": 571709,
+          "shadowDrawCalls": 157,
+          "nearDetails": 0,
+          "instances": 3503,
+          "residentBytes": 97509574,
+          "bytes": 100409832,
+          "comicFrameUpperBound": {
+            "triangles": 3191011,
+            "drawCalls": 1416
+          },
+          "atomicWorldGeometrySHA256": "3ae7c571e6f6a07b1d306fa7cca53462071145fb1b69dfe92597928384ff9242",
+          "meshTriangles": {
+            "building/body": 378318,
+            "tree/Distant tree crowns": 110096,
+            "tree/Trunks": 41076,
+            "road/Inferred roadside margins clipped at buildings": 37342,
+            "road/Bridge deck thickness and soffits": 32522,
+            "road/OSM pedestrian paths and at-grade crossings": 19691,
+            "road/Continuous carriageways": 12088,
+            "road/Inferred zebra crossings": 6828,
+            "road/Bridge parapets and pedestrian guardrails": 4995,
+            "road/Inferred bridge piers outside lower routes": 2928,
+            "ground/osm:wood": 1620,
+            "ground/Shared flat ground / no DEM": 1396,
+            "ground/osm:parking": 1206,
+            "ground/osm:park": 1067,
+            "ground/osm:garden": 1011,
+            "road/Stair risers, sides and soffits": 864,
+            "water/Land cover": 632,
+            "road/Junction-aware lane paint and inferred stop lines": 460,
+            "road/Stair treads and endpoint landings": 220,
+            "ground/osm:lawn": 184,
+            "ground/osm:plaza": 171,
+            "road/Continuous stair handrails and posts": 58,
+            "ground/osm:sport": 47,
+            "ground/osm:construction": 4
+          },
+          "roadTriangles": {
+            "generated:inferred-roadside-margins-clipped-at-buildings": 37342,
+            "generated:bridge-deck-thickness-and-soffits": 32522,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 19691,
+            "generated:continuous-carriageways": 12088,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 4995,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2928,
+            "generated:stair-risers-sides-and-soffits": 864,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 460,
+            "generated:stair-treads-and-endpoint-landings": 220,
+            "undefined": 192,
+            "generated:continuous-stair-handrails-and-posts": 58
+          }
+        },
+        "high": {
+          "triangles": 1348707,
+          "drawCalls": 13696,
+          "shadowTriangles": 1265592,
+          "shadowDrawCalls": 13539,
+          "nearDetails": 749,
+          "instances": 4236,
+          "residentBytes": 202472585,
+          "bytes": 223031300,
+          "comicFrameUpperBound": {
+            "triangles": 6660426,
+            "drawCalls": 68326
+          },
+          "atomicWorldGeometrySHA256": "0fab45b33f5cacc13306675da5286d796dfe77b8fefb7a805b23f8888c2ba229",
+          "meshTriangles": {
+            "building/body": 378318,
+            "road/Bridge parapets and pedestrian guardrails": 370396,
+            "tree/Distant tree crowns": 223200,
+            "tree/Distant cypress crowns": 86184,
+            "tree/Distant conifer crowns": 85428,
+            "tree/Trunks": 41076,
+            "road/Inferred roadside margins clipped at buildings": 37342,
+            "road/Bridge deck thickness and soffits": 32522,
+            "facility/Procedural roof equipment groups": 27000,
+            "road/OSM pedestrian paths and at-grade crossings": 19691,
+            "road/Continuous carriageways": 12088,
+            "road/Inferred zebra crossings": 6828,
+            "facility/Raised road kerbs": 4704,
+            "road/Continuous stair handrails and posts": 4128,
+            "road/Inferred bridge piers outside lower routes": 2928,
+            "facility/Pedestrian heads": 1624,
+            "facility/Pedestrian legs": 1624,
+            "ground/osm:wood": 1620,
+            "ground/Shared flat ground / no DEM": 1396,
+            "ground/osm:parking": 1206,
+            "ground/osm:park": 1067,
+            "ground/osm:garden": 1011,
+            "facility/Roadside lamp poles": 1008,
+            "facility/Lamp arms": 1008,
+            "road/Stair risers, sides and soffits": 864,
+            "facility/Vehicle wheels": 816,
+            "facility/Inferred pedestrians": 812,
+            "water/Land cover": 632,
+            "road/Junction-aware lane paint and inferred stop lines": 460,
+            "facility/Lamp housings": 432,
+            "road/Stair treads and endpoint landings": 220,
+            "facility/Inferred parked vehicles": 204,
+            "facility/Vehicle glass": 204,
+            "ground/osm:lawn": 184,
+            "ground/osm:plaza": 171,
+            "facility/Inferred traffic signals": 140,
+            "facility/Signal housings": 60,
+            "facility/Signal lights": 60,
+            "ground/osm:sport": 47,
+            "ground/osm:construction": 4
+          },
+          "roadTriangles": {
+            "generated:bridge-parapets-and-pedestrian-guardrails": 370396,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 37342,
+            "generated:bridge-deck-thickness-and-soffits": 32522,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 19691,
+            "generated:continuous-carriageways": 12088,
+            "generated:continuous-stair-handrails-and-posts": 4128,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2928,
+            "generated:stair-risers-sides-and-soffits": 864,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 460,
+            "generated:stair-treads-and-endpoint-landings": 220,
+            "undefined": 192
+          }
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion-grow-1",
+      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "kyoto-gion",
+        "origin": {
+          "lat": 35.00365,
+          "lon": 135.775
+        },
+        "area": {
+          "south": 35.00229793628537,
+          "west": 135.77335678027748,
+          "north": 35.00500206371463,
+          "east": 135.77664321972253
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 300
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 7014,
+      "chunks": 1,
+      "features": 883,
+      "counts": {
+        "inputElements": 7014,
+        "features": 883,
+        "buildings": 601,
+        "trees": 89,
+        "chunks": 1
+      },
+      "worldHash": "72e3f7c34e873c74d5716e248373c817cffe8f119881c8988ff56e9204267b8f",
+      "identitySHA256": "36706c7ad05fff2e4862438a49d5bc0b7c2b39ab0dfc5c5d03efef99abc49a9d",
+      "buildMs": 1592.2662,
+      "maxRssKiB": 360568,
+      "packageBytes": 31715188,
+      "sourceInternalFeatures": [],
+      "lods": {
+        "low": {
+          "triangles": 10324,
+          "drawCalls": 11,
+          "shadowTriangles": 0,
+          "shadowDrawCalls": 0,
+          "nearDetails": 0,
+          "instances": 178,
+          "residentBytes": 992339,
+          "bytes": 1041376,
+          "comicFrameUpperBound": {
+            "triangles": 41302,
+            "drawCalls": 47
+          },
+          "atomicWorldGeometrySHA256": "7c5727ef1afd138e3c8cf1eac1c3b4b64b986185a07553054dff3568ba56f59a",
+          "meshTriangles": {
+            "building/far": 8318,
+            "road/Far road batch": 1051,
+            "tree/Trunks": 356,
+            "tree/Distant tree crowns": 356,
+            "ground/Far ground batch": 243
+          },
+          "roadTriangles": {
+            "generated:continuous-carriageways": 618,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 377,
+            "generated:stair-risers-sides-and-soffits": 36,
+            "generated:stair-treads-and-endpoint-landings": 10,
+            "generated:continuous-stair-handrails-and-posts": 10
+          }
+        },
+        "medium": {
+          "triangles": 62538,
+          "drawCalls": 18,
+          "shadowTriangles": 57200,
+          "shadowDrawCalls": 9,
+          "nearDetails": 0,
+          "instances": 215,
+          "residentBytes": 10900146,
+          "bytes": 10966696,
+          "comicFrameUpperBound": {
+            "triangles": 307358,
+            "drawCalls": 84
+          },
+          "atomicWorldGeometrySHA256": "9ff9f8996714931da210a33c7292cb92c45c2d5411e2dcca1f55cd2341f0bcc8",
+          "meshTriangles": {
+            "building/body": 47564,
+            "tree/Distant tree crowns": 7088,
+            "road/Inferred roadside margins clipped at buildings": 3341,
+            "tree/Trunks": 2492,
+            "road/Continuous carriageways": 660,
+            "road/OSM pedestrian paths and at-grade crossings": 596,
+            "road/Inferred zebra crossings": 444,
+            "ground/Shared flat ground / no DEM": 94,
+            "ground/osm:garden": 70,
+            "road/Junction-aware lane paint and inferred stop lines": 54,
+            "ground/osm:parking": 52,
+            "road/Stair risers, sides and soffits": 36,
+            "ground/osm:lawn": 27,
+            "road/Stair treads and endpoint landings": 10,
+            "road/Continuous stair handrails and posts": 10
+          },
+          "roadTriangles": {
+            "generated:inferred-roadside-margins-clipped-at-buildings": 3341,
+            "generated:continuous-carriageways": 660,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 596,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 54,
+            "generated:stair-risers-sides-and-soffits": 36,
+            "undefined": 12,
+            "generated:stair-treads-and-endpoint-landings": 10,
+            "generated:continuous-stair-handrails-and-posts": 10
+          }
+        },
+        "high": {
+          "triangles": 77068,
+          "drawCalls": 1825,
+          "shadowTriangles": 71730,
+          "shadowDrawCalls": 1816,
+          "nearDetails": 84,
+          "instances": 298,
+          "residentBytes": 16324836,
+          "bytes": 18754492,
+          "comicFrameUpperBound": {
+            "triangles": 380008,
+            "drawCalls": 9119
+          },
+          "atomicWorldGeometrySHA256": "da191144a1a1d435834429bf6199ac2c9bec7a281b79754f562405582bc4ce3e",
+          "meshTriangles": {
+            "building/body": 47564,
+            "tree/Distant tree crowns": 15840,
+            "road/Inferred roadside margins clipped at buildings": 3341,
+            "facility/Procedural roof equipment groups": 2940,
+            "tree/Trunks": 2492,
+            "road/Continuous stair handrails and posts": 816,
+            "tree/Distant cypress crowns": 756,
+            "road/Continuous carriageways": 660,
+            "facility/Raised road kerbs": 648,
+            "road/OSM pedestrian paths and at-grade crossings": 596,
+            "road/Inferred zebra crossings": 444,
+            "facility/Pedestrian heads": 112,
+            "facility/Pedestrian legs": 112,
+            "facility/Vehicle wheels": 96,
+            "ground/Shared flat ground / no DEM": 94,
+            "facility/Roadside lamp poles": 84,
+            "facility/Lamp arms": 84,
+            "ground/osm:garden": 70,
+            "facility/Inferred pedestrians": 56,
+            "road/Junction-aware lane paint and inferred stop lines": 54,
+            "ground/osm:parking": 52,
+            "road/Stair risers, sides and soffits": 36,
+            "facility/Lamp housings": 36,
+            "ground/osm:lawn": 27,
+            "facility/Inferred parked vehicles": 24,
+            "facility/Vehicle glass": 24,
+            "road/Stair treads and endpoint landings": 10
+          },
+          "roadTriangles": {
+            "generated:inferred-roadside-margins-clipped-at-buildings": 3341,
+            "generated:continuous-stair-handrails-and-posts": 816,
+            "generated:continuous-carriageways": 660,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 596,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 54,
+            "generated:stair-risers-sides-and-soffits": 36,
+            "undefined": 12,
+            "generated:stair-treads-and-endpoint-landings": 10
+          }
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion-grow-4",
+      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "kyoto-gion",
+        "origin": {
+          "lat": 35.00365,
+          "lon": 135.775
+        },
+        "area": {
+          "south": 35.000945872570746,
+          "west": 135.77171356055496,
+          "north": 35.006354127429255,
+          "east": 135.77828643944505
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 300
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 7014,
+      "chunks": 4,
+      "features": 3329,
+      "counts": {
+        "inputElements": 7014,
+        "features": 3329,
+        "buildings": 2017,
+        "trees": 363,
+        "chunks": 4
+      },
+      "worldHash": "4aa38aedf075ebfb5cd3cde7aef4af38455210632d607f1577683315ddaaceaa",
+      "identitySHA256": "f211da2983ba64c0d564bc7ff551734497bb11932827c024da2a7aa4c281d138",
+      "buildMs": 6221.3204000000005,
+      "maxRssKiB": 734348,
+      "packageBytes": 129374899,
+      "sourceInternalFeatures": [],
+      "lods": {
+        "low": {
+          "triangles": 48523,
+          "drawCalls": 43,
+          "shadowTriangles": 0,
+          "shadowDrawCalls": 0,
+          "nearDetails": 0,
+          "instances": 726,
+          "residentBytes": 4934189,
+          "bytes": 5182724,
+          "comicFrameUpperBound": {
+            "triangles": 194098,
+            "drawCalls": 175
+          },
+          "atomicWorldGeometrySHA256": "35a78d966c700a4c2d2ad6a9e47e4d575c5507fd75dd96d6c14bbb1cb64bc38e",
+          "meshTriangles": {
+            "building/far": 28206,
+            "road/Far road batch": 15877,
+            "ground/Far ground batch": 1492,
+            "tree/Trunks": 1452,
+            "tree/Distant tree crowns": 1452,
+            "water/Far water batch": 44
+          },
+          "roadTriangles": {
+            "generated:bridge-deck-thickness-and-soffits": 6695,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 4113,
+            "generated:continuous-carriageways": 3472,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 965,
+            "generated:inferred-bridge-piers-outside-lower-routes": 576,
+            "generated:stair-risers-sides-and-soffits": 36,
+            "generated:stair-treads-and-endpoint-landings": 10,
+            "generated:continuous-stair-handrails-and-posts": 10
+          }
+        },
+        "medium": {
+          "triangles": 237591,
+          "drawCalls": 77,
+          "shadowTriangles": 207255,
+          "shadowDrawCalls": 38,
+          "nearDetails": 0,
+          "instances": 995,
+          "residentBytes": 39875701,
+          "bytes": 40281372,
+          "comicFrameUpperBound": {
+            "triangles": 1157625,
+            "drawCalls": 349
+          },
+          "atomicWorldGeometrySHA256": "99624958cea1921898fc17e2c98ca93ce1c255c7da8c9ff7dd8648a253dc5b5d",
+          "meshTriangles": {
+            "building/body": 160867,
+            "tree/Distant tree crowns": 27888,
+            "road/Inferred roadside margins clipped at buildings": 15546,
+            "tree/Trunks": 10164,
+            "road/Bridge deck thickness and soffits": 6695,
+            "road/OSM pedestrian paths and at-grade crossings": 5877,
+            "road/Continuous carriageways": 4012,
+            "road/Inferred zebra crossings": 3228,
+            "road/Bridge parapets and pedestrian guardrails": 965,
+            "road/Inferred bridge piers outside lower routes": 576,
+            "ground/osm:parking": 411,
+            "ground/osm:wood": 367,
+            "ground/Shared flat ground / no DEM": 334,
+            "ground/osm:garden": 287,
+            "road/Junction-aware lane paint and inferred stop lines": 181,
+            "water/Land cover": 44,
+            "ground/osm:park": 39,
+            "road/Stair risers, sides and soffits": 36,
+            "ground/osm:lawn": 29,
+            "ground/osm:plaza": 25,
+            "road/Stair treads and endpoint landings": 10,
+            "road/Continuous stair handrails and posts": 10
+          },
+          "roadTriangles": {
+            "generated:inferred-roadside-margins-clipped-at-buildings": 15546,
+            "generated:bridge-deck-thickness-and-soffits": 6695,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 5877,
+            "generated:continuous-carriageways": 4012,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 965,
+            "generated:inferred-bridge-piers-outside-lower-routes": 576,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 181,
+            "undefined": 48,
+            "generated:stair-risers-sides-and-soffits": 36,
+            "generated:stair-treads-and-endpoint-landings": 10,
+            "generated:continuous-stair-handrails-and-posts": 10
+          }
+        },
+        "high": {
+          "triangles": 389124,
+          "drawCalls": 6132,
+          "shadowTriangles": 358788,
+          "shadowDrawCalls": 6093,
+          "nearDetails": 351,
+          "instances": 1342,
+          "residentBytes": 70321824,
+          "bytes": 78567060,
+          "comicFrameUpperBound": {
+            "triangles": 1915290,
+            "drawCalls": 30624
+          },
+          "atomicWorldGeometrySHA256": "d0e80d0d8e7d2292f370be2933586b4bab4962d43680d59324d0a0d3365a3b74",
+          "meshTriangles": {
+            "building/body": 160867,
+            "road/Bridge parapets and pedestrian guardrails": 77600,
+            "tree/Distant tree crowns": 58860,
+            "tree/Distant cypress crowns": 17388,
+            "road/Inferred roadside margins clipped at buildings": 15546,
+            "tree/Trunks": 10164,
+            "facility/Procedural roof equipment groups": 10080,
+            "tree/Distant conifer crowns": 9828,
+            "road/Bridge deck thickness and soffits": 6695,
+            "road/OSM pedestrian paths and at-grade crossings": 5877,
+            "road/Continuous carriageways": 4012,
+            "road/Inferred zebra crossings": 3228,
+            "facility/Raised road kerbs": 2316,
+            "road/Continuous stair handrails and posts": 816,
+            "facility/Pedestrian heads": 728,
+            "facility/Pedestrian legs": 728,
+            "road/Inferred bridge piers outside lower routes": 576,
+            "facility/Vehicle wheels": 432,
+            "ground/osm:parking": 411,
+            "ground/osm:wood": 367,
+            "facility/Roadside lamp poles": 364,
+            "facility/Lamp arms": 364,
+            "facility/Inferred pedestrians": 364,
+            "ground/Shared flat ground / no DEM": 334,
+            "ground/osm:garden": 287,
+            "road/Junction-aware lane paint and inferred stop lines": 181,
+            "facility/Lamp housings": 156,
+            "facility/Inferred parked vehicles": 108,
+            "facility/Vehicle glass": 108,
+            "facility/Inferred traffic signals": 84,
+            "water/Land cover": 44,
+            "ground/osm:park": 39,
+            "road/Stair risers, sides and soffits": 36,
+            "facility/Signal housings": 36,
+            "facility/Signal lights": 36,
+            "ground/osm:lawn": 29,
+            "ground/osm:plaza": 25,
+            "road/Stair treads and endpoint landings": 10
+          },
+          "roadTriangles": {
+            "generated:bridge-parapets-and-pedestrian-guardrails": 77600,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 15546,
+            "generated:bridge-deck-thickness-and-soffits": 6695,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 5877,
+            "generated:continuous-carriageways": 4012,
+            "generated:continuous-stair-handrails-and-posts": 816,
+            "generated:inferred-bridge-piers-outside-lower-routes": 576,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 181,
+            "undefined": 48,
+            "generated:stair-risers-sides-and-soffits": 36,
+            "generated:stair-treads-and-endpoint-landings": 10
+          }
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion-grow-9",
+      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "kyoto-gion",
+        "origin": {
+          "lat": 35.00365,
+          "lon": 135.775
+        },
+        "area": {
+          "south": 34.99959380885612,
+          "west": 135.77007034083243,
+          "north": 35.00770619114388,
+          "east": 135.77992965916758
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 300
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 7014,
+      "chunks": 9,
+      "features": 6698,
+      "counts": {
+        "inputElements": 7014,
+        "features": 6698,
+        "buildings": 3912,
+        "trees": 993,
+        "chunks": 9
+      },
+      "worldHash": "2cc7a49f0f550d4eb737e8079e52f8de862e2c097d078a68296bc72e21ca34ad",
+      "identitySHA256": "649a4b6257bb802260252bdb306882849efd2d4b18ec38785eb5ccd9cad5ffd1",
+      "buildMs": 16502.3738,
+      "maxRssKiB": 1276352,
+      "packageBytes": 296927307,
+      "sourceInternalFeatures": [
+        {
+          "featureId": "w879306473",
+          "sourceIds": [
+            "way/879306473"
+          ],
+          "reason": "Original whole-region envelope has zero exposed faces; source identity remains in featureIndex.",
+          "wallSpans": 0,
+          "roofPolygons": 0,
+          "bottomPolygons": 0,
+          "visibleEnclosers": [
+            "w879306476"
+          ],
+          "levels": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "featureId": "w879306475",
+          "sourceIds": [
+            "way/879306475"
+          ],
+          "reason": "Original whole-region envelope has zero exposed faces; source identity remains in featureIndex.",
+          "wallSpans": 0,
+          "roofPolygons": 0,
+          "bottomPolygons": 0,
+          "visibleEnclosers": [
+            "w879306476"
+          ],
+          "levels": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      ],
+      "lods": {
+        "low": {
+          "triangles": 120535,
+          "drawCalls": 99,
+          "shadowTriangles": 0,
+          "shadowDrawCalls": 0,
+          "nearDetails": 0,
+          "instances": 1986,
+          "residentBytes": 12538194,
+          "bytes": 13383312,
+          "comicFrameUpperBound": {
+            "triangles": 482146,
+            "drawCalls": 399
+          },
+          "atomicWorldGeometrySHA256": "4fb7bcb23a543679fc0820c1f2f77d0b5622fc6c7c2d3597b0e4a9bc77dfc517",
+          "meshTriangles": {
+            "building/far": 55376,
+            "road/Far road batch": 52591,
+            "ground/Far ground batch": 4165,
+            "tree/Trunks": 3972,
+            "tree/Distant tree crowns": 3972,
+            "water/Far water batch": 459
+          },
+          "roadTriangles": {
+            "generated:bridge-deck-thickness-and-soffits": 25857,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 11473,
+            "generated:continuous-carriageways": 8012,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 3899,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2208,
+            "generated:stair-risers-sides-and-soffits": 864,
+            "generated:stair-treads-and-endpoint-landings": 220,
+            "generated:continuous-stair-handrails-and-posts": 58
+          }
+        },
+        "medium": {
+          "triangles": 521261,
+          "drawCalls": 179,
+          "shadowTriangles": 453695,
+          "shadowDrawCalls": 94,
+          "nearDetails": 0,
+          "instances": 2461,
+          "residentBytes": 82291877,
+          "bytes": 83724220,
+          "comicFrameUpperBound": {
+            "triangles": 2538745,
+            "drawCalls": 813
+          },
+          "atomicWorldGeometrySHA256": "34d93e3bed350af25db99103075998978bc6deecbc5a1ef8528be58eca5aff65",
+          "meshTriangles": {
+            "building/body": 317942,
+            "tree/Distant tree crowns": 74384,
+            "road/Inferred roadside margins clipped at buildings": 32505,
+            "tree/Trunks": 27804,
+            "road/Bridge deck thickness and soffits": 25857,
+            "road/OSM pedestrian paths and at-grade crossings": 15699,
+            "road/Continuous carriageways": 9204,
+            "road/Inferred zebra crossings": 5700,
+            "road/Bridge parapets and pedestrian guardrails": 3899,
+            "road/Inferred bridge piers outside lower routes": 2208,
+            "ground/osm:wood": 980,
+            "ground/Shared flat ground / no DEM": 926,
+            "ground/osm:parking": 903,
+            "road/Stair risers, sides and soffits": 864,
+            "ground/osm:garden": 685,
+            "water/Land cover": 459,
+            "ground/osm:park": 419,
+            "road/Junction-aware lane paint and inferred stop lines": 293,
+            "road/Stair treads and endpoint landings": 220,
+            "ground/osm:lawn": 113,
+            "ground/osm:plaza": 111,
+            "road/Continuous stair handrails and posts": 58,
+            "ground/osm:sport": 28
+          },
+          "roadTriangles": {
+            "generated:inferred-roadside-margins-clipped-at-buildings": 32505,
+            "generated:bridge-deck-thickness-and-soffits": 25857,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 15699,
+            "generated:continuous-carriageways": 9204,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 3899,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2208,
+            "generated:stair-risers-sides-and-soffits": 864,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 293,
+            "generated:stair-treads-and-endpoint-landings": 220,
+            "undefined": 96,
+            "generated:continuous-stair-handrails-and-posts": 58
+          }
+        },
+        "high": {
+          "triangles": 1046344,
+          "drawCalls": 11909,
+          "shadowTriangles": 978778,
+          "shadowDrawCalls": 11824,
+          "nearDetails": 479,
+          "instances": 2931,
+          "residentBytes": 166898340,
+          "bytes": 183578740,
+          "comicFrameUpperBound": {
+            "triangles": 5164160,
+            "drawCalls": 59463
+          },
+          "atomicWorldGeometrySHA256": "da51ea389c4298dc588e1b9a4031c14e00a5d74f9a90d8bd45685a1176e3f50f",
+          "meshTriangles": {
+            "building/body": 317942,
+            "road/Bridge parapets and pedestrian guardrails": 300824,
+            "tree/Distant tree crowns": 150300,
+            "tree/Distant conifer crowns": 60480,
+            "tree/Distant cypress crowns": 58968,
+            "road/Inferred roadside margins clipped at buildings": 32505,
+            "tree/Trunks": 27804,
+            "road/Bridge deck thickness and soffits": 25857,
+            "facility/Procedural roof equipment groups": 20580,
+            "road/OSM pedestrian paths and at-grade crossings": 15699,
+            "road/Continuous carriageways": 9204,
+            "road/Inferred zebra crossings": 5700,
+            "road/Continuous stair handrails and posts": 4128,
+            "facility/Raised road kerbs": 3048,
+            "road/Inferred bridge piers outside lower routes": 2208,
+            "facility/Pedestrian heads": 1008,
+            "facility/Pedestrian legs": 1008,
+            "ground/osm:wood": 980,
+            "ground/Shared flat ground / no DEM": 926,
+            "ground/osm:parking": 903,
+            "road/Stair risers, sides and soffits": 864,
+            "facility/Roadside lamp poles": 700,
+            "facility/Lamp arms": 700,
+            "ground/osm:garden": 685,
+            "facility/Inferred pedestrians": 504,
+            "facility/Vehicle wheels": 480,
+            "water/Land cover": 459,
+            "ground/osm:park": 419,
+            "facility/Lamp housings": 300,
+            "road/Junction-aware lane paint and inferred stop lines": 293,
+            "road/Stair treads and endpoint landings": 220,
+            "facility/Inferred parked vehicles": 120,
+            "facility/Vehicle glass": 120,
+            "ground/osm:lawn": 113,
+            "ground/osm:plaza": 111,
+            "facility/Inferred traffic signals": 84,
+            "facility/Signal housings": 36,
+            "facility/Signal lights": 36,
+            "ground/osm:sport": 28
+          },
+          "roadTriangles": {
+            "generated:bridge-parapets-and-pedestrian-guardrails": 300824,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 32505,
+            "generated:bridge-deck-thickness-and-soffits": 25857,
+            "generated:osm-pedestrian-paths-and-at-grade-crossings": 15699,
+            "generated:continuous-carriageways": 9204,
+            "generated:continuous-stair-handrails-and-posts": 4128,
+            "generated:inferred-bridge-piers-outside-lower-routes": 2208,
+            "generated:stair-risers-sides-and-soffits": 864,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 293,
+            "generated:stair-treads-and-endpoint-landings": 220,
+            "undefined": 96
+          }
+        }
+      }
+    }
+  ]
+}

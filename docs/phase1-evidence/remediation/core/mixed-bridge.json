@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-03T14:40:58.470Z",
+  "commit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+  "input": "synthetic single straight 12m bridge plus two grade-connected ground extensions, seed71, divisions4",
+  "samplePlane": {
+    "x": 104,
+    "description": "external side shell, sampled in z/y"
+  },
+  "baselineLowTriangles": 14,
+  "baselineHighTriangles": 14,
+  "baselineAgreementPoints": 400,
+  "lowOwners": [
+    "2_0",
+    "2_1",
+    "2_2",
+    "2_3"
+  ],
+  "results": [],
+  "status": "pass"
+}

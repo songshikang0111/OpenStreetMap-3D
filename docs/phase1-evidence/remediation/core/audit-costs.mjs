@@ -9,6 +9,11 @@ import * as THREE from 'three';
 import {decodeChunk,sceneStats} from '../../../../src/core/scene-codec.js';
 import {validateSceneManifest} from '../../../../src/core/index.js';
 import {bindSceneStyle} from '../../../../src/styles/index.js';
+import {parseOSM,inside} from '../../../../src/osm.js';
+import {normalizeRaw} from '../../../../src/core/contract.js';
+import {planBuildingEnvelopes} from '../../../../src/building-envelope.js';
+import {planRoof} from '../../../../src/roofs.js';
+import {normalizedRing} from '../../../../src/generators/mesh-tools.js';
 
 const root=fileURLToPath(new URL('../../../../',import.meta.url));
 const directory=path.resolve(root,process.argv[2]||'work/core-repair-final');
@@ -20,7 +25,7 @@ const summary=await readJSON(path.join(directory,'build-summary.json'));
 assert.equal(summary.cases.length,12,'Use all official 12 cases without coverage changes');
 assert.equal(new Set(summary.cases.map(c=>c.compilerCommit)).size,1,'All cases must use one frozen compiler commit');
 const fields=['triangles','drawCalls','shadowTriangles','shadowDrawCalls','nearDetails','instances','residentBytes'];
-const report={date:new Date().toISOString(),auditCommit:commit,node:process.version,
+const report={date:new Date().toISOString(),auditCommit:commit,auditScriptSHA256:hash(await readFile(fileURLToPath(import.meta.url))),node:process.version,
   method:'CPU: decode every chunk/LOD, verify descriptor costs, bind comic materials and recount. No frustum culling, no runtime attachments. This is not measured whole-frame WebGL or AC18/20 acceptance.',
   frameAssumption:{triangles:'4 * main triangles + actual castShadow triangles + 6 fullscreen triangles',drawCalls:'4 * main draws + actual castShadow draws + 3 fullscreen draws',
     note:'Conservative comic pipeline submission bound before scene/light-frustum culling. A single-pass quantity must not be presented as an entire-frame measurement.'},
@@ -35,9 +40,23 @@ for(const built of summary.cases){
   const identity=Object.values(manifest.featureIndex).map(({ownerChunk,chunkIds,...rest})=>rest).sort((a,b)=>a.featureId.localeCompare(b.featureId));
   const entry={name:built.name,compilerCommit:built.compilerCommit,source:built.source,sourceHash:built.sourceHash,seed:built.seed,config:built.config,
     inputElements:built.inputElements,chunks:built.chunks,features:built.features,counts:built.report.counts,worldHash:manifest.hashes.world,
-    identitySHA256:hash(JSON.stringify(identity)),buildMs:built.buildMs,maxRssKiB:built.maxRssKiB,packageBytes:built.packageBytes,lods:{}};
+    identitySHA256:hash(JSON.stringify(identity)),buildMs:built.buildMs,maxRssKiB:built.maxRssKiB,packageBytes:built.packageBytes,sourceInternalFeatures:[],lods:{}};
+  let originalData,envelopes;
+  async function proveSourceInternal(f,present,level){
+    // Some clipped source snapshots contain overlapping building parts wholly
+    // inside a retained outer building. Prove zero exposed original geometry;
+    // never exempt arbitrary missing objects, trees or external recipe members.
+    assert.equal(f.kind,'building');assert.equal(f.bounds,undefined);assert.equal(f.provenance.recipeId,undefined);
+    if(!originalData){const source=await readFile(path.join(root,built.source));assert.equal(hash(source),built.sourceHash);originalData=parseOSM(normalizeRaw(JSON.parse(source),built.config),built.seed);envelopes=planBuildingEnvelopes(originalData.buildings);}
+    const b=originalData.buildings.find(b=>b.id===f.featureId),plan=envelopes.get(f.featureId);assert.ok(b&&plan);assert.equal(planRoof(b,{inferRoofs:false}).supported,false);
+    let wallSpans=0;for(const [i,source]of [b.outer,...b.holes].entries()){const ring=normalizedRing(source,!!i);for(let j=0;j<ring.length;j++){const a=ring[j],c=ring[(j+1)%ring.length],dx=c[0]-a[0],dz=c[1]-a[1],len=Math.hypot(dx,dz);if(len>=.03)wallSpans+=plan.wall(a,c,[dz/len,0,-dx/len]).length;}}
+    assert.equal(wallSpans,0);assert.equal(plan.roof.length,0);if(b.minHeight>0)assert.equal(plan.bottom.length,0);
+    const visibleEnclosers=originalData.buildings.filter(n=>n!==b&&n.height>=b.height&&n.minHeight<=b.minHeight&&inside(b.center,n.outer)&&!n.holes.some(h=>inside(b.center,h))&&present.has(n.id)).map(n=>n.id);
+    assert.ok(visibleEnclosers.length,`No actual exterior enclosure for ${f.featureId}`);
+    let proof=entry.sourceInternalFeatures.find(p=>p.featureId===f.featureId);if(!proof){proof={featureId:f.featureId,sourceIds:f.sourceIds,reason:'Original whole-region envelope has zero exposed faces; source identity remains in featureIndex.',wallSpans,roofPolygons:0,bottomPolygons:plan.bottom.length,visibleEnclosers,levels:[]};entry.sourceInternalFeatures.push(proof);}proof.levels.push(level);
+  }
   for(const level of ['low','medium','high']){
-    const totals=Object.fromEntries([...fields,'bytes'].map(k=>[k,0])),records=[],present=new Set(),meshCosts=new Map();
+    const totals=Object.fromEntries([...fields,'bytes'].map(k=>[k,0])),records=[],present=new Set(),meshCosts=new Map(),roadCosts=new Map();
     for(const chunk of manifest.chunks){
       const d=chunk.lods.find(d=>d.id===level);assert.ok(d,`${built.name}/${chunk.id}/${level}`);
       const group=await decodeChunk(await readFile(path.join(folder,d.uri)),d),actual=sceneStats(group);
@@ -47,8 +66,9 @@ for(const built of summary.cases){
       group.updateMatrixWorld(true);
       group.traverse(o=>{
         if(!o.isMesh)return;
-        const city=o.userData.city,cost=sceneStats(o),key=`${city.kind}/${o.name}`;
+        const city=o.userData.city,cost=sceneStats(o),key=`${city.kind}/${city.kind==='building'?(city.lodRole||'body'):o.name}`;
         meshCosts.set(key,(meshCosts.get(key)||0)+cost.triangles);
+        if(city.kind==='road'){const g=o.geometry,ix=g.index?.array,f=g.attributes.cityFeature;for(let i=0;i<(ix?.length??g.attributes.position.count);i+=3){const id=renderIds.get(f.getX(ix?ix[i]:i));roadCosts.set(id,(roadCosts.get(id)||0)+1);}}
         if(!['building','tree'].includes(city.kind))return;
         for(const id of city.featureIds||[])present.add(id);
         if(o.isInstancedMesh){
@@ -67,9 +87,9 @@ for(const built of summary.cases){
       });
       binding.dispose();dispose(group);
     }
-    for(const f of Object.values(manifest.featureIndex))if(['building','tree'].includes(f.kind))assert.ok(present.has(f.featureId),`${built.name}/${level} missing ${f.featureId}`);
+    for(const f of Object.values(manifest.featureIndex))if(['building','tree'].includes(f.kind)&&!present.has(f.featureId))await proveSourceInternal(f,present,level);
     const frameUpperBound={triangles:4*totals.triangles+totals.shadowTriangles+6,drawCalls:4*totals.drawCalls+totals.shadowDrawCalls+3};
-    entry.lods[level]={...totals,comicFrameUpperBound:frameUpperBound,atomicWorldGeometrySHA256:hash(records.sort().join('\n')),meshTriangles:Object.fromEntries([...meshCosts].sort((a,b)=>b[1]-a[1]))};
+    entry.lods[level]={...totals,comicFrameUpperBound:frameUpperBound,atomicWorldGeometrySHA256:hash(records.sort().join('\n')),meshTriangles:Object.fromEntries([...meshCosts].sort((a,b)=>b[1]-a[1])),roadTriangles:Object.fromEntries([...roadCosts].sort((a,b)=>b[1]-a[1]))};
     if(level==='low'){
       assert.equal(totals.shadowTriangles,0);assert.equal(totals.shadowDrawCalls,0);
       assert.ok(frameUpperBound.triangles<=report.budget.triangles,`${built.name} low frame triangles ${frameUpperBound.triangles}`);
