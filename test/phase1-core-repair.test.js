@@ -102,6 +102,16 @@ test('independent repair review: external material arrays keep authored role/col
   for(const d of r.manifest.chunks[0].lods){const g=await decodeChunk(r.assets[d.uri],d),mesh=g.children.find(m=>m.name==='external colors');assert.deepEqual(mesh.geometry.userData.city.materialRoles,['wall','roof']);assert.deepEqual(mesh.material.map(m=>m.color.getHex()),[0xff0000,0x0000ff]);}
 });
 
+test('independent repair review: one atomic mesh keeps every member of a multipart claim',async()=>{
+  const {raw,config}=continuityFixture(),ids=['w548126516','w548126517','w547523487','w547523486'];
+  const result=await compileScene(raw,{...config,tiling:{divisions:2}},{landmarkRegistry:{recipes:[],match:()=>[{recipeId:'single-multipart',recipeVersion:'1',generatorId:'custom',claimedFeatureIds:ids}],generate:()=>{
+    const group=new THREE.Group();group.add(new THREE.Mesh(new THREE.BoxGeometry(3,10,4),new THREE.MeshStandardMaterial()));return {group,claimedFeatureIds:ids};
+  }}});
+  const owner=result.manifest.featureIndex[ids[0]].ownerChunk;
+  for(const id of ids){assert.equal(result.manifest.featureIndex[id].ownerChunk,owner);assert.deepEqual(result.manifest.featureIndex[id].chunkIds,[owner]);}
+  const chunk=result.manifest.chunks.find(c=>c.id===owner);for(const d of chunk.lods){const group=await decodeChunk(result.assets[d.uri],d),mesh=group.children.find(o=>o.userData.city.recipeId==='single-multipart');assert.deepEqual([...mesh.userData.city.featureIds].sort(),[...ids].sort());}
+});
+
 test('independent repair review: caster metadata is optional, bounded independently, and verified against real assets',async()=>{
   const {normalizeManifest}=await import('../src/runtime/manifest.js'),{raw,config}=continuityFixture(),r=await compileScene(raw,config),d=r.manifest.chunks[0].lods.find(d=>d.id==='high');
   for(const value of [-1,NaN,1.5,Number.MAX_SAFE_INTEGER]){const m=structuredClone(r.manifest),l=m.chunks[0].lods.find(d=>d.id==='high');delete l.shadowTriangles;delete l.shadowDrawCalls;for(const u of l.drawUnits){delete u.shadowTriangles;delete u.shadowDrawCalls;}l.drawUnits[0].shadowTriangles=value;assert.equal(validateSceneManifest(m).valid,false);assert.throws(()=>normalizeManifest(m,'https://example.test/manifest.json'));}

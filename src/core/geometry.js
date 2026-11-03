@@ -131,7 +131,7 @@ export function partitionMesh(mesh, grid, ownerFor, featureIds) {
   const atomic=mesh.userData.city?.kind==='building'&&ownerFor(mesh.userData.city.featureId);
   if(atomic){
     const copy=new THREE.Mesh(g,mesh.material);copy.name=mesh.name;copy.matrix.copy(mesh.matrixWorld);copy.matrixAutoUpdate=false;copy.matrixWorldNeedsUpdate=true;copy.castShadow=mesh.castShadow;copy.receiveShadow=mesh.receiveShadow;
-    copy.userData={...mesh.userData,city:{...mesh.userData.city,featureIds:[mesh.userData.city.featureId]}};return [[atomic,copy]];
+    copy.userData={...mesh.userData,city:{...mesh.userData.city,featureIds:[...mesh.userData.city.featureIds]}};return [[atomic,copy]];
   }
   if(grid.cells&&grid.columns)return clipPartition(mesh,grid,ownerFor,featureIds);
   const index=g.index?.array,total=index?.length??g.attributes.position.count,feature=g.attributes.cityFeature;
