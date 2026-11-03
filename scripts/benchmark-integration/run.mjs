@@ -12,7 +12,7 @@ const results=[];
 for(const name of names){
   const browser=await openLocalBrowser({root,headless:false,startPath:'scripts/benchmark-integration/index.html'});let result;
   try{
-    await browser.evaluate(`(async()=>{const deadline=performance.now()+20000;while(!globalThis.benchmarkReady&&performance.now()<deadline)await new Promise(r=>setTimeout(r,50));if(!benchmarkReady)throw new Error('Benchmark page not ready');})()`);
+    await browser.evaluate(`(async()=>{const deadline=performance.now()+20000;while(!globalThis.benchmarkReady&&performance.now()<deadline)await new Promise(r=>setTimeout(r,50));if(!globalThis.benchmarkReady)throw new Error('Benchmark page not ready');})()`);
     const manifest=JSON.parse(await readFile(path.join(root,'work/integration-scenes',name,'manifest.json'),'utf8'));
     const cold=await browser.evaluate(`benchmark.load(${JSON.stringify(name)},${JSON.stringify(manifest.bounds)})`);
     const build=JSON.parse(await readFile(path.join(root,'work/integration-scenes',name,'build-report.json'),'utf8'));

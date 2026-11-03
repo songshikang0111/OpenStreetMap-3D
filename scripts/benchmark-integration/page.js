@@ -1,4 +1,5 @@
 import {createCityViewer} from '../../dist-sdk/city-ink.js';
+performance.setResourceTimingBufferSize(50000);
 let viewer,manifest;const diagnostics=[];
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const sample=()=>viewer.getStats();
