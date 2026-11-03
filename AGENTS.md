@@ -1,5 +1,12 @@
 # 项目协作要求
 
+## 开发入口
+
+- 一期冻结接口、所有权与 AC01–AC27：`docs/phase1-plan.md`。
+- 架构和命令：`README.md`、`CONTRIBUTING.md`；扩展：`docs/extensions.md`；支持与诊断：`docs/support.md`。
+- 验证：`npm test`、`npm run build`；按改动补充真实 CLI/SDK/浏览器验证。性能采用整帧统计与资源往返，不能用 Node 时间替代 GPU 性能。
+- 不提交缓存或生成的大模型。保留 OSM 来源和许可。公共接口变更同步类型、Schema、例子与证据。
+
 ## Git 提交
 
 - 每次完成实质性的功能迭代或改动后，必须创建 Git commit，不得只将成果留在工作区。

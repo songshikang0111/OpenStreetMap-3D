@@ -5,3 +5,7 @@ work/
 .DS_Store
 __pycache__/
 *.pyc
+dist-sdk/
+.city-service/
+.city-cache/
+*.tgz

@@ -3,18 +3,70 @@
   "version": "0.8.1",
   "private": true,
   "type": "module",
+  "description": "City Ink local city scene toolchain and Web SDK",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.11"
+  },
+  "bin": {
+    "city": "./bin/city.js"
+  },
+  "main": "./src/sdk/index.js",
+  "types": "./src/sdk/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/sdk/index.d.ts",
+      "import": "./src/sdk/index.js"
+    },
+    "./core": {
+      "types": "./src/core/index.d.ts",
+      "import": "./src/core/index.js"
+    },
+    "./styles": {
+      "types": "./src/styles/index.d.ts",
+      "import": "./src/styles/index.js"
+    },
+    "./landmarks": {
+      "types": "./src/landmark-registry.d.ts",
+      "import": "./src/landmark-registry.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "bin",
+    "src",
+    "schemas",
+    "packages",
+    "studio",
+    "dist-sdk",
+    "scripts/serve-static.mjs",
+    "examples/quickstart",
+    "LICENSE",
+    "DATA_LICENSE.md",
+    "README.md",
+    "CONTRIBUTING.md",
+    "docs/phase1-plan.md",
+    "docs/extensions.md",
+    "docs/support.md"
+  ],
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5178 --strictPort",
-    "build": "vite build",
+    "build": "vite build && vite build --config vite.studio.config.js && vite build --config vite.sdk.config.js",
+    "build:sdk": "vite build --config vite.sdk.config.js",
+    "studio": "node bin/city.js studio",
+    "city": "node bin/city.js",
+    "prepack": "npm run build",
     "preview": "vite preview --host 127.0.0.1 --port 5178 --strictPort",
     "test": "node --test test/*.test.js",
     "data:fetch": "python scripts/fetch_osm.py"
   },
   "dependencies": {
+    "@types/three": "0.187.0",
     "polygon-clipping": "0.15.7",
     "three": "0.186.1"
   },
   "devDependencies": {
+    "typescript": "7.0.2",
     "vite": "6.4.5"
   }
 }
