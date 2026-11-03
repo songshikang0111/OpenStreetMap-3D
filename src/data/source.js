@@ -1,8 +1,8 @@
 import { CityError } from './errors.js';
 
 export const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
-export const DATA_SOURCE_FIELDS = ['endpoint','transport','fallbackEndpoints','fallbackPolicy'];
-export const DATA_SOURCE_DEFAULTS = Object.freeze({endpoint:OVERPASS_URL,transport:'post',fallbackEndpoints:[],fallbackPolicy:'none'});
+export const DATA_SOURCE_FIELDS = ['provider','endpoint','transport','fallbackEndpoints','fallbackPolicy'];
+export const DATA_SOURCE_DEFAULTS = Object.freeze({provider:'overpass-main',endpoint:OVERPASS_URL,transport:'post',fallbackEndpoints:[],fallbackPolicy:'none'});
 export const DATA_SOURCE_PROVIDERS = [
   {id:'overpass-main',name:'FOSSGIS Overpass',endpoint:OVERPASS_URL,transport:'post',coverage:'global',documentation:'https://dev.overpass-api.de/overpass-doc/en/preface/commons.html'},
   {id:'private-coffee',name:'Private.coffee Overpass',endpoint:'https://overpass.private.coffee/api/interpreter',transport:'post',coverage:'global',documentation:'https://overpass.private.coffee/'},
@@ -22,8 +22,18 @@ export function dataSourceOverrides(value={}){
   return Object.fromEntries(DATA_SOURCE_FIELDS.filter(k=>value[k]!==undefined).map(k=>[k,value[k]]));
 }
 export function resolveDataSource(...values){
-  const config={...DATA_SOURCE_DEFAULTS,...Object.assign({},...values.map(dataSourceOverrides))};
+  let config={...DATA_SOURCE_DEFAULTS};
+  for(const value of values){
+    const override=dataSourceOverrides(value);
+    if(override.provider!==undefined){
+      const preset=DATA_SOURCE_PROVIDERS.find(p=>p.id===override.provider);
+      if(preset)config={...config,provider:preset.id,endpoint:preset.endpoint,transport:preset.transport};
+      else if(override.provider!=='custom'||!override.endpoint)throw new CityError('INVALID_PROVIDER','source','Unknown provider, or custom provider without an endpoint.','Run city data providers for supported presets; self-hosted services use --endpoint URL.');
+    }
+    config={...config,...override};
+  }
   config.endpoint=validateEndpoint(config.endpoint);
+  config.provider=DATA_SOURCE_PROVIDERS.find(p=>p.endpoint===config.endpoint)?.id||'custom';
   if(!['post','get'].includes(config.transport))throw new CityError('INVALID_SOURCE','source','source.transport must be post or get.');
   if(!['none','unavailable'].includes(config.fallbackPolicy))throw new CityError('INVALID_SOURCE','source','source.fallbackPolicy must be none or unavailable.');
   if(!Array.isArray(config.fallbackEndpoints)||config.fallbackEndpoints.length>2)throw new CityError('INVALID_SOURCE','source','Use at most two explicit fallback endpoints.');

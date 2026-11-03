@@ -1,13 +1,13 @@
 import path from 'node:path';
 import { CityError, atomicWrite, readJSON, hash } from './common.js';
 import { requestJSON } from './http.js';
-import { resolveDataSource, overpassRequest } from './source.js';
+import { OVERPASS_URL, resolveDataSource, overpassRequest, canFallback } from './source.js';
 
 export const LANDMARK_LOCATIONS = [
   { id: 'china-zun', displayName: '中国尊 / CITIC Tower', lat: 39.91150105, lon: 116.46023565, source: 'official-landmark-index', bbox:{south:39.9111543,west:116.4597631,north:39.9118478,east:116.4607082} },
   { id: 'cctv-headquarters', displayName: '央视总部 / CCTV Headquarters', lat: 39.9138124, lon: 116.4579664, source: 'official-landmark-index', bbox:{south:39.9130559,west:116.4570374,north:39.9145689,east:116.4588954} }
 ];
-export async function searchPlaces(query, { cacheDir, offline = false, refresh = false, photonUrl = 'https://photon.komoot.io/api/', overpassUrl, source, endpoint, transport, fallbackEndpoints, fallbackPolicy, request = requestJSON, signal, requestOptions = {} } = {}) {
+export async function searchPlaces(query, { cacheDir, offline = false, refresh = false, photonUrl = 'https://photon.komoot.io/api/', overpassUrl, source, provider, endpoint, transport, fallbackEndpoints, fallbackPolicy, request = requestJSON, signal, requestOptions = {} } = {}) {
   if (typeof query !== 'string' || !query.trim() || query.length > 300) throw new CityError('INVALID_QUERY', 'search', 'Query must contain 1–300 characters.');
   query = query.trim();
   const coordinates = query.match(/^(-?\d+(?:\.\d+)?)\s*[,，]\s*(-?\d+(?:\.\d+)?)$/);
@@ -20,16 +20,23 @@ export async function searchPlaces(query, { cacheDir, offline = false, refresh =
   const landmark = LANDMARK_LOCATIONS.find(p => [p.id, `landmark:${p.id}`, p.displayName, ...p.displayName.split(' / ')].some(s => s.toLowerCase() === query.toLowerCase()));
   if (landmark) return [landmark];
   const osm = query.match(/^(?:https?:\/\/(?:www\.)?openstreetmap\.org\/)?(node|way|relation)[/:](\d+)\/?(?:\?.*)?$/);
-  const resolved=resolveDataSource(source,{endpoint:endpoint||overpassUrl,transport,fallbackEndpoints,fallbackPolicy});
+  const resolved=resolveDataSource(source,{provider,endpoint:endpoint||overpassUrl,transport,fallbackEndpoints,fallbackPolicy});
   const key = hash({ query, photonUrl, source:resolved }); const file = cacheDir && path.join(cacheDir, `search-${key}.json`);
-  if (file && (!refresh || offline)) { try { return (await readJSON(file)).candidates; } catch (e) { if (e.code !== 'ENOENT') throw e; } }
+  if (file && (!refresh || offline)) {
+    const legacy=(!osm||resolved.endpoint===OVERPASS_URL&&resolved.transport==='post'&&resolved.fallbackPolicy==='none')?path.join(cacheDir,`search-${hash({query,photonUrl,overpassUrl:OVERPASS_URL})}.json`):undefined;
+    for(const cached of [file,legacy].filter(Boolean)){try{return (await readJSON(cached)).candidates;}catch(e){if(e.code!=='ENOENT')throw e;}}
+  }
   if (offline) throw new CityError('OFFLINE_SEARCH_MISS', 'search', 'No offline search result.', 'Use coordinates, an official landmark ID, or a previously cached query.');
   let candidates;
   if (osm) {
-    const {url,init}=overpassRequest(resolved.endpoint,`[out:json][timeout:15];${osm[1]}(${osm[2]});out center;`,resolved.transport);
-    const raw = await request(url, { ...requestOptions, ...init,signal });
+    const endpoints=[resolved.endpoint,...(resolved.fallbackPolicy==='unavailable'?resolved.fallbackEndpoints:[])];let raw,actualEndpoint;
+    for(let index=0;index<endpoints.length;index++){
+      signal?.throwIfAborted();const candidate=endpoints[index],{url,init}=overpassRequest(candidate,`[out:json][timeout:15];${osm[1]}(${osm[2]});out center;`,resolved.transport);
+      try{raw=await request(url,{...requestOptions,...init,signal});actualEndpoint=candidate;break;}
+      catch(error){signal?.throwIfAborted();if(index===endpoints.length-1||!canFallback(error))throw error;}
+    }
     if (raw.remark || !Array.isArray(raw.elements)) throw new CityError('INVALID_SEARCH_RESPONSE', 'search', raw.remark || 'Invalid OSM response.');
-    candidates = raw.elements.map(e => ({ id: `${e.type}/${e.id}`, displayName: e.tags?.name || `${e.type}/${e.id}`, lat: e.lat ?? e.center?.lat, lon: e.lon ?? e.center?.lon, source: 'osm-object' }));
+    candidates = raw.elements.map(e => ({ id: `${e.type}/${e.id}`, displayName: e.tags?.name || `${e.type}/${e.id}`, lat: e.lat ?? e.center?.lat, lon: e.lon ?? e.center?.lon, source: 'osm-object',endpoint:actualEndpoint }));
   } else {
     const url = new URL(photonUrl); url.searchParams.set('q', query); url.searchParams.set('limit', '5');
     const raw = await request(url.href, { ...requestOptions, signal, maxBytes: 1024 * 1024 });

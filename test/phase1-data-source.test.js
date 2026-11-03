@@ -13,6 +13,7 @@ import {createProject,patchProject,SAMPLE_AREA,OFFLINE_SAMPLE} from '../src/cli/
 import {runCLI,runBatch} from '../src/cli/index.js';
 import {createLocalServer} from '../src/local-server/index.js';
 import {validateProjectConfig} from '../src/core/config.js';
+import {searchPlaces} from '../src/data/search.js';
 
 const temp=()=>mkdtemp(path.join(os.tmpdir(),'city-source-'));
 async function fixture(handler){const server=createServer(handler);await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));return {endpoint:`http://127.0.0.1:${server.address().port}/interpreter`,close:()=>new Promise(resolve=>server.close(resolve))};}
@@ -24,6 +25,22 @@ test('source validation is shared by project/core, allows self-hosted HTTP and r
   for(const source of [{transport:'PUT'},{fallbackPolicy:'always'},{fallbackEndpoints:['https://a/','https://b/','https://c/']},{endpoint:'https://a/',fallbackEndpoints:['https://a/']}])assert.throws(()=>resolveDataSource(source));
   const root=await temp();const config=await createProject(root,{sample:true});assert.equal(validateProjectConfig({...config,source:{...config.source,endpoint:'javascript:alert(1)'}}).valid,false);
   await patchProject(root,{source:{endpoint:'http://localhost:8123/interpreter',transport:'get'}});const saved=await readJSON(path.join(root,'city.config.json'));assert.equal(saved.source.file,'data/source.json');assert.equal(saved.source.kind,'sample');assert.equal(saved.source.transport,'get');
+});
+test('provider presets select URL/transport without manual methods, and explicit fields override defaults',async()=>{
+  const europe=resolveDataSource({provider:'dresel-europe'});assert.equal(europe.endpoint,'https://ovp.dresel.systems/api/interpreter');assert.equal(europe.transport,'get');
+  assert.equal(resolveDataSource({provider:'vk-maps'}).transport,'get');
+  const custom=resolveDataSource(europe,{endpoint:'http://localhost:8123/interpreter',transport:'post'});assert.equal(custom.provider,'custom');assert.equal(custom.transport,'post');
+  assert.throws(()=>resolveDataSource({provider:'unknown'}),e=>e.code==='INVALID_PROVIDER');
+  let out='';const result=await runCLI(['data','providers','--json'],{stdout:{write:s=>out+=s}});assert.equal(result.status,'succeeded');assert.ok(JSON.parse(out).providers.find(p=>p.id==='dresel-europe').coverage.includes('Europe only'));
+  const root=await temp();await runCLI(['init',root,'--sample','--provider','dresel-europe','--json'],{stdout:{write:()=>{}}});assert.equal((await readJSON(path.join(root,'city.config.json'))).source.provider,'dresel-europe');
+});
+test('OSM object search shares explicit GET fallback semantics and default legacy search caches remain offline',async()=>{
+  let calls=[];
+  const candidates=await searchPlaces('way/123',{endpoint:'https://search-primary.test/api',transport:'get',fallbackEndpoints:['https://search-backup.test/api'],fallbackPolicy:'unavailable',request:async url=>{const endpoint=new URL(url).origin;calls.push(endpoint);if(endpoint==='https://search-primary.test')throw new CityError('HTTP_ERROR','download','502','retry',{httpStatus:502});return {elements:[{type:'way',id:123,center:{lat:10,lon:20}}]};}});
+  assert.deepEqual(calls,['https://search-primary.test','https://search-backup.test']);assert.equal(candidates[0].endpoint,'https://search-backup.test/api');
+  const {hash}=await import('../src/data/common.js');const cacheDir=await temp(),query='Legacy query';
+  await atomicWrite(path.join(cacheDir,`search-${hash({query,photonUrl:'https://photon.komoot.io/api/',overpassUrl:DATA_SOURCE_DEFAULTS.endpoint})}.json`),{candidates:[{id:'legacy',lat:10,lon:20,displayName:query,source:'photon'}]});
+  assert.equal((await searchPlaces(query,{cacheDir,offline:true}))[0].id,'legacy');
 });
 test('explicit GET source records provenance and has a separate cache from legacy POST',async()=>{
   const cacheDir=await temp();let calls=0;

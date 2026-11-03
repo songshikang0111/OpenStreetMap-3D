@@ -2,10 +2,11 @@
 export interface Area { south:number; west:number; north:number; east:number }
 export interface Origin { lat:number; lon:number }
 export interface Diagnostic {code:string;stage:string;message:string;hint:string;featureId?:string;tileId?:string;endpoint?:string;httpStatus?:number;retryAfterMs?:number;sourceAttempts?:SourceAttempt[]}
-export interface DataSourceOptions {endpoint?:string;transport?:'get'|'post';fallbackEndpoints?:string[];fallbackPolicy?:'none'|'unavailable'}
-export interface ResolvedDataSource {endpoint:string;transport:'get'|'post';fallbackEndpoints:string[];fallbackPolicy:'none'|'unavailable'}
+export type DataSourceProvider = 'overpass-main'|'private-coffee'|'vk-maps'|'dresel-europe'|'custom';
+export interface DataSourceOptions {provider?:DataSourceProvider;endpoint?:string;transport?:'get'|'post';fallbackEndpoints?:string[];fallbackPolicy?:'none'|'unavailable'}
+export interface ResolvedDataSource {provider:DataSourceProvider;endpoint:string;transport:'get'|'post';fallbackEndpoints:string[];fallbackPolicy:'none'|'unavailable'}
 export interface SourceAttempt {endpoint:string;transport:'get'|'post';status:'succeeded'|'failed';elapsedMs:number;code?:string;httpStatus?:number}
-export interface Candidate extends Origin {id:string;displayName:string;source:string;bbox?:Area}
+export interface Candidate extends Origin {id:string;displayName:string;source:string;bbox?:Area;endpoint?:string}
 export interface OSMElement {type:'node'|'way'|'relation';id:number;lat?:number;lon?:number;nodes?:number[];geometry?:Origin[];members?:{type:'node'|'way'|'relation';ref:number;role?:string;geometry?:Origin[]}[];tags?:Record<string,string>;version?:number;timestamp?:string}
 export interface RawOSM {elements:OSMElement[];metadata?:Record<string,unknown>;version?:string|number;generator?:string;remark?:string}
 export interface Normalized {raw:RawOSM;diagnostics:Diagnostic[];missing:{type:string;id:number}[];contentHash:string}
@@ -18,7 +19,7 @@ export function fetchArea(options:DataSourceOptions&{source?:DataSourceOptions;a
 export function resolveDataSource(...values:(DataSourceOptions|undefined)[]):ResolvedDataSource;
 export function validateEndpoint(value:unknown):string;
 export const DATA_SOURCE_DEFAULTS:Readonly<ResolvedDataSource>;
-export const DATA_SOURCE_PROVIDERS:{id:string;name:string;endpoint:string;transport:'get'|'post';coverage:string;documentation:string}[];
+export const DATA_SOURCE_PROVIDERS:{id:Exclude<DataSourceProvider,'custom'>;name:string;endpoint:string;transport:'get'|'post';coverage:string;documentation:string}[];
 export function areaQuery(area:Area):string;
 export function requestJSON(url:string,options?:RequestInit&{fetchImpl?:typeof fetch;timeoutMs?:number;maxBytes?:number;retries?:number;minIntervalMs?:number;sleep?:(milliseconds:number,signal?:AbortSignal)=>Promise<void>}):Promise<unknown>;
 export const LANDMARK_LOCATIONS:Candidate[];

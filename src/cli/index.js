@@ -7,7 +7,7 @@ import { validateProject } from './tasks.js';
 import { JobManager, workerRunner, inspectJob, requestJobCancel } from './jobs.js';
 import { createLocalServer } from '../local-server/index.js';
 import { withProjectLock } from './project-lock.js';
-import { dataSourceOverrides, resolveDataSource } from '../data/source.js';
+import { dataSourceOverrides, resolveDataSource, DATA_SOURCE_PROVIDERS, DATA_SOURCE_DEFAULTS } from '../data/source.js';
 
 export const HELP=`City Ink — local city toolchain
 Usage: city <command> [options]
@@ -15,6 +15,7 @@ Usage: city <command> [options]
   search <query> [--offline] [--photon-url URL]
   data fetch --project path [--endpoint URL] [--transport post|get] [--refresh] [--offline]
   data import <file.json> --project path
+  data providers (list presets, transport and coverage; supports --json)
   build --project path [--resume JOB_ID] [--offline]
   batch <list.json> [--concurrency 1..4] [--resume]
   validate --project path [--offline]
@@ -26,6 +27,7 @@ Usage: city <command> [options]
   jobs status|cancel|resume <JOB_ID> --project path
 Common: --json (one structured stdout result), --help, --offline, --project path
 Data source options (init/search/data fetch/batch/studio): --endpoint URL --transport post|get
+  --provider overpass-main|private-coffee|vk-maps|dresel-europe (presets set URL + transport)
   --fallback-endpoint URL (repeat at most twice; opts into unavailable fallback)
   --fallback-policy none|unavailable (default none). No fallback on 429/406, invalid data or cancellation.
   Precedence: command/job override > project source > studio defaults > built-in FOSSGIS POST.
@@ -38,7 +40,7 @@ PNG/GLB use installed Chrome/Edge (CITY_BROWSER override); GLB exports the compl
 Ordinary build/export/validate never refreshes network data. --resume retries failed/cancelled jobs.
 `;
 const flags=new Set(['json','help','offline','refresh','sample','rollback']);
-const valued=new Set(['project','workspace','name','area','origin','port','concurrency','output','photon-url','cache','endpoint','transport','fallback-policy','fallback-endpoint']);
+const valued=new Set(['project','workspace','name','area','origin','port','concurrency','output','photon-url','cache','provider','endpoint','transport','fallback-policy','fallback-endpoint']);
 function parse(args){
   const options={},positionals=[];
   for(let i=0;i<args.length;i++){
@@ -53,7 +55,7 @@ function parse(args){
   return {options,positionals};
 }
 const result=(extra={})=>({schemaVersion:1,status:'succeeded',artifacts:[],diagnostics:[],...extra});
-function sourceOptions(options){const source=dataSourceOverrides({endpoint:options.endpoint,transport:options.transport,fallbackEndpoints:options['fallback-endpoint'],fallbackPolicy:options['fallback-policy']||(options['fallback-endpoint']?'unavailable':undefined)});resolveDataSource(source);return source;}
+function sourceOptions(options){const source=dataSourceOverrides({provider:options.provider,endpoint:options.endpoint,transport:options.transport,fallbackEndpoints:options['fallback-endpoint'],fallbackPolicy:options['fallback-policy']||(options['fallback-endpoint']?'unavailable':undefined)});resolveDataSource(source);return source;}
 export async function runBatch(file,{concurrency=1,resume=false,offline=false,source={},signal,runner=workerRunner}={}){
   const sourceOverride=dataSourceOverrides(source);resolveDataSource(sourceOverride);
   const list=await readJSON(file);const entries=Array.isArray(list)?list:list.projects;
@@ -89,6 +91,7 @@ export async function runCLI(args,{cwd=process.cwd(),stdout=process.stdout,stder
     if(Object.keys(source).length&&!['init','search','batch','studio','preview'].includes(command)&&!(command==='data'&&p[1]==='fetch')&&!(command==='jobs'&&p[1]==='resume'))throw new CityError('OPTION_SCOPE','cli','Data source flags apply to init/search/fetch/batch/studio or a resumed fetch job.');
     const allowedOffline=new Set(['search','data','build','batch','validate','export','init','preview','studio','landmarks','jobs']);
     if(options.offline&&!allowedOffline.has(command))throw new CityError('OFFLINE_UNSUPPORTED','cli','--offline is not supported here.');
+    if(command==='data'&&p[1]==='providers')return emit(result({defaults:DATA_SOURCE_DEFAULTS,providers:DATA_SOURCE_PROVIDERS}));
     if(command==='init'){
       let area,origin;
       if(options.area){const nums=options.area.split(',').map(Number);if(nums.length!==4)throw new CityError('INVALID_AREA','cli','--area requires south,west,north,east.');area=Object.fromEntries(['south','west','north','east'].map((k,i)=>[k,nums[i]]));}
