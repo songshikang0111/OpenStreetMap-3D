@@ -91,8 +91,9 @@ async function previewIfBuilt() {
   if(existing.ok&&epoch===state.projectEpoch)await preview();
 }
 async function preview() {
-  const epoch=++state.previewEpoch,project=state.project,config=state.config,style=settings.style(),quality=$('quality').value;
+  const epoch=++state.previewEpoch,project=state.project,config=state.config,style=settings.style(),quality=$('quality').value,previewJobId=state.job?.id;
   const current=()=>epoch===state.previewEpoch&&project.id===state.project?.id;
+  const canReportScene=()=>!state.job||state.job.id===previewJobId&&state.job.kind==='build'&&state.job.status==='succeeded';
   try {
   const prepared=await prepareStyle(style,{projectId:project.id});if(!current())return;
   await disposePreview();if(!current())return;$('empty').hidden=false;enabled();
@@ -103,7 +104,7 @@ async function preview() {
   const loaded=await engine.loadProjectStyle(prepared.style,{module:prepared.styleModule,baseUrl:new URL(prepared.baseUrl,location.href).href});
   if(!current()){loaded.dispose();return;}
   let viewer;
-  try{viewer=await engine.createCityViewer({container:$('viewport'),manifestUrl,style:loaded,quality,onProgress:progress=>{if(!current()||state.job)return;$('job-status').textContent=progress.complete?'场景已加载；拖动旋转，滚轮缩放，右键平移。':`加载场景：${progress.stage || json(progress)}`;},onDiagnostic:error=>{if(current())diagnostic(error);},onSelect:value=>{if(current())$('selection').textContent=json(value);}});}catch(error){loaded.dispose();if(current())throw error;return;}
+  try{viewer=await engine.createCityViewer({container:$('viewport'),manifestUrl,style:loaded,quality,onProgress:progress=>{if(!current()||!canReportScene())return;$('job-status').textContent=progress.complete?'场景已加载；拖动旋转，滚轮缩放，右键平移。':`加载场景：${progress.stage || json(progress)}`;},onDiagnostic:error=>{if(current())diagnostic(error);},onSelect:value=>{if(current())$('selection').textContent=json(value);}});}catch(error){loaded.dispose();if(current())throw error;return;}
   if(!current()){try{await viewer.dispose();}finally{loaded.dispose();}return;}
   state.loadedStyle=loaded;
   try {
@@ -117,7 +118,7 @@ async function preview() {
   if(!current())return;
   $('report').textContent=json({summary:summarizeFeatures(state.manifest.featureIndex),report:lock?.build?.report,sources:state.manifest.sources,attribution:state.manifest.attribution,limitations:'平地近似；未标注高度与部分道路高程为规则推断；地标为参数化近似。'});
   await viewer.whenIdle();
-  if(current())$('job-status').textContent='场景已加载；拖动旋转，滚轮缩放，右键平移。';
+  if(current()&&canReportScene())$('job-status').textContent='场景已加载；拖动旋转，滚轮缩放，右键平移。';
   }catch(error){if(current()){await disposePreview();$('empty').hidden=false;enabled();throw error;}else{try{await viewer.dispose();}finally{loaded.dispose();}}}
   }catch(error){if(current())throw error;}
 }
