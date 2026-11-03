@@ -24,9 +24,10 @@ export async function exportWeb(root,{signal,onProgress=()=>{},output='site'}={}
     await atomicWrite(path.join(staging,'viewer-config.json'),{style:config.style,quality:config.quality,camera:config.camera},{signal});
     checkAbort(signal);onProgress({stage:'publish-site',progress:0.9});
     const site=await safePath(root,output,{allowMissing:true}),backup=await safePath(root,'.city-cache/previous-site',{allowMissing:true});
+    checkAbort(signal);await mkdir(path.dirname(site),{recursive:true});checkAbort(signal);
     await rm(backup,{recursive:true,force:true});let previous=false;
     try{await rename(site,backup);previous=true;}catch(error){if(error.code!=='ENOENT')throw error;}
-    try{await rename(staging,site);}catch(error){if(previous)await rename(backup,site);throw error;}
+    try{checkAbort(signal);await rename(staging,site);}catch(error){if(previous)await rename(backup,site);throw error;}
     await rm(backup,{recursive:true,force:true});
     return {schemaVersion:1,status:'succeeded',artifacts:[`${output}/index.html`],diagnostics:[],scope:'complete-area',attribution:'© OpenStreetMap contributors; ODbL'};
   }finally{await rm(staging,{recursive:true,force:true});}

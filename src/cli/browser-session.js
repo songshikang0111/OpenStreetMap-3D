@@ -5,7 +5,7 @@ import {spawn} from 'node:child_process';
 import {access,mkdtemp,readFile,rm,realpath} from 'node:fs/promises';
 
 /** Small CDP harness for the CLI's own local viewer. It does not attach to user profiles. */
-export async function openLocalBrowser({root,signal,headless=true,executable=process.env.CITY_BROWSER,width=1280,height=720}={}) {
+export async function openLocalBrowser({root,signal,headless=true,executable=process.env.CITY_BROWSER,width=1280,height=720,startPath=''}={}) {
   const browserCandidates=[executable,...(process.platform==='win32' ? ['C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'] : ['/usr/bin/google-chrome','/usr/bin/chromium','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'])].filter(Boolean);
   let browser;
   for(const candidate of browserCandidates) {try{await access(candidate);browser=candidate;break;}catch{}}
@@ -22,8 +22,8 @@ export async function openLocalBrowser({root,signal,headless=true,executable=pro
     }catch{res.writeHead(404);res.end('Not found');}
   });
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
-  const url=`http://127.0.0.1:${server.address().port}/`;
-  const child=spawn(browser,[`--user-data-dir=${profile}`,'--remote-debugging-port=0','--no-first-run','--no-default-browser-check','--disable-background-networking',`--window-size=${width},${height}`,...(headless?['--headless=new']:[]),url],{stdio:'ignore',windowsHide:true});
+  const url=new URL(startPath,`http://127.0.0.1:${server.address().port}/`).href;
+  const child=spawn(browser,[`--user-data-dir=${profile}`,'--remote-debugging-port=0','--no-first-run','--no-default-browser-check','--disable-background-networking','--disable-background-timer-throttling','--disable-renderer-backgrounding','--disable-backgrounding-occluded-windows',`--window-size=${width},${height}`,...(headless?['--headless=new']:[]),url],{stdio:'ignore',windowsHide:true});
   let ws,sequence=0;const pending=new Map();let exited=false;
   child.on('error',()=>{exited=true;});child.on('exit',()=>{exited=true;});
   const abort=()=>child.kill();signal?.addEventListener('abort',abort,{once:true});
