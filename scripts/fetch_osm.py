@@ -6,6 +6,9 @@ import pathlib
 import sys
 import urllib.parse
 import urllib.request
+import urllib.error
+import tempfile
+import os
 from osm_map_areas import complete_areas
 
 sys.stdout.reconfigure(encoding='utf-8')
@@ -73,9 +76,24 @@ for endpoint in endpoints:
         }
         output = pathlib.Path(args.output)
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+        # Preserve a usable snapshot if writing is interrupted.
+        temporary = None
+        try:
+            with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=output.parent, delete=False, suffix='.tmp') as handle:
+                temporary = pathlib.Path(handle.name)
+                json.dump(data, handle, ensure_ascii=False, separators=(',', ':'))
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary, output)
+        finally:
+            if temporary and temporary.exists():
+                temporary.unlink()
         print(f'Saved {len(data["elements"])} elements, {output.stat().st_size:,} bytes to {output}', flush=True)
         break
+    except urllib.error.HTTPError as error:
+        print(f'HTTPError: {error}', flush=True)
+        if error.code == 429:
+            raise SystemExit('Source rate limited this request. Retry later; do not rotate endpoints to evade limits.')
     except Exception as error:
         print(f'{type(error).__name__}: {error}', flush=True)
 else:
