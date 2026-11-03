@@ -7,6 +7,9 @@ import { validateProject } from './tasks.js';
 export async function exportProject(root,{format='web',output,signal,onProgress=()=>{}}={}){
   await validateProject(root);checkAbort(signal);
   if(format==='web')return exportWeb(root,{output:output||'site',signal,onProgress});
+  let browserAdapter;
+  try{browserAdapter=await import('./browser-export.js');}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
+  if(browserAdapter)return browserAdapter.exportInBrowser(root,{format,output,signal,onProgress});
   if(format==='glb')return exportGLB(root,{output:output||'exports/city.glb',signal});
   if(format==='png')return exportPNG(root,{output:output||'exports/city.png',signal});
   throw new CityError('UNSUPPORTED_EXPORT','export',`Unsupported format ${format}.`);
@@ -17,7 +20,7 @@ async function publishDirectory(staging,target,backup){
   try{await rename(staging,target);}catch(e){if(saved)await rename(backup,target);throw e;}
   await rm(backup,{recursive:true,force:true});
 }
-async function exportWeb(root,{output,signal,onProgress}){
+export async function exportWeb(root,{output='site',signal,onProgress=()=>{}}={}){
   if(!['site'].includes(output)&&!output.startsWith('exports/'))throw new CityError('EXPORT_PATH','export','Web output must be site or under exports/.');
   const target=await safePath(root,output,{allowMissing:true});
   const staging=await safePath(root,`.city-cache/web-${crypto.randomUUID()}`,{allowMissing:true});
@@ -27,7 +30,7 @@ async function exportWeb(root,{output,signal,onProgress}){
     await readFile(sdk).catch(()=>{throw new CityError('SDK_UNAVAILABLE','export','Web SDK is missing.','Integrate task D before exporting.');});
     const config=await readJSON(path.join(root,'city.config.json'));
     await atomicWrite(path.join(source,'index.html'),'<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>City Ink</title><style>html,body,#city{margin:0;width:100%;height:100%}#credit{position:fixed;bottom:6px;right:6px;background:#fffd;padding:4px;font:12px sans-serif;z-index:2}</style></head><body><div id="city"></div><div id="credit">© OpenStreetMap contributors · ODbL</div><script type="module" src="./viewer.js"></script></body></html>');
-    await atomicWrite(path.join(source,'viewer.js'),`import { createCityViewer } from ${JSON.stringify(sdk)};\nconst viewer=await createCityViewer({container:document.querySelector('#city'),manifestUrl:new URL('./scene/manifest.json',document.baseURI).href,style:${JSON.stringify(config.style.id)},quality:${JSON.stringify(config.quality)}});\nwindow.cityViewer=viewer;\nawait viewer.load();\nwindow.cityReady=true;`);
+    await atomicWrite(path.join(source,'viewer.js'),`import { createCityViewer } from ${JSON.stringify(sdk)};\nconst viewer=await createCityViewer({container:document.querySelector('#city'),manifestUrl:new URL('./scene/manifest.json',document.baseURI).href,style:${JSON.stringify(config.style.id)},quality:${JSON.stringify(config.quality)}});\nwindow.cityViewer=viewer;\nawait viewer.whenIdle?.({timeoutMs:60000});\nwindow.cityReady=true;`);
     const {build}=await import('vite');
     onProgress({stage:'bundle',progress:0.2});
     await build({configFile:false,root:source,base:'./',logLevel:'error',build:{outDir:out,emptyOutDir:true}});
@@ -49,7 +52,7 @@ async function exportGLB(root,{output,signal}){
     const descriptor=[...lods].sort((a,b)=>(b.triangles||0)-(a.triangles||0))[0];
     if(!descriptor?.uri)throw new CityError('INVALID_MANIFEST','export',`No geometry for chunk ${chunk.id}.`);
     const bytes=await readFile(await safePath(root,`dist/${descriptor.uri}`));
-    const decoded=await decodeChunk(JSON.parse(bytes.toString('utf8')),descriptor);
+    const decoded=await decodeChunk(bytes,descriptor);
     if(chunk.transform?.position)decoded.position.fromArray(chunk.transform.position);
     else if(Array.isArray(chunk.transform)&&chunk.transform.length===16){decoded.matrix.fromArray(chunk.transform);decoded.matrix.decompose(decoded.position,decoded.quaternion,decoded.scale);}
     group.add(decoded);
@@ -69,20 +72,18 @@ async function exportPNG(root,{output,signal}){
   if(!output.startsWith('exports/')||!output.endsWith('.png'))throw new CityError('EXPORT_PATH','export','PNG output must be exports/*.png.');
   let chromium;try{({chromium}=await import('playwright'));}catch{throw new CityError('BROWSER_UNAVAILABLE','export','PNG export requires Playwright and Chromium.','Install playwright and run npx playwright install chromium, then retry.');}
   await exportWeb(root,{output:'exports/png-viewer',signal,onProgress:()=>{}});
-  const {createLocalServer}=await import('../local-server/index.js');
-  const server=await createLocalServer({projectRoot:root,port:0,sample:false});
   let browser;
   try{
     browser=await chromium.launch({headless:true});const page=await browser.newPage({viewport:{width:1280,height:720},deviceScaleFactor:1});
-    const project=[...server.projects.values()][0];
     // The server exposes only dist/site. A dedicated static preview avoids exposing source data.
     const {createServer}=await import('vite');const preview=await createServer({configFile:false,root:path.join(root,'exports/png-viewer'),server:{host:'127.0.0.1',port:0},logLevel:'error'});await preview.listen();
     try{
       await page.goto(preview.resolvedUrls.local[0]);await page.waitForFunction(()=>window.cityReady===true,{timeout:60000});
       // Load the whole region before capture when supported; never claim partial view is the full region.
-      await page.evaluate(async()=>{await window.cityViewer.load();});checkAbort(signal);
-      await page.screenshot({path:await safePath(root,output,{allowMissing:true})});
+      await page.evaluate(async()=>{await window.cityViewer.whenIdle?.({timeoutMs:60000});});checkAbort(signal);
+      const screenshot=await page.screenshot();
+      await atomicWrite(await safePath(root,output,{allowMissing:true}),screenshot,{signal});
     }finally{await preview.close();}
     return {schemaVersion:1,status:'succeeded',artifacts:[output],diagnostics:[{code:'PNG_VIEW_SCOPE',stage:'export',message:'1280×720 default SDK overview with visible-region streaming and OSM attribution.',hint:'Use GLB for complete-region geometry.'}]};
-  }finally{await browser?.close();await server.close();}
+  }finally{await browser?.close();}
 }

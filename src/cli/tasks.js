@@ -25,21 +25,27 @@ async function engineFingerprint() {
   await visit(root); return hash(entries);
 }
 export async function buildProject(root, { signal, onProgress = () => {}, core, landmarkRegistry } = {}) {
+  await recoverBuildPublication(root);
   const config = await readProject(root);
   core ||= await loadCore();
-  const validation = await core.validateProjectConfig(config);
+  // A's current enum aliases and string package paths; public project values remain preserved.
+  const compileConfig={...config,source:{...config.source,kind:config.source.kind==='import'?'local':config.source.kind},quality:config.quality==='low'?'draft':config.quality,landmarks:{...config.landmarks,packages:config.landmarks.packages.map(p=>typeof p==='string'?p:p.path)}};
+  const validation = await core.validateProjectConfig(compileConfig);
   if (validation === false || validation?.valid === false) throw new CityError('INVALID_CONFIG','build','Core rejected project configuration.');
   const sourcePath = await safePath(root,config.source.file);
-  const raw = normalizeOSM(await readJSON(sourcePath),{area:config.area,origin:config.origin,name:config.name});
+  const sourceBytes=await readFile(sourcePath);
+  const raw = normalizeOSM(JSON.parse(sourceBytes.toString('utf8')),{area:config.area,origin:config.origin,name:config.name});
   const recipes = await projectRecipes(root,config);
   if (recipes.length && !landmarkRegistry) {
     const registry = await import('../landmark-registry.js');
-    landmarkRegistry = registry.createLandmarkRegistry({overrides:recipes});
+    landmarkRegistry = registry.createLandmarkRegistry({overrides:Object.fromEntries(recipes.map(recipe=>[recipe.id,recipe]))});
   }
   const previous = await readJSON(path.join(root,'city.lock.json'));
-  const inputs = {configHash:hash(config), dataHash:raw.contentHash, sourceFileHash:hash(await readFile(sourcePath)), engineHash:await engineFingerprint(), recipeHash:hash(recipes), styleHash:hash(config.style)};
+  if(previous.pendingRebuild?.next&&hash(previous.pendingRebuild.next)!==hash(config.landmarks.packages))throw new CityError('LANDMARK_UPDATE_INCOMPLETE','build','Landmark configuration and pending lock transaction differ.','Repeat the explicit landmark update or roll it back before building.');
+  const inputs = {configHash:hash(config), dataHash:raw.contentHash, sourceFileHash:hash(sourceBytes), engineHash:await engineFingerprint(), recipeHash:hash(recipes), styleHash:hash(config.style)};
   checkAbort(signal); onProgress({stage:'compile',progress:0});
-  const result = await core.compileScene(raw.raw,config,{signal,onProgress,landmarkRegistry});
+  const result = await core.compileScene(raw.raw,compileConfig,{signal,onProgress,landmarkRegistry});
+  if(hash(await readFile(sourcePath))!==inputs.sourceFileHash||hash(await readProject(root))!==inputs.configHash)throw new CityError('INPUT_CHANGED','build','Project input changed while compiling.','Wait for edits to finish and build again.');
   checkAbort(signal);
   const valid = await core.validateSceneManifest(result.manifest);
   if (valid === false || valid?.valid === false) throw new CityError('INVALID_MANIFEST','build','Compiler produced an invalid manifest.');
@@ -74,6 +80,7 @@ export async function buildProject(root, { signal, onProgress = () => {}, core, 
   } finally { await rm(staging,{recursive:true,force:true}); }
 }
 export async function validateProject(root, {core}={}) {
+  await recoverBuildPublication(root);
   const config=await readProject(root), lock=await readJSON(path.join(root,'city.lock.json'));
   const data=normalizeOSM(await readJSON(await safePath(root,config.source.file)),{area:config.area,origin:config.origin,name:config.name});
   const manifest=await readJSON(await safePath(root,'dist/manifest.json'));
@@ -85,12 +92,29 @@ export async function validateProject(root, {core}={}) {
   for(const [file,expected] of Object.entries(lock.assetHashes||{})) if(hash(await readFile(await safePath(root,`dist/${file}`)))!==expected) throw new CityError('CORRUPT_ASSET','validate',`Asset hash mismatch: ${file}.`);
   return {schemaVersion:1,status:'succeeded',artifacts:['dist/manifest.json'],diagnostics:data.diagnostics};
 }
+export async function recoverBuildPublication(root){
+  const dist=await safePath(root,'dist',{allowMissing:true}),backup=await safePath(root,'.city-cache/previous-dist',{allowMissing:true});
+  let manifest;
+  try{manifest=await readJSON(path.join(dist,'manifest.json'));}
+  catch(e){
+    if(e.code!=='ENOENT')throw e;
+    try{await readJSON(path.join(backup,'manifest.json'));await rename(backup,dist);manifest=await readJSON(path.join(dist,'manifest.json'));}
+    catch(e){if(e.code==='ENOENT')return;throw e;}
+  }
+  let embedded;
+  try{embedded=await readJSON(path.join(dist,'city.build-lock.json'));}catch(e){if(e.code==='ENOENT')return;throw e;}
+  const current=await readJSON(path.join(root,'city.lock.json'));
+  if(current.contentHash===embedded.contentHash)return;
+  if(hash(manifest)!==embedded.manifestHash)throw new CityError('CORRUPT_MANIFEST','recovery','Published manifest does not match its generation lock.');
+  for(const [file,expected]of Object.entries(embedded.assetHashes||{}))if(hash(await readFile(await safePath(dist,file)))!==expected)throw new CityError('CORRUPT_ASSET','recovery',`Published asset is corrupt: ${file}.`);
+  await atomicWrite(path.join(root,'city.lock.json'),{...embedded,...(current.landmarkHistory?{landmarkHistory:current.landmarkHistory}:{}),...(current.pendingRebuild?{pendingRebuild:current.pendingRebuild}:{})});
+}
 export async function runProjectTask(kind, root, parameters={}, context={}) {
   const {signal,onProgress=()=>{}}=context;
   if(kind==='build') return buildProject(root,context);
   if(kind==='fetch') {
     const config=await readProject(root); onProgress({stage:'download',progress:0});
-    const result=await fetchArea({area:config.area,origin:config.origin,name:config.name,cacheDir:await safePath(root,'.city-cache/data',{allowMissing:true}),...parameters,signal});
+    const result=await fetchArea({area:config.area,origin:config.origin,name:config.name,cacheDir:await safePath(root,'.city-cache/data',{allowMissing:true}),...parameters,signal,...(context.request?{request:context.request}:{})});
     await atomicWrite(await safePath(root,config.source.file,{allowMissing:true}),result.raw,{signal});
     return {schemaVersion:1,status:'succeeded',artifacts:[config.source.file],diagnostics:result.diagnostics,cacheHit:result.cacheHit,contentHash:result.contentHash};
   }

@@ -7,6 +7,7 @@ import { CityError, diagnostic, readJSON, atomicWrite, safePath } from '../data/
 import { searchPlaces } from '../data/search.js';
 import { createProject, readProject, patchProject, importData } from '../cli/project.js';
 import { JobManager } from '../cli/jobs.js';
+import { withProjectLock } from '../cli/project-lock.js';
 
 const MIME={'.json':'application/json','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.html':'text/html','.png':'image/png','.glb':'model/gltf-binary','.svg':'image/svg+xml','.wasm':'application/wasm'};
 const envelope=(extra={})=>({schemaVersion:1,status:'succeeded',artifacts:[],diagnostics:[],...extra});
@@ -19,12 +20,12 @@ async function body(req){
   catch{throw new CityError('INVALID_JSON','http','Expected a JSON object.');}
 }
 function keys(value,allowed){for(const key of Object.keys(value))if(!allowed.includes(key))throw new CityError('INVALID_PARAMETER','http',`Unsupported parameter ${key}.`);}
-export async function createLocalServer({workspaceRoot,projectRoot,port=4178,host='127.0.0.1',concurrency=1,runner,search=searchPlaces,studioRoot=fileURLToPath(new URL('../../studio/',import.meta.url)),sample=true}={}){
+export async function createLocalServer({workspaceRoot,projectRoot,port=4178,host='127.0.0.1',concurrency=1,runner,search=searchPlaces,studioRoot=fileURLToPath(new URL('../../studio/',import.meta.url)),sample=true,offline=false}={}){
   if(!['127.0.0.1','localhost','::1'].includes(host))throw new CityError('LOCALHOST_ONLY','server','The studio service only binds loopback.');
   if(!Number.isInteger(port)||port<0||port>65535)throw new CityError('INVALID_PORT','server','Port must be 0–65535.');
   workspaceRoot=path.resolve(projectRoot||workspaceRoot||process.cwd());await mkdir(workspaceRoot,{recursive:true});
   const registryFile=await safePath(workspaceRoot,'.city-service/projects.json',{allowMissing:true});
-  const jobs=await new JobManager({directory:await safePath(workspaceRoot,'.city-service/jobs',{allowMissing:true}),concurrency,runner}).open();
+  let jobs;
   const projects=new Map();let registryWrites=Promise.resolve(),vite;
   const persist=()=>{const entries=[...projects.values()];registryWrites=registryWrites.then(()=>atomicWrite(registryFile,entries));return registryWrites;};
   async function register(relativePath){
@@ -41,6 +42,13 @@ export async function createLocalServer({workspaceRoot,projectRoot,port=4178,hos
     catch(e){if(e.code!=='ENOENT')throw e;await createProject(await safePath(workspaceRoot,'sample',{allowMissing:true}),{name:'Offline synthetic sample',sample:true});}
     await register('sample');
   }
+  jobs=await new JobManager({directory:await safePath(workspaceRoot,'.city-service/jobs',{allowMissing:true}),concurrency,runner,validateJob:async job=>{
+    const relative=path.relative(workspaceRoot,job.project).replaceAll('\\','/')||'.';
+    const root=await safePath(workspaceRoot,relative);
+    if(![...projects.values()].some(p=>path.resolve(workspaceRoot,p.relativePath)===root))throw new CityError('JOB_PROJECT_ESCAPE','job','Persisted job project is not registered in this workspace.');
+    if(job.parameters?.packagePath){const relativePackage=path.relative(workspaceRoot,job.parameters.packagePath).replaceAll('\\','/');await safePath(workspaceRoot,relativePackage);}
+    if(job.parameters?.output)await safePath(root,job.parameters.output,{allowMissing:true});
+  }}).open();
   async function locate(id){const p=projects.get(id);if(!p)throw new CityError('PROJECT_NOT_FOUND','project',`Unknown project ${id}.`);return {p,root:await safePath(workspaceRoot,p.relativePath)};}
   async function staticFile(root,relative,res){
     const file=await safePath(root,relative);if(!(await stat(file)).isFile())throw new CityError('NOT_FOUND','http','File not found.');
@@ -52,7 +60,7 @@ export async function createLocalServer({workspaceRoot,projectRoot,port=4178,hos
       if(!allowedHosts.has(req.headers.host))throw new CityError('HOST_REJECTED','http','Invalid local Host header.');
       if(req.headers.origin && !allowedHosts.has(new URL(req.headers.origin).host))throw new CityError('ORIGIN_REJECTED','http','Cross-origin requests are not allowed.');
       const url=new URL(req.url,'http://127.0.0.1'), route=decodeURIComponent(url.pathname);
-      if(route==='/api/search'&&req.method==='GET')return send(res,200,envelope({candidates:await search(url.searchParams.get('q'),{cacheDir:await safePath(workspaceRoot,'.city-service/search',{allowMissing:true}),offline:url.searchParams.get('offline')==='true'})}));
+      if(route==='/api/search'&&req.method==='GET')return send(res,200,envelope({candidates:await search(url.searchParams.get('q'),{cacheDir:await safePath(workspaceRoot,'.city-service/search',{allowMissing:true}),offline:offline||url.searchParams.get('offline')==='true'})}));
       if(route==='/api/projects'&&req.method==='GET'){
         const list=[];for(const p of projects.values())list.push({...p,config:await readProject((await locate(p.id)).root)});
         return send(res,200,envelope({projects:list}));
@@ -73,11 +81,12 @@ export async function createLocalServer({workspaceRoot,projectRoot,port=4178,hos
         if(!match[2]&&req.method==='PATCH'){
           if([...jobs.jobs.values()].some(j=>j.project===root&&['running','queued'].includes(j.status)))throw new CityError('PROJECT_BUSY','config','Wait for or cancel this project’s jobs before editing.');
           const patch=await body(req);keys(patch,['name','area','origin','seed','source','generation','tiling','quality','style','landmarks','camera']);
-          return send(res,200,envelope({project:{...p,config:await patchProject(root,patch)}}));
+          return send(res,200,envelope({project:{...p,config:await withProjectLock(root,()=>patchProject(root,patch))}}));
         }
         if(match[2]==='import'&&req.method==='POST'){
+          if([...jobs.jobs.values()].some(j=>j.project===root&&['running','queued'].includes(j.status)))throw new CityError('PROJECT_BUSY','import','Wait for or cancel this project’s jobs before importing.');
           const input=await body(req);keys(input,['relativePath']);
-          const result=await importData(root,await safePath(workspaceRoot,input.relativePath));return send(res,200,envelope({artifacts:result.artifacts,diagnostics:result.diagnostics}));
+          const result=await withProjectLock(root,async()=>importData(root,await safePath(workspaceRoot,input.relativePath)));return send(res,200,envelope({artifacts:result.artifacts,diagnostics:result.diagnostics}));
         }
         if(match[2]==='jobs'&&req.method==='POST'){
           const input=await body(req);keys(input,['kind','parameters','resume','refresh','offline','output','packagePath','rollback']);
@@ -86,12 +95,13 @@ export async function createLocalServer({workspaceRoot,projectRoot,port=4178,hos
           if(input.parameters&&(typeof input.parameters!=='object'||Array.isArray(input.parameters)))throw new CityError('INVALID_PARAMETER','job','parameters must be an object.');
           const allowed={fetch:['refresh','offline'],build:['offline'], 'export-web':['output','offline'], 'update-landmarks':['packagePath','rollback','offline']}[input.kind];keys(parameters,allowed);
           for(const flag of ['refresh','offline','rollback'])if(parameters[flag]!==undefined&&typeof parameters[flag]!=='boolean')throw new CityError('INVALID_PARAMETER','job',`${flag} must be boolean.`);
+          if(offline)parameters.offline=true;
           if(parameters.packagePath)parameters.packagePath=await safePath(workspaceRoot,parameters.packagePath);
           if(parameters.output)await safePath(root,parameters.output,{allowMissing:true});
           let job;
           if(input.resume){
             const resumeId=input.resume===true?[...jobs.jobs.values()].reverse().find(j=>j.project===root&&j.kind===input.kind&&['failed','cancelled'].includes(j.status))?.id:input.resume;
-            if(resumeId){const old=jobs.get(resumeId);if(old.project!==root||old.kind!==input.kind)throw new CityError('JOB_MISMATCH','job','Resume job belongs to a different project or kind.');job=await jobs.resume(resumeId);}
+            if(resumeId){const old=jobs.get(resumeId);if(old.project!==root||old.kind!==input.kind)throw new CityError('JOB_MISMATCH','job','Resume job belongs to a different project or kind.');job=await jobs.resume(resumeId,offline?{offline:true}:undefined);}
           }
           if(!job)job=await jobs.enqueue(input.kind,root,parameters);
           return send(res,202,envelope({job}));

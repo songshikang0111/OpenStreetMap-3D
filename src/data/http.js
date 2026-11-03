@@ -2,6 +2,12 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { CityError, checkAbort } from './common.js';
 
 const queues = new Map();
+async function waitForQueue(promise,signal){
+  if(!signal)return promise;
+  checkAbort(signal);let abort;
+  try{await Promise.race([promise,new Promise((_,reject)=>{abort=()=>reject(signal.reason);signal.addEventListener('abort',abort,{once:true});})]);}
+  finally{signal.removeEventListener('abort',abort);}
+}
 // All requests to an origin share a queue, including concurrent batch jobs.
 export async function requestJSON(url, { fetchImpl = fetch, signal, timeoutMs = 75000, maxBytes = 32 * 1024 * 1024,
   retries = 2, minIntervalMs = 1100, sleep = (ms, signal) => delay(ms, undefined, { signal }), ...init } = {}) {
@@ -10,8 +16,10 @@ export async function requestJSON(url, { fetchImpl = fetch, signal, timeoutMs = 
   let release;
   const gate = new Promise(resolve => { release = resolve; });
   const tail = previous.catch(() => {}).then(() => gate); queues.set(origin, tail);
-  await previous.catch(() => {});
+  tail.then(()=>{if(queues.get(origin)===tail)queues.delete(origin);});
+  let started=false;
   try {
+    await waitForQueue(previous.catch(() => {}),signal);started=true;
     for (let attempt = 0; attempt <= retries; attempt++) {
       checkAbort(signal);
       const controller = new AbortController();
@@ -50,7 +58,6 @@ export async function requestJSON(url, { fetchImpl = fetch, signal, timeoutMs = 
     }
   } finally {
     // Hold the queue through the cooldown, even after failure.
-    await sleep(minIntervalMs).catch(() => {}); release();
-    if (queues.get(origin) === tail) queues.delete(origin);
+    if(started)await sleep(minIntervalMs).catch(() => {}); release();
   }
 }
