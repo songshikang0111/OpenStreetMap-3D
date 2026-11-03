@@ -16,5 +16,6 @@ test('studio round-trips declared external entry, dependencies, assets and AO pa
   assert.deepEqual(styleFromForm(form),{id:'project-sepia',entry:'styles/sepia.ts',parameters:{aoStrength:.12,tint:'#705030'},dependencies:{'@project/palette':'styles/palette.js'},assets:['styles/paper.png']});
   assert.deepEqual(styleFromForm({...form,option:'comic',parameters:'{"aoStrength":0.12}'}),{id:'comic',parameters:{aoStrength:.12}});
   for(const text of ['[]','null','broken'])assert.throws(()=>jsonObject(text));
+  for(const text of ['{"aoStrength":1e400}','{"nested":{"values":[0.12,-1e400]}}'])assert.throws(()=>jsonObject(text),/有限/);
   assert.throws(()=>styleFromForm({...form,assets:'{}'}));assert.throws(()=>styleFromForm({...form,entry:''}));
 });

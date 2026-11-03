@@ -1,6 +1,12 @@
 export function jsonObject(text,label='参数') {
   let value;try {value=JSON.parse(text||'{}');} catch {throw new Error(`${label}须为有效 JSON。`);}
   if(!value||typeof value!=='object'||Array.isArray(value))throw new Error(`${label}须为 JSON 对象。`);
+  const pending=[value];
+  while(pending.length){
+    const item=pending.pop();
+    if(typeof item==='number'&&!Number.isFinite(item))throw new Error(`${label}中的数值必须有限，不能在保存时变成 null。`);
+    if(item&&typeof item==='object')for(const child of Object.values(item))pending.push(child);
+  }
   return value;
 }
 const endpoint=value=>{
