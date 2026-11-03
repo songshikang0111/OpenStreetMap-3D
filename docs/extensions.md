@@ -21,6 +21,8 @@ await viewer.whenIdle();
 await viewer.setStyle('comic');
 ```
 
+使用 Vite 等打包器运行上述顶层 `await` 示例时，将 `build.target` 设为 `es2022`；也可以把初始化包在异步函数中。页面容器需要明确宽高。
+
 风格不重新下载数据。仅材质、灯光、后处理变化可实时绑定；改变密度/几何必须声明 `rebuildParameters`，修改项目生成配置后重建。创建的材质、纹理和 render target 需要由绑定或管线的 `dispose` 释放，不释放调用者共享资源。使用原有程序立面时保留语义角色和 `facade-v6` 属性。
 
 验证：用相同清单在 comic/line/color/white/自定义画风间切换，检查所有角色、近远景和连续五次切换后的资源数；SDK 与工作台不能各自维护一套生成规则。

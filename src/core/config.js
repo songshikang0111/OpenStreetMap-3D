@@ -35,7 +35,7 @@ export function validateProjectConfig(config) {
     if(!config.camera||typeof config.camera!=='object'||Array.isArray(config.camera))error('camera','Expected an object.');
     else{
       for(const key of ['position','target'])if(config.camera[key]!==undefined&&(!Array.isArray(config.camera[key])||config.camera[key].length!==3||!config.camera[key].every(Number.isFinite)))error(`camera.${key}`,'Expected three finite coordinates.');
-      if(config.camera.fov!==undefined&&(!Number.isFinite(config.camera.fov)||config.camera.fov<=0||config.camera.fov>=180))error('camera.fov','Expected 0 < fov < 180.');
+      if(config.camera.fov!==undefined&&(!Number.isFinite(config.camera.fov)||config.camera.fov<5||config.camera.fov>140))error('camera.fov','Expected FOV in [5, 140].');
       if(config.camera.near!==undefined&&(!Number.isFinite(config.camera.near)||config.camera.near<=0))error('camera.near','Expected a positive near plane.');
     }
   }

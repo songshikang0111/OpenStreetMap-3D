@@ -15,6 +15,9 @@ test('real project keeps geometry valid after camera/material/quality save and r
     const saved=await readFile(path.join(directory,'city.config.json'),'utf8');
     await assert.rejects(patchProject(directory,{camera:{position:[null,0,0]}}),error=>error.code==='INVALID_CONFIG');
     assert.equal(await readFile(path.join(directory,'city.config.json'),'utf8'),saved);
+    for(const fov of [4.9,140.1,170]){await assert.rejects(patchProject(directory,{camera:{fov}}),error=>error.code==='INVALID_CONFIG');assert.equal(await readFile(path.join(directory,'city.config.json'),'utf8'),saved);}
+    for(const fov of [5,140]){await patchProject(directory,{camera:{fov}});await validateProject(directory);}
+    await patchProject(directory,{camera:{fov:50}});
     await validateProject(directory);await buildProject(directory);
     const next=JSON.parse(await readFile(path.join(directory,'city.lock.json'),'utf8'));
     assert.deepEqual(next.assetHashes,initial.assetHashes);assert.equal(next.inputs.buildConfigHash,initial.inputs.buildConfigHash);assert.notEqual(next.inputs.configHash,initial.inputs.configHash);
