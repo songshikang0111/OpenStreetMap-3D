@@ -1,6 +1,6 @@
 # A 核心修复交接
 
-2026-11-03。分支`codex/phase1-core-repair`；工作区为原phase1-core worktree。基线`dee3cc8`，原`codex/phase1-core`保留。**产品冻结提交 `e03aaa85683bddb09f816be091a5afa18c60f51c` 可集成。** 后续本目录证据提交不改变产品代码。未改主仓库、其他任务worktree、SDK/runtime、source/style参数或默认预算。
+2026-11-03。分支`codex/phase1-core-repair`；工作区为原phase1-core worktree。基线`dee3cc8`，原`codex/phase1-core`保留。**最新产品冻结提交 `3b62b40281c116352dd8bd379cb22331d026f2df` 可集成。** 后续本目录证据提交不改变产品代码。未改主仓库、其他任务worktree、SDK/runtime、source/style参数或默认预算。已合入前轮`e03aaa8`的集成分支只需追加本轮产品修复`3b62b40`，并同步证据。
 
 ## 交付与集成
 
@@ -13,6 +13,7 @@
 5. `b5a8c39`：有界平面候选、细扶手主轮廓和原子几何快速路径。
 6. `a66fe8b`：快速路径保留全部multipart成员身份。
 7. `e03aaa8`：有方向的内侧去重、同向叠桥保留完整外皮。
+8. `3b62b40`：按真实裁切planes选择候选cell，修复有符号微小坐标被索引舍入后漏裁的P1；精确边界唯一归属，微倾跨界保留两侧。
 
 具体实现及D字段契约见[implementation](implementation.md)，独立审查见[review](review.md)。generator版本为1.1.0，CINK与manifest schemaVersion仍为1；必须重建资产，不能沿用旧性能缓存。相关生成器仅增加既有road structures计划的共享访问和stair helper导出。跨组件测试`phase1-e2e-core.test.js`仅按low地面附着底面省略更新角色断言；悬空底面新增测试仍要求完整保留。
 
@@ -43,19 +44,20 @@
 
 ## 验证与重现
 
-- 冻结产品提交`e03aaa8`：`npm test` **287/287**；`npm run test:types`通过；`npm run build`的演示/Studio/SDK三套产物通过（Vite既有大包提示）。
-- 四个核心/集成测试文件 **49/49**；repair/partition **23/23**。
+- 冻结产品提交`3b62b40`：`npm test` **289/289**；`npm run test:types`通过；`npm run build`的演示/Studio/SDK三套产物通过（Vite既有大包提示）。
+- 四个核心/集成测试文件 **51/51**；repair/partition **25/25**。
+- 根新增P1边界反例已闭环：[boundary-regression.json](boundary-regression.json)。32m²墙恢复完整，最近输出面距离8.1e-26m；真实high护栏源面积/4块面积均3480.494275995952m²，无缺失源面。54个signed微小坐标/精确边界变体、属性/材质插值、1/4/16护栏总面积与每个源面中心同向覆盖加入永久测试；两条新测试在原版确实失败。没有放宽阈值或删除回归。
 - [ground混合覆盖](mixed-ground.json)：53种纯档/单块升级/回退/棋盘/条带图案，每图案900采样点，0洞/0重叠，面积360000m²。
 - [road混合覆盖](mixed-road.json)：53图案，每图案300采样点，0洞/0重叠，面积5800m²。
 - [bridge混合覆盖](mixed-bridge.json)：400个共同外侧面样本，逐块low→high升级全部通过；空results表示无失败。
 - 水面、53图案共同桥壳、1/4/16父变换/反射/多材质/实例bounds以及5mm外凸共同cap/side由永久partition测试覆盖。根只读探针复制到本worktree重跑时仅改工作区路径；JSON均明确记录冻结提交。原探针不替代永久测试。
-- 独立审查另验证600个平面样本和442个变换后混合覆盖样本，见review。
+- 独立审查在前轮验证600个平面样本和442个变换后混合覆盖样本；本轮`3b62b40`额外108案/2592点均恰好覆盖一次，见review。最大面积误差5.77e-12m²，无新增可复现缺陷。
 
 复现CPU包与审计：
 
 ```sh
-node scripts/phase1-build-cases.mjs work/core-repair-frozen
-node docs/phase1-evidence/remediation/core/audit-costs.mjs work/core-repair-frozen
+node scripts/phase1-build-cases.mjs work/core-repair-boundary-frozen
+node docs/phase1-evidence/remediation/core/audit-costs.mjs work/core-repair-boundary-frozen
 node --test test/phase1-core-repair.test.js test/phase1-core-partition.test.js test/phase1-core.test.js test/phase1-e2e-core.test.js
 npm test
 npm run test:types

@@ -16,7 +16,7 @@ import {planRoof} from '../../../../src/roofs.js';
 import {normalizedRing} from '../../../../src/generators/mesh-tools.js';
 
 const root=fileURLToPath(new URL('../../../../',import.meta.url));
-const directory=path.resolve(root,process.argv[2]||'work/core-repair-final');
+const directory=path.resolve(root,process.argv[2]||'work/core-repair-boundary-frozen');
 const output=path.resolve(root,process.argv[3]||'docs/phase1-evidence/remediation/core/cost-summary.json');
 const hash=x=>createHash('sha256').update(x).digest('hex');
 const readJSON=async p=>JSON.parse(await readFile(p,'utf8'));

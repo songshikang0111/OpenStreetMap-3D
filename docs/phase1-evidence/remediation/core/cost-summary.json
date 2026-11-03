@@ -1,7 +1,7 @@
 {
-  "date": "2026-11-03T14:49:14.293Z",
-  "auditCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
-  "auditScriptSHA256": "86d5a9706e45c2e583f84761ed8a9c212555dec5725734371d5792a8642d8c00",
+  "date": "2026-11-03T15:06:35.985Z",
+  "auditCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
+  "auditScriptSHA256": "33f98681efe1bf5e967214a0211809ea0b5ec34be448cfebfa9541f0dae1ddb6",
   "node": "v22.11.0",
   "method": "CPU: decode every chunk/LOD, verify descriptor costs, bind comic materials and recount. No frustum culling, no runtime attachments. This is not measured whole-frame WebGL or AC18/20 acceptance.",
   "frameAssumption": {
@@ -17,7 +17,7 @@
   "cases": [
     {
       "name": "beijing-cbd-fixed-1",
-      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
       "source": "public/data/beijing-cbd.json",
       "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
       "seed": 1,
@@ -68,8 +68,8 @@
       },
       "worldHash": "513785b3def511bdf8ddcf7e493a273fea3e5289daa5b25a915ffa5b7ed23878",
       "identitySHA256": "cc3fce9b84ae30feff1ba46892220fd39bb9c6fec592eb47d7f49e81661deb32",
-      "buildMs": 12410.3642,
-      "maxRssKiB": 929244,
+      "buildMs": 17940.4525,
+      "maxRssKiB": 990120,
       "packageBytes": 166607319,
       "sourceInternalFeatures": [],
       "lods": {
@@ -224,7 +224,7 @@
     },
     {
       "name": "beijing-cbd-fixed-4",
-      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
       "source": "public/data/beijing-cbd.json",
       "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
       "seed": 1,
@@ -275,8 +275,8 @@
       },
       "worldHash": "513785b3def511bdf8ddcf7e493a273fea3e5289daa5b25a915ffa5b7ed23878",
       "identitySHA256": "cc3fce9b84ae30feff1ba46892220fd39bb9c6fec592eb47d7f49e81661deb32",
-      "buildMs": 15116.1476,
-      "maxRssKiB": 961764,
+      "buildMs": 12363.883,
+      "maxRssKiB": 936716,
       "packageBytes": 168006412,
       "sourceInternalFeatures": [],
       "lods": {
@@ -431,7 +431,7 @@
     },
     {
       "name": "beijing-cbd-fixed-16",
-      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
       "source": "public/data/beijing-cbd.json",
       "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
       "seed": 1,
@@ -482,8 +482,8 @@
       },
       "worldHash": "513785b3def511bdf8ddcf7e493a273fea3e5289daa5b25a915ffa5b7ed23878",
       "identitySHA256": "cc3fce9b84ae30feff1ba46892220fd39bb9c6fec592eb47d7f49e81661deb32",
-      "buildMs": 15899.4822,
-      "maxRssKiB": 959080,
+      "buildMs": 12289.254,
+      "maxRssKiB": 885712,
       "packageBytes": 172958295,
       "sourceInternalFeatures": [],
       "lods": {
@@ -638,7 +638,7 @@
     },
     {
       "name": "beijing-cbd-grow-1",
-      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
       "source": "public/data/beijing-cbd.json",
       "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
       "seed": 1,
@@ -689,8 +689,8 @@
       },
       "worldHash": "417df84bb4765ef313300e1463982e073378e01e9dddbb3cb23c73ac0b596140",
       "identitySHA256": "62d7f82ce8af552a49ec8c275c95e28caa72bd8e3cdbca7abde1b0bdce96f774",
-      "buildMs": 1090.1643000000001,
-      "maxRssKiB": 215348,
+      "buildMs": 1055.2747,
+      "maxRssKiB": 218556,
       "packageBytes": 14157809,
       "sourceInternalFeatures": [],
       "lods": {
@@ -825,7 +825,7 @@
     },
     {
       "name": "beijing-cbd-grow-4",
-      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
       "source": "public/data/beijing-cbd.json",
       "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
       "seed": 1,
@@ -876,8 +876,8 @@
       },
       "worldHash": "82e1bd742c669ffb5ccc664a89d44965d2be470b38df605aacd19dd7ff7e4791",
       "identitySHA256": "dd4d0643f73976f811647555915e96020e40e7daf4d7de1efd3e3175a76327d1",
-      "buildMs": 3787.5173,
-      "maxRssKiB": 399624,
+      "buildMs": 3624.5815000000002,
+      "maxRssKiB": 387972,
       "packageBytes": 50551640,
       "sourceInternalFeatures": [
         {
@@ -1066,7 +1066,7 @@
     },
     {
       "name": "beijing-cbd-grow-9",
-      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
       "source": "public/data/beijing-cbd.json",
       "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
       "seed": 1,
@@ -1117,8 +1117,8 @@
       },
       "worldHash": "15545a24af062492f46f809206d85b04eb84369a6c6227d0790fc329e1991318",
       "identitySHA256": "3387bd2b39034c4bda9aa49e4cb7ec0521402db5ba853ca1ada1a83f362ded31",
-      "buildMs": 7801.8258,
-      "maxRssKiB": 644824,
+      "buildMs": 7464.312400000001,
+      "maxRssKiB": 627288,
       "packageBytes": 110613462,
       "sourceInternalFeatures": [],
       "lods": {
@@ -1273,7 +1273,7 @@
     },
     {
       "name": "kyoto-gion-fixed-1",
-      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
       "source": "public/data/kyoto-gion.json",
       "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
       "seed": 1,
@@ -1324,8 +1324,8 @@
       },
       "worldHash": "890a0844ddb04b2277c4b584ef3d9a52ab0a2617a357030511c495e4f6bbdf5b",
       "identitySHA256": "ead70b7180a38fc5638f4edf282f050abfc957d03f227bffcf34e656d03ff405",
-      "buildMs": 21230.8239,
-      "maxRssKiB": 1638408,
+      "buildMs": 20914.9241,
+      "maxRssKiB": 1635888,
       "packageBytes": 355455975,
       "sourceInternalFeatures": [],
       "lods": {
@@ -1490,7 +1490,7 @@
     },
     {
       "name": "kyoto-gion-fixed-4",
-      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
       "source": "public/data/kyoto-gion.json",
       "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
       "seed": 1,
@@ -1541,8 +1541,8 @@
       },
       "worldHash": "890a0844ddb04b2277c4b584ef3d9a52ab0a2617a357030511c495e4f6bbdf5b",
       "identitySHA256": "ead70b7180a38fc5638f4edf282f050abfc957d03f227bffcf34e656d03ff405",
-      "buildMs": 21970.8887,
-      "maxRssKiB": 1611988,
+      "buildMs": 21079.2482,
+      "maxRssKiB": 1608408,
       "packageBytes": 357477935,
       "sourceInternalFeatures": [],
       "lods": {
@@ -1707,7 +1707,7 @@
     },
     {
       "name": "kyoto-gion-fixed-16",
-      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
       "source": "public/data/kyoto-gion.json",
       "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
       "seed": 1,
@@ -1758,8 +1758,8 @@
       },
       "worldHash": "890a0844ddb04b2277c4b584ef3d9a52ab0a2617a357030511c495e4f6bbdf5b",
       "identitySHA256": "ead70b7180a38fc5638f4edf282f050abfc957d03f227bffcf34e656d03ff405",
-      "buildMs": 21532.4002,
-      "maxRssKiB": 1600340,
+      "buildMs": 22448.6495,
+      "maxRssKiB": 1598592,
       "packageBytes": 362922836,
       "sourceInternalFeatures": [],
       "lods": {
@@ -1924,7 +1924,7 @@
     },
     {
       "name": "kyoto-gion-grow-1",
-      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
       "source": "public/data/kyoto-gion.json",
       "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
       "seed": 1,
@@ -1975,8 +1975,8 @@
       },
       "worldHash": "72e3f7c34e873c74d5716e248373c817cffe8f119881c8988ff56e9204267b8f",
       "identitySHA256": "36706c7ad05fff2e4862438a49d5bc0b7c2b39ab0dfc5c5d03efef99abc49a9d",
-      "buildMs": 1592.2662,
-      "maxRssKiB": 360568,
+      "buildMs": 1632.8455,
+      "maxRssKiB": 364308,
       "packageBytes": 31715188,
       "sourceInternalFeatures": [],
       "lods": {
@@ -2109,7 +2109,7 @@
     },
     {
       "name": "kyoto-gion-grow-4",
-      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
       "source": "public/data/kyoto-gion.json",
       "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
       "seed": 1,
@@ -2160,8 +2160,8 @@
       },
       "worldHash": "4aa38aedf075ebfb5cd3cde7aef4af38455210632d607f1577683315ddaaceaa",
       "identitySHA256": "f211da2983ba64c0d564bc7ff551734497bb11932827c024da2a7aa4c281d138",
-      "buildMs": 6221.3204000000005,
-      "maxRssKiB": 734348,
+      "buildMs": 6192.3712000000005,
+      "maxRssKiB": 736136,
       "packageBytes": 129374899,
       "sourceInternalFeatures": [],
       "lods": {
@@ -2322,7 +2322,7 @@
     },
     {
       "name": "kyoto-gion-grow-9",
-      "compilerCommit": "e03aaa85683bddb09f816be091a5afa18c60f51c",
+      "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
       "source": "public/data/kyoto-gion.json",
       "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
       "seed": 1,
@@ -2373,8 +2373,8 @@
       },
       "worldHash": "2cc7a49f0f550d4eb737e8079e52f8de862e2c097d078a68296bc72e21ca34ad",
       "identitySHA256": "649a4b6257bb802260252bdb306882849efd2d4b18ec38785eb5ccd9cad5ffd1",
-      "buildMs": 16502.3738,
-      "maxRssKiB": 1276352,
+      "buildMs": 16595.975599999998,
+      "maxRssKiB": 1276296,
       "packageBytes": 296927307,
       "sourceInternalFeatures": [
         {
