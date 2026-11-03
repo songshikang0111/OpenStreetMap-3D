@@ -1,0 +1,488 @@
+{
+  "date": "2026-11-03",
+  "commit": "40cad2886747ca661eaeb2674cf7adbcacaaa09f",
+  "environment": {
+    "node": "v22.11.0",
+    "platform": "win32",
+    "arch": "x64",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13600KF",
+    "totalMemory": 34163961856
+  },
+  "method": "CPU scene-package audit; this is not browser/GPU performance evidence.",
+  "samples": [
+    {
+      "name": "beijing-cbd",
+      "experiment": "fixed-coverage",
+      "divisions": 1,
+      "sourceFileSHA256": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "inputElements": 1376,
+      "counts": {
+        "inputElements": 1376,
+        "features": 13293,
+        "buildings": 477,
+        "trees": 3680,
+        "chunks": 1
+      },
+      "worldHash": "2ef410c3050dd9d86bd46ad65ead622c64b7a6e5a836d623ead5f66ea4eb591e",
+      "geometrySignature": "1126f128e7ffe1ad5b3f422dcaf512ae75ff0bb6fbfb9edd25cd4cb3375399a8",
+      "buildMs": 5936.407200000001,
+      "memory": {
+        "rss": 709132288,
+        "heapTotal": 161685504,
+        "heapUsed": 123906992,
+        "external": 356074947,
+        "arrayBuffers": 353956408
+      },
+      "lods": {
+        "low": {
+          "triangles": 543886,
+          "bytes": 65631732,
+          "residentBytes": 65016626,
+          "drawCalls": 22
+        },
+        "medium": {
+          "triangles": 1335941,
+          "bytes": 92973204,
+          "residentBytes": 91389581,
+          "drawCalls": 497
+        },
+        "high": {
+          "triangles": 1486809,
+          "bytes": 103931220,
+          "residentBytes": 101375527,
+          "drawCalls": 511
+        }
+      }
+    },
+    {
+      "name": "beijing-cbd",
+      "experiment": "fixed-coverage",
+      "divisions": 2,
+      "sourceFileSHA256": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "inputElements": 1376,
+      "counts": {
+        "inputElements": 1376,
+        "features": 13293,
+        "buildings": 477,
+        "trees": 3680,
+        "chunks": 4
+      },
+      "worldHash": "2ef410c3050dd9d86bd46ad65ead622c64b7a6e5a836d623ead5f66ea4eb591e",
+      "geometrySignature": "1126f128e7ffe1ad5b3f422dcaf512ae75ff0bb6fbfb9edd25cd4cb3375399a8",
+      "buildMs": 6531.351999999999,
+      "memory": {
+        "rss": 617013248,
+        "heapTotal": 150528000,
+        "heapUsed": 113594864,
+        "external": 296851194,
+        "arrayBuffers": 294731379
+      },
+      "lods": {
+        "low": {
+          "triangles": 543886,
+          "bytes": 65980608,
+          "residentBytes": 65038442,
+          "drawCalls": 81
+        },
+        "medium": {
+          "triangles": 1335941,
+          "bytes": 93620700,
+          "residentBytes": 91721099,
+          "drawCalls": 550
+        },
+        "high": {
+          "triangles": 1486809,
+          "bytes": 104640716,
+          "residentBytes": 101721871,
+          "drawCalls": 603
+        }
+      }
+    },
+    {
+      "name": "beijing-cbd",
+      "experiment": "fixed-coverage",
+      "divisions": 4,
+      "sourceFileSHA256": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "inputElements": 1376,
+      "counts": {
+        "inputElements": 1376,
+        "features": 13293,
+        "buildings": 477,
+        "trees": 3680,
+        "chunks": 16
+      },
+      "worldHash": "2ef410c3050dd9d86bd46ad65ead622c64b7a6e5a836d623ead5f66ea4eb591e",
+      "geometrySignature": "1126f128e7ffe1ad5b3f422dcaf512ae75ff0bb6fbfb9edd25cd4cb3375399a8",
+      "buildMs": 6727.146700000001,
+      "memory": {
+        "rss": 613216256,
+        "heapTotal": 152625152,
+        "heapUsed": 114615432,
+        "external": 293329544,
+        "arrayBuffers": 291209729
+      },
+      "lods": {
+        "low": {
+          "triangles": 543886,
+          "bytes": 67098464,
+          "residentBytes": 65101226,
+          "drawCalls": 247
+        },
+        "medium": {
+          "triangles": 1335941,
+          "bytes": 95437868,
+          "residentBytes": 92514275,
+          "drawCalls": 696
+        },
+        "high": {
+          "triangles": 1486809,
+          "bytes": 106680248,
+          "residentBytes": 102572239,
+          "drawCalls": 881
+        }
+      }
+    },
+    {
+      "name": "beijing-cbd",
+      "experiment": "fixed-physical-cells",
+      "cellSizeMeters": 500,
+      "cells": 1,
+      "counts": {
+        "inputElements": 1376,
+        "features": 778,
+        "buildings": 14,
+        "trees": 265,
+        "chunks": 1
+      },
+      "sourceFileSHA256": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "buildMs": 605.2761999999966,
+      "lods": {
+        "low": {
+          "triangles": 32225,
+          "bytes": 3645824,
+          "residentBytes": 3577919,
+          "drawCalls": 17
+        },
+        "medium": {
+          "triangles": 110669,
+          "bytes": 8602504,
+          "residentBytes": 8508833,
+          "drawCalls": 29
+        },
+        "high": {
+          "triangles": 118757,
+          "bytes": 9225320,
+          "residentBytes": 9067219,
+          "drawCalls": 43
+        }
+      }
+    },
+    {
+      "name": "beijing-cbd",
+      "experiment": "fixed-physical-cells",
+      "cellSizeMeters": 500,
+      "cells": 2,
+      "counts": {
+        "inputElements": 1376,
+        "features": 5476,
+        "buildings": 92,
+        "trees": 1322,
+        "chunks": 4
+      },
+      "sourceFileSHA256": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "buildMs": 1782.6120999999985,
+      "lods": {
+        "low": {
+          "triangles": 167182,
+          "bytes": 19001196,
+          "residentBytes": 18593690,
+          "drawCalls": 68
+        },
+        "medium": {
+          "triangles": 447040,
+          "bytes": 27928212,
+          "residentBytes": 27345416,
+          "drawCalls": 152
+        },
+        "high": {
+          "triangles": 510760,
+          "bytes": 30646896,
+          "residentBytes": 29588352,
+          "drawCalls": 205
+        }
+      }
+    },
+    {
+      "name": "beijing-cbd",
+      "experiment": "fixed-physical-cells",
+      "cellSizeMeters": 500,
+      "cells": 3,
+      "counts": {
+        "inputElements": 1376,
+        "features": 9417,
+        "buildings": 286,
+        "trees": 2518,
+        "chunks": 9
+      },
+      "sourceFileSHA256": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "buildMs": 4036.577299999997,
+      "lods": {
+        "low": {
+          "triangles": 336489,
+          "bytes": 39735216,
+          "residentBytes": 38791671,
+          "drawCalls": 135
+        },
+        "medium": {
+          "triangles": 868213,
+          "bytes": 60629604,
+          "residentBytes": 59128005,
+          "drawCalls": 405
+        },
+        "high": {
+          "triangles": 979733,
+          "bytes": 67774568,
+          "residentBytes": 65436987,
+          "drawCalls": 519
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion",
+      "experiment": "fixed-coverage",
+      "divisions": 1,
+      "sourceFileSHA256": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "inputElements": 7014,
+      "counts": {
+        "inputElements": 7014,
+        "features": 8281,
+        "buildings": 4460,
+        "trees": 1467,
+        "chunks": 1
+      },
+      "worldHash": "e08a46b8fd257b3a52fbbfd68493d9fb6a62378e0cb85a9030a5981c25fc73fc",
+      "geometrySignature": "ba07e87581de9ba9652fcd976f467f8195bb6dd4a62da8c6ce8a7b541b02556f",
+      "buildMs": 18948.046000000002,
+      "memory": {
+        "rss": 1367683072,
+        "heapTotal": 277090304,
+        "heapUsed": 237881400,
+        "external": 712801233,
+        "arrayBuffers": 710681418
+      },
+      "lods": {
+        "low": {
+          "triangles": 650245,
+          "bytes": 94737796,
+          "residentBytes": 94158615,
+          "drawCalls": 26
+        },
+        "medium": {
+          "triangles": 1330679,
+          "bytes": 205755032,
+          "residentBytes": 196061931,
+          "drawCalls": 4485
+        },
+        "high": {
+          "triangles": 1370375,
+          "bytes": 214095988,
+          "residentBytes": 204294989,
+          "drawCalls": 4499
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion",
+      "experiment": "fixed-coverage",
+      "divisions": 2,
+      "sourceFileSHA256": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "inputElements": 7014,
+      "counts": {
+        "inputElements": 7014,
+        "features": 8281,
+        "buildings": 4460,
+        "trees": 1467,
+        "chunks": 4
+      },
+      "worldHash": "e08a46b8fd257b3a52fbbfd68493d9fb6a62378e0cb85a9030a5981c25fc73fc",
+      "geometrySignature": "ba07e87581de9ba9652fcd976f467f8195bb6dd4a62da8c6ce8a7b541b02556f",
+      "buildMs": 20817.713500000005,
+      "memory": {
+        "rss": 1139949568,
+        "heapTotal": 259444736,
+        "heapUsed": 220907736,
+        "external": 646688010,
+        "arrayBuffers": 644568163
+      },
+      "lods": {
+        "low": {
+          "triangles": 650245,
+          "bytes": 95321900,
+          "residentBytes": 94184871,
+          "drawCalls": 99
+        },
+        "medium": {
+          "triangles": 1330679,
+          "bytes": 206727280,
+          "residentBytes": 196524993,
+          "drawCalls": 4555
+        },
+        "high": {
+          "triangles": 1370375,
+          "bytes": 215127540,
+          "residentBytes": 204772877,
+          "drawCalls": 4605
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion",
+      "experiment": "fixed-coverage",
+      "divisions": 4,
+      "sourceFileSHA256": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "inputElements": 7014,
+      "counts": {
+        "inputElements": 7014,
+        "features": 8281,
+        "buildings": 4460,
+        "trees": 1467,
+        "chunks": 16
+      },
+      "worldHash": "e08a46b8fd257b3a52fbbfd68493d9fb6a62378e0cb85a9030a5981c25fc73fc",
+      "geometrySignature": "ba07e87581de9ba9652fcd976f467f8195bb6dd4a62da8c6ce8a7b541b02556f",
+      "buildMs": 21985.521399999998,
+      "memory": {
+        "rss": 1051328512,
+        "heapTotal": 255250432,
+        "heapUsed": 215931008,
+        "external": 586935840,
+        "arrayBuffers": 584815865
+      },
+      "lods": {
+        "low": {
+          "triangles": 650245,
+          "bytes": 97132808,
+          "residentBytes": 94265475,
+          "drawCalls": 289
+        },
+        "medium": {
+          "triangles": 1330679,
+          "bytes": 209540928,
+          "residentBytes": 197653749,
+          "drawCalls": 4733
+        },
+        "high": {
+          "triangles": 1370375,
+          "bytes": 218049724,
+          "residentBytes": 205929173,
+          "drawCalls": 4840
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion",
+      "experiment": "fixed-physical-cells",
+      "cellSizeMeters": 250,
+      "cells": 1,
+      "counts": {
+        "inputElements": 7014,
+        "features": 611,
+        "buildings": 397,
+        "trees": 62,
+        "chunks": 1
+      },
+      "sourceFileSHA256": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "buildMs": 682.5846999999922,
+      "lods": {
+        "low": {
+          "triangles": 14136,
+          "bytes": 1888948,
+          "residentBytes": 1835400,
+          "drawCalls": 16
+        },
+        "medium": {
+          "triangles": 49576,
+          "bytes": 11100464,
+          "residentBytes": 10244802,
+          "drawCalls": 412
+        },
+        "high": {
+          "triangles": 52216,
+          "bytes": 11687692,
+          "residentBytes": 10814872,
+          "drawCalls": 420
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion",
+      "experiment": "fixed-physical-cells",
+      "cellSizeMeters": 250,
+      "cells": 2,
+      "counts": {
+        "inputElements": 7014,
+        "features": 2403,
+        "buildings": 1489,
+        "trees": 179,
+        "chunks": 4
+      },
+      "sourceFileSHA256": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "buildMs": 2361.7790000000095,
+      "lods": {
+        "low": {
+          "triangles": 105925,
+          "bytes": 15726484,
+          "residentBytes": 15450459,
+          "drawCalls": 61
+        },
+        "medium": {
+          "triangles": 235743,
+          "bytes": 51648688,
+          "residentBytes": 48360621,
+          "drawCalls": 1546
+        },
+        "high": {
+          "triangles": 247839,
+          "bytes": 53999792,
+          "residentBytes": 50630283,
+          "drawCalls": 1583
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion",
+      "experiment": "fixed-physical-cells",
+      "cellSizeMeters": 250,
+      "cells": 3,
+      "counts": {
+        "inputElements": 7014,
+        "features": 4969,
+        "buildings": 2876,
+        "trees": 643,
+        "chunks": 9
+      },
+      "sourceFileSHA256": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "buildMs": 6987.939700000003,
+      "lods": {
+        "low": {
+          "triangles": 346694,
+          "bytes": 51878504,
+          "residentBytes": 50830822,
+          "drawCalls": 153
+        },
+        "medium": {
+          "triangles": 690024,
+          "bytes": 120558044,
+          "residentBytes": 113692666,
+          "drawCalls": 3020
+        },
+        "high": {
+          "triangles": 711436,
+          "bytes": 125025860,
+          "residentBytes": 118009662,
+          "drawCalls": 3095
+        }
+      }
+    }
+  ]
+}

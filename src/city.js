@@ -21,7 +21,7 @@ function facadeMaterial(shared) {
   return material;
 }
 
-export function buildCity(data, { landscapeEnabled = false, inferRoofs = false, registry, landmarkRegistry, landmarks:landmarkOptions = {enabled:true}, style:styleSelection, quality } = {}) {
+export function buildCity(data, { landscapeEnabled = false, inferRoofs = false, landmarksEnabled = true, registry, landmarkRegistry, landmarks:landmarkOptions = {enabled:landmarksEnabled}, style:styleSelection, quality } = {}) {
   const group = new THREE.Group(); group.name = 'Beijing CBD — OpenStreetMap';
   const shared = createStyleShared();
   const material = facadeMaterial(shared);
@@ -169,5 +169,5 @@ export function buildCity(data, { landscapeEnabled = false, inferRoofs = false, 
   }
   annotateSceneSemantics(group);
   const styleBinding=styleSelection?bindSceneStyle(group,{style:styleSelection,shared}):null;
-  return {group,styleBinding,landmarkGroups:landmarkResults.filter(r=>r.claimedFeatureIds.length).map(r=>r.group),landmarkDiagnostics:landmarkOptions.enabled===false?[]:activeRegistry.diagnostics,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,landscapeStats:landscape.stats,roofStats,sourceColors,landmarks,familyCounts,grammarCounts,surfaceCounts,facadeStats:{candidateWalls:nearWalls.length,maxInstances:18000}};
+  return {group,styleBinding,landmarkGroups:landmarkResults.filter(r=>r.claimedFeatureIds.length).map(r=>r.group),landmarkDiagnostics:landmarkOptions.enabled===false?[]:activeRegistry.diagnostics,buildings,treeGroup,detailGroup,equipment,shared,roadPlan:roadSurface.plan,streetlifePlan:streetlife.plan,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,landscapeStats:landscape.stats,roofStats,sourceColors,landmarks,familyCounts,grammarCounts,surfaceCounts,facadeStats:{candidateWalls:nearWalls.length,maxInstances:18000}};
 }
