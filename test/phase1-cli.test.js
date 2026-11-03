@@ -86,7 +86,7 @@ test('localhost HTTP provides real projects/jobs/resources and rejects origin, e
     assert.equal((await post(`/api/projects/${id}/jobs`,{kind:'fetch',parameters:{cacheDir:'../escape'}})).status,400);
     const rejected=await fetch(service.url+'/api/projects',{headers:{Origin:'https://evil.test'}});assert.equal(rejected.status,403);
     const job=(await (await post(`/api/projects/${id}/jobs`,{kind:'build'})).json()).job;
-    await delay(10);assert.ok(live);assert.equal((await get(`/api/jobs/${job.id}`)).job.status,'running');
+    const liveDeadline=Date.now()+10000;while(!live&&Date.now()<liveDeadline)await delay(10);assert.ok(live,'job runner must start before cancellation assertions');assert.equal((await get(`/api/jobs/${job.id}`)).job.status,'running');
     await atomicWrite(path.join(root,'import.json'),{elements:OFFLINE_SAMPLE.elements});assert.equal((await post(`/api/projects/${id}/import`,{relativePath:'import.json'})).status,409);
     await post(`/api/jobs/${job.id}/cancel`,{});assert.equal((await service.jobs.wait(job.id)).status,'cancelled');
     await mkdir(path.join(root,'sample/dist'),{recursive:true});await atomicWrite(path.join(root,'sample/dist/manifest.json'),{schemaVersion:1});assert.equal((await get(`/projects/${id}/dist/manifest.json`)).schemaVersion,1);
