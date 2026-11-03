@@ -13,9 +13,9 @@ function setArea(area) {for (const key of ['south','west','north','east']) $(key
 function getArea() {return validateArea(Object.fromEntries(['south','west','north','east'].map(key => [key,$(key).value])));}
 function remember() {localStorage.setItem('city-ink-studio', json({projectId:state.project?.id,jobId:state.job?.id,lastKind:state.lastKind}));}
 function enabled() {
-  const busy = state.actionBusy || state.job && !isTerminal(state.job);
+  const jobBusy=!!state.job&&!isTerminal(state.job),busy = state.actionBusy || jobBusy;
   for(const id of ['fetch','build','save','web']) $(id).disabled = !state.project || busy;
-  $('cancel').disabled = !busy; $('retry').disabled = !state.project || (busy && !state.disconnected);
+  $('cancel').disabled = !jobBusy||state.actionBusy; $('retry').disabled = state.actionBusy||!state.project || (jobBusy && !state.disconnected);
   for(const id of ['png','glb']) $(id).disabled = !state.viewer || busy;
   for(const id of ['sample','create','projects','relative-path']) $(id).disabled=!!busy;
   for(const id of ['seed','tile-size','infer-roofs','landscape','landmarks']) $(id).disabled=!state.project||!!busy;
@@ -103,7 +103,7 @@ async function preview() {
   const loaded=await engine.loadProjectStyle(prepared.style,{module:prepared.styleModule,baseUrl:new URL(prepared.baseUrl,location.href).href});
   if(!current()){loaded.dispose();return;}
   let viewer;
-  try{viewer=await engine.createCityViewer({container:$('viewport'),manifestUrl,style:loaded,quality,onProgress:progress=>{if(!current()||state.job&&!isTerminal(state.job))return;$('job-status').textContent=progress.complete?'场景已加载；拖动旋转，滚轮缩放，右键平移。':`加载场景：${progress.stage || json(progress)}`;},onDiagnostic:error=>{if(current())diagnostic(error);},onSelect:value=>{if(current())$('selection').textContent=json(value);}});}catch(error){loaded.dispose();if(current())throw error;return;}
+  try{viewer=await engine.createCityViewer({container:$('viewport'),manifestUrl,style:loaded,quality,onProgress:progress=>{if(!current()||state.job)return;$('job-status').textContent=progress.complete?'场景已加载；拖动旋转，滚轮缩放，右键平移。':`加载场景：${progress.stage || json(progress)}`;},onDiagnostic:error=>{if(current())diagnostic(error);},onSelect:value=>{if(current())$('selection').textContent=json(value);}});}catch(error){loaded.dispose();if(current())throw error;return;}
   if(!current()){try{await viewer.dispose();}finally{loaded.dispose();}return;}
   state.loadedStyle=loaded;
   try {
