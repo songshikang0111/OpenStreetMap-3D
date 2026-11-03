@@ -26,6 +26,10 @@
       "types": "./src/styles/index.d.ts",
       "import": "./src/styles/index.js"
     },
+    "./styles/project-bundle": {
+      "types": "./src/styles/project-bundle.d.ts",
+      "import": "./src/styles/project-bundle.js"
+    },
     "./landmarks": {
       "types": "./src/landmark-registry.d.ts",
       "import": "./src/landmark-registry.js"

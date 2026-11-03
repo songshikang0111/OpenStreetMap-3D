@@ -56,7 +56,7 @@ await viewer.dispose();
 loaded.dispose(); // 释放这次加载创建的 CSS；切换项目/重复打开时必须调用。
 ```
 
-不要把项目文件 `entry` 直接当浏览器 URL 导入；先由本地 `bundleProjectStyle(root, config.style)` 生成 descriptor/assets。该可复用 Node helper 位于 `src/styles/project-bundle.js`，返回 Map，不直接发布或覆盖站点。Studio 接线与缓存/路由说明见 [修复交接](phase1-evidence/remediation/styles/handoff.md)。加载器以传入 descriptor 的 baseUrl 解析所有相对模块/CSS；外部模块必须同站点 origin。`LoadedProjectStyle.dispose()` 只移除该句柄拥有的 CSS，不销毁别的 viewer 的链接，重复调用安全。Studio 应先 `await oldViewer.dispose(); oldLoaded.dispose()` 再切换项目，并在预览失败时也释放句柄。
+不要把项目文件 `entry` 直接当浏览器 URL 导入；先由本地 `bundleProjectStyle(root, config.style)` 生成 descriptor/assets。Node 消费者可从 `beijing-city-ink/styles/project-bundle` 导入该 helper；源码位于 `src/styles/project-bundle.js`，返回 Map，不直接发布或覆盖站点。Studio 接线与缓存/路由说明见 [修复交接](phase1-evidence/remediation/styles/handoff.md)。加载器以传入 descriptor 的 baseUrl 解析所有相对模块/CSS；外部模块必须同站点 origin。`LoadedProjectStyle.dispose()` 只移除该句柄拥有的 CSS，不销毁别的 viewer 的链接，重复调用安全。Studio 应先 `await oldViewer.dispose(); oldLoaded.dispose()` 再切换项目，并在预览失败时也释放句柄。
 
 画风覆盖建筑、玻璃、屋顶、结构、道路、水、树、地面、设施和地标，声明兼容范围、参数 Schema、回退角色与释放。风格不重新下载数据；几何变化应声明 rebuildParameters。保留原有程序立面时使用 `facade-v6` 属性和语义角色。验证相同清单的四官方+自定义画风、保存/重开参数、非根路径、阻外网和至少五次打开/释放，SDK 与工作台共用同一注册表/加载器。
 

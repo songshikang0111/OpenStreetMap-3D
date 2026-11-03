@@ -1,6 +1,7 @@
 import {createCityViewer, type CityViewer} from 'beijing-city-ink';
 import {compileScene, validateProjectConfig, type ProjectConfig} from 'beijing-city-ink/core';
 import {registerStyle, getStyle} from 'beijing-city-ink/styles';
+import {bundleProjectStyle} from 'beijing-city-ink/styles/project-bundle';
 import {createLandmarkRegistry} from 'beijing-city-ink/landmarks';
 import {normalizeOSM} from 'beijing-city-ink/data';
 import {createLocalServer} from 'beijing-city-ink/local-server';
@@ -23,3 +24,5 @@ const normalized=normalizeOSM({elements:[]},{area:config.area});
 void normalized.contentHash;
 async function localNodeServer(){const service=await createLocalServer({workspaceRoot:'work/studio',port:0});service.server.address();await service.close();}
 void localNodeServer;
+async function bundleLocalStyle(){const result=await bundleProjectStyle('.', {id:'project-sepia',entry:'styles/sepia.js',dependencies:{palette:'styles/palette.js'},assets:['styles/paper.svg'],parameters:{aoStrength:.12}});const files:string[]=result.report.files;const bytes:Uint8Array|undefined=result.assets.get(files[0]);return {module:result.module,bytes};}
+void bundleLocalStyle;

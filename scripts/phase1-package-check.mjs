@@ -37,8 +37,12 @@ try{
   const configFile=path.join(project,'city.config.json'),config=JSON.parse(await readFile(configFile,'utf8'));
   config.style={id:'project-sepia',entry:'styles/sepia.js',dependencies:{'project-palette':'styles/palette.js'},assets:['styles/paper #1.svg'],parameters:{aoStrength:.12}};
   await writeFile(configFile,JSON.stringify(config));
+  const publicProbe=path.join(consumer,'project-style-probe.mjs');
+  await writeFile(publicProbe,"import {bundleProjectStyle} from 'beijing-city-ink/styles/project-bundle';\nimport {readFile} from 'node:fs/promises';\nimport path from 'node:path';\nconst root=process.argv[2],config=JSON.parse(await readFile(path.join(root,'city.config.json'),'utf8')),result=await bundleProjectStyle(root,config.style);console.log(JSON.stringify({id:result.style.id,hash:result.report.hash}));");
+  const publicBundler=JSON.parse((await command([publicProbe,project],consumer)).stdout);assert.equal(publicBundler.id,'project-sepia');assert.match(publicBundler.hash,/^[a-f0-9]{64}$/);
   const styleExport=JSON.parse((await command([bin,'export','web','--project',project,'--output','exports/nonroot/city','--json'],consumer)).stdout);assert.equal(styleExport.status,'succeeded');
   const site=path.join(project,'exports/nonroot/city'),published=JSON.parse(await readFile(path.join(site,'viewer-config.json'),'utf8')),styleBuild=JSON.parse(await readFile(path.join(site,'style-build.json'),'utf8'));
+  assert.equal(styleBuild.hash,publicBundler.hash,'public helper and standard CLI use the same bundler');
   assert.equal(published.style.id,'project-sepia');assert.equal(published.style.parameters.aoStrength,.12);assert.equal(published.styleModule.id,'project-sepia');
   for(const file of ['styles/sepia.js','styles/palette.js','styles/theme.css','styles/paper #1.svg'])assert.ok(styleBuild.inputs[file],`Missing installed bundler input ${file}`);
   for(const file of styleBuild.files)assert.ok((await readFile(path.join(site,file))).length);
