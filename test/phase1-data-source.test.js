@@ -33,6 +33,17 @@ test('provider presets select URL/transport without manual methods, and explicit
   assert.throws(()=>resolveDataSource({provider:'unknown'}),e=>e.code==='INVALID_PROVIDER');
   let out='';const result=await runCLI(['data','providers','--json'],{stdout:{write:s=>out+=s}});assert.equal(result.status,'succeeded');assert.ok(JSON.parse(out).providers.find(p=>p.id==='dresel-europe').coverage.includes('Europe only'));
   const root=await temp();await runCLI(['init',root,'--sample','--provider','dresel-europe','--json'],{stdout:{write:()=>{}}});assert.equal((await readJSON(path.join(root,'city.config.json'))).source.provider,'dresel-europe');
+  await patchProject(root,{source:{provider:'custom',endpoint:'http://old-source.test/api',transport:'post'}});await patchProject(root,{source:{provider:'dresel-europe'}});
+  const changed=resolveDataSource((await readJSON(path.join(root,'city.config.json'))).source);assert.equal(changed.endpoint,europe.endpoint);assert.equal(changed.transport,'get');
+});
+test('a higher-priority provider replaces lower endpoint/transport in batch and CLI resume',async()=>{
+  const root=await temp();await atomicWrite(path.join(root,'batch.json'),{projects:[{project:'one',kind:'fetch',parameters:{endpoint:'http://old-source.test/api',transport:'post',fallbackEndpoints:['http://fallback.test/api'],fallbackPolicy:'unavailable'}}]});
+  let captured;await runBatch(path.join(root,'batch.json'),{source:{provider:'dresel-europe'},runner:async job=>{captured=job.parameters;return {status:'succeeded'};}});
+  assert.equal(captured.endpoint,'https://ovp.dresel.systems/api/interpreter');assert.equal(captured.transport,'get');assert.deepEqual(captured.fallbackEndpoints,['http://fallback.test/api']);
+  await createProject(path.join(root,'resume'),{sample:true});let out='';
+  const io={cwd:root,stdout:{write:s=>out+=s},stderr:{write:()=>{}},runner:async job=>{captured=job.parameters;throw new Error('intentional fixture failure');}};
+  const first=await runCLI(['data','fetch','--project','resume','--endpoint','http://old-source.test/api','--transport','post','--json'],io);assert.equal(first.status,'failed');
+  const resumed=await runCLI(['jobs','resume',first.job.id,'--project','resume','--provider','dresel-europe','--json'],{...io,runner:async job=>{captured=job.parameters;return {status:'succeeded'};}});assert.equal(resumed.status,'succeeded');assert.equal(captured.endpoint,'https://ovp.dresel.systems/api/interpreter');assert.equal(captured.transport,'get');
 });
 test('OSM object search shares explicit GET fallback semantics and default legacy search caches remain offline',async()=>{
   let calls=[];
@@ -88,6 +99,7 @@ test('studio source catalog/defaults/project PATCH and per-job overrides use the
   try{
     const catalog=await (await fetch(service.url+'/api/data-sources')).json();assert.equal(catalog.defaults.endpoint,remote.endpoint);assert.ok(catalog.providers.some(p=>p.id==='vk-maps'));
     const created=await (await post('/api/projects',{name:'source service',sample:true})).json();assert.equal(created.project.config.source.transport,'get');const id=created.project.id;
+    const preset=await (await post('/api/projects',{name:'preset overrides operator',sample:true,source:{provider:'dresel-europe'}})).json();assert.equal(preset.project.config.source.endpoint,'https://ovp.dresel.systems/api/interpreter');assert.equal(preset.project.config.source.transport,'get');
     const job=(await (await post(`/api/projects/${id}/jobs`,{kind:'fetch'})).json()).job;const done=await service.jobs.wait(job.id);assert.equal(done.status,'succeeded');assert.equal(done.result.source.endpoint,remote.endpoint);assert.deepEqual(requests,['GET']);
     assert.equal((await post(`/api/projects/${id}`,{source:{transport:'post'}},'PATCH')).status,200);
     const overridden=(await (await post(`/api/projects/${id}/jobs`,{kind:'fetch',parameters:{transport:'get',refresh:true}})).json()).job;assert.equal((await service.jobs.wait(overridden.id)).status,'succeeded');assert.deepEqual(requests,['GET','GET']);
@@ -95,4 +107,10 @@ test('studio source catalog/defaults/project PATCH and per-job overrides use the
     assert.equal((await post(`/api/projects/${id}/jobs`,{kind:'fetch',parameters:{cacheDir:'../outside'}})).status,400);
     assert.equal((await post(`/api/projects/${id}`,{source:{endpoint:'https://user:pass@host/api'}},'PATCH')).status,400);
   }finally{await service.close();await remote.close();}
+});
+test('nested HTTP provider override has priority over flat endpoint/transport parameters',async()=>{
+  const root=await temp();let captured;const service=await createLocalServer({workspaceRoot:root,port:0,runner:async job=>{captured=job.parameters;return {status:'succeeded'};}});
+  try{
+    const id=[...service.projects.keys()][0];const response=await fetch(service.url+`/api/projects/${id}/jobs`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({kind:'fetch',endpoint:'http://flat-source.test/api',transport:'post',parameters:{provider:'dresel-europe'}})});const value=await response.json();assert.equal(response.status,202);await service.jobs.wait(value.job.id);assert.equal(captured.endpoint,'https://ovp.dresel.systems/api/interpreter');assert.equal(captured.transport,'get');
+  }finally{await service.close();}
 });

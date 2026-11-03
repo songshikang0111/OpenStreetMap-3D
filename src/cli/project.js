@@ -3,7 +3,7 @@ import { readFile, mkdir } from 'node:fs/promises';
 import { CityError, validateArea, centerOf, relativeFile, safePath, atomicWrite, readJSON, hash } from '../data/common.js';
 import { normalizeOSM } from '../data/normalize.js';
 import {validateProjectConfig} from '../core/config.js';
-import {resolveDataSource} from '../data/source.js';
+import {resolveDataSource,expandDataSourceOverrides} from '../data/source.js';
 
 export const SAMPLE_AREA = { south: 39.908, west: 116.459, north: 39.910, east: 116.462 };
 // A deliberately small synthetic offline sample, explicitly identified as such.
@@ -49,7 +49,7 @@ export async function createProject(root, { name = path.basename(root), area = S
 export async function patchProject(root, patch) {
   const current = await readProject(root);
   if (patch.origin && hash(patch.origin) !== hash(current.origin)) throw new CityError('ORIGIN_LOCKED', 'config', 'Project origin is fixed after initialization.', 'Create a new project to change projection origin.');
-  const config = validateConfig({ ...current, ...patch,...(patch.source?{source:{...current.source,...patch.source}}:{}) });
+  const config = validateConfig({ ...current, ...patch,...(patch.source?{source:{...current.source,...patch.source,...expandDataSourceOverrides(patch.source)}}:{}) });
   await atomicWrite(path.join(root, 'city.config.json'), config); return config;
 }
 export async function importData(root, file, { signal } = {}) {

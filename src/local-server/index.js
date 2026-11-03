@@ -8,7 +8,7 @@ import { searchPlaces } from '../data/search.js';
 import { createProject, readProject, patchProject, importData } from '../cli/project.js';
 import { JobManager } from '../cli/jobs.js';
 import { withProjectLock } from '../cli/project-lock.js';
-import { resolveDataSource, dataSourceOverrides, DATA_SOURCE_FIELDS, DATA_SOURCE_PROVIDERS } from '../data/source.js';
+import { resolveDataSource, expandDataSourceOverrides, DATA_SOURCE_FIELDS, DATA_SOURCE_PROVIDERS } from '../data/source.js';
 
 const MIME={'.json':'application/json','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.html':'text/html','.png':'image/png','.glb':'model/gltf-binary','.svg':'image/svg+xml','.wasm':'application/wasm'};
 const envelope=(extra={})=>({schemaVersion:1,status:'succeeded',artifacts:[],diagnostics:[],...extra});
@@ -75,7 +75,7 @@ export async function createLocalServer({workspaceRoot,projectRoot,port=4178,hos
       if(route==='/api/projects'&&req.method==='POST'){
         const input=await body(req);keys(input,['name','area','origin','source','sample']);
         const relativePath=`projects/${randomUUID()}`;const root=await safePath(workspaceRoot,relativePath,{allowMissing:true});
-        await createProject(root,{...input,source:{...dataSourceOverrides(dataSource),...input.source}});return send(res,201,envelope({project:await register(relativePath)}));
+        await createProject(root,{...input,source:{...expandDataSourceOverrides(dataSource),...input.source,...expandDataSourceOverrides(input.source)}});return send(res,201,envelope({project:await register(relativePath)}));
       }
       if(route==='/api/projects/open'&&req.method==='POST'){
         const input=await body(req);keys(input,['relativePath']);if(typeof input.relativePath!=='string')throw new CityError('INVALID_PARAMETER','project','relativePath is required.');
@@ -98,8 +98,9 @@ export async function createLocalServer({workspaceRoot,projectRoot,port=4178,hos
         if(match[2]==='jobs'&&req.method==='POST'){
           const input=await body(req);keys(input,['kind','parameters','resume','refresh','offline','output','packagePath','rollback',...DATA_SOURCE_FIELDS]);
           if(!['fetch','build','export-web','update-landmarks'].includes(input.kind))throw new CityError('UNKNOWN_JOB','job','Unsupported studio job kind.');
-          const parameters={...Object.fromEntries(['refresh','offline','output','packagePath','rollback',...DATA_SOURCE_FIELDS].filter(k=>input[k]!==undefined).map(k=>[k,input[k]])),...input.parameters};
           if(input.parameters&&(typeof input.parameters!=='object'||Array.isArray(input.parameters)))throw new CityError('INVALID_PARAMETER','job','parameters must be an object.');
+          const flat=Object.fromEntries(['refresh','offline','output','packagePath','rollback',...DATA_SOURCE_FIELDS].filter(k=>input[k]!==undefined).map(k=>[k,input[k]]));
+          const parameters={...flat,...expandDataSourceOverrides(flat),...input.parameters,...expandDataSourceOverrides(input.parameters)};
           const allowed={fetch:['refresh','offline',...DATA_SOURCE_FIELDS],build:['offline'], 'export-web':['output','offline'], 'update-landmarks':['packagePath','rollback','offline']}[input.kind];keys(parameters,allowed);
           for(const flag of ['refresh','offline','rollback'])if(parameters[flag]!==undefined&&typeof parameters[flag]!=='boolean')throw new CityError('INVALID_PARAMETER','job',`${flag} must be boolean.`);
           if(offline)parameters.offline=true;

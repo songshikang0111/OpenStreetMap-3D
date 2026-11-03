@@ -41,6 +41,12 @@ export function resolveDataSource(...values){
   if(new Set([config.endpoint,...config.fallbackEndpoints]).size!==config.fallbackEndpoints.length+1)throw new CityError('INVALID_SOURCE','source','Primary and fallback endpoints must be distinct.');
   return config;
 }
+// Expand only fields supplied by a preset, before flattening parameter layers.
+// Unrelated fallback defaults must not overwrite an entry's explicit policy.
+export function expandDataSourceOverrides(value={}){
+  const override=dataSourceOverrides(value),resolved=resolveDataSource(override);
+  return override.provider===undefined?override:{...override,endpoint:resolved.endpoint,transport:resolved.transport};
+}
 export function canFallback(error){
   return ['TIMEOUT','NETWORK_ERROR'].includes(error.code)||error.code==='HTTP_ERROR'&&[502,503,504].includes(error.httpStatus);
 }

@@ -7,7 +7,7 @@ import { validateProject } from './tasks.js';
 import { JobManager, workerRunner, inspectJob, requestJobCancel } from './jobs.js';
 import { createLocalServer } from '../local-server/index.js';
 import { withProjectLock } from './project-lock.js';
-import { dataSourceOverrides, resolveDataSource, DATA_SOURCE_PROVIDERS, DATA_SOURCE_DEFAULTS } from '../data/source.js';
+import { expandDataSourceOverrides, DATA_SOURCE_PROVIDERS, DATA_SOURCE_DEFAULTS } from '../data/source.js';
 
 export const HELP=`City Ink — local city toolchain
 Usage: city <command> [options]
@@ -55,9 +55,9 @@ function parse(args){
   return {options,positionals};
 }
 const result=(extra={})=>({schemaVersion:1,status:'succeeded',artifacts:[],diagnostics:[],...extra});
-function sourceOptions(options){const source=dataSourceOverrides({provider:options.provider,endpoint:options.endpoint,transport:options.transport,fallbackEndpoints:options['fallback-endpoint'],fallbackPolicy:options['fallback-policy']||(options['fallback-endpoint']?'unavailable':undefined)});resolveDataSource(source);return source;}
+function sourceOptions(options){return expandDataSourceOverrides({provider:options.provider,endpoint:options.endpoint,transport:options.transport,fallbackEndpoints:options['fallback-endpoint'],fallbackPolicy:options['fallback-policy']||(options['fallback-endpoint']?'unavailable':undefined)});}
 export async function runBatch(file,{concurrency=1,resume=false,offline=false,source={},signal,runner=workerRunner}={}){
-  const sourceOverride=dataSourceOverrides(source);resolveDataSource(sourceOverride);
+  const sourceOverride=expandDataSourceOverrides(source);
   const list=await readJSON(file);const entries=Array.isArray(list)?list:list.projects;
   if(!Array.isArray(entries)||!entries.length||entries.length>100)throw new CityError('INVALID_BATCH','batch','Batch requires 1–100 project entries.');
   const base=path.dirname(file),directory=path.join(base,'.city-cache',`batch-${hash(entries)}`);
