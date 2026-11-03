@@ -122,8 +122,8 @@ export async function createLocalServer({workspaceRoot,projectRoot,port=4178,hos
       catch(e){if(e.code!=='ENOENT')throw e;}
       try{await stat(path.join(studioRoot,'index.html'));}
       catch{throw new CityError('STUDIO_UNAVAILABLE','studio','Studio UI has not been integrated.','Integrate studio/ from task E; the real API is available.');}
-      if(route!=='/'&&!/^\/(studio|src|node_modules|@vite|@id)\//.test(route))throw new CityError('NOT_FOUND','http','Resource is outside studio source roots.');
-      if(!vite){const {createServer}=await import('vite');vite=await createServer({configFile:false,publicDir:false,root:path.dirname(studioRoot),server:{middlewareMode:true,host:'127.0.0.1',fs:{allow:[path.dirname(studioRoot)]}},appType:'custom'});}
+      if(route!=='/'&&!/^\/(studio|src|node_modules|@vite|@id)\//.test(route)&&!/^\/packages\/(styles|landmarks)\//.test(route))throw new CityError('NOT_FOUND','http','Resource is outside studio source roots.');
+      if(!vite){const {createServer}=await import('vite');vite=await createServer({configFile:false,publicDir:false,root:path.dirname(studioRoot),server:{middlewareMode:true,hmr:{server},host:'127.0.0.1',fs:{allow:[path.dirname(studioRoot)]}},appType:'custom'});}
       if(route==='/'){
         const html=await vite.transformIndexHtml('/studio/index.html',await readFile(path.join(studioRoot,'index.html'),'utf8'));
         res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});res.end(html);return;

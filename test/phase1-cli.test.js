@@ -167,3 +167,16 @@ test('symlink/junction project paths cannot escape the workspace',async()=>{
   const root=await temp(),outside=await temp();await createProject(outside,{sample:true});
   await symlink(outside,path.join(root,'link'),'junction');await assert.rejects(safePath(root,'link'),e=>e.code==='PATH_ESCAPE');
 });
+test('source studio serves its real package module graph and denies unrelated project files',async()=>{
+  const root=await temp(),studioRoot=path.join(root,'studio');await mkdir(studioRoot);
+  await atomicWrite(path.join(studioRoot,'index.html'),'<html><body><script type="module" src="/src/styles/index.js"></script></body></html>');
+  await atomicWrite(path.join(root,'src/styles/index.js'),'export {styles} from "../../packages/styles/index.js";');
+  await atomicWrite(path.join(root,'packages/styles/index.js'),'export const styles = ["comic"];');
+  await atomicWrite(path.join(root,'private.json'),{private:true});
+  const service=await createLocalServer({workspaceRoot:root,studioRoot,port:0,sample:false});
+  try{
+    const source=await fetch(service.url+'/src/styles/index.js');assert.equal(source.status,200);assert.match(await source.text(),/\/packages\/styles\/index.js/);
+    const pack=await fetch(service.url+'/packages/styles/index.js');assert.equal(pack.status,200);assert.match(await pack.text(),/comic/);
+    assert.equal((await fetch(service.url+'/private.json')).status,404);assert.equal((await fetch(service.url+'/data/source.json')).status,404);
+  }finally{await service.close();}
+});
