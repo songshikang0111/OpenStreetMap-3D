@@ -24,7 +24,7 @@ export async function openLocalBrowser({root,signal,headless=true,executable=pro
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
   const url=new URL(startPath,`http://127.0.0.1:${server.address().port}/`).href;
   const child=spawn(browser,[`--user-data-dir=${profile}`,'--remote-debugging-port=0','--no-first-run','--no-default-browser-check','--disable-background-networking','--disable-background-timer-throttling','--disable-renderer-backgrounding','--disable-backgrounding-occluded-windows',`--window-size=${width},${height}`,...(headless?['--headless=new']:[]),url],{stdio:'ignore',windowsHide:true});
-  let ws,sequence=0;const pending=new Map();let exited=false;
+  let ws,sequence=0;const pending=new Map(),events=[];let exited=false;
   child.on('error',()=>{exited=true;});child.on('exit',()=>{exited=true;});
   const abort=()=>child.kill();signal?.addEventListener('abort',abort,{once:true});
   async function close() {
@@ -46,7 +46,13 @@ export async function openLocalBrowser({root,signal,headless=true,executable=pro
     if(!target)throw new Error('Local viewer browser target missing.');
     ws=new WebSocket(target.webSocketDebuggerUrl);
     await new Promise((resolve,reject)=>{ws.addEventListener('open',resolve,{once:true});ws.addEventListener('error',reject,{once:true});});
-    ws.addEventListener('message',event=>{const response=JSON.parse(event.data),item=pending.get(response.id);if(item){pending.delete(response.id);response.error?item.reject(new Error(response.error.message)):item.resolve(response.result);}});
+    ws.addEventListener('message',event=>{
+      const response=JSON.parse(event.data),item=pending.get(response.id);
+      if(item){pending.delete(response.id);response.error?item.reject(new Error(response.error.message)):item.resolve(response.result);}
+      if(response.method==='Runtime.exceptionThrown')events.push({level:'error',type:'exception',message:response.params.exceptionDetails.exception?.description||response.params.exceptionDetails.text});
+      if(response.method==='Runtime.consoleAPICalled'&&['error','warning'].includes(response.params.type))events.push({level:response.params.type,message:response.params.args.map(arg=>String(arg.value??arg.description??'')).join(' ').slice(0,8000)});
+      if(events.length>1000)events.shift();
+    });
     ws.addEventListener('close',()=>{for(const item of pending.values())item.reject(new Error('Browser connection closed'));pending.clear();});
     const send=(method,params={})=>new Promise((resolve,reject)=>{
       const id=++sequence,timer=setTimeout(()=>{pending.delete(id);reject(new Error(`Browser ${method} timed out`));},120000);
@@ -55,7 +61,7 @@ export async function openLocalBrowser({root,signal,headless=true,executable=pro
     });
     await send('Runtime.enable');
     await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});
-    return {url,browser,send,close,async evaluate(expression){
+    return {url,browser,send,close,events,async evaluate(expression){
       const result=await send('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true});
       if(result.exceptionDetails)throw new Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text);
       return result.result?.value;

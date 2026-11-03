@@ -3,16 +3,17 @@ let viewer,manifest;const diagnostics=[];
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const sample=()=>viewer.getStats();
 globalThis.benchmark={
-  async load(name){
-    await viewer?.dispose();performance.clearResourceTimings();diagnostics.length=0;
+  async load(name,bounds){
+    await viewer?.dispose();const startupResources=performance.getEntriesByType('resource').map(item=>({url:item.name,transferSize:item.transferSize,encodedBodySize:item.encodedBodySize,duration:item.duration}));performance.clearResourceTimings();diagnostics.length=0;
     const url=new URL(`../../work/integration-scenes/${name}/manifest.json`,import.meta.url);
-    manifest=await fetch(url).then(response=>response.json());
-    const started=performance.now();
-    viewer=await createCityViewer({container:document.getElementById('city'),manifestUrl:url.href,style:'comic',quality:'balanced',onDiagnostic:d=>diagnostics.push(d)});
+    // Camera bounds come from the same manifest read by the Node runner. Asset
+    // loading here follows the SDK's real default fetch path exactly once.
+    manifest={bounds};const started=performance.now();let firstUsable=null,complete=null;
+    viewer=await createCityViewer({container:document.getElementById('city'),manifestUrl:url.href,style:'comic',quality:'balanced',onDiagnostic:d=>diagnostics.push(d),onProgress:progress=>{if(progress.stage==='stream'&&progress.loaded>0&&firstUsable===null)firstUsable=performance.now();if(progress.stage==='stream'&&progress.complete&&progress.loaded>0&&complete===null)complete=performance.now();}});
     globalThis.cityViewer=viewer;
     await viewer.whenIdle({timeoutMs:90000});await sleep(300);
     const canvas=document.querySelector('canvas'),gl=canvas.getContext('webgl2'),extension=gl.getExtension('WEBGL_debug_renderer_info');
-    return {cold:sample(),wallLoadMs:performance.now()-started,manifestBounds:manifest.bounds,hardware:{userAgent:navigator.userAgent,webgl:gl.getParameter(gl.VERSION),shadingLanguage:gl.getParameter(gl.SHADING_LANGUAGE_VERSION),vendor:extension?gl.getParameter(extension.UNMASKED_VENDOR_WEBGL):gl.getParameter(gl.VENDOR),renderer:extension?gl.getParameter(extension.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER),gpuTimerExtension:!!gl.getExtension('EXT_disjoint_timer_query_webgl2')}};
+    return {cold:sample(),wallLoadMs:performance.now()-started,firstUsableSceneMs:firstUsable-started,firstUsableFromNavigationMs:firstUsable,completeSceneMs:complete-started,completeFromNavigationMs:complete,startupResources,manifestBounds:manifest.bounds,hardware:{userAgent:navigator.userAgent,webgl:gl.getParameter(gl.VERSION),shadingLanguage:gl.getParameter(gl.SHADING_LANGUAGE_VERSION),vendor:extension?gl.getParameter(extension.UNMASKED_VENDOR_WEBGL):gl.getParameter(gl.VENDOR),renderer:extension?gl.getParameter(extension.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER),gpuTimerExtension:!!gl.getExtension('EXT_disjoint_timer_query_webgl2')}};
   },
   async measure(seconds=60){
     const [x0,,z0,x1,y1,z1]=manifest.bounds,cx=(x0+x1)/2,cz=(z0+z1)/2,span=Math.max(x1-x0,z1-z0),focus=Math.min(40,y1*.25);
