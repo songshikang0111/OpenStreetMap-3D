@@ -1,10 +1,10 @@
 import path from 'node:path';
 import { Worker } from 'node:worker_threads';
 import { randomUUID } from 'node:crypto';
-import { mkdir, readdir, writeFile, rm } from 'node:fs/promises';
+import { mkdir, readdir, rm } from 'node:fs/promises';
 import { atomicWrite, readJSON, CityError, diagnostic } from '../data/common.js';
 import { requestJSON } from '../data/http.js';
-import { acquireProjectLock } from './project-lock.js';
+import { acquireProjectLock, acquireProcessLock } from './project-lock.js';
 
 const terminal=new Set(['succeeded','failed','cancelled']);
 export const JOB_KINDS=['fetch','build','export-web','update-landmarks','export-png','export-glb'];
@@ -39,15 +39,7 @@ export class JobManager {
   }
   async open(){
     await mkdir(this.directory,{recursive:true});
-    this.ownerFile=path.join(this.directory,'owner.json');
-    try{await writeFile(this.ownerFile,JSON.stringify({pid:process.pid}),{flag:'wx'});}
-    catch(error){
-      if(error.code!=='EEXIST')throw error;
-      const owner=await readJSON(this.ownerFile);let alive=true;
-      try{process.kill(owner.pid,0);}catch(e){if(e.code==='ESRCH')alive=false;else throw e;}
-      if(alive)throw new CityError('JOBS_BUSY','job','Another process owns this task queue.','Use jobs status/cancel, or wait for that process to finish.');
-      await rm(this.ownerFile);await writeFile(this.ownerFile,JSON.stringify({pid:process.pid}),{flag:'wx'});
-    }
+    this.releaseQueue=await acquireProcessLock(this.directory,'owner.json',{code:'JOBS_BUSY'});
     try{
     for(const file of await readdir(this.directory))if(/^[a-f0-9-]+\.json$/.test(file)){
       const job=await readJSON(path.join(this.directory,file));
@@ -63,7 +55,7 @@ export class JobManager {
       }
     },250);this.cancelPoll.unref();
     return this;
-    }catch(error){clearInterval(this.cancelPoll);await rm(this.ownerFile,{force:true});throw error;}
+    }catch(error){clearInterval(this.cancelPoll);await this.releaseQueue();throw error;}
   }
   persist(job){const value=structuredClone(job);this.writes=this.writes.catch(()=>{}).then(()=>atomicWrite(path.join(this.directory,`${job.id}.json`),value));return this.writes;}
   get(id){const job=this.jobs.get(id);if(!job)throw new CityError('JOB_NOT_FOUND','job',`Unknown job ${id}.`);return structuredClone(job);}
@@ -130,7 +122,7 @@ export class JobManager {
     delete job.result;delete job.finishedAt;await this.persist(job);this.pump();return this.get(id);
   }
   wait(id){const job=this.get(id);if(terminal.has(job.status)&&!this.active.has(id))return this.writes.catch(()=>{}).then(()=>this.get(id));return new Promise(resolve=>{this.waiters.set(id,[...(this.waiters.get(id)||[]),resolve]);});}
-  async close(){this.closed=true;clearInterval(this.cancelPoll);try{for(const job of this.jobs.values())if(!terminal.has(job.status))await this.cancel(job.id);await Promise.all([...this.active.keys()].map(id=>this.wait(id)));await this.writes.catch(()=>{});}finally{if(this.ownerFile)await rm(this.ownerFile,{force:true});}}
+  async close(){this.closed=true;clearInterval(this.cancelPoll);try{for(const job of this.jobs.values())if(!terminal.has(job.status))await this.cancel(job.id);await Promise.all([...this.active.keys()].map(id=>this.wait(id)));await this.writes.catch(()=>{});}finally{await this.releaseQueue?.();}}
 }
 export async function inspectJob(directory,id){if(!/^[a-f0-9-]+$/.test(id))throw new CityError('JOB_NOT_FOUND','job','Invalid job ID.');return readJSON(path.join(directory,`${id}.json`));}
 export async function requestJobCancel(directory,id){const job=await inspectJob(directory,id);if(!terminal.has(job.status))await atomicWrite(path.join(directory,`${id}.cancel`),{cancel:true});return job;}

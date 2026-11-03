@@ -155,6 +155,14 @@ test('simultaneous stale project-lock recovery never grants two owners',async()=
     for(const result of results)if(result.status==='fulfilled')await result.value();
   }
 });
+test('CLI validate never recovers or mutates a generation while another project task owns it',async()=>{
+  const root=await temp();await createProject(root,{sample:true});await buildProject(root,{core:fixtureCore});const release=await acquireProjectLock(root);
+  try{
+    await rename(path.join(root,'dist'),path.join(root,'.city-cache/previous-dist'));
+    let out='';const result=await runCLI(['validate','--project',root,'--json'],{stdout:{write:s=>out+=s}});assert.equal(result.diagnostics[0].code,'PROJECT_BUSY');assert.ok(await readJSON(path.join(root,'.city-cache/previous-dist/manifest.json')));
+    await assert.rejects(readJSON(path.join(root,'dist/manifest.json')),e=>e.code==='ENOENT');
+  }finally{await release();}
+});
 test('symlink/junction project paths cannot escape the workspace',async()=>{
   const root=await temp(),outside=await temp();await createProject(outside,{sample:true});
   await symlink(outside,path.join(root,'link'),'junction');await assert.rejects(safePath(root,'link'),e=>e.code==='PATH_ESCAPE');

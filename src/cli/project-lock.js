@@ -4,7 +4,10 @@ import { randomUUID } from 'node:crypto';
 import { safePath, readJSON, CityError } from '../data/common.js';
 
 export async function acquireProjectLock(root){
-  const busy=()=>new CityError('PROJECT_BUSY','job','Another CLI, batch or studio task is modifying this project.','Wait for that task to finish or cancel it in its owning process.');
+  return acquireProcessLock(root,'.city-cache/task-owner.json');
+}
+export async function acquireProcessLock(root,relative,{code='PROJECT_BUSY'}={}){
+  const busy=()=>new CityError(code,'job','Another CLI, batch or studio task owns this project or queue.','Wait for that task to finish or cancel it in its owning process.');
   function alive(owner){try{process.kill(owner.pid,0);return true;}catch(e){if(e.code==='ESRCH')return false;throw e;}}
   async function claim(relative,depth=0){
     if(depth>8)throw new CityError('LOCK_RECOVERY_LIMIT','job','Too many interrupted lock-recovery records.','Inspect .city-cache/task-owner.json recovery records and retry after stopping project tasks.');
@@ -23,6 +26,6 @@ export async function acquireProjectLock(root){
       try{await write();return release;}catch(e){if(e.code==='EEXIST')throw busy();throw e;}
     }finally{await releaseRecovery();}
   }
-  return claim('.city-cache/task-owner.json');
+  return claim(relative);
 }
 export async function withProjectLock(root,action){const release=await acquireProjectLock(root);try{return await action();}finally{await release();}}

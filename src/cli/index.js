@@ -87,7 +87,7 @@ export async function runCLI(args,{cwd=process.cwd(),stdout=process.stdout,stder
     }
     if(command==='search'){const candidates=await searchPlaces(p.slice(1).join(' '),{cacheDir:path.resolve(cwd,options.cache||'.city-cache/search'),offline:options.offline,photonUrl:options['photon-url'],signal});return emit(result({candidates}));}
     if(command==='data'&&p[1]==='import'){if(!p[2])throw new CityError('FILE_REQUIRED','import','Specify a JSON file.');const imported=await withProjectLock(root,()=>importData(root,path.resolve(cwd,p[2]),{signal}));return emit(result({artifacts:imported.artifacts,diagnostics:imported.diagnostics,contentHash:imported.contentHash}));}
-    if(command==='validate')return emit(await validateProject(root));
+    if(command==='validate')return emit(await withProjectLock(root,()=>validateProject(root)));
     if(command==='landmarks'&&p[1]==='check'){if(!p[2])throw new CityError('PACKAGE_REQUIRED','landmarks','Specify a package directory.');const pack=await readRecipePackage(path.resolve(cwd,p[2]));return emit(result({hash:pack.hash,recipes:pack.recipes.map(r=>({id:r.id,version:r.version}))}));}
     if(command==='batch'){if(!p[1])throw new CityError('FILE_REQUIRED','batch','Specify a batch list.');return emit(await runBatch(path.resolve(cwd,p[1]),{concurrency:Number(options.concurrency||1),resume:!!options.resume,offline:!!options.offline,signal,runner}));}
     if(command==='studio'||command==='preview'){
