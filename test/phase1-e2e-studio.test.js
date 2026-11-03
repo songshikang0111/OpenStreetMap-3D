@@ -16,8 +16,8 @@ test('studio API preserves failed/cancelled jobs instead of fabricating success 
   const api=createStudioApi({fetchImpl:async(url,options)=>{call={url,options};return {ok:true,json:async()=>({job:{id:'j1',status:'failed',diagnostics:[{code:'BUILD_FAILED'}]}})};}});
   const response=await api.job('a/b');
   assert.equal(call.url,'/api/jobs/a%2Fb');assert.equal(response.job.status,'failed');assert.ok(isTerminal(response.job));
-  await api.start('p1','build',{resume:true});
-  assert.deepEqual(JSON.parse(call.options.body),{kind:'build',resume:true});
+  await api.start('p1','build',{},'j1');
+  assert.deepEqual(JSON.parse(call.options.body),{kind:'build',parameters:{},resume:'j1'});
   assert.equal(call.options.method,'POST');
 });
 

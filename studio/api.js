@@ -28,7 +28,7 @@ export function createStudioApi({base = '', fetchImpl = globalThis.fetch} = {}) 
     open: relativePath => request('/api/projects/open', {relativePath}),
     get: projectId => request(`/api/projects/${id(projectId)}`),
     save: (projectId, config) => request(`/api/projects/${id(projectId)}`, config, 'PATCH'),
-    start: (projectId, kind, parameters = {}) => request(`/api/projects/${id(projectId)}/jobs`, {kind, ...parameters}),
+    start: (projectId, kind, parameters = {}, resume) => request(`/api/projects/${id(projectId)}/jobs`, {kind, parameters, ...(resume ? {resume} : {})}),
     job: jobId => request(`/api/jobs/${id(jobId)}`),
     cancel: jobId => request(`/api/jobs/${id(jobId)}/cancel`, {}),
   };

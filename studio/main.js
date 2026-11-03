@@ -3,7 +3,7 @@ import {createStudioApi, areaAround, validateArea, isTerminal} from './api.js';
 import {createCityViewer} from '../src/sdk/index.js';
 
 const $ = id => document.getElementById(id), api = createStudioApi();
-const state = {project:null, config:null, viewer:null, job:null, polling:0, location:{lat:39.9095, lon:116.4605}, lastKind:'build'};
+const state = {project:null, config:null, viewer:null, manifest:null, job:null, polling:0, location:{lat:39.9095, lon:116.4605}, lastKind:'build'};
 const json = value => JSON.stringify(value, null, 2);
 const unwrap = (value, key) => value[key] ?? value.data?.[key] ?? value.data ?? value;
 function diagnostic(error) { $('diagnostics').textContent = error.diagnostics?.length ? json(error.diagnostics) : String(error.message || error); $('diagnostics').classList.add('error'); }
@@ -16,6 +16,7 @@ function enabled() {
   for(const id of ['fetch','build','save','web']) $(id).disabled = !state.project || busy;
   $('cancel').disabled = !busy; $('retry').disabled = !state.project || busy;
   for(const id of ['png','glb']) $(id).disabled = !state.viewer || busy;
+  for(const id of ['sample','create','projects','relative-path']) $(id).disabled=!!busy;
 }
 async function listProjects() {
   const projects = unwrap(await api.projects(), 'projects');
@@ -27,6 +28,7 @@ async function openProject(project) {
   project = unwrap(project, 'project');
   if (!project.id) throw new Error('本地服务未返回项目 ID。');
   const detail = unwrap(await api.get(project.id), 'project');
+  if(state.project?.id!==project.id) {clearTimeout(state.polling);state.job=null;await state.viewer?.dispose();state.viewer=null;$('empty').hidden=false;}
   state.project = {...project,...detail}; state.config = detail.config || detail;
   const config=state.config;
   $('project-name').value=config.name; setArea(config.area);
@@ -34,7 +36,8 @@ async function openProject(project) {
   $('style').value=config.style?.id || 'comic'; $('quality').value=config.quality || 'balanced';
   $('project-info').textContent=`${config.name} · ${state.project.relativePath || state.project.path || state.project.id} · 保存时固化范围、风格和相机`;
   remember(); enabled(); await listProjects();
-  if(state.project.manifestUrl || state.project.built) await preview();
+  const existing=await fetch(`/projects/${encodeURIComponent(state.project.id)}/dist/manifest.json`);
+  if(existing.ok) await preview();
 }
 async function save() {
   if(!state.project) throw new Error('请先打开项目。');
@@ -45,15 +48,18 @@ async function save() {
   $('project-info').textContent=`${state.config.name} · 配置已保存（包括当前相机）`;
 }
 async function preview() {
-  state.viewer?.dispose(); state.viewer=null;
+  await state.viewer?.dispose(); state.viewer=null;
   const manifestUrl=state.project.manifestUrl || `/projects/${encodeURIComponent(state.project.id)}/dist/manifest.json`;
-  const viewer=await createCityViewer({container:$('viewport'),manifestUrl,style:$('style').value,quality:$('quality').value,onProgress:progress=>{$('job-status').textContent=`加载场景：${progress.stage || json(progress)}`;},onDiagnostic:diagnostic,onSelect:value=>{$('selection').textContent=json(value);}});
+  state.manifest=await fetch(manifestUrl).then(async response=>{if(!response.ok)throw new Error('场景清单不可用；请先构建项目。');return response.json();});
+  const viewer=await createCityViewer({container:$('viewport'),manifestUrl,style:{id:$('style').value,parameters:state.config.style?.parameters || {}},quality:$('quality').value,onProgress:progress=>{$('job-status').textContent=`加载场景：${progress.stage || json(progress)}`;},onDiagnostic:diagnostic,onSelect:value=>{$('selection').textContent=json(value);}});
   state.viewer=viewer; $('empty').hidden=true;
   if(state.config.camera) viewer.setView(state.config.camera);
   enabled();
-  const report=await fetch(`/projects/${encodeURIComponent(state.project.id)}/dist/report.json`);
-  if(report.ok) $('report').textContent=json(await report.json());
-  else $('report').textContent=json({message:'场景已加载，独立报告不可用；查看任务 artifacts 和对象来源。',project:state.config,stats:viewer.getStats()});
+  const report=await fetch(`/projects/${encodeURIComponent(state.project.id)}/dist/city.build-lock.json`);
+  const lock=report.ok?await report.json():null;
+  $('report').textContent=json({report:lock?.build?.report,sources:state.manifest.sources,attribution:state.manifest.attribution,featureCount:Array.isArray(state.manifest.featureIndex)?state.manifest.featureIndex.length:Object.keys(state.manifest.featureIndex||{}).length,limitations:'平地近似；未标注高度与部分道路高程为规则推断；地标为参数化近似。'});
+  await viewer.whenIdle();
+  $('job-status').textContent='场景已加载；拖动旋转，滚轮缩放，右键平移。';
 }
 async function pollJob() {
   clearTimeout(state.polling);
@@ -70,9 +76,9 @@ async function pollJob() {
     else if(job.status==='succeeded' && (job.kind || state.lastKind)==='build') await preview();
   } catch(error) {diagnostic(error); $('job-status').textContent='服务连接中断；恢复后点击“恢复 / 重试任务”。'; enabled();}
 }
-async function start(kind,parameters={}) {
+async function start(kind,parameters={},resume) {
   await save(); state.lastKind=kind;
-  state.job=unwrap(await api.start(state.project.id,kind,parameters),'job');
+  state.job=unwrap(await api.start(state.project.id,kind,parameters,resume),'job');
   if(!state.job.id) throw new Error('服务未返回任务 ID；未宣告任务成功。');
   remember(); enabled(); await pollJob();
 }
@@ -91,8 +97,9 @@ $('search-form').addEventListener('submit',action(async()=>{
 $('apply-radius').addEventListener('click',action(async()=>setArea(areaAround(state.location,$('radius').value))));
 $('create').addEventListener('click',action(async()=>openProject(await api.create({name:$('project-name').value,area:getArea(),source:{kind:'overpass',file:'data/source.json'}}))));
 $('sample').addEventListener('click',action(async()=>{
-  await openProject(await api.create({name:`offline-sample-${Date.now()}`,sample:true,source:{kind:'sample'}}));
-  await start('build',{offline:true});
+  await openProject(await api.create({name:`offline-sample-${Date.now()}`,sample:true}));
+  $('report').textContent='内置样例为小型合成街区，用于离线试用；不代表真实地图下载或实测还原。';
+  await start('build');
 }));
 $('projects').addEventListener('change',action(async()=>{if($('projects').value) await openProject({id:$('projects').value});}));
 $('open-form').addEventListener('submit',action(async()=>openProject(await api.open($('relative-path').value))));
@@ -103,20 +110,20 @@ $('web').addEventListener('click',action(()=>start('export-web')));
 $('cancel').addEventListener('click',action(async()=>{await api.cancel(state.job.id);await pollJob();}));
 $('retry').addEventListener('click',action(async()=>{
   if(state.job && !isTerminal(state.job)) return pollJob();
-  await start(state.lastKind,{resume:true});
+  await start(state.lastKind,{},state.job?.id);
 }));
 $('style').addEventListener('change',action(async()=>{if(state.viewer) await state.viewer.setStyle($('style').value);}));
 $('quality').addEventListener('change',action(async()=>{if(state.project) {await save();if(state.viewer) await preview();}}));
 $('fov').addEventListener('input',()=>{if(state.viewer) state.viewer.setView({...state.viewer.getView(),fov:Number($('fov').value)});});
 $('camera').addEventListener('change',()=>{
   if(!state.viewer) return;
-  const bounds=state.viewer.getStats().bounds, scale=Array.isArray(bounds)?Math.max(bounds[3]-bounds[0],bounds[5]-bounds[2],100):800;
+  const bounds=state.manifest?.bounds, scale=Array.isArray(bounds)?Math.max(bounds[3]-bounds[0],bounds[5]-bounds[2],100):800;
   const views={overview:{position:[scale*.8,scale*.8,scale*.8],target:[0,20,0]},street:{position:[50,12,100],target:[0,18,0]},skyline:{position:[0,80,scale],target:[0,40,0]}};
   state.viewer.setView({...views[$('camera').value],fov:Number($('fov').value)});
 });
 function download(data,name,type) {const url=URL.createObjectURL(data instanceof Blob?data:new Blob([data],{type})); const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-$('png').addEventListener('click',action(async()=>{const data=await state.viewer.exportPNG({scope:'current-view',maxSize:2400});download(data,'city-ink.png','image/png');}));
-$('glb').addEventListener('click',action(async()=>{const data=await state.viewer.exportGLB({scope:'all'});download(data,'city-ink.glb','model/gltf-binary');}));
+$('png').addEventListener('click',action(async()=>{const data=await state.viewer.exportPNG({width:2400,height:Math.round(2400*$('viewport').clientHeight/$('viewport').clientWidth)});download(data.blob,'city-ink.png','image/png');$('diagnostics').textContent=json({scope:data.scope,loadedChunkIds:data.loadedChunkIds,attribution:data.attribution});}));
+$('glb').addEventListener('click',action(async()=>{const data=await state.viewer.exportGLB({scope:'complete'});download(data.blob,'city-ink.glb','model/gltf-binary');$('diagnostics').textContent=json({scope:data.scope,chunkIds:data.chunkIds,limitations:data.limitations});}));
 setInterval(()=>{if(state.viewer) $('stats').textContent=json(state.viewer.getStats());},1000);
 window.addEventListener('beforeunload',()=>state.viewer?.dispose());
 action(async()=>{
