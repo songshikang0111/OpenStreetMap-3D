@@ -72,3 +72,13 @@ test('project loader CSS ownership supports repeated opens and releases a previo
     await assert.rejects(loadProjectStyle({id:'color'},{...options,importModule:async()=>({default:{}})}));assert.equal(links.length,0);
   }finally{globalThis.document=previous;}
 });
+
+test('JS, CSS and descriptor asset URLs preserve hash/percent filename characters',async()=>{
+  const root=await mkdtemp(path.join(os.tmpdir(),'city-style-encoding-'));
+  try{
+    const style=await projectFixture(root,{assetName:'paper#v2%done.svg'}),bundle=await bundleProjectStyle(root,style);
+    const url=bundle.module.assets['styles/paper#v2%done.svg'];assert(url.includes('paper%23v2%25done.svg'));
+    const scripts=[...bundle.assets].filter(([key])=>key.endsWith('.js')).map(([,value])=>new TextDecoder().decode(value)).join('\n');assert(scripts.includes('paper%23v2%25done.svg'));
+    const css=[...bundle.assets].filter(([key])=>key.endsWith('.css')).map(([,value])=>new TextDecoder().decode(value)).join('\n');assert(!css.includes('#v2'));assert(!css.includes('%done'));
+  }finally{assert(path.resolve(root).startsWith(path.resolve(os.tmpdir())+path.sep));await rm(root,{recursive:true,force:true});}
+});

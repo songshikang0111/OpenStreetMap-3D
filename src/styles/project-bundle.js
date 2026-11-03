@@ -9,6 +9,7 @@ import {validateStyle,resolveStyleSelection} from './index.js';
 const engineRoot=fileURLToPath(new URL('../../',import.meta.url));
 const viewerEntry=fileURLToPath(new URL('./viewer-entry.js',import.meta.url));
 const sourceLoaders={'.js':'js','.mjs':'js','.ts':'ts','.json':'json','.css':'css'};
+const urlPath=value=>value.split('/').map(segment=>segment==='.'||segment==='..'?segment:encodeURIComponent(segment)).join('/');
 /** Offline, explicit import graph. Returns assets; caller owns atomic publication. */
 export async function bundleProjectStyle(root,selection,{signal}={}){
   let config;try{config=validateProjectStyleConfig(selection||{id:'comic'});}catch(error){throw new CityError('STYLE_CONFIG','style',error.message);}
@@ -23,7 +24,7 @@ export async function bundleProjectStyle(root,selection,{signal}={}){
   const outdir=path.join(output,'assets');
   try{
     checkAbort(signal);
-    const result=await build({absWorkingDir:engineRoot,entryPoints:{'city-ink':viewerEntry,...(entry?{'project-style':'city-project-entry'}:{})},outdir,bundle:true,splitting:true,minify:true,format:'esm',platform:'browser',target:'es2022',write:false,metafile:true,logLevel:'silent',logOverride:{'unsupported-dynamic-import':'warning','unsupported-require-call':'warning'},chunkNames:'chunks/[name]-[hash]',assetNames:'resources/[name]-[hash]',plugins:[{
+    const result=await build({absWorkingDir:engineRoot,entryPoints:{'city-ink':viewerEntry,...(entry?{'project-style':'city-project-entry'}:{})},outdir,bundle:true,splitting:true,minify:true,format:'esm',platform:'browser',target:'es2022',write:false,metafile:true,logLevel:'silent',logOverride:{'unsupported-dynamic-import':'warning','unsupported-require-call':'warning'},chunkNames:'chunks/[name]-[hash]',assetNames:'resources/[hash]',plugins:[{
       name:'explicit-project-style',setup(builder){
         builder.onResolve({filter:/^city-project-entry$/},()=>({path:entry,namespace:'city-project'}));
         builder.onResolve({filter:/.*/,namespace:'city-project'},async args=>{
@@ -66,13 +67,13 @@ export async function bundleProjectStyle(root,selection,{signal}={}){
       let bytes=file.contents;
       if(relative.endsWith('.js')){
         let code=file.text;
-        for(const [token,target] of assetTokens){let url=path.posix.relative(path.posix.dirname(relative),target);if(!url.startsWith('.'))url=`./${url}`;code=code.replaceAll(JSON.stringify(token),`new URL(${JSON.stringify(url)},import.meta.url).href`);}
+        for(const [token,target] of assetTokens){let url=path.posix.relative(path.posix.dirname(relative),target);if(!url.startsWith('.'))url=`./${url}`;code=code.replaceAll(JSON.stringify(token),`new URL(${JSON.stringify(urlPath(url))},import.meta.url).href`);}
         bytes=new TextEncoder().encode(code);
       }
       assets.set(relative,bytes);
     }
     const declaredUrls={};
-    for(const [file,relative] of declared){const contents=await readFile(file);inputs.set(relative,hash(contents));const target=`assets/style-files/${relative}`;assets.set(target,contents);declaredUrls[relative]=`./${target}`;}
+    for(const [file,relative] of declared){const contents=await readFile(file);inputs.set(relative,hash(contents));const target=`assets/style-files/${relative}`;assets.set(target,contents);declaredUrls[relative]=`./${urlPath(target)}`;}
     await mkdir(outdir,{recursive:true});await writeFile(path.join(output,'package.json'),' {"type":"module"}');
     for(const [relative,bytes] of assets){const destination=path.join(output,relative);await mkdir(path.dirname(destination),{recursive:true});await writeFile(destination,bytes);}
     let pack,parameters;
@@ -81,7 +82,7 @@ export async function bundleProjectStyle(root,selection,{signal}={}){
       else parameters=resolveStyleSelection(config).parameters;
     }catch(error){throw new CityError('STYLE_MODULE_INVALID','style',error.message,'The entry must export a Node/browser-compatible StylePack with matching id and valid saved parameters; put DOM work inside factories.');}
     checkAbort(signal);
-    const module=entry?{schemaVersion:1,id:pack.id,version:pack.version,entry:'./assets/project-style.js',stylesheets:[...assets.keys()].filter(f=>f.endsWith('.css')).map(f=>`./${f}`),assets:declaredUrls,hash:hash([...assets].map(([name,bytes])=>[name,hash(bytes)]))}:null;
+    const module=entry?{schemaVersion:1,id:pack.id,version:pack.version,entry:'./assets/project-style.js',stylesheets:result.outputFiles.filter(f=>f.path.endsWith('.css')).map(f=>`./assets/${urlPath(path.relative(outdir,f.path).replaceAll('\\','/'))}`),assets:declaredUrls,hash:hash([...assets].map(([name,bytes])=>[name,hash(bytes)]))}:null;
     return {style:{id:config.id,parameters},module,assets,report:{schemaVersion:1,inputs:Object.fromEntries([...inputs].sort()),files:[...assets.keys()],hash:hash([...assets].map(([name,bytes])=>[name,hash(bytes)]))}};
   }catch(error){if(error instanceof CityError||signal?.aborted)throw error;throw new CityError('STYLE_BUNDLE_FAILED','style',error.message,'Check local entry/imports/assets and explicit dependency mappings.');}
   finally{await rm(output,{recursive:true,force:true});}
