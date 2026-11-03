@@ -12,7 +12,7 @@ parentPort.on('message',message=>{
 });
 const request=(url,init)=>new Promise((resolve,reject)=>{
   const id=++requestId;requests.set(id,{resolve,reject});
-  parentPort.postMessage({type:'request',id,url,init:{method:init.method,body:init.body?.toString(),headers:{'Content-Type':'application/x-www-form-urlencoded'}}});
+  parentPort.postMessage({type:'request',id,url,init:{method:init.method,body:init.body?.toString(),headers:init.headers}});
 });
 try {
   const result=await runProjectTask(workerData.kind,workerData.project,workerData.parameters,{signal:controller.signal,request,onProgress:progress=>parentPort.postMessage({type:'progress',progress})});

@@ -2,8 +2,9 @@ import path from 'node:path';
 import { CityError, atomicWrite, hash, readJSON, validateArea, bboxArray, checkAbort } from './common.js';
 import { requestJSON } from './http.js';
 import { normalizeOSM } from './normalize.js';
+import { OVERPASS_URL, resolveDataSource, canFallback, overpassRequest } from './source.js';
 
-export const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
+export { OVERPASS_URL };
 export const QUERY_VERSION = 1;
 export function areaQuery(area) {
   validateArea(area); const box = bboxArray(area).join(',');
@@ -11,21 +12,30 @@ export function areaQuery(area) {
   // Recursive down includes complete ways/nodes and nested relation members, not clipped geometry.
   return `[out:json][timeout:60][maxsize:67108864];(${selectors.map(s => `nwr${s}(${box});`).join('')});(._;>>;);out meta;`;
 }
-export async function fetchArea({ area, origin, name, cacheDir, endpoint = OVERPASS_URL, refresh = false, offline = false, signal, request = requestJSON, requestOptions = {} }) {
+export async function fetchArea({ area, origin, name, cacheDir, source, endpoint, transport, fallbackEndpoints, fallbackPolicy, refresh = false, offline = false, signal, request = requestJSON, requestOptions = {} }) {
+  checkAbort(signal);
   const query = areaQuery(area);
-  const key = hash({ area, endpoint, queryVersion: QUERY_VERSION });
-  const file = path.join(cacheDir, `${key}.json`);
-  if (!refresh || offline) {
+  const selected=resolveDataSource(source,{endpoint,transport,fallbackEndpoints,fallbackPolicy});
+  const endpoints=[selected.endpoint,...(selected.fallbackPolicy==='unavailable'?selected.fallbackEndpoints:[])];
+  // Preserve v1 POST cache keys. GET snapshots are separate protocol requests.
+  const descriptor=endpoint=>{const key=hash({area,endpoint,queryVersion:QUERY_VERSION,...(selected.transport==='get'?{transport:'get'}:{})});return {key,file:path.join(cacheDir,`${key}.json`)};};
+  if (!refresh || offline) for(const candidate of endpoints){
+    const {key,file}=descriptor(candidate);
     try {
       const entry = await readJSON(file);
       const normalized = normalizeOSM(entry.raw, { area, origin, name });
       if (entry.key !== key || entry.contentHash !== normalized.contentHash || entry.snapshotHash !== hash(entry.raw)) throw new CityError('CACHE_CORRUPT', 'cache', 'Cached snapshot hash mismatch.', 'Refresh explicitly to replace this cache.');
-      return { ...normalized, raw: { ...normalized.raw, metadata: { ...entry.raw.metadata, ...normalized.raw.metadata } }, cacheHit: true, cacheKey: key, cacheFile: file };
+      checkAbort(signal);
+      return { ...normalized, diagnostics:[...normalized.diagnostics,...(candidate!==selected.endpoint?[fallbackDiagnostic(candidate,true)]:[])], raw: { ...normalized.raw, metadata: { ...entry.raw.metadata, ...normalized.raw.metadata } }, cacheHit: true, cacheKey: key, cacheFile: file, endpoint:candidate, transport:selected.transport, sourceAttempts:[] };
     } catch (e) { if (e.code !== 'ENOENT') throw e; }
   }
   if (offline) throw new CityError('OFFLINE_CACHE_MISS', 'cache', 'No cached snapshot for this area and source.', 'Fetch once online or import a local JSON file.');
+  const sourceAttempts=[];
+  for(let index=0;index<endpoints.length;index++){
+  const candidate=endpoints[index],{key,file}=descriptor(candidate),started=performance.now();
+  try{
   const receivedAt = new Date().toISOString();
-  const download = q => request(endpoint, { ...requestOptions, method: 'POST', body: new URLSearchParams({ data: q }), signal });
+  const download = q => {const {url,init}=overpassRequest(candidate,q,selected.transport);return request(url, { ...requestOptions,...init, signal });};
   let raw = await download(query);
   let result = normalizeOSM(raw, { area, origin, name });
   if (result.missing.length) {
@@ -38,8 +48,16 @@ export async function fetchArea({ area, origin, name, cacheDir, endpoint = OVERP
     raw = { ...raw, elements: [...merged.values()] };
     result = normalizeOSM(raw, { area, origin, name });
   }
-  result = normalizeOSM(result.raw, { area, origin, name, source: { retrievedAt: receivedAt, endpoint, query, queryVersion: QUERY_VERSION, sourceApi: 'overpass', sourceHash: hash(raw) } });
+  sourceAttempts.push({endpoint:candidate,transport:selected.transport,status:'succeeded',elapsedMs:Math.round(performance.now()-started)});
+  result = normalizeOSM(result.raw, { area, origin, name, source: { retrievedAt: receivedAt, endpoint:candidate, transport:selected.transport, requestedEndpoint:selected.endpoint, fallbackPolicy:selected.fallbackPolicy, sourceAttempts, query, queryVersion: QUERY_VERSION, sourceApi: 'overpass', sourceHash: hash(raw), ...(raw.osm3s?.timestamp_osm_base?{osmBaseTimestamp:raw.osm3s.timestamp_osm_base}:{}) } });
   checkAbort(signal);
   await atomicWrite(file, { key, contentHash: result.contentHash, snapshotHash: hash(result.raw), raw: result.raw }, { signal });
-  return { ...result, cacheHit: false, cacheKey: key, cacheFile: file };
+  return { ...result, diagnostics:[...result.diagnostics,...(index?[fallbackDiagnostic(candidate,false)]:[])], cacheHit: false, cacheKey: key, cacheFile: file, endpoint:candidate, transport:selected.transport, sourceAttempts };
+  }catch(error){
+    checkAbort(signal);
+    sourceAttempts.push({endpoint:candidate,transport:selected.transport,status:'failed',code:error.code||'TASK_FAILED',...(error.httpStatus?{httpStatus:error.httpStatus}:{}),elapsedMs:Math.round(performance.now()-started)});
+    if(index===endpoints.length-1||!canFallback(error)){error.sourceAttempts=sourceAttempts;throw error;}
+  }
+  }
 }
+function fallbackDiagnostic(endpoint,cacheHit){return {code:cacheHit?'FALLBACK_CACHE_HIT':'SOURCE_FALLBACK',stage:cacheHit?'cache':'download',message:`Used ${cacheHit?'cached data from':'explicit fallback'} ${endpoint}.`,hint:'The snapshot records the actual source; configure a self-hosted endpoint for sustained use.'};}

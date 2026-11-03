@@ -50,11 +50,11 @@ test('atomic writes cancelled before commit keep prior JSON intact',async()=>{
 });
 test('HTTP retries 429 on the same URL with Retry-After, bounds bytes and rejects malformed JSON',async()=>{
   let calls=0;const waits=[],urls=[];
-  const result=await requestJSON('https://fixture.test/query',{minIntervalMs:0,sleep:async ms=>{waits.push(ms);},fetchImpl:async url=>{urls.push(url);return ++calls===1?new Response('',{status:429,headers:{'Retry-After':'2'}}):new Response('{"elements":[]}');}});
-  assert.deepEqual(result,{elements:[]});assert.equal(calls,2);assert.equal(new Set(urls).size,1);assert.ok(waits.includes(2000));
+  const result=await requestJSON('https://retry-fixture.test/query',{minIntervalMs:0,sleep:async ms=>{waits.push(ms);},fetchImpl:async url=>{urls.push(url);return ++calls===1?new Response('',{status:429,headers:{'Retry-After':'2'}}):new Response('{"elements":[]}');}});
+  assert.deepEqual(result,{elements:[]});assert.equal(calls,2);assert.equal(new Set(urls).size,1);assert.ok(waits.includes(30000));
   await assert.rejects(requestJSON('https://fixture.test/large',{retries:0,minIntervalMs:0,maxBytes:4,fetchImpl:async()=>new Response('12345678')}),e=>e.code==='DOWNLOAD_LIMIT');
   await assert.rejects(requestJSON('https://fixture.test/json',{retries:0,minIntervalMs:0,fetchImpl:async()=>new Response('not json')}),e=>e.code==='INVALID_JSON');
-  await assert.rejects(requestJSON('https://fixture.test/limit',{retries:0,minIntervalMs:0,fetchImpl:async()=>new Response('',{status:429})}),e=>e.code==='RATE_LIMITED');
+  await assert.rejects(requestJSON('https://limited-fixture.test/limit',{retries:0,minIntervalMs:0,fetchImpl:async()=>new Response('',{status:429})}),e=>e.code==='RATE_LIMITED');
 });
 test('HTTP cancellation and timeout abort the underlying request',async()=>{
   const never=async(_,init)=>new Promise((resolve,reject)=>init.signal.addEventListener('abort',()=>reject(init.signal.reason),{once:true}));

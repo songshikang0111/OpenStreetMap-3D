@@ -1,15 +1,13 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile, rename, rm, realpath, lstat } from 'node:fs/promises';
 import path from 'node:path';
+import { CityError } from './errors.js';
 
-export class CityError extends Error {
-  constructor(code, stage, message, hint = 'Check the input and retry.', details = {}) {
-    super(message); Object.assign(this, { code, stage, hint, ...details });
-  }
-}
+export { CityError };
 export function diagnostic(error, stage = 'task') {
   return { code: error.code || 'TASK_FAILED', stage: error.stage || stage, message: error.message,
-    hint: error.hint || 'Check the input and retry.', ...(error.featureId ? { featureId: error.featureId } : {}) };
+    hint: error.hint || 'Check the input and retry.', ...(error.featureId ? { featureId: error.featureId } : {}),
+    ...Object.fromEntries(['httpStatus','endpoint','retryAfterMs','sourceAttempts'].filter(k=>error[k]!==undefined).map(k=>[k,error[k]])) };
 }
 export function checkAbort(signal) { signal?.throwIfAborted(); }
 export function stableJSON(value) {

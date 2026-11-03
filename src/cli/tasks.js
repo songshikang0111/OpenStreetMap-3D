@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { CityError, atomicWrite, checkAbort, hash, readJSON, safePath, relativeFile } from '../data/common.js';
 import { normalizeOSM } from '../data/normalize.js';
 import { fetchArea } from '../data/overpass.js';
+import { dataSourceOverrides } from '../data/source.js';
 import { readProject } from './project.js';
 import { projectRecipes, updateLandmarks } from './landmarks.js';
 
@@ -122,9 +123,10 @@ export async function runProjectTask(kind, root, parameters={}, context={}) {
   if(kind==='build') return buildProject(root,context);
   if(kind==='fetch') {
     const config=await readProject(root); onProgress({stage:'download',progress:0});
-    const result=await fetchArea({area:config.area,origin:config.origin,name:config.name,cacheDir:await safePath(root,'.city-cache/data',{allowMissing:true}),...parameters,signal,...(context.request?{request:context.request}:{})});
+    for(const key of Object.keys(parameters))if(!['endpoint','transport','fallbackEndpoints','fallbackPolicy','refresh','offline'].includes(key))throw new CityError('INVALID_PARAMETER','fetch',`Unsupported fetch parameter ${key}.`);
+    const result=await fetchArea({area:config.area,origin:config.origin,name:config.name,cacheDir:await safePath(root,'.city-cache/data',{allowMissing:true}),source:config.source,...dataSourceOverrides(parameters),refresh:parameters.refresh,offline:parameters.offline,signal,...(context.request?{request:context.request}:{})});
     await atomicWrite(await safePath(root,config.source.file,{allowMissing:true}),result.raw,{signal});
-    return {schemaVersion:1,status:'succeeded',artifacts:[config.source.file],diagnostics:result.diagnostics,cacheHit:result.cacheHit,contentHash:result.contentHash};
+    return {schemaVersion:1,status:'succeeded',artifacts:[config.source.file],diagnostics:result.diagnostics,cacheHit:result.cacheHit,contentHash:result.contentHash,source:{endpoint:result.endpoint,transport:result.transport,retrievedAt:result.raw.metadata.retrievedAt,sourceHash:result.raw.metadata.sourceHash,osmBaseTimestamp:result.raw.metadata.osmBaseTimestamp,cacheKey:result.cacheKey,attempts:result.sourceAttempts}};
   }
   if(kind==='update-landmarks') {
     const updated=await updateLandmarks(root,{...parameters,signal});

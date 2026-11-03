@@ -7,12 +7,13 @@ import { validateProject } from './tasks.js';
 import { JobManager, workerRunner, inspectJob, requestJobCancel } from './jobs.js';
 import { createLocalServer } from '../local-server/index.js';
 import { withProjectLock } from './project-lock.js';
+import { dataSourceOverrides, resolveDataSource } from '../data/source.js';
 
 export const HELP=`City Ink — local city toolchain
 Usage: city <command> [options]
   init [path] --sample | --area south,west,north,east [--name text]
   search <query> [--offline] [--photon-url URL]
-  data fetch --project path [--refresh] [--offline]
+  data fetch --project path [--endpoint URL] [--transport post|get] [--refresh] [--offline]
   data import <file.json> --project path
   build --project path [--resume JOB_ID] [--offline]
   batch <list.json> [--concurrency 1..4] [--resume]
@@ -24,6 +25,11 @@ Usage: city <command> [options]
   landmarks update <package-dir> --project path [--rollback]
   jobs status|cancel|resume <JOB_ID> --project path
 Common: --json (one structured stdout result), --help, --offline, --project path
+Data source options (init/search/data fetch/batch/studio): --endpoint URL --transport post|get
+  --fallback-endpoint URL (repeat at most twice; opts into unavailable fallback)
+  --fallback-policy none|unavailable (default none). No fallback on 429/406, invalid data or cancellation.
+  Precedence: command/job override > project source > studio defaults > built-in FOSSGIS POST.
+  init saves source options; fetch overrides only that persisted job. Batch source flags affect fetch entries.
 Exit codes: 0 success; 1 failed input/task; 2 partial/failed batch; 130 cancelled.
 Batch file: {"projects":[{"project":"relative/path","kind":"build","parameters":{}}]}
 Search coordinates: latitude,longitude. OSM: way/123 or https://openstreetmap.org/way/123.
@@ -32,7 +38,7 @@ PNG/GLB use installed Chrome/Edge (CITY_BROWSER override); GLB exports the compl
 Ordinary build/export/validate never refreshes network data. --resume retries failed/cancelled jobs.
 `;
 const flags=new Set(['json','help','offline','refresh','sample','rollback']);
-const valued=new Set(['project','workspace','name','area','origin','port','concurrency','output','photon-url','cache']);
+const valued=new Set(['project','workspace','name','area','origin','port','concurrency','output','photon-url','cache','endpoint','transport','fallback-policy','fallback-endpoint']);
 function parse(args){
   const options={},positionals=[];
   for(let i=0;i<args.length;i++){
@@ -40,14 +46,16 @@ function parse(args){
     if(!arg.startsWith('--')){positionals.push(arg);continue;}
     const name=arg.slice(2);
     if(flags.has(name))options[name]=true;
-    else if(valued.has(name)){if(!args[i+1]||args[i+1].startsWith('--'))throw new CityError('MISSING_OPTION','cli',`--${name} requires a value.`);options[name]=args[++i];}
+    else if(valued.has(name)){if(!args[i+1]||args[i+1].startsWith('--'))throw new CityError('MISSING_OPTION','cli',`--${name} requires a value.`);const value=args[++i];if(name==='fallback-endpoint')options[name]=[...(options[name]||[]),value];else options[name]=value;}
     else if(name==='resume')options.resume=args[i+1]&&!args[i+1].startsWith('--')?args[++i]:true;
     else throw new CityError('UNKNOWN_OPTION','cli',`Unknown option ${arg}.`,'Run city --help.');
   }
   return {options,positionals};
 }
 const result=(extra={})=>({schemaVersion:1,status:'succeeded',artifacts:[],diagnostics:[],...extra});
-export async function runBatch(file,{concurrency=1,resume=false,offline=false,signal,runner=workerRunner}={}){
+function sourceOptions(options){const source=dataSourceOverrides({endpoint:options.endpoint,transport:options.transport,fallbackEndpoints:options['fallback-endpoint'],fallbackPolicy:options['fallback-policy']||(options['fallback-endpoint']?'unavailable':undefined)});resolveDataSource(source);return source;}
+export async function runBatch(file,{concurrency=1,resume=false,offline=false,source={},signal,runner=workerRunner}={}){
+  const sourceOverride=dataSourceOverrides(source);resolveDataSource(sourceOverride);
   const list=await readJSON(file);const entries=Array.isArray(list)?list:list.projects;
   if(!Array.isArray(entries)||!entries.length||entries.length>100)throw new CityError('INVALID_BATCH','batch','Batch requires 1–100 project entries.');
   const base=path.dirname(file),directory=path.join(base,'.city-cache',`batch-${hash(entries)}`);
@@ -60,8 +68,9 @@ export async function runBatch(file,{concurrency=1,resume=false,offline=false,si
       const entry=typeof entries[i]==='string'?{project:entries[i]}:entries[i];
       if(!entry||typeof entry.project!=='string')throw new CityError('INVALID_BATCH','batch',`Entry ${i} requires project.`);
       let job;
-      if(state.items[i])job=await manager.resume(state.items[i].id,offline?{offline:true}:undefined);
-      else{job=await manager.enqueue(entry.kind||'build',path.resolve(base,entry.project),{...entry.parameters,...(offline?{offline:true}:{})});state.items.push({index:i,id:job.id,project:entry.project});await atomicWrite(stateFile,state);}
+      const override={...((entry.kind||'build')==='fetch'?sourceOverride:{}),...(offline?{offline:true}:{})};
+      if(state.items[i])job=await manager.resume(state.items[i].id,override);
+      else{job=await manager.enqueue(entry.kind||'build',path.resolve(base,entry.project),{...entry.parameters,...override});state.items.push({index:i,id:job.id,project:entry.project});await atomicWrite(stateFile,state);}
       if(signal?.aborted)await manager.cancel(job.id);
     }
     const jobs=await Promise.all(state.items.map(item=>manager.wait(item.id)));
@@ -76,6 +85,8 @@ export async function runCLI(args,{cwd=process.cwd(),stdout=process.stdout,stder
     const parsed=parse(args);options=parsed.options;const p=parsed.positionals;command=p[0];
     if(options.help||!command)return emit(result({help:HELP}));
     const root=path.resolve(cwd,options.project||'.');
+    const source=sourceOptions(options);
+    if(Object.keys(source).length&&!['init','search','batch','studio','preview'].includes(command)&&!(command==='data'&&p[1]==='fetch')&&!(command==='jobs'&&p[1]==='resume'))throw new CityError('OPTION_SCOPE','cli','Data source flags apply to init/search/fetch/batch/studio or a resumed fetch job.');
     const allowedOffline=new Set(['search','data','build','batch','validate','export','init','preview','studio','landmarks','jobs']);
     if(options.offline&&!allowedOffline.has(command))throw new CityError('OFFLINE_UNSUPPORTED','cli','--offline is not supported here.');
     if(command==='init'){
@@ -83,16 +94,16 @@ export async function runCLI(args,{cwd=process.cwd(),stdout=process.stdout,stder
       if(options.area){const nums=options.area.split(',').map(Number);if(nums.length!==4)throw new CityError('INVALID_AREA','cli','--area requires south,west,north,east.');area=Object.fromEntries(['south','west','north','east'].map((k,i)=>[k,nums[i]]));}
       if(options.origin){const [lat,lon]=options.origin.split(',').map(Number);origin={lat,lon};}
       if(!options.sample&&!area)throw new CityError('AREA_REQUIRED','init','Choose --sample or an explicit --area.');
-      const directory=path.resolve(cwd,p[1]||options.project||'.');const config=await createProject(directory,{name:options.name||path.basename(directory),...(area?{area}:{}),origin,sample:!!options.sample});return emit(result({project:directory,config,artifacts:['city.config.json','city.lock.json',...(options.sample?[config.source.file]:[])]}));
+      const directory=path.resolve(cwd,p[1]||options.project||'.');const config=await createProject(directory,{name:options.name||path.basename(directory),...(area?{area}:{}),origin,sample:!!options.sample,source});return emit(result({project:directory,config,artifacts:['city.config.json','city.lock.json',...(options.sample?[config.source.file]:[])]}));
     }
-    if(command==='search'){const candidates=await searchPlaces(p.slice(1).join(' '),{cacheDir:path.resolve(cwd,options.cache||'.city-cache/search'),offline:options.offline,photonUrl:options['photon-url'],signal});return emit(result({candidates}));}
+    if(command==='search'){const candidates=await searchPlaces(p.slice(1).join(' '),{cacheDir:path.resolve(cwd,options.cache||'.city-cache/search'),offline:options.offline,photonUrl:options['photon-url'],source:options.project?(await readProject(root)).source:undefined,...source,signal});return emit(result({candidates}));}
     if(command==='data'&&p[1]==='import'){if(!p[2])throw new CityError('FILE_REQUIRED','import','Specify a JSON file.');const imported=await withProjectLock(root,()=>importData(root,path.resolve(cwd,p[2]),{signal}));return emit(result({artifacts:imported.artifacts,diagnostics:imported.diagnostics,contentHash:imported.contentHash}));}
     if(command==='validate')return emit(await withProjectLock(root,()=>validateProject(root)));
     if(command==='landmarks'&&p[1]==='check'){if(!p[2])throw new CityError('PACKAGE_REQUIRED','landmarks','Specify a package directory.');const pack=await readRecipePackage(path.resolve(cwd,p[2]));return emit(result({hash:pack.hash,recipes:pack.recipes.map(r=>({id:r.id,version:r.version}))}));}
-    if(command==='batch'){if(!p[1])throw new CityError('FILE_REQUIRED','batch','Specify a batch list.');return emit(await runBatch(path.resolve(cwd,p[1]),{concurrency:Number(options.concurrency||1),resume:!!options.resume,offline:!!options.offline,signal,runner}));}
+    if(command==='batch'){if(!p[1])throw new CityError('FILE_REQUIRED','batch','Specify a batch list.');return emit(await runBatch(path.resolve(cwd,p[1]),{concurrency:Number(options.concurrency||1),resume:!!options.resume,offline:!!options.offline,source,signal,runner}));}
     if(command==='studio'||command==='preview'){
       if(command==='preview')await readProject(root);
-      const service=await createLocalServer({workspaceRoot:path.resolve(cwd,options.workspace||'.city-studio'),projectRoot:options.project||command==='preview'?root:undefined,offline:!!options.offline,port:options.port===undefined?4178:Number(options.port)});
+      const service=await createLocalServer({workspaceRoot:path.resolve(cwd,options.workspace||'.city-studio'),projectRoot:options.project||command==='preview'?root:undefined,offline:!!options.offline,dataSource:source,port:options.port===undefined?4178:Number(options.port)});
       const active=emit(result({url:service.url,projects:[...service.projects.values()]}));
       const close=()=>service.close();signal?.addEventListener('abort',close,{once:true});
       return {...active,service};
@@ -112,13 +123,14 @@ export async function runCLI(args,{cwd=process.cwd(),stdout=process.stdout,stder
         if(p[1]==='status')return emit(result({job:manager.get(p[2])}));
         if(p[1]==='cancel')return emit(result({job:await manager.cancel(p[2])}));
         if(p[1]!=='resume')throw new CityError('UNKNOWN_COMMAND','cli','Unknown jobs command.');
-        job=await manager.resume(p[2],options.offline?{offline:true}:undefined);
+        if(Object.keys(source).length&&manager.get(p[2]).kind!=='fetch')throw new CityError('OPTION_SCOPE','cli','Source flags can only override a resumed fetch job.');
+        job=await manager.resume(p[2],{...source,...(options.offline?{offline:true}:{})});
       }else if(options.resume){
-        if(typeof options.resume!=='string')throw new CityError('JOB_REQUIRED','job','--resume requires an ID for a single job.');job=await manager.resume(options.resume,options.offline?{offline:true}:undefined);
+        if(typeof options.resume!=='string')throw new CityError('JOB_REQUIRED','job','--resume requires an ID for a single job.');job=await manager.resume(options.resume,{...source,...(options.offline?{offline:true}:{})});
       }else{
         let kind,parameters={};
         if(command==='build')kind='build';
-        else if(command==='data'&&p[1]==='fetch'){kind='fetch';parameters={offline:!!options.offline,refresh:!!options.refresh};}
+        else if(command==='data'&&p[1]==='fetch'){kind='fetch';parameters={...source,offline:!!options.offline,refresh:!!options.refresh};}
         else if(command==='export'&&['web','png','glb'].includes(p[1])){kind=`export-${p[1]}`;if(options.output)parameters.output=options.output;}
         else if(command==='landmarks'&&p[1]==='update'){kind='update-landmarks';parameters={rollback:!!options.rollback,...(p[2]?{packagePath:path.resolve(cwd,p[2])}:{})};}
         else throw new CityError('UNKNOWN_COMMAND','cli',`Unknown command ${p.join(' ')}.`,'Run city --help.');

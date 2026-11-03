@@ -3,6 +3,7 @@ import { readFile, mkdir } from 'node:fs/promises';
 import { CityError, validateArea, centerOf, relativeFile, safePath, atomicWrite, readJSON, hash } from '../data/common.js';
 import { normalizeOSM } from '../data/normalize.js';
 import {validateProjectConfig} from '../core/config.js';
+import {resolveDataSource} from '../data/source.js';
 
 export const SAMPLE_AREA = { south: 39.908, west: 116.459, north: 39.910, east: 116.462 };
 // A deliberately small synthetic offline sample, explicitly identified as such.
@@ -23,6 +24,7 @@ export function validateConfig(config) {
   if(config.origin.lat<config.area.south||config.origin.lat>config.area.north||config.origin.lon<config.area.west||config.origin.lon>config.area.east)throw new CityError('ORIGIN_OUTSIDE_AREA','config','The fixed project origin must remain inside the selected area.','Create a new project for a different location.');
   relativeFile(config.source?.file);
   if (!config.source.file.startsWith('data/') || !['overpass','import','local','osm-map','sample'].includes(config.source.kind)) throw new CityError('INVALID_CONFIG', 'config', 'Source must use data/ and kind overpass, local, osm-map, import or sample.');
+  resolveDataSource(config.source);
   if (!config.generation || !['landscapeEnabled','inferRoofs'].every(k => typeof config.generation[k] === 'boolean') || !(config.tiling?.sizeMeters >= 25 && config.tiling.sizeMeters <= 10000) || !['low','draft','balanced','high'].includes(config.quality) || typeof config.style?.id !== 'string' || !config.style.id || !config.style.parameters || typeof config.style.parameters !== 'object' || Array.isArray(config.style.parameters) || !config.landmarks || typeof config.landmarks.enabled !== 'boolean' || !Array.isArray(config.landmarks.packages)) throw new CityError('INVALID_CONFIG', 'config', 'Invalid generation, tiling, quality, style or landmark settings.');
   for (const p of config.landmarks.packages) relativeFile(typeof p === 'string' ? p : p.path);
   const validation=validateProjectConfig(config);
@@ -47,7 +49,7 @@ export async function createProject(root, { name = path.basename(root), area = S
 export async function patchProject(root, patch) {
   const current = await readProject(root);
   if (patch.origin && hash(patch.origin) !== hash(current.origin)) throw new CityError('ORIGIN_LOCKED', 'config', 'Project origin is fixed after initialization.', 'Create a new project to change projection origin.');
-  const config = validateConfig({ ...current, ...patch });
+  const config = validateConfig({ ...current, ...patch,...(patch.source?{source:{...current.source,...patch.source}}:{}) });
   await atomicWrite(path.join(root, 'city.config.json'), config); return config;
 }
 export async function importData(root, file, { signal } = {}) {

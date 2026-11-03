@@ -1,5 +1,6 @@
 import { projection } from '../osm.js';
 import {validateProjectStyleConfig} from '../styles/project-contract.js';
+import { resolveDataSource } from '../data/source.js';
 
 export const MAX_AREA_SPAN_METERS = 10000;
 
@@ -23,6 +24,7 @@ export function validateProjectConfig(config) {
   for(const key of ['generation','tiling','style','landmarks'])if(config[key]!==undefined&&(!config[key]||typeof config[key]!=='object'||Array.isArray(config[key])))error(key,'Expected an object.');
   if (config.seed !== undefined && !Number.isSafeInteger(config.seed)) error('seed','Seed must be a safe integer.');
   if (!config.source || !['overpass','osm-map','local','import','sample'].includes(config.source.kind) || typeof config.source.file !== 'string' || !config.source.file.trim()) error('source','source requires kind (overpass/osm-map/local/import/sample) and file.');
+  if(config.source)try{resolveDataSource(config.source);}catch(e){error('source',e.message);}
   for (const key of ['landscapeEnabled','inferRoofs']) if(config.generation?.[key] !== undefined && typeof config.generation[key] !== 'boolean') error(`generation.${key}`,'Expected boolean.');
   if(config.landmarks?.enabled !== undefined && typeof config.landmarks.enabled !== 'boolean') error('landmarks.enabled','Expected boolean.');
   if(config.landmarks?.policy !== undefined && !['strict','degraded'].includes(config.landmarks.policy))error('landmarks.policy','Expected strict or degraded.');

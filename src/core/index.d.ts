@@ -1,11 +1,12 @@
 import type { Group } from 'three';
 import type {LandmarkFeature,LandmarkContext} from '../landmark-registry.js';
+import type {DataSourceOptions} from '../data/index.js';
 
 export interface Diagnostic { code: string; stage: string; message: string; path?: string; featureId?: string; tileId?: string; hint?: string }
 export interface Area { south: number; west: number; north: number; east: number }
 export interface ProjectConfig {
   schemaVersion: 1; name: string; area: Area; origin?: {lat: number; lon: number}; seed?: number;
-  source: {kind: 'overpass' | 'osm-map' | 'local' | 'import' | 'sample'; file: string; [key:string]:unknown};
+  source: DataSourceOptions & {kind: 'overpass' | 'osm-map' | 'local' | 'import' | 'sample'; file: string; [key:string]:unknown};
   generation?: {landscapeEnabled?: boolean; inferRoofs?: boolean};
   tiling?: {sizeMeters?: number; /** Fixed-area comparison: N×N cells. */ divisions?: number};
   quality?: 'draft' | 'low' | 'balanced' | 'high'; style?: import('../styles/project-contract.js').ProjectStyleConfig;
