@@ -6,7 +6,7 @@ import path from 'node:path';
 import os from 'node:os';
 import {pathToFileURL} from 'node:url';
 import {bundleProjectStyle} from '../src/styles/project-bundle.js';
-import {loadProjectStyle,getStyle} from '../src/styles/index.js';
+import {loadProjectStyle,getStyle,validateProjectStyleConfig} from '../src/styles/index.js';
 import {validateProjectConfig} from '../src/core/config.js';
 import {createProject,patchProject} from '../src/cli/project.js';
 import {buildProject} from '../src/cli/tasks.js';
@@ -81,4 +81,15 @@ test('JS, CSS and descriptor asset URLs preserve hash/percent filename character
     const scripts=[...bundle.assets].filter(([key])=>key.endsWith('.js')).map(([,value])=>new TextDecoder().decode(value)).join('\n');assert(scripts.includes('paper%23v2%25done.svg'));
     const css=[...bundle.assets].filter(([key])=>key.endsWith('.css')).map(([,value])=>new TextDecoder().decode(value)).join('\n');assert(!css.includes('#v2'));assert(!css.includes('%done'));
   }finally{assert(path.resolve(root).startsWith(path.resolve(os.tmpdir())+path.sep));await rm(root,{recursive:true,force:true});}
+});
+
+test('dependency specifier Schema and runtime agree on dot segments and engine aliases',async()=>{
+  const schema=JSON.parse(await readFile(new URL('../schemas/project.schema.json',import.meta.url),'utf8'));
+  const pattern=new RegExp(schema.properties.style.properties.dependencies.propertyNames.pattern);
+  for(const name of ['foo/.','foo/..','@foo/bar/.','three','three/addons/x','beijing-city-ink/styles']){
+    assert.equal(pattern.test(name),false,name);assert.throws(()=>validateProjectStyleConfig({id:'test',entry:'styles/test.js',dependencies:{[name]:'styles/vendor.js'}}));
+  }
+  for(const name of ['local-palette','@scope/palette','palette/submodule','palette/.private']){
+    assert.equal(pattern.test(name),true,name);assert.doesNotThrow(()=>validateProjectStyleConfig({id:'test',entry:'styles/test.js',dependencies:{[name]:'styles/vendor.js'}}));
+  }
 });
