@@ -5,7 +5,7 @@ import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {openLocalBrowser} from '../../src/cli/browser-session.js';
-import {CASE_NAMES,assessCase} from './assessment.mjs';
+import {CASE_NAMES,STATIONARY_VIEWS,assessCase} from './assessment.mjs';
 const root=fileURLToPath(new URL('../../',import.meta.url)),args=process.argv.slice(2);
 const option=(name,fallback)=>args.find(arg=>arg.startsWith(`--${name}=`))?.slice(name.length+3)||fallback;
 for(const arg of args.filter(arg=>arg.startsWith('--')))if(!/^--(?:seconds|stationary-seconds|output|scenes)=/.test(arg))throw new Error(`Unknown option ${arg}`);
@@ -20,9 +20,14 @@ if(new Set(names).size!==names.length||names.some(name=>!CASE_NAMES.includes(nam
 const referenceBytes=await readFile(path.join(root,'docs/phase1-evidence/integration/performance/beijing-cbd-grow-1.json'));
 const reference=JSON.parse(referenceBytes),referenceSummary=JSON.parse(await readFile(path.join(root,'docs/phase1-evidence/integration/performance/summary.json'),'utf8'));
 const fixedView=t=>{const keys=reference.path.keys,index=keys.findIndex((key,i)=>i<keys.length-1&&t>=key.t&&t<=keys[i+1].t),a=keys[index],b=keys[index+1],u=(t-a.t)/(b.t-a.t),mix=(a,b)=>a.map((v,i)=>v+(b[i]-v)*u);return {position:mix(a.position,b.position),target:mix(a.target,b.target),fov:a.fov+(b.fov-a.fov)*u};};
+for(const item of STATIONARY_VIEWS)if(JSON.stringify(fixedView(item.targetTime))!==JSON.stringify(item.view))throw new Error('Preserved camera reference differs from the reviewed t13/t19 constants.');
+execFileSync('git',['diff','--exit-code','HEAD','--'],{cwd:root,stdio:'pipe'});
 const environment={date:new Date().toISOString(),commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),platform:os.platform(),release:os.release(),cpu:os.cpus()[0].model,logicalCpus:os.cpus().length,memoryBytes:os.totalmem(),node:process.version,viewport:{width:1280,height:720,dpr:1},quality:'balanced',seconds,stationarySeconds,scenes:path.relative(root,scenes),output:path.relative(root,output),stationaryReference:{measurementCommit:referenceSummary.environment.commit,sceneCompilerCommit:reference.build.compilerCommit,rawSha256:createHash('sha256').update(referenceBytes).digest('hex'),source:'docs/phase1-evidence/integration/performance/beijing-cbd-grow-1.json',times:[13,19]},bundleSha256:createHash('sha256').update(await readFile(path.join(root,'dist-sdk/city-ink.js'))).digest('hex'),notes:['Integrated production A/C/D bundle and protocol, no fixture decoder.','renderer.info autoReset=false; all scene/shadow/AO/composite passes accumulated.','Resource bytes are CPU arrays / estimates, never actual GPU VRAM.','GPU elapsed uses non-blocking EXT_disjoint_timer_query_webgl2 when available; requestAnimationFrame intervals remain wall-clock.']};
 const results=[];
 for(const name of names){
+  if(execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim()!==environment.commit)throw new Error('Frozen commit changed during the benchmark.');
+  execFileSync('git',['diff','--exit-code','HEAD','--'],{cwd:root,stdio:'pipe'});
+  if(createHash('sha256').update(await readFile(path.join(root,'dist-sdk/city-ink.js'))).digest('hex')!==environment.bundleSha256)throw new Error('Production SDK changed during the benchmark.');
   const browser=await openLocalBrowser({root,headless:false,startPath:'scripts/benchmark-integration/index.html'});let result;
   try{
     await browser.evaluate(`(async()=>{const deadline=performance.now()+20000;while(!globalThis.benchmarkReady&&performance.now()<deadline)await new Promise(r=>setTimeout(r,50));if(!globalThis.benchmarkReady)throw new Error('Benchmark page not ready');})()`);
@@ -31,6 +36,7 @@ for(const name of names){
     const manifestUrl=new URL('/'+scenePath,browser.url).href;
     const cold=await browser.evaluate(`benchmark.load(${JSON.stringify(name)},${JSON.stringify(manifest.bounds)},${JSON.stringify(manifestUrl)})`);
     const build=JSON.parse(await readFile(path.join(scenes,name,'build-report.json'),'utf8'));
+    if(build.compilerCommit!==environment.commit)throw new Error('Scene compiler commit differs from the frozen measured commit.');
     const pathResult=await browser.evaluate(`benchmark.measure(${seconds})`);
     const stationary=[];
     if(name==='beijing-cbd-grow-1')for(const targetTime of [13,19]){
