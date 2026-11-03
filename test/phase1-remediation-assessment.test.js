@@ -18,6 +18,7 @@ test('stationary evidence requires a complete real-time window and both saved ca
   Object.assign(stats,{paused:false,disposed:false,diagnostics:[]});
   Object.assign(stats.rendering,{frames,frameCount:1501,windowFrames:1500});
   const phase={...STATIONARY_VIEWS[0],timeOrigin:100000,measurementEpochMs:100000,endedEpochMs:115000,durationSeconds:15,baseline:structuredClone(stats),stats,samples:Array.from({length:151},(_,i)=>({second:i/10,runtime:stats.runtime})),measuredRequests:[]};
+  phase.baselineView=phase.actualView=phase.view;phase.samples.forEach(item=>item.view=phase.view);phase.phaseRequests=[];
   assert.ok(Object.values(assessStationary(phase).checks).every(Boolean));
   const truncated=structuredClone(phase);truncated.stats.rendering.frames=frames.slice(0,2);truncated.stats.rendering.frameCount=3;truncated.stats.rendering.windowFrames=2;
   assert.equal(assessStationary(truncated).checks.frames,false);
@@ -31,7 +32,14 @@ test('stationary evidence requires a complete real-time window and both saved ca
   assert.equal(assessCase({...raw,stationary:[phase,structuredClone(phase)]}).checks.stationary,false);
   const wrongCamera={...phase,...STATIONARY_VIEWS[1],view:phase.view};
   assert.equal(assessStationary(wrongCamera).checks.camera,false);
-  assert.equal(assessCase({...raw,stationary:[phase,{...phase,...STATIONARY_VIEWS[1]}]}).checks.stationary,true);
+  const t19=structuredClone(phase);Object.assign(t19,STATIONARY_VIEWS[1]);t19.baselineView=t19.actualView=t19.view;t19.samples.forEach(item=>item.view=t19.view);
+  assert.equal(assessCase({...raw,stationary:[phase,t19]}).checks.stationary,true);
+  const drifted=structuredClone(phase);drifted.actualView.position[0]+=10;assert.equal(assessStationary(drifted).checks.camera,false);
+  const short=structuredClone(phase);short.endedEpochMs=114910;assert.equal(assessStationary(short).checks.duration,false);
+  const hiddenRequests=structuredClone(phase);hiddenRequests.phaseRequests=[{url:'http://localhost/high.cink',observedAt:101000},{url:'http://localhost/high.cink',observedAt:102000}];
+  assert.equal(assessStationary(hiddenRequests).checks.requestEvidence,false);assert.equal(assessStationary(hiddenRequests).checks.noRepeatedRequests,false);
+  const forged=structuredClone(raw);forged.stationary=[phase,t19];forged.path.stats.rendering.frames=Array.from({length:1500},(_,i)=>({time:40+i*40,intervalMs:40,triangles:100,drawCalls:2}));forged.path.stats.rendering.frameCount=1501;forged.path.stats.rendering.windowFrames=1500;
+  assert.equal(assessCase(forged).checks.completeSamples,true);assert.equal(assessCase(forged).checks.p95,false);assert.equal(assessCase(forged).intervals.p95,40);
 });
 test('whole-frame draw maximum cannot be hidden by a passing p95',async()=>{
   const raw=await historical('kyoto-gion-grow-1'),assessed=assessCase(raw);
@@ -41,7 +49,8 @@ test('whole-frame draw maximum cannot be hidden by a passing p95',async()=>{
 });
 test('stationary gate rejects repeated transitions, cancellation and repeated asset URLs',async()=>{
   const raw=await historical('beijing-cbd-grow-1');
-  const phase={durationSeconds:15,baseline:{runtime:{swaps:0,cancelled:0}},stats:raw.path.stats,samples:raw.path.samples,measuredRequests:raw.networkRequests};
+  const requests=raw.networkRequests.map((request,i)=>({...request,observedAt:100000+i}));
+  const phase={durationSeconds:15,measurementEpochMs:100000,endedEpochMs:115000,baseline:{runtime:{swaps:0,cancelled:0}},stats:raw.path.stats,samples:raw.path.samples,phaseRequests:requests,measuredRequests:requests};
   const assessed=assessStationary(phase);
   assert.equal(assessed.checks.stableLod,false);assert.equal(assessed.checks.noCancelledRequests,false);assert.equal(assessed.checks.noRepeatedRequests,false);
   assert.ok(assessed.requests.maxPerUrl>10);assert.equal(requestCounts([{url:'http://localhost/a.cink'},{url:'http://localhost/a.cink'},{url:'http://localhost/manifest.json'}]).maxPerUrl,2);

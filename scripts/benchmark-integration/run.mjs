@@ -45,7 +45,7 @@ for(const name of names){
   }catch(error){result={name,error:error.stack};}
   finally{await browser.close();}
   await writeFile(path.join(output,`${name}.json`),JSON.stringify(result));
-  const summary=result.error?result:{name,p50:result.path.stats.rendering.intervalsMs.p50,p95:result.path.stats.rendering.intervalsMs.p95,p99:result.path.stats.rendering.intervalsMs.p99,longFrames50ms:result.path.stats.rendering.longFrames50ms,gpuP50:result.path.stats.rendering.gpuTime.p50,gpuP95:result.path.stats.rendering.gpuTime.p95,status:result.assessment.status,stationary:result.assessment.stationary,drawCallsP95:result.path.stats.rendering.drawCalls.p95,trianglesP95:result.path.stats.rendering.triangles.p95,checks:result.checks};results.push(summary);console.log(JSON.stringify(summary));
+  const summary=result.error?result:{name,p50:result.assessment.intervals.p50,p95:result.assessment.intervals.p95,p99:result.assessment.intervals.p99,longFrames50ms:result.path.stats.rendering.longFrames50ms,gpuP50:result.path.stats.rendering.gpuTime.p50,gpuP95:result.path.stats.rendering.gpuTime.p95,status:result.assessment.status,stationary:result.assessment.stationary,drawCallsP95:result.path.stats.rendering.drawCalls.p95,trianglesP95:result.path.stats.rendering.triangles.p95,checks:result.checks};results.push(summary);console.log(JSON.stringify(summary));
   await writeFile(path.join(output,'summary.json'),JSON.stringify({environment,expectedCases:CASE_NAMES.length,completedCases:results.length,status:results.length===CASE_NAMES.length?(results.every(item=>item.status==='pass')?'pass':'fail'):'not-run',results},null,2));
 }
 

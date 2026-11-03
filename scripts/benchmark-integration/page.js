@@ -42,13 +42,13 @@ globalThis.benchmark={
   },
   async stationary(view,seconds=15){
     viewer.setLodMode('auto');viewer.setView(view);await viewer.whenIdle({timeoutMs:90000});await sleep(2000);
-    const baseline=sample();viewer.resetStats();const samples=[],start=performance.now(),measurementEpochMs=performance.timeOrigin+start;let next=0;
+    const baseline=sample(),baselineView=viewer.getView();viewer.resetStats();const samples=[],start=performance.now(),measurementEpochMs=performance.timeOrigin+start;let next=0;
     await new Promise(resolve=>{function step(now){
       const elapsed=(now-start)/1000;
-      if(elapsed>=next){const stats=sample();samples.push({second:elapsed,runtime:stats.runtime,nearAttachments:stats.nearAttachments,render:stats.rendering.last});next+=.1;}
+      if(elapsed>=next){const stats=sample();samples.push({second:elapsed,view:viewer.getView(),runtime:stats.runtime,nearAttachments:stats.nearAttachments,render:stats.rendering.last});next+=.1;}
       if(elapsed<seconds)requestAnimationFrame(step);else resolve();
     }requestAnimationFrame(step);});
-    return {view,timeOrigin:performance.timeOrigin,measurementEpochMs,endedEpochMs:performance.timeOrigin+performance.now(),durationSeconds:(performance.now()-start)/1000,baseline,samples,stats:viewer.getStats({raw:true})};
+    return {view,baselineView,actualView:viewer.getView(),timeOrigin:performance.timeOrigin,measurementEpochMs,endedEpochMs:performance.timeOrigin+performance.now(),durationSeconds:(performance.now()-start)/1000,baseline,samples,stats:viewer.getStats({raw:true})};
   },
   resources:()=>performance.getEntriesByType('resource').map(item=>({url:item.name,transferSize:item.transferSize,encodedBodySize:item.encodedBodySize,decodedBodySize:item.decodedBodySize,duration:item.duration})),
   async comparisons(){
