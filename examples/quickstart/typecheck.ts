@@ -16,6 +16,7 @@ registerStyle(getStyle('comic'));
 async function start(container:HTMLElement):Promise<CityViewer>{
   const viewer=await createCityViewer({container,manifestUrl:'./scene/manifest.json',quality:'balanced',budget:{residentBytes:128*1024*1024,concurrentLoads:3},onDiagnostic:d=>console.warn(d.code,d.url),onSelect:feature=>console.log(feature?.featureId)});
   await viewer.whenIdle();viewer.setView({position:[100,150,200],target:[0,0,0],fov:45});
+  const frame=viewer.getStats({raw:true}).rendering.frames?.[0];if(frame){const near:number=frame.bodyNearDetails+frame.nearAttachmentDetails;const bytes:number=frame.nearGeometryArrayBytes;void near;void bytes;}
   await viewer.setStyle('line');await viewer.exportGLB({scope:'complete'});await viewer.exportPNG({width:1280,height:720});
   return viewer;
 }

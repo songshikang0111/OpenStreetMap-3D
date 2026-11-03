@@ -157,13 +157,15 @@ export async function createCityViewer(options) {
       renderer.info.reset(); gpuTimer.begin(time);
       try { observedProfile = renderWithProfile(renderer, pipeline, scene, camera, shadows); } finally { gpuTimer.end(); }
       streamer?.refreshResources(); nearDetails?.refreshResources();
+      const near = nearDetails?.stats();
       if (streamer) {
-        const near = nearDetails?.stats(); streamer.extraResidentBytes = near?.geometryArrayBytes || 0; streamer.extraTriangles = near?.triangles || 0; streamer.extraCalls = near?.drawCalls || 0; streamer.extraDetails = near?.nearDetails || 0;
+        streamer.extraResidentBytes = near?.geometryArrayBytes || 0; streamer.extraTriangles = near?.triangles || 0; streamer.extraCalls = near?.drawCalls || 0; streamer.extraDetails = near?.nearDetails || 0;
         streamer.counters.peakEstimatedResidentBytes = Math.max(streamer.counters.peakEstimatedResidentBytes, streamer.estimatedBytes());
       }
-      statistics.record(time, renderer, { cpuFrameMs: performance.now() - before, estimatedResidentBytes: streamer?.estimatedBytes() || 0, chunks: streamer?.current.size || 0 });
       // Whole-frame counters include all scene, shadow and screen-space passes.
       const runtime = streamer?.stats(), calls = renderer.info.render.calls, triangles = renderer.info.render.triangles;
+      const bodyNearDetails=runtime?.nearDetails||0,nearAttachmentDetails=near?.nearDetails||0;
+      statistics.record(time, renderer, { cpuFrameMs: performance.now() - before, estimatedResidentBytes: runtime?.estimatedResidentBytes || 0, chunks: streamer?.current.size || 0, bodyNearDetails,nearAttachmentDetails,totalNearDetails:bodyNearDetails+nearAttachmentDetails,nearGeometryArrayBytes:near?.geometryArrayBytes||0 });
       if (firstRenderedMs == null && runtime?.visibleChunks && triangles > 6) { firstRenderedAtMs = performance.now(); firstRenderedMs = firstRenderedAtMs - sceneStarted; }
       if (streamer && lodMode === 'auto' && (calls > budget.drawCalls || triangles > budget.visibleTriangles)) streamer.diagnostic('MEASURED_DRAW_BUDGET', 'Whole-frame renderer counters exceed budget; the next schedule reduces geometric detail.', { drawCalls: calls, triangles });
       if (runtime?.settled && runtime.visibleChunks && allLoadedMs == null) allLoadedMs = performance.now() - sceneStarted;
