@@ -1,5 +1,5 @@
 import './style.css';
-import {createStudioApi, areaAround, validateArea, isTerminal, viewsForBounds} from './api.js';
+import {createStudioApi, areaAround, validateArea, isTerminal, viewsForBounds, summarizeFeatures} from './api.js';
 import {createCityViewer} from '../src/sdk/index.js';
 
 const $ = id => document.getElementById(id), api = createStudioApi();
@@ -17,6 +17,7 @@ function enabled() {
   $('cancel').disabled = !busy; $('retry').disabled = !state.project || (busy && !state.disconnected);
   for(const id of ['png','glb']) $(id).disabled = !state.viewer || busy;
   for(const id of ['sample','create','projects','relative-path']) $(id).disabled=!!busy;
+  for(const id of ['seed','tile-size','infer-roofs','landscape','landmarks']) $(id).disabled=!state.project||!!busy;
 }
 async function listProjects() {
   const projects = unwrap(await api.projects(), 'projects');
@@ -34,6 +35,7 @@ async function openProject(project) {
   $('project-name').value=config.name; setArea(config.area);
   state.location=config.origin || {lat:(config.area.south+config.area.north)/2,lon:(config.area.west+config.area.east)/2};
   $('style').value=config.style?.id || 'comic'; $('quality').value=config.quality || 'balanced';
+  $('seed').value=config.seed ?? 1;$('tile-size').value=config.tiling?.sizeMeters || 500;$('infer-roofs').checked=config.generation?.inferRoofs || false;$('landscape').checked=config.generation?.landscapeEnabled || false;$('landmarks').checked=config.landmarks?.enabled!==false;
   $('project-info').textContent=`${config.name} · ${state.project.relativePath || state.project.path || state.project.id} · 保存时固化范围、风格和相机`;
   remember(); enabled(); await listProjects();
   const existing=await fetch(`/projects/${encodeURIComponent(state.project.id)}/dist/manifest.json`);
@@ -42,6 +44,8 @@ async function openProject(project) {
 async function save() {
   if(!state.project) throw new Error('请先打开项目。');
   const patch={name:$('project-name').value,area:getArea(),style:{id:$('style').value,parameters:state.config.style?.parameters || {}},quality:$('quality').value};
+  patch.seed=Number($('seed').value);patch.tiling={...state.config.tiling,sizeMeters:Number($('tile-size').value)};
+  patch.generation={...state.config.generation,inferRoofs:$('infer-roofs').checked,landscapeEnabled:$('landscape').checked};patch.landmarks={...state.config.landmarks,enabled:$('landmarks').checked};
   if(state.viewer) patch.camera=state.viewer.getView();
   const result=unwrap(await api.save(state.project.id,patch),'project');
   state.config={...state.config,...patch,...result.config};
@@ -58,7 +62,7 @@ async function preview() {
   enabled();
   const report=await fetch(`/projects/${encodeURIComponent(state.project.id)}/dist/city.build-lock.json`);
   const lock=report.ok?await report.json():null;
-  $('report').textContent=json({report:lock?.build?.report,sources:state.manifest.sources,attribution:state.manifest.attribution,featureCount:Array.isArray(state.manifest.featureIndex)?state.manifest.featureIndex.length:Object.keys(state.manifest.featureIndex||{}).length,limitations:'平地近似；未标注高度与部分道路高程为规则推断；地标为参数化近似。'});
+  $('report').textContent=json({summary:summarizeFeatures(state.manifest.featureIndex),report:lock?.build?.report,sources:state.manifest.sources,attribution:state.manifest.attribution,limitations:'平地近似；未标注高度与部分道路高程为规则推断；地标为参数化近似。'});
   await viewer.whenIdle();
   $('job-status').textContent='场景已加载；拖动旋转，滚轮缩放，右键平移。';
 }

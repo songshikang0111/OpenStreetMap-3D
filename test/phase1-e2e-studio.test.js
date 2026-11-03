@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {areaAround,validateArea,createStudioApi,ApiError,isTerminal,viewsForBounds} from '../studio/api.js';
+import {areaAround,validateArea,createStudioApi,ApiError,isTerminal,viewsForBounds,summarizeFeatures} from '../studio/api.js';
 
 test('studio retains named range precision and rejects reversed/invalid boundaries',()=>{
   const area=areaAround({lat:39.9095,lon:116.4605},250);
@@ -32,4 +32,9 @@ test('studio camera presets follow content bounds away from the locked origin',(
   const views=viewsForBounds([1000,0,1000,1500,100,1500]);
   for(const view of Object.values(views)){assert.equal(view.target[0],1250);assert.equal(view.target[2],1250);assert.ok(view.position[0]>=1000);}
   assert.deepEqual(viewsForBounds({min:[1000,0,1000],max:[1500,100,1500]}),views);
+});
+
+test('quality report separates height inference from tagged values and grouped landmarks',()=>{
+  const summary=summarizeFeatures({a:{kind:'building',provenance:{height:'estimated'}},b:{kind:'building',atomicGroupId:'cctv',provenance:{height:'height',recipeId:'cctv'}},c:{kind:'building',atomicGroupId:'cctv',provenance:{height:'levels',recipeId:'cctv'}},d:{kind:'tree'}});
+  assert.equal(summary.estimatedHeightFraction,1/3);assert.equal(summary.landmarkGroups,1);assert.equal(summary.heightSources.height,1);assert.equal(summary.features,4);
 });

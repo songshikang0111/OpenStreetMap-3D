@@ -62,3 +62,9 @@ export function viewsForBounds(bounds) {
     skyline:{position:[cx,y0+Math.max(40,(y1-y0)*.3),cz+span],target:[cx,focus,cz]},
   };
 }
+
+export function summarizeFeatures(featureIndex={}) {
+  const features=Array.isArray(featureIndex)?featureIndex:Object.values(featureIndex),buildings=features.filter(feature=>feature.kind==='building'),heightSources={},recipes=new Set();
+  for(const feature of buildings){const source=feature.provenance?.height || feature.heightSource || 'unknown';heightSources[source]=(heightSources[source]||0)+1;if(feature.provenance?.recipeId)recipes.add(feature.atomicGroupId || feature.provenance.recipeId);}
+  return {features:features.length,buildings:buildings.length,heightSources,estimatedHeightFraction:buildings.length?(heightSources.estimated||0)/buildings.length:0,landmarkGroups:recipes.size};
+}
