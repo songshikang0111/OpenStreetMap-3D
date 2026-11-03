@@ -50,5 +50,5 @@ export function validateProjectConfig(config:unknown):ValidationResult<ProjectCo
 export function validateSceneManifest(manifest:unknown):ValidationResult<SceneManifest>;
 export function compileScene(raw:{elements:Record<string,unknown>[];metadata?:Record<string,unknown>},config:ProjectConfig,options?:CompileOptions):Promise<{
   manifest:SceneManifest;assets:Record<string,Uint8Array|string>;
-  report:{schemaVersion:1;status:'succeeded';diagnostics:Diagnostic[];hashes:SceneManifest['hashes'];counts:Record<string,number>;road:Record<string,unknown>;landscape:Record<string,unknown>;determinism:Record<string,boolean>};
+  report:{schemaVersion:1;status:'succeeded';diagnostics:Diagnostic[];hashes:SceneManifest['hashes'];counts:Record<string,number>;road:Record<string,unknown>;landscape:Record<string,unknown>;roof:Record<string,number>;determinism:Record<string,boolean>};
 }>;
