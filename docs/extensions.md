@@ -39,6 +39,16 @@ city export glb --project ./my-city --offline --json
 
 标准导出使用同一 SDK/注册表，打包所有风格模块、相对依赖、CSS/资产并验证 metadata、id、兼容性及参数；未知 id 必须声明入口。无效入口或参数会在发布前失败，已有站点保留。`viewer-config.json` 记录参数与 `styleModule`，`style-build.json` 记录输入/输出哈希；产物可放在任意 HTTP 子路径，无 CDN/本地服务运行时依赖。PNG/GLB CLI 也先导出同一标准页面再加载画风。GLB 仍只保留基础材质/几何，不保证移植程序后处理。
 
+参数规则是明确的小型子集，`StyleParameterRule`/`StyleParametersSchema` 与 `schemas/style.schema.json` 同步：
+
+- `number`：有限 JavaScript number；`integer`：`Number.isSafeInteger`（±9007199254740991 内）。两者支持包含边界的 minimum/maximum；边界也必须有限，minimum ≤ maximum，integer 范围必须至少包含一个安全整数。整数边界可为小数，例如 .5–2.5 接受1/2，拒绝1.25。
+- `boolean` 和 `string`：不做隐式转换，不接受 minimum/maximum。
+- 四种规则均可使用 default、非空且唯一的同类型 enum，以及 title/description 字符串说明；default 与 enum 每项都必须满足类型/范围，default 还必须属于 enum。
+- 所有参数可省略；只在键未提供时使用 default，无 default 的键从结果省略。明确提供 null/undefined 是非法值，不代表恢复默认。parameters 容器的省略/undefined 表示空对象，null/数组/其他原始值不合法。0、false、空字符串均按其真实值保留。
+- 不支持 object/array/null 规则、类型数组、required、pattern、multipleOf、exclusiveMinimum 等未声明关键字；注册、加载及导出均明确拒绝，不会静默忽略。参数对象和规则应为普通对象（或无原型字典）。
+
+例如 `count:{type:'integer',minimum:0,maximum:5,default:1}` 接受0/5，拒绝1.25、-2.75和null；非法默认值或枚举在注册前就报错。Schema 描述元数据形状及基本值类型；运行时还检查字段之间的范围/默认值/枚举一致性，并在发布前拒绝无效配置，保留旧站点。
+
 手工 SDK 集成保留直接 `registerStyle(sepia)` 能力；消费标准打包 descriptor 时可用同一公开解析器：
 
 ```js

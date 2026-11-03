@@ -4,6 +4,7 @@ import {installFacadeShader,facadeAttributeDefaults} from '../facade-shader.js';
 import {InkRenderer} from '../ink-renderer.js';
 import {foliageMaterial} from '../foliage.js';
 import {satisfies,versionTuple} from '../generators/compatibility.js';
+import {validateStyleParametersSchema,resolveStyleParameters} from './parameters.js';
 
 export const STYLE_CONTRACT_VERSION=1;
 const styles=new Map();
@@ -16,22 +17,15 @@ export function validateStyle(style) {
   if(!satisfies('1.0.0',style.engineCompatibility))throw new TypeError(`Style ${style.id} is incompatible`);
   if(typeof style.createMaterial!=='function'||typeof style.createPipeline!=='function'||typeof style.dispose!=='function')throw new TypeError('Style requires createMaterial/createPipeline/dispose');
   if(!Array.isArray(style.materialRoles)||style.materialRoles.some(r=>typeof r!=='string'||!r)||!style.materialRoles.includes(style.fallbackRole)||!Array.isArray(style.rebuildParameters)||style.rebuildParameters.some(r=>typeof r!=='string')||!style.qualityHints||typeof style.qualityHints!=='object'||Array.isArray(style.qualityHints))throw new TypeError('Style roles, fallbackRole, rebuildParameters and qualityHints required');
-  if(style.parametersSchema?.type!=='object'||style.parametersSchema.additionalProperties!==false||!style.parametersSchema.properties||typeof style.parametersSchema.properties!=='object'||Array.isArray(style.parametersSchema.properties))throw new TypeError('Style parametersSchema must be a closed object with properties');
+  validateStyleParametersSchema(style.parametersSchema);
   return style;
 }
 export function registerStyle(style){validateStyle(style);styles.set(style.id,style);return style;}
 for(const style of officialStyles)registerStyle(style);
-export function getStyle(id='comic'){const style=typeof id==='string'?styles.get(id):validateStyle(id);if(!style)throw new TypeError(`Unknown style: ${id}`);return style;}
+export function getStyle(id='comic'){const style=typeof id==='string'?styles.get(id):id;if(!style)throw new TypeError(`Unknown style: ${id}`);return validateStyle(style);}
 export function resolveStyleSelection(selection) {
   const style=getStyle(selection&&typeof selection==='object'&&typeof selection.createMaterial!=='function'?selection.id:selection||'comic');
-  const given=selection?.parameters||{},parameters={};
-  for(const key of Object.keys(given))if(!Object.hasOwn(style.parametersSchema.properties||{},key))throw new TypeError(`Unknown style parameter: ${key}`);
-  for(const [key,rule] of Object.entries(style.parametersSchema.properties||{})){
-    const value=given[key]??rule.default;
-    if(value===undefined)continue;
-    if((rule.type==='number'&&(!Number.isFinite(value)||value< (rule.minimum??-Infinity)||value>(rule.maximum??Infinity)))||(rule.type==='boolean'&&typeof value!=='boolean')||(rule.type==='string'&&typeof value!=='string')||(rule.enum&&!rule.enum.includes(value)))throw new TypeError(`Invalid style parameter ${key}`);
-    parameters[key]=value;
-  }
+  const parameters=resolveStyleParameters(style.parametersSchema,selection?.parameters);
   return {style,parameters};
 }
 export function createStyleShared(values={}) {

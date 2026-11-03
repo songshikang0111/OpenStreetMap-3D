@@ -1,6 +1,7 @@
 import type {Group,Material,Object3D,Scene,Camera,WebGLRenderer} from 'three';
 import type {StylePack,StylePipeline,SharedUniforms} from '../../packages/styles/index.js';
 export type {StylePack,StylePipeline,SharedUniforms};
+export type {StyleParameterRule,StyleParametersSchema} from '../../packages/styles/index.js';
 export type StyleSelection=string|StylePack|{id:string;parameters?:Record<string,unknown>};
 export interface StyleBinding {style:StylePack;shared:SharedUniforms;parameters:Record<string,unknown>;diagnostics:Array<{code:string;stage:string;featureId?:string;message:string}>;dispose():void}
 export const STYLE_CONTRACT_VERSION:1;

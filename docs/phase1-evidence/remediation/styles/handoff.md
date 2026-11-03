@@ -63,3 +63,16 @@ E 在自己的集成分支按序 cherry-pick **599c448 → 1e4296f → 5c204b2 �
 [原样独立审查报告](independent-review.json) 包含首轮三个发现、最终实际提交、两轮原始浏览器结果、CSS正常/失败/pagehide/并存句柄、特殊文件名三路径HTTP状态、CLI产物与剩余集成依赖。审查者 `/root/styles_repair_review`，明确 gpt-6.1-sol / xhigh / fork_turns none，未编辑受跟踪文件或创建提交。最终功能5c204b2无未解决C组件缺陷。完整独立270项TAP见 [independent-tests.tap](independent-tests.tap)。
 
 最终证据文档提交不改变产品代码。独立通过只限以上C责任范围；根验收历史失败报告保持原样，不能凭此提前把全期矩阵改成通过。
+
+
+## 主对话追加 P2：参数规则契约（2026-11-03）
+
+主对话在集成架构独立复验发现 integer 规则未执行：count:{type:'integer',minimum:0,maximum:5} 接受1.25，真实 bundle 对保存 -2.75 返回成功。此问题不通过只检查负数修补；本轮统一 register/resolve/load/bundle 的 primitive 参数契约。
+
+- `src/styles/parameters.js` 是轻量共享校验器，不引入 JSON Schema 引擎。支持有限 number、安全 integer、boolean、string；数值范围必须有限且有序，integer 区间必须包含安全整数。拒绝未知类型、类型数组和未支持关键字。
+- 注册时检查 schema/default/enum：enum 非空、唯一、同类型且符合范围；default 同样符合规则并属于 enum。number/integer 不转换字符串；boolean/string 不接受数值范围。
+- 仅省略参数键才使用 default。明确的 null/undefined 值失败；无 default 的可选键省略。省略或 undefined 的 parameters 容器视为空对象，null/数组/其他原始容器失败。0/false/空字符串保留。重新读取已注册且被修改的 schema 也重验，避免绕过。
+- 类型提供 StyleParameterRule 判别联合及 StyleParametersSchema；style.schema.json 限制为同一 primitive 子集。Schema 的注释明确跨字段默认值/范围/enum 一致性由共享运行时追加检查。教程和官方样式包说明同步。
+- 新增直接注册/解析/加载边界和真实本地 bundle/export 回归：非法整数、null、未知规则、无效 default/enum 全部拒绝，旧 viewer-config/site 保持不变。新增严格类型消费包含预期编译失败断言。
+
+本分支追加功能修复前的验证：274/274 npm test、三套 build、test:types、parameter-typecheck.ts 全部通过。独立审查会在实际提交上复验并单独归档；此前270项和初次review保持为历史证据。E 应先合入此次新增提交再运行最终 types/build/package/GPU；没有修改 SDK/runtime/AO、local-server、根 package 或集成 worktree。
