@@ -47,6 +47,10 @@ test('stationary evidence requires a complete real-time window and both saved ca
   const peak=structuredClone(phase);peak.stats.runtime.peakEstimatedResidentBytes=128*1024*1024+1;assert.equal(assessStationary(peak).checks.resident,false);
   const impossibleBytes=structuredClone(phase);impossibleBytes.stats.rendering.frames[40].nearGeometryArrayBytes=1001;assert.equal(assessStationary(impossibleBytes).checks.resourceEvidence,false);
   const negative=structuredClone(phase);negative.samples[0].runtime.nearDetails=-1000;negative.samples[0].nearAttachments.nearDetails=19000;assert.equal(assessStationary(negative).checks.resourceEvidence,false);
+  for(const bytes of [128*1024*1024+1,1001]){
+    const sampleOver=structuredClone(phase);sampleOver.samples[40].runtime={...sampleOver.samples[40].runtime,estimatedResidentBytes:bytes};sampleOver.samples[40].render={...sampleOver.samples[40].render,estimatedResidentBytes:bytes};
+    assert.equal(assessStationary(sampleOver).checks.resident,false);
+  }
 });
 test('whole-frame draw maximum cannot be hidden by a passing p95',async()=>{
   const raw=await historical('kyoto-gion-grow-1'),assessed=assessCase(raw);
