@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { parseOSM, projection } from '../osm.js';
 import { buildCity } from '../city.js';
+import { createLandmarkRegistry } from '../landmark-registry.js';
 import { isNeedleCrown } from '../foliage.js';
 import { validateProjectConfig } from './config.js';
 import { GENERATOR_VERSION, STYLE_CONTRACT_VERSION, CityBuildError, canonicalStringify, checkCancelled, normalizeRaw, sha256 } from './contract.js';
@@ -43,12 +44,14 @@ export async function compileScene(raw, inputConfig, options = {}) {
   if(data.stats.invalidRings)diagnostics.push({code:'INVALID_RINGS',stage:'parse',message:`${data.stats.invalidRings} polygon relations could not be constructed.`});
   const sourceHash=await sha256(canonicalStringify(normalized)),configHash=await sha256(canonicalStringify(config));
   await progress('plan',.12);
-  const city=buildCity(data,{...config.generation,landmarksEnabled:config.landmarks.enabled});
+  // Core owns async claims and validates generated bodies before partitioning.
+  const landmarkRegistry=config.landmarks.enabled?(options.landmarkRegistry||createLandmarkRegistry()):null;
+  const city=buildCity(data,{...config.generation,landmarks:{enabled:false}});
   const ownedGeometry=new Set(),ownedMaterial=new Set();
   const remember=group=>group.traverse(o=>{if(o.geometry)ownedGeometry.add(o.geometry);for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[])ownedMaterial.add(m);});
   remember(city.group);
   try {
-    const featureIndex={},atomicGroups=new Map(),context={origin:config.origin,bounds:data.bounds,seed:config.seed};
+    const featureIndex={},atomicGroups=new Map(),context={origin:config.origin,bounds:data.bounds,seed:config.seed,features:data.buildings,objectIds:new Map(data.buildings.map((building,index)=>[building.id,index+1]))};
     const add=(id,record)=>featureIndex[id]||=({featureId:id,sourceIds:[],kind:'generated',...record,chunkIds:[]});
     for(const b of data.buildings)add(b.id,{kind:'building',sourceIds:[sourceId(b)],provenance:{height:b.source,heightMeters:b.height,minHeightMeters:b.minHeight,tags:b.tags},anchor:[...b.center]});
     for(const r of data.roads)add(`w${r.id}`,{kind:'road',sourceIds:[`way/${r.id}`],provenance:{tags:r.tags,elevation:'rule-inferred',widthMeters:r.width}});
@@ -58,16 +61,25 @@ export async function compileScene(raw, inputConfig, options = {}) {
       const green=t.key.match(/^green:((?:w\d+|r\d+-\d+))/),row=t.key.match(/^row:(\d+):/);
       const sourceIds=t.source==='osm'?[`node/${t.key.slice(4)}`]:t.roadId?[`way/${t.roadId}`]:green?[normalizeSourceId(green[1])]:row?[`way/${row[1]}`]:[];
       add(`tree:${t.key}`,{kind:'tree',sourceIds,anchor:[t.x,t.z],provenance:{source:t.source,seed:config.seed,ruleVersion:GENERATOR_VERSION,heightMeters:t.h,shape:t.shape,generatorKey:t.key}});}
-    const registryObjects=new Set();
-    if(config.landmarks.enabled && options.landmarkRegistry){
+    const registryObjects=new Set(),usedRegistries=new Set();
+    if(landmarkRegistry){
       let matches=[];const claimed=new Set();
-      try {matches=await options.landmarkRegistry.match(data.buildings,context);if(!Array.isArray(matches))throw Error('Registry match must return an array.');}
+      try {matches=await landmarkRegistry.match(data.buildings,context);if(!Array.isArray(matches))throw Error('Registry match must return an array.');}
       catch(error){diagnostics.push({code:'LANDMARK_MATCH_FAILED',stage:'plan',message:error.message,hint:'Retained default shapes; fix the registry matcher.'});matches=[];}
+      usedRegistries.add(landmarkRegistry);
+      const matchRegistry=new Map(matches.map(match=>[match,landmarkRegistry]));
+      // Legacy injected match/generate adapters add rules to the official set.
+      // A full C registry declares recipes (including [] to disable defaults).
+      if(options.landmarkRegistry&&!Array.isArray(landmarkRegistry.recipes)){
+        const official=createLandmarkRegistry(),customClaims=new Set(matches.flatMap(match=>Array.isArray(match?.claimedFeatureIds)?match.claimedFeatureIds:[]));
+        for(const match of official.match(data.buildings,context))if(!match.claimedFeatureIds.some(id=>customClaims.has(id))){matches.push(match);matchRegistry.set(match,official);}
+        usedRegistries.add(official);
+      }
       for(const match of matches.filter(m=>{if(m&&typeof m==='object'&&typeof m.recipeId==='string')return true;diagnostics.push({code:'INVALID_LANDMARK_CLAIM',stage:'plan',message:'Ignored malformed registry match.'});return false;}).sort((a,b)=>`${a.recipeId}:${a.claimedFeatureIds}`.localeCompare(`${b.recipeId}:${b.claimedFeatureIds}`,'en'))){
         checkCancelled(signal);
         if(!Array.isArray(match.claimedFeatureIds)||!match.claimedFeatureIds.length||new Set(match.claimedFeatureIds).size!==match.claimedFeatureIds.length||match.claimedFeatureIds.some(id=>!featureIndex[id]||claimed.has(id))){diagnostics.push({code:'INVALID_LANDMARK_CLAIM',stage:'plan',message:`Ignored invalid or overlapping claim for ${match.recipeId}.`});continue;}
         try {
-          const generated=await options.landmarkRegistry.generate(match,context);
+          const generated=await matchRegistry.get(match).generate(match,context);
           if(!generated.group?.isGroup)throw new Error('Generator must return a Three.js Group.');
           remember(generated.group);
           const renderable=[];generated.group.traverseVisible(m=>{if(m.isMesh&&m.geometry?.attributes.position?.count&&(!m.isInstancedMesh||m.count>0))renderable.push(m);});
@@ -85,13 +97,14 @@ export async function compileScene(raw, inputConfig, options = {}) {
           const ids=[...match.claimedFeatureIds].sort(),groupId=`landmark:${match.recipeId}:${ids.join(',')}`;
           atomicGroups.set(groupId,ids);
           for(const id of ids){claimed.add(id);featureIndex[id].atomicGroupId=groupId;featureIndex[id].provenance.recipeId=match.recipeId;featureIndex[id].provenance.recipeVersion=match.recipeVersion;featureIndex[id].provenance.generator=generated.provenance||{};}
-          for(const mesh of city.buildings)if(ids.includes(mesh.userData.feature.id))city.group.remove(mesh);
-          generated.group.traverse(mesh=>{if(mesh.isMesh){registryObjects.add(mesh);mesh.userData.city={...mesh.userData.city,featureId:mesh.userData.city?.featureId&&ids.includes(mesh.userData.city.featureId)?mesh.userData.city.featureId:ids[0],featureIds:ids,sourceIds:ids.flatMap(id=>featureIndex[id].sourceIds),kind:'building',atomicGroupId:groupId,recipeId:match.recipeId,recipeVersion:match.recipeVersion,materialRole:mesh.userData.city?.materialRole||'structure'};}});
+          for(const mesh of city.buildings)if(ids.includes(mesh.userData.feature.id))mesh.removeFromParent();
+          generated.group.traverse(mesh=>{if(mesh.isMesh){registryObjects.add(mesh);mesh.userData.city={...mesh.userData.city,featureId:mesh.userData.city?.featureId&&ids.includes(mesh.userData.city.featureId)?mesh.userData.city.featureId:ids[0],featureIds:ids,sourceIds:ids.flatMap(id=>featureIndex[id].sourceIds),kind:'building',atomicGroupId:groupId,recipeId:match.recipeId,recipeVersion:match.recipeVersion,generatorId:match.generatorId,recipeParameters:match.parameters,materialRole:mesh.userData.city?.materialRole||'structure'};}});
           city.group.add(generated.group);remember(generated.group);diagnostics.push(...(generated.diagnostics||[]),...(match.diagnostics||[]));
         }catch(error){diagnostics.push({code:'LANDMARK_GENERATION_FAILED',stage:'geometry',message:`${match.recipeId}: ${error.message}`,hint:'Retained the legacy/default shape; fix or disable the supplied recipe.'});}
       }
     }
-    if(options.landmarkRegistry){
+    for(const registry of usedRegistries)diagnostics.push(...(registry.diagnostics||[]));
+    if(landmarkRegistry){
       const accepted=new Set(Object.values(featureIndex).filter(f=>f.provenance.recipeId).map(f=>f.featureId)),g=city.equipment.geometry,a=g.attributes.objectId;
       if(accepted.size&&a){
         const keep=[];for(let i=0;i<a.count;i+=3){const pick=Math.round(a.getX(i)*255)+(Math.round(a.getY(i)*255)<<8)+(Math.round(a.getZ(i)*255)<<16);if(!accepted.has(data.buildings[pick-1]?.id))keep.push(i,i+1,i+2);}
@@ -132,7 +145,7 @@ export async function compileScene(raw, inputConfig, options = {}) {
         }else{ids=[id];add(id,{kind,sourceIds:[...new Set(sources)].sort(),provenance:{source:mesh.userData.source||'shared-region-geometry',ruleVersion:GENERATOR_VERSION}});}
       }
       mesh.userData=cleanUserData(mesh);
-      mesh.userData.city={...original,featureId:registryObjects.has(mesh)?original.featureId:ids[0],featureIds:[...new Set(ids)].sort(),sourceIds:[...new Set(ids.flatMap(id=>featureIndex[id].sourceIds))].sort(),kind,materialRole:role,lodRole};
+      mesh.userData.city={...original,schemaVersion:1,featureId:registryObjects.has(mesh)?original.featureId:ids[0],featureIds:[...new Set(ids)].sort(),sourceIds:[...new Set(ids.flatMap(id=>featureIndex[id].sourceIds))].sort(),kind,materialRole:role,lodRole};
       if(mesh.isInstancedMesh)mesh.userData.city.instanceFeatureIds=ids;
     }
     const ids=Object.keys(featureIndex).sort();ids.forEach((id,i)=>featureIndex[id].renderId=i+1);const renderIds=[null,...ids],instanceGeometries=new Map();
@@ -168,9 +181,9 @@ export async function compileScene(raw, inputConfig, options = {}) {
     const assets={},chunkMap=new Map(grid.cells.map(c=>[c.id,{id:c.id,bounds:[c.bounds[0],0,c.bounds[1],c.bounds[2],0,c.bounds[3]],contentBounds:null,transform:identity,lods:[]}])) ;
     const lowMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9});ownedMaterial.add(lowMaterial);
     const lowGeometries=new Map();
-    for(const mesh of meshes)if(mesh.userData.city.kind==='building'&&!registryObjects.has(mesh)){
+    for(const mesh of meshes)if(mesh.userData.city.kind==='building'&&(!registryObjects.has(mesh)||['city-ink/china-zun','city-ink/cctv'].includes(mesh.userData.city.generatorId))){
       const b=data.buildings.find(b=>b.id===mesh.userData.city.featureId);if(!b)continue;
-      const low=lowBuilding(b,lowMaterial,config.landmarks.enabled),g=low.geometry,n=g.attributes.position.count;
+      const low=lowBuilding(b,lowMaterial,!!mesh.userData.city.generatorId,mesh.userData.city.recipeParameters),g=low.geometry,n=g.attributes.position.count;
       const color=mesh.geometry.attributes.color,c=new THREE.Color();if(color?.count)c.fromBufferAttribute(color,0);else c.copy(mesh.material.color||new THREE.Color('#c7c7be'));
       g.setAttribute('color',new THREE.Float32BufferAttribute(Array.from({length:n},()=>c.toArray()).flat(),3));g.setAttribute('cityFeature',new THREE.Uint32BufferAttribute(new Uint32Array(n).fill(featureIndex[b.id].renderId),1));
       const roles=new Uint8Array(n).fill(materialRoles.indexOf(mesh.userData.city.materialRole));for(let i=0;i<n;i++)if(g.attributes.normal.getY(i)>.5)roles[i]=3;else if(g.attributes.normal.getY(i)<-.5)roles[i]=4;g.setAttribute('cityMaterialRole',new THREE.Uint8BufferAttribute(roles,1));

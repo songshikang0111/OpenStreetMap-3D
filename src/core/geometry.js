@@ -7,7 +7,7 @@ export function boundsOf(object) {
   return b.isEmpty()?[0,0,0,0,0,0]:[...b.min.toArray(),...b.max.toArray()];
 }
 
-export function lowBuilding(building, material, enabled=true) {
+export function lowBuilding(building, material, enabled=true,parameters={}) {
   const kind=enabled?landmarkKind(building):null;
   let geometry;
   if(!kind){
@@ -34,7 +34,7 @@ export function lowBuilding(building, material, enabled=true) {
       }
     };
     if(kind==='cctv'){
-      const a=cctvRing(building,building.minHeight),b=cctvRing(building,building.height);
+      const a=cctvRing(building,building.minHeight,parameters.legShifts),b=cctvRing(building,building.height,parameters.legShifts);
       skin(a,b,.45+building.minHeight,.45+building.height);cap(a,.45+building.minHeight,false);cap(b,.45+building.height,true);
     }else{
       const xs=building.outer.map(p=>p[0]),zs=building.outer.map(p=>p[1]),cx=(Math.min(...xs)+Math.max(...xs))/2,cz=(Math.min(...zs)+Math.max(...zs))/2;
@@ -154,7 +154,7 @@ export function mergeLowBuildings(group) {
       geometry.setAttribute(name,name==='cityFeature'?new THREE.Uint32BufferAttribute(values,1):name==='cityMaterialRole'?new THREE.Uint8BufferAttribute(values,1):new THREE.Float32BufferAttribute(values,size));
     }
     const merged=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9}));merged.name='Far building silhouettes';merged.receiveShadow=true;
-    merged.userData={inkClass:1,city:{kind:'building',materialRole:role,lodRole:'far',materialRoleTable:meshes[0].userData.city.materialRoleTable,materialRoleAttribute:'cityMaterialRole',featureIds:[...new Set(meshes.flatMap(m=>m.userData.city.featureIds))].sort(),sourceIds:[...new Set(meshes.flatMap(m=>m.userData.city.sourceIds))].sort()}};
+    merged.userData={inkClass:1,city:{schemaVersion:1,kind:'building',materialRole:role,lodRole:'far',materialRoleTable:meshes[0].userData.city.materialRoleTable,materialRoleAttribute:'cityMaterialRole',featureIds:[...new Set(meshes.flatMap(m=>m.userData.city.featureIds))].sort(),sourceIds:[...new Set(meshes.flatMap(m=>m.userData.city.sourceIds))].sort()}};
     for(const mesh of meshes)group.remove(mesh);group.add(merged);
   }
 }
