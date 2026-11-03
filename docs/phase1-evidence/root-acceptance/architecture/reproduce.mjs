@@ -1,0 +1,30 @@
+import {execFileSync} from 'node:child_process';
+import path from 'node:path';
+import {mkdir,writeFile,readFile,readdir,cp} from 'node:fs/promises';
+import {createProject,patchProject} from '../../../../src/cli/project.js';
+import {buildProject,runProjectTask} from '../../../../src/cli/tasks.js';
+import {exportProject} from '../../../../src/cli/export.js';
+import {createLocalServer} from '../../../../src/local-server/index.js';
+import {runCLI} from '../../../../src/cli/index.js';
+const base=path.resolve('work/root-acceptance-architecture');
+const root=path.join(base,`external-style-${Date.now()}`);
+await createProject(root,{name:'external style export probe',sample:true});
+await buildProject(root);
+await mkdir(path.join(root,'styles'));
+await cp('examples/quickstart/sepia-style.js',path.join(root,'styles/sepia.js'));
+await patchProject(root,{style:{id:'project-sepia',parameters:{}}});
+const exported=await exportProject(root,{format:'web'});
+const config=JSON.parse(await readFile(path.join(root,'site/viewer-config.json'),'utf8'));
+const viewerSource=await readFile(path.join(root,'site/viewer.js'),'utf8');
+const siteFiles=[];async function walk(dir,rel=''){for(const item of await readdir(dir,{withFileTypes:true})){const next=path.join(dir,item.name),r=path.join(rel,item.name);if(item.isDirectory())await walk(next,r);else siteFiles.push(r.replaceAll('\\','/'));}}await walk(path.join(root,'site'));
+const {getStyle,registerStyle}=await import('../../../../src/styles/index.js');let lookup;try{getStyle(config.style.id);lookup='registered';}catch(e){lookup=e.message;}
+const sepia=(await import('../../../../examples/quickstart/sepia-style.js')).default;
+registerStyle(sepia);const explicitSDKRegistration=getStyle('project-sepia').id;
+const sourceRoot=path.join(base,`endpoint-${Date.now()}`);
+await createProject(sourceRoot,{sample:true,source:{endpoint:'http://127.0.0.1:1/custom'}});
+let actualEndpoint;await runProjectTask('fetch',sourceRoot,{}, {request:async url=>{actualEndpoint=url;return {elements:[]};}});
+const stdout={write(){}},stderr={write(){}};
+const cliEndpoint=await runCLI(['data','fetch','--project',sourceRoot,'--endpoint','http://127.0.0.1:1/custom','--json'],{stdout,stderr});
+const service=await createLocalServer({workspaceRoot:path.join(base,`service-${Date.now()}`),port:0});let apiEndpoint;try{const projects=await fetch(`${service.url}/api/projects`).then(r=>r.json());const project=projects.projects[0];const response=await fetch(`${service.url}/api/projects/${project.id}/jobs`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'fetch',parameters:{endpoint:'http://127.0.0.1:1/custom'}})});apiEndpoint={status:response.status,body:await response.json()};}finally{await service.close();}
+const result={commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),externalStyle:{exported,config,siteFiles,viewerHasRegistration:viewerSource.includes('registerStyle'),lookup,explicitSDKRegistration},endpoint:{savedSourceEndpoint:'http://127.0.0.1:1/custom',actualEndpoint,cliEndpoint,apiEndpoint}};
+await writeFile(path.join(base,'findings.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));

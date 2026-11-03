@@ -1,0 +1,126 @@
+{
+  "date": "2026-11-03T11:57:51.773Z",
+  "sourceCommit": "7c837551f5e364c98bbc19adf8d5af73a6a2ab85",
+  "tool": "Official Chrome extension via cua_repl; independent primary reviewer, not implementation author",
+  "scope": "Offline synthetic sample; this UI run did not block external networking and is not live OSM download evidence",
+  "project": "work/root-acceptance-studio/projects/cf124b4f-046e-43b5-85bc-63f298c0172b",
+  "config": {
+    "area": {
+      "east": 116.462,
+      "north": 39.91,
+      "south": 39.908,
+      "west": 116.459
+    },
+    "camera": {
+      "fov": 45,
+      "near": 0.25,
+      "position": [
+        25.652154541015626,
+        12,
+        51.30430908203125
+      ],
+      "target": [
+        0,
+        18,
+        0
+      ]
+    },
+    "generation": {
+      "inferRoofs": false,
+      "landscapeEnabled": false
+    },
+    "landmarks": {
+      "enabled": true,
+      "packages": []
+    },
+    "name": "offline-sample-1793706704825",
+    "origin": {
+      "lat": 39.909,
+      "lon": 116.4605
+    },
+    "quality": "low",
+    "schemaVersion": 1,
+    "seed": 1,
+    "source": {
+      "file": "data/source.json",
+      "kind": "sample"
+    },
+    "style": {
+      "id": "color",
+      "parameters": {}
+    },
+    "tiling": {
+      "sizeMeters": 500
+    }
+  },
+  "results": [
+    {
+      "name": "sample build and rendered canvas",
+      "status": "pass"
+    },
+    {
+      "name": "color style, low quality, street view, save and reload",
+      "status": "pass"
+    },
+    {
+      "name": "open actual project relative path",
+      "status": "pass"
+    },
+    {
+      "name": "invalid name-as-path",
+      "status": "expected-error",
+      "code": "ENOENT"
+    },
+    {
+      "name": "PNG with attribution / complete GLB",
+      "status": "pass"
+    },
+    {
+      "name": "web export at nested URL with four official styles",
+      "status": "pass"
+    },
+    {
+      "name": "custom project-sepia web export",
+      "status": "fail",
+      "error": "Unknown style: project-sepia"
+    },
+    {
+      "name": "camera preset label on reopen",
+      "status": "minor-observation",
+      "note": "Actual street camera restores, but preset selector displays overview."
+    }
+  ],
+  "exports": [
+    {
+      "type": "png",
+      "downloadName": "city-ink (3).png",
+      "bytes": 290652,
+      "modified": "2026-11-03T11:53:55.952Z",
+      "sha256": "c92cd5e2b15b2f89a502f4f73fc32dcec27c7df19026a05f8a5e2388358c92f7",
+      "signature": "89504e470d0a1a0a"
+    },
+    {
+      "type": "glb",
+      "downloadName": "city-ink (2).glb",
+      "bytes": 101244,
+      "modified": "2026-11-03T11:54:08.585Z",
+      "sha256": "9f58dd1381a34fb3ec15ccad51e7bcf3bf91b1c794cd487f448ce80977faf9ce",
+      "signature": "glTF"
+    }
+  ],
+  "staticSite": {
+    "path": "work/root-acceptance-studio/projects/cf124b4f-046e-43b5-85bc-63f298c0172b/site",
+    "url": "http://127.0.0.1:4194/projects/cf124b4f-046e-43b5-85bc-63f298c0172b/site/",
+    "styles": [
+      "color",
+      "comic",
+      "line",
+      "white"
+    ]
+  },
+  "customSite": {
+    "url": "http://127.0.0.1:4194/custom-style-site/",
+    "visibleError": "Unknown style: project-sepia"
+  },
+  "cleanup": "Temporary test browser tabs closed; local servers stopped after evidence collection."
+}

@@ -1,0 +1,514 @@
+[
+  {
+    "targetTime": 10,
+    "view": {
+      "position": [
+        -122.50888529026042,
+        25,
+        -110.76172574684028
+      ],
+      "target": [
+        0.5427259487235006,
+        20,
+        -6.486136335879564
+      ],
+      "fov": 55
+    },
+    "mode": "CPU scheduler, CPU frustum counts for 4 scene passes plus shadow and composite, stationary camera, default budget; no hardware performance claims",
+    "counters": {
+      "loads": 2,
+      "unloads": 1,
+      "cancelled": 0,
+      "failures": 0,
+      "fetchedBytes": 12964152,
+      "swaps": 1,
+      "peakConcurrentLoads": 1,
+      "peakEstimatedResidentBytes": 12893896
+    },
+    "swaps": [
+      {
+        "time": 0,
+        "desired": 0,
+        "mainTriangles": 0,
+        "nearTriangles": 0,
+        "multiplier": 5,
+        "triangles": 6,
+        "calls": 3
+      },
+      {
+        "time": 240,
+        "level": "low",
+        "desired": 0,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 520,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 117972,
+        "nearTriangles": 2352,
+        "multiplier": 4.981666168013032,
+        "triangles": 599414,
+        "calls": 307
+      }
+    ]
+  },
+  {
+    "targetTime": 13,
+    "view": {
+      "position": [
+        -54.465855332583416,
+        26.25,
+        -52.10670670317487
+      ],
+      "target": [
+        0.5427259487235006,
+        19.5,
+        -6.486136335879564
+      ],
+      "fov": 55
+    },
+    "mode": "CPU scheduler, CPU frustum counts for 4 scene passes plus shadow and composite, stationary camera, default budget; no hardware performance claims",
+    "counters": {
+      "loads": 29,
+      "unloads": 28,
+      "cancelled": 14,
+      "failures": 0,
+      "fetchedBytes": 296776508,
+      "swaps": 28,
+      "peakConcurrentLoads": 1,
+      "peakEstimatedResidentBytes": 13177928
+    },
+    "swaps": [
+      {
+        "time": 0,
+        "desired": 0,
+        "mainTriangles": 0,
+        "nearTriangles": 0,
+        "multiplier": 5,
+        "triangles": 6,
+        "calls": 3
+      },
+      {
+        "time": 200,
+        "level": "low",
+        "desired": 0,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 760,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 960,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 1840,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 2000,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 2880,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 3080,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 4000,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 4160,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 5040,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 5200,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 6080,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 6280,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 7160,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 7360,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 8240,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 8440,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 9320,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 9480,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 10440,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 10640,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 11560,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 11760,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 12640,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 12840,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 13720,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 13880,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 14760,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 115628,
+        "nearTriangles": 3648,
+        "multiplier": 5.4222222222222225,
+        "triangles": 596894,
+        "calls": 247
+      },
+      {
+        "time": 14920,
+        "level": "low",
+        "desired": 1,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      }
+    ]
+  },
+  {
+    "targetTime": 19,
+    "view": {
+      "position": [
+        81.62020458277061,
+        28.75,
+        65.20333138415589
+      ],
+      "target": [
+        0.5427259487235006,
+        18.5,
+        -6.486136335879564
+      ],
+      "fov": 55
+    },
+    "mode": "CPU scheduler, CPU frustum counts for 4 scene passes plus shadow and composite, stationary camera, default budget; no hardware performance claims",
+    "counters": {
+      "loads": 2,
+      "unloads": 1,
+      "cancelled": 81,
+      "failures": 0,
+      "fetchedBytes": 699907832,
+      "swaps": 1,
+      "peakConcurrentLoads": 1,
+      "peakEstimatedResidentBytes": 18079940
+    },
+    "swaps": [
+      {
+        "time": 0,
+        "desired": 0,
+        "mainTriangles": 0,
+        "nearTriangles": 0,
+        "multiplier": 5,
+        "triangles": 6,
+        "calls": 3
+      },
+      {
+        "time": 240,
+        "level": "low",
+        "desired": 0,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 680,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 116929,
+        "nearTriangles": 2928,
+        "multiplier": 5.052631578947368,
+        "triangles": 586786,
+        "calls": 291
+      }
+    ]
+  },
+  {
+    "targetTime": 37,
+    "view": {
+      "position": [
+        26.61162330146368,
+        22,
+        40.43787889905275
+      ],
+      "target": [
+        0.5427259487235006,
+        18,
+        -79.47904892355204
+      ],
+      "fov": 30
+    },
+    "mode": "CPU scheduler, CPU frustum counts for 4 scene passes plus shadow and composite, stationary camera, default budget; no hardware performance claims",
+    "counters": {
+      "loads": 3,
+      "unloads": 2,
+      "cancelled": 0,
+      "failures": 0,
+      "fetchedBytes": 21550948,
+      "swaps": 2,
+      "peakConcurrentLoads": 1,
+      "peakEstimatedResidentBytes": 18081732
+    },
+    "swaps": [
+      {
+        "time": 0,
+        "desired": 0,
+        "mainTriangles": 0,
+        "nearTriangles": 0,
+        "multiplier": 5,
+        "triangles": 6,
+        "calls": 3
+      },
+      {
+        "time": 240,
+        "level": "low",
+        "desired": 0,
+        "mainTriangles": 32225,
+        "nearTriangles": 0,
+        "multiplier": 4.907494181536075,
+        "triangles": 158144,
+        "calls": 94
+      },
+      {
+        "time": 680,
+        "level": "high",
+        "desired": 0,
+        "mainTriangles": 116311,
+        "nearTriangles": 3264,
+        "multiplier": 5.333333333333333,
+        "triangles": 597706,
+        "calls": 259
+      },
+      {
+        "time": 1120,
+        "level": "medium",
+        "desired": 1,
+        "mainTriangles": 108223,
+        "nearTriangles": 0,
+        "multiplier": 5.484848484848484,
+        "triangles": 540946,
+        "calls": 184
+      }
+    ]
+  }
+]
