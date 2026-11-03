@@ -4,19 +4,25 @@ import { randomUUID } from 'node:crypto';
 import { safePath, readJSON, CityError } from '../data/common.js';
 
 export async function acquireProjectLock(root){
-  const file=await safePath(root,'.city-cache/task-owner.json',{allowMissing:true});
-  await mkdir(path.dirname(file),{recursive:true});const token=randomUUID();
-  const claim=()=>writeFile(file,JSON.stringify({pid:process.pid,token}),{flag:'wx'});
-  try{await claim();}
-  catch(e){
-    if(e.code!=='EEXIST')throw e;
-    const owner=await readJSON(file);let alive=true;
-    try{process.kill(owner.pid,0);}catch(error){if(error.code==='ESRCH')alive=false;else throw error;}
-    if(alive)throw new CityError('PROJECT_BUSY','job','Another CLI, batch or studio task is modifying this project.','Wait for that task to finish or cancel it in its owning process.');
-    // Only reclaim the stale record we inspected.
-    if((await readJSON(file)).token!==owner.token)throw new CityError('PROJECT_BUSY','job','Project ownership changed; retry later.');
-    await rm(file);try{await claim();}catch(error){if(error.code==='EEXIST')throw new CityError('PROJECT_BUSY','job','Another process acquired the project.');throw error;}
+  const busy=()=>new CityError('PROJECT_BUSY','job','Another CLI, batch or studio task is modifying this project.','Wait for that task to finish or cancel it in its owning process.');
+  function alive(owner){try{process.kill(owner.pid,0);return true;}catch(e){if(e.code==='ESRCH')return false;throw e;}}
+  async function claim(relative,depth=0){
+    if(depth>8)throw new CityError('LOCK_RECOVERY_LIMIT','job','Too many interrupted lock-recovery records.','Inspect .city-cache/task-owner.json recovery records and retry after stopping project tasks.');
+    const file=await safePath(root,relative,{allowMissing:true});await mkdir(path.dirname(file),{recursive:true});const token=randomUUID();
+    const write=()=>writeFile(file,JSON.stringify({pid:process.pid,token}),{flag:'wx'});
+    const release=async()=>{try{if((await readJSON(file)).token===token)await rm(file,{force:true});}catch(e){if(e.code!=='ENOENT')throw e;}};
+    try{await write();return release;}catch(e){if(e.code!=='EEXIST')throw e;}
+    let owner;try{owner=await readJSON(file);}catch(e){if(e.code==='ENOENT')throw busy();throw e;}
+    if(alive(owner))throw busy();
+    // The recovery claim serializes stale removal. If a recoverer itself died,
+    // the next suffix provides the same arbitration before reclaiming it.
+    const releaseRecovery=await claim(`${relative}.recovery`,depth+1);
+    try{
+      let current;try{current=await readJSON(file);}catch(e){if(e.code!=='ENOENT')throw e;}
+      if(current){if(current.token!==owner.token||alive(current))throw busy();await rm(file);}
+      try{await write();return release;}catch(e){if(e.code==='EEXIST')throw busy();throw e;}
+    }finally{await releaseRecovery();}
   }
-  return async()=>{try{if((await readJSON(file)).token===token)await rm(file,{force:true});}catch(e){if(e.code!=='ENOENT')throw e;}};
+  return claim('.city-cache/task-owner.json');
 }
 export async function withProjectLock(root,action){const release=await acquireProjectLock(root);try{return await action();}finally{await release();}}

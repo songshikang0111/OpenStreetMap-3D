@@ -12,6 +12,7 @@ import { JobManager, requestJobCancel } from '../src/cli/jobs.js';
 import { updateLandmarks } from '../src/cli/landmarks.js';
 import { runCLI, runBatch, exitCode } from '../src/cli/index.js';
 import { createLocalServer } from '../src/local-server/index.js';
+import { acquireProjectLock } from '../src/cli/project-lock.js';
 
 const temp=()=>mkdtemp(path.join(os.tmpdir(),'city-cli-test-'));
 const fixtureCore={validateProjectConfig:()=>true,validateSceneManifest:m=>m.schemaVersion===1,compileScene:async(raw,config,{signal,onProgress})=>{signal?.throwIfAborted();onProgress({stage:'geometry',progress:0.5});return {manifest:{schemaVersion:1,chunks:[],origin:config.origin},assets:{'chunks/a.json':JSON.stringify({seed:config.seed,ids:raw.elements.map(e=>e.id)})},report:{diagnostics:[]}};}};
@@ -144,6 +145,15 @@ test('failed final job-state write returns a structured failure and releases wai
   try{
     const job=await manager.enqueue('build','fixture');const done=await Promise.race([manager.wait(job.id),delay(1000).then(()=>{throw new Error('waiter hung');})]);assert.equal(done.status,'failed');assert.ok(done.diagnostics.some(d=>d.code==='JOB_PERSIST_FAILED'));assert.equal(manager.active.size,0);
   }finally{await manager.close();}
+});
+test('simultaneous stale project-lock recovery never grants two owners',async()=>{
+  const root=await temp();await createProject(root,{sample:true});
+  for(let i=0;i<30;i++){
+    await atomicWrite(path.join(root,'.city-cache/task-owner.json'),{pid:2147483647,token:'dead-owner'});
+    if(i===0)await atomicWrite(path.join(root,'.city-cache/task-owner.json.recovery'),{pid:2147483647,token:'dead-recoverer'});
+    const results=await Promise.allSettled([acquireProjectLock(root),acquireProjectLock(root)]);assert.equal(results.filter(r=>r.status==='fulfilled').length,1);
+    for(const result of results)if(result.status==='fulfilled')await result.value();
+  }
 });
 test('symlink/junction project paths cannot escape the workspace',async()=>{
   const root=await temp(),outside=await temp();await createProject(outside,{sample:true});
