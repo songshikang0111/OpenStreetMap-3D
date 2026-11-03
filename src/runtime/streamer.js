@@ -2,6 +2,7 @@ import { Group } from 'three';
 import { budgetPlan, projectChunks } from './policy.js';
 import { measureGroup, ResourceRegistry } from './resources.js';
 import { runtimeError } from './manifest.js';
+import { collectDrawUnits, drawUnitCost } from './render-cost.js';
 
 export class ChunkStreamer {
   constructor({ manifest, readAsset, decodeChunk, budget, bindGroup = () => null, prepareGroup, releaseGroup = () => {}, onDiagnostic = () => {}, onProgress = () => {}, now = () => performance.now() }) {
@@ -9,6 +10,7 @@ export class ChunkStreamer {
     this.group = new Group(); this.group.name = 'City Ink streamed chunks';
     this.registry = new ResourceRegistry(); this.current = new Map(); this.pending = new Map(); this.desired = new Map();
     this.failures = new Map(); this.ready = []; this.disposed = false; this.epoch = 0; this.states = new Map();
+    this.unitCache = new Map(); this.standby = new Map();
     this.counters = { loads: 0, unloads: 0, cancelled: 0, failures: 0, fetchedBytes: 0, swaps: 0, peakConcurrentLoads: 0, peakEstimatedResidentBytes: 0 };
     this.firstUsableMs = null; this.started = now(); this.warned = new Set(); this.passMultiplier = 1;
   }
@@ -17,17 +19,20 @@ export class ChunkStreamer {
     if (this.warned.has(key)) return;
     this.warned.add(key); this.onDiagnostic({ code, stage: 'runtime', message, ...details });
   }
-  update(camera, height, time = this.now(), { forceLod } = {}) {
+  update(camera, height, time = this.now(), { forceLod, renderContext } = {}) {
     if (this.disposed) return;
     this.hasScheduled = true;
-    const projected = projectChunks(this.manifest.chunks, camera, height, this.budget.prefetchMargin);
+    this.renderContext = renderContext;
+    const projected = projectChunks(this.manifest.chunks, camera, height, this.budget.prefetchMargin, renderContext, this.unitCache);
     for (const item of projected) {
       const resident = this.current.get(item.chunk.id);
       item.residentCosts = item.chunk.lods.map((lod, index) => resident?.index === index ? resident.estimatedBytes : Math.ceil((lod.residentBytes ?? lod.bytes) * 1.1));
     }
-    const plan = budgetPlan(projected, this.states, { ...this.budget, residentBytes: Math.max(0, this.budget.residentBytes - (this.extraResidentBytes || 0)), visibleTriangles: Math.max(0, this.budget.visibleTriangles - (this.extraTriangles || 0) * this.passMultiplier), drawCalls: Math.max(0, this.budget.drawCalls - (this.extraCalls || 0) * this.passMultiplier), nearDetails: Math.max(0, this.budget.nearDetails - (this.extraDetails || 0)) }, time, this.passMultiplier);
+    const reserve = [...this.standby.values()].reduce((sum, entry) => sum + entry.estimatedBytes, 0);
+    const plan = budgetPlan(projected, this.states, { ...this.budget, residentBytes: Math.max(0, this.budget.residentBytes - reserve) }, time, renderContext || this.passMultiplier);
     if (forceLod != null) for (const p of plan.requests) p.index = Math.min(p.chunk.lods.length - 1, forceLod);
     this.desired = new Map(plan.requests.map(p => [p.chunk.id, p])); this.plan = plan;
+    for (const p of plan.requests) if (this.states.get(p.chunk.id)?.index !== p.index) this.states.set(p.chunk.id, { index: p.index, since: time });
     if (plan.degraded) this.diagnostic('LOD_BUDGET_DOWNGRADE', 'Detail was reduced to preserve coverage within the configured resource budget.');
     if (plan.unavoidable) this.diagnostic('COVERAGE_EXCEEDS_BUDGET', 'Even the coarsest visible coverage exceeds budget. Increase budget or build a smaller supported area.', { totals: plan.totals });
     for (const [id, entry] of this.current) {
@@ -37,6 +42,14 @@ export class ChunkStreamer {
       if (desired) entry.lastVisible = time;
       else if (time - entry.lastVisible >= this.budget.unloadDelayMs) this.evict(id);
     }
+    for (const desired of this.desired.values()) {
+      const coarse = this.standby.get(desired.chunk.id);
+      if (coarse?.index !== desired.index) continue;
+      this.standby.delete(desired.chunk.id);
+      const previous = this.current.get(desired.chunk.id); if (previous) this.release(previous);
+      coarse.group.visible = true; coarse.lastVisible = time; coarse.frameMetrics = desired.costs?.[coarse.index];
+      this.group.add(coarse.group); this.current.set(desired.chunk.id, coarse); this.counters.swaps++;
+    }
     for (const [key, task] of this.pending) {
       const desired = this.desired.get(task.chunk.id);
       if (!desired || (task.index !== desired.index && task.index !== task.chunk.lods.length - 1)) this.cancel(key);
@@ -45,7 +58,11 @@ export class ChunkStreamer {
     if (this.estimatedBytes() > this.budget.residentBytes * .8) {
       for (const [id] of this.current) if (!this.desired.has(id)) this.evict(id);
     }
-    this.mountReady(time); this.pump();
+    this.mountReady(time);
+    // Keep a counted coarse representation so sudden camera changes can retain
+    // complete coverage while an asynchronous replacement is being decoded.
+    if (renderContext && forceLod == null) this.enforceFrameBudget(time);
+    this.pump();
     this.counters.peakEstimatedResidentBytes = Math.max(this.counters.peakEstimatedResidentBytes, this.estimatedBytes());
     this.onProgress({ stage: 'stream', loaded: this.current.size, visible: this.desired.size, pending: this.pending.size, complete: this.isSettled() });
   }
@@ -105,6 +122,7 @@ export class ChunkStreamer {
       // Preparation may add renderer classification attributes or clone geometry.
       const prepared = this.registry.retain(group); this.registry.release(resources); resources = prepared;
       if (controller.signal.aborted || this.disposed || task.epoch !== this.epoch) { this.releaseGroup(group); binding?.dispose?.(); this.registry.release(resources); return; }
+      this.unitCache.set(lod.url, collectDrawUnits(group));
       this.ready.push({ ...task, group, binding, resources, metrics: measureGroup(group), estimatedBytes: Math.max(lod.residentBytes ?? lod.bytes, this.groupBytes(group)) });
       this.failures.delete(key);
       group = null;
@@ -135,16 +153,40 @@ export class ChunkStreamer {
     if (!desired || entry.controller.signal.aborted || this.disposed) { this.releaseGroup(entry.group); entry.binding?.dispose?.(); this.registry.release(entry.resources); return; }
     const previous = this.current.get(entry.chunk.id);
     entry.since = time; entry.lastVisible = time; entry.group.visible = true;
-    entry.frameMetrics = desired.costs?.[entry.index];
+    entry.frameMetrics = this.renderContext ? drawUnitCost(this.unitCache.get(entry.chunk.lods[entry.index].url), this.renderContext) : desired.costs?.[entry.index];
+    if (desired.costs) desired.costs[entry.index] = entry.frameMetrics;
     this.group.add(entry.group); this.current.set(entry.chunk.id, entry);
-    this.states.set(entry.chunk.id, { index: entry.index, since: !previous && desired.index < entry.index ? -Infinity : time });
+    if (entry.index === desired.index) this.states.set(entry.chunk.id, { index: entry.index, since: time });
     entry.resourcesDirty = true;
-    if (previous) { this.release(previous); this.counters.swaps++; }
+    if (previous) {
+      if (this.renderContext && previous.index === previous.chunk.lods.length - 1) {
+        previous.group.removeFromParent(); previous.group.visible = false; this.standby.set(previous.chunk.id, previous);
+      } else this.release(previous);
+      this.counters.swaps++;
+    }
     this.counters.loads++;
     if (this.firstUsableMs == null) this.firstUsableMs = this.now() - this.started;
   }
   release(entry) { entry.group.removeFromParent(); this.releaseGroup(entry.group); entry.binding?.dispose?.(); this.registry.release(entry.resources); this.counters.unloads++; }
-  evict(id) { const entry = this.current.get(id); if (!entry) return; this.release(entry); this.current.delete(id); this.states.delete(id); }
+  evict(id) { const entry = this.current.get(id); if (!entry) return; this.release(entry); this.current.delete(id); const coarse = this.standby.get(id); if (coarse) { this.release(coarse); this.standby.delete(id); } this.states.delete(id); }
+  frameCost() {
+    let triangles = this.renderContext?.fixedTriangles || 0, calls = this.renderContext?.fixedCalls || 0;
+    for (const e of this.current.values()) if (e.group.visible) { triangles += e.frameMetrics?.frameTriangles ?? e.metrics.triangles * this.passMultiplier; calls += e.frameMetrics?.frameCalls ?? e.metrics.drawCalls * this.passMultiplier; }
+    return { triangles, calls };
+  }
+  enforceFrameBudget(time) {
+    for (const desired of [...this.desired.values()].reverse()) {
+      const cost = this.frameCost(); if (cost.triangles <= this.budget.visibleTriangles && cost.calls <= this.budget.drawCalls) break;
+      const entry = this.current.get(desired.chunk.id), coarse = this.standby.get(desired.chunk.id);
+      if (!entry || !coarse) continue;
+      const coarseCost = desired.costs[coarse.index], entryCost = desired.costs[entry.index];
+      if (coarseCost.frameTriangles > entryCost.frameTriangles || coarseCost.frameCalls > entryCost.frameCalls) continue;
+      this.standby.delete(desired.chunk.id); this.release(entry);
+      coarse.group.visible = true; coarse.lastVisible = time; coarse.frameMetrics = coarseCost;
+      this.group.add(coarse.group); this.current.set(desired.chunk.id, coarse); this.counters.swaps++;
+      desired.index = coarse.index; this.states.set(desired.chunk.id, { index: coarse.index, since: -Infinity });
+    }
+  }
   cancel(key) {
     const task = this.pending.get(key); if (!task || task.controller.signal.aborted) return;
     task.controller.abort(); this.counters.cancelled++;
@@ -156,6 +198,7 @@ export class ChunkStreamer {
   estimatedBytes() {
     let bytes = this.extraResidentBytes || 0;
     for (const e of this.current.values()) bytes += e.estimatedBytes;
+    for (const e of this.standby.values()) bytes += e.estimatedBytes;
     for (const e of this.pending.values()) bytes += e.chunk.lods[e.index].residentBytes ?? e.chunk.lods[e.index].bytes;
     return bytes;
   }
@@ -175,7 +218,7 @@ export class ChunkStreamer {
       if (e.group.visible) { visibleIds.push(id); visibleTriangles += e.frameMetrics?.triangles ?? e.metrics.triangles; sceneDrawCalls += e.frameMetrics?.drawCalls ?? e.metrics.drawCalls; nearDetails += e.metrics.nearDetails; }
     }
     for (const id of this.desired.keys()) if (!this.current.has(id)) missingIds.push(id);
-    return { ...this.counters, ...this.registry.stats(), estimatedResidentBytes: this.estimatedBytes(), byteMetric: 'CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory', currentChunks: this.current.size, pendingLoads: this.pending.size, visibleChunks: visibleIds.length, missingChunks: missingIds, visibleIds, levels, visibleTriangles, sceneDrawCalls, nearDetails, settled: this.isSettled(), firstUsableMs: this.firstUsableMs };
+    return { ...this.counters, ...this.registry.stats(), estimatedResidentBytes: this.estimatedBytes(), byteMetric: 'CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory', currentChunks: this.current.size, pendingLoads: this.pending.size, visibleChunks: visibleIds.length, missingChunks: missingIds, visibleIds, levels, visibleTriangles, sceneDrawCalls, nearDetails, frameCost: this.frameCost(), desiredLods: [...this.desired.values()].map(p => ({ tileId: p.chunk.id, index: p.index, level: p.chunk.lods[p.index].level })), currentLods: [...this.current.values()].map(e => ({ tileId: e.chunk.id, index: e.index, level: e.chunk.lods[e.index].level })), standbyChunks: this.standby.size, settled: this.isSettled(), firstUsableMs: this.firstUsableMs };
   }
   refreshResources() {
     // Render pipelines can add classification attributes / clone shared buffers
@@ -191,12 +234,14 @@ export class ChunkStreamer {
     // Do not mix asynchronous old-style results into the new pipeline.
     this.epoch++;
     for (const key of this.pending.keys()) this.cancel(key);
-    for (const entry of this.current.values()) {
+    this.unitCache.clear();
+    for (const entry of [...this.current.values(), ...this.standby.values()]) {
       entry.binding?.dispose?.(); entry.binding = await bindGroup(entry.group);
       await prepareGroup?.(entry.group);
       const resources = this.registry.retain(entry.group); this.registry.release(entry.resources); entry.resources = resources;
       entry.metrics = measureGroup(entry.group); entry.estimatedBytes = Math.max(entry.chunk.lods[entry.index].residentBytes ?? entry.chunk.lods[entry.index].bytes, this.groupBytes(entry.group));
       entry.resourcesDirty = true;
+      this.unitCache.set(entry.chunk.lods[entry.index].url, collectDrawUnits(entry.group));
     }
   }
   async dispose() {
@@ -206,6 +251,6 @@ export class ChunkStreamer {
     for (const id of [...this.current.keys()]) this.evict(id);
     await Promise.allSettled([...this.pending.values()].map(p => p.promise));
     for (const entry of this.ready.splice(0)) { this.releaseGroup(entry.group); entry.binding?.dispose?.(); this.registry.release(entry.resources); }
-    this.pending.clear(); this.desired.clear(); this.failures.clear(); this.states.clear(); this.extraResidentBytes = this.extraTriangles = this.extraCalls = this.extraDetails = 0; this.group.removeFromParent();
+    this.pending.clear(); this.desired.clear(); this.failures.clear(); this.states.clear(); this.unitCache.clear(); this.extraResidentBytes = this.extraTriangles = this.extraCalls = this.extraDetails = 0; this.group.removeFromParent();
   }
 }

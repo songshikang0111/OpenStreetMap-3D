@@ -9,6 +9,7 @@ import { loadDefaultAdapters } from '../runtime/integrations.js';
 import { NearDetails } from '../runtime/near-details.js';
 import { applyView } from '../runtime/camera.js';
 import { applyPipelineQuality } from '../runtime/style-quality.js';
+import { renderProfile, costContext, renderWithProfile } from '../runtime/render-cost.js';
 import { exportViewerPNG, exportViewerGLB } from './exports.js';
 
 const QUALITY = { low: { pixelRatio: 1, shadowQuality: 0, aoQuality: 0 }, balanced: { pixelRatio: 1, shadowQuality: 1, aoQuality: 1 }, high: { pixelRatio: 2, shadowQuality: 2, aoQuality: 2 } };
@@ -38,12 +39,14 @@ export async function createCityViewer(options) {
   sun.position.set(-400, 800, 350); sun.castShadow = budget.shadowQuality > 0;
   sun.shadow.mapSize.setScalar(budget.shadowQuality > 1 ? 2048 : 1024);
   Object.assign(sun.shadow.camera, { left: -700, right: 700, top: 700, bottom: -700, near: 1, far: 4000 });
+  sun.shadow.camera.updateProjectionMatrix();
   scene.add(ambient, sun, sun.target);
   const shared = adapters.createShared?.() || { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: { value: .5 }, glassReflection: { value: .65 }, toneSize: { value: 4.2 }, projectionScale: { value: 1000 } };
   const statistics = new FrameStatistics(), gpuTimer = new GpuFrameTimer(renderer.getContext()); let streamer, manifest, activeUrl, pipeline, style, nearDetails;
   let width = 1, height = 1, animation, disposed = false, loading, loadEpoch = 0, paused = false, renderFailed = false, lodMode = 'auto';
   let selectionStart, allLoadedMs = null, firstRenderedMs = null, firstRenderedAtMs = null, sceneStarted = 0, sceneOperations = Promise.resolve(), internalPauses = 0, disposal;
   let viewRevision = 0, scheduledRevision = -1;
+  let observedProfile;
   const invalidateSchedule = () => { viewRevision++; };
   controls.addEventListener('change', invalidateSchedule);
   const acquirePause = () => { internalPauses++; let released = false; return () => { if (!released) { released = true; internalPauses--; } }; };
@@ -75,7 +78,7 @@ export async function createCityViewer(options) {
     if (!next?.render || !next?.resize || !next?.dispose) { next?.dispose?.(); throw runtimeError('INVALID_STYLE_PIPELINE', 'style', 'Style pipeline requires render/resize/dispose.'); }
     const resume = acquirePause();
     try {
-      previous?.dispose(); pipeline = next; style = resolved;
+      previous?.dispose(); pipeline = next; style = resolved; observedProfile = undefined;
       pipeline.resize(Math.round(width * renderer.getPixelRatio()), Math.round(height * renderer.getPixelRatio()));
       applyPipelineQuality(pipeline, budget);
       if (streamer) await streamer.rebind(bindGroup, prepareGroup);
@@ -143,13 +146,16 @@ export async function createCityViewer(options) {
     controls.update();
     const before = performance.now();
     try {
-      streamer?.update(camera, height, time, { forceLod: lodMode === 'auto' ? undefined : lodMode === 'full' ? 0 : manifest.chunks[0].lods.length - 1 });
+      const shadows = renderer.shadowMap.enabled && sun.castShadow;
+      const profile = observedProfile || renderProfile(pipeline, shadows);
+      const context = costContext(camera, profile, sun);
+      streamer?.update(camera, height, time, { forceLod: lodMode === 'auto' ? undefined : lodMode === 'full' ? 0 : manifest.chunks[0].lods.length - 1, renderContext: context });
       scheduledRevision = viewRevision;
-      const main = streamer?.stats(), multiplier = streamer?.passMultiplier || 5;
+      const main = streamer?.frameCost(), multiplier = profile.scenePasses + profile.shadowPasses;
       const mainResident = (streamer?.estimatedBytes() || 0) - (streamer?.extraResidentBytes || 0);
-      nearDetails?.update(streamer?.current.values() || [], camera, time, budget.visibleTriangles - (main?.visibleTriangles || 0) * multiplier, multiplier, { residentBytes: budget.residentBytes - mainResident, drawCalls: budget.drawCalls - (main?.sceneDrawCalls || 0) * multiplier - 3 });
+      nearDetails?.update(streamer?.current.values() || [], camera, time, budget.visibleTriangles - (main?.triangles || 0), multiplier, { residentBytes: budget.residentBytes - mainResident, drawCalls: budget.drawCalls - (main?.calls || 0) });
       renderer.info.reset(); gpuTimer.begin(time);
-      try { pipeline.render(); } finally { gpuTimer.end(); }
+      try { observedProfile = renderWithProfile(renderer, pipeline, scene, camera, shadows); } finally { gpuTimer.end(); }
       streamer?.refreshResources(); nearDetails?.refreshResources();
       if (streamer) {
         const near = nearDetails?.stats(); streamer.extraResidentBytes = near?.geometryArrayBytes || 0; streamer.extraTriangles = near?.triangles || 0; streamer.extraCalls = near?.drawCalls || 0; streamer.extraDetails = near?.nearDetails || 0;
@@ -159,7 +165,6 @@ export async function createCityViewer(options) {
       // Whole-frame counters include all scene, shadow and screen-space passes.
       const runtime = streamer?.stats(), calls = renderer.info.render.calls, triangles = renderer.info.render.triangles;
       if (firstRenderedMs == null && runtime?.visibleChunks && triangles > 6) { firstRenderedAtMs = performance.now(); firstRenderedMs = firstRenderedAtMs - sceneStarted; }
-      if (streamer && runtime.sceneDrawCalls > 0) streamer.passMultiplier = Math.max(1, Math.min(16, Math.max((calls - 3) / (runtime.sceneDrawCalls + (streamer.extraCalls || 0)), triangles / Math.max(1, runtime.visibleTriangles + (streamer.extraTriangles || 0)))));
       if (streamer && lodMode === 'auto' && (calls > budget.drawCalls || triangles > budget.visibleTriangles)) streamer.diagnostic('MEASURED_DRAW_BUDGET', 'Whole-frame renderer counters exceed budget; the next schedule reduces geometric detail.', { drawCalls: calls, triangles });
       if (runtime?.settled && runtime.visibleChunks && allLoadedMs == null) allLoadedMs = performance.now() - sceneStarted;
     } catch (error) { renderFailed = true; diagnose({ code: 'RENDER_FAILED', stage: 'render', message: error.message }); }
