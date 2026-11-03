@@ -8,6 +8,7 @@ import { GpuFrameTimer } from '../runtime/gpu-timer.js';
 import { loadDefaultAdapters } from '../runtime/integrations.js';
 import { NearDetails } from '../runtime/near-details.js';
 import { applyView } from '../runtime/camera.js';
+import { applyPipelineQuality } from '../runtime/style-quality.js';
 import { exportViewerPNG, exportViewerGLB } from './exports.js';
 
 const QUALITY = { low: { pixelRatio: 1, shadowQuality: 0, aoQuality: 0 }, balanced: { pixelRatio: 1, shadowQuality: 1, aoQuality: 1 }, high: { pixelRatio: 2, shadowQuality: 2, aoQuality: 2 } };
@@ -76,7 +77,7 @@ export async function createCityViewer(options) {
     try {
       previous?.dispose(); pipeline = next; style = resolved;
       pipeline.resize(Math.round(width * renderer.getPixelRatio()), Math.round(height * renderer.getPixelRatio()));
-      if (pipeline.ink) { pipeline.ink.aoEnabled = budget.aoQuality > 0; pipeline.ink.material.uniforms.aoStrength.value = budget.aoQuality > 0 ? .65 : 0; }
+      applyPipelineQuality(pipeline, budget);
       if (streamer) await streamer.rebind(bindGroup, prepareGroup);
       nearDetails?.rebind(bindGroup); renderFailed = false; invalidateSchedule();
     } catch (error) { renderFailed = true; diagnose({ code: 'STYLE_BIND_FAILED', stage: 'style', message: error.message }); throw error; }
