@@ -8,6 +8,7 @@ import {createProject,readProject,patchProject,importData,SAMPLE_AREA} from '../
 import {buildProject,validateProject} from '../src/cli/tasks.js';
 import {exportProject} from '../src/cli/export.js';
 import {createLocalServer} from '../src/local-server/index.js';
+import official from '../packages/landmarks/index.js';
 
 const root=fileURLToPath(new URL('../',import.meta.url)),directory=path.join(root,'work/integration-e2e',new Date().toISOString().replaceAll(/[:.]/g,'-'));
 const evidence=path.join(root,'docs/phase1-evidence/integration');await mkdir(directory,{recursive:true});await mkdir(evidence,{recursive:true});
@@ -68,6 +69,22 @@ await check('CLI PNG and complete GLB signatures',async()=>{
   assert.equal(pngBytes.subarray(0,8).toString('hex'),'89504e470d0a1a0a');assert.equal(glbBytes.subarray(0,4).toString(),'glTF');
   await cp(path.join(project,png.artifacts[0]),path.join(evidence,'sample-export.png'));
   return {png:{...png,bytes:pngBytes.length},glb:{...glb,bytes:glbBytes.length}};
+});
+await check('real CLI recipe versions / geometry change / locked rollback',async()=>{
+  const source=JSON.parse(await readFile(path.join(root,'public/data/beijing-cbd.json'),'utf8')),zun=source.elements.find(element=>element.type==='way'&&element.id===599547918);
+  assert.ok(zun);const latitudes=zun.geometry.map(point=>point.lat),longitudes=zun.geometry.map(point=>point.lon),area={south:Math.min(...latitudes)-.001,west:Math.min(...longitudes)-.001,north:Math.max(...latitudes)+.001,east:Math.max(...longitudes)+.001};
+  const city=path.join(directory,'rules-real'),file=path.join(directory,'zun-real.json');await writeFile(file,JSON.stringify({...source,elements:[zun]}));await createProject(city,{name:'Real OSM China Zun rule update',area});await importData(city,file);await buildProject(city);
+  const hashes=[];
+  for(const [version,ribWidth] of [['1.0.1',.7],['1.1.0',1.2]]){
+    const recipe=structuredClone(official.recipes[0]);recipe.version=version;recipe.parameters.ribWidth=ribWidth;
+    const pack=path.join(directory,`recipes-${version}`);await mkdir(pack);await writeFile(path.join(pack,'recipes.json'),JSON.stringify({schemaVersion:1,id:'integration/landmarks',version,engineCompatibility:'>=1.0.0 <2.0.0',recipes:[recipe]}));
+    const result=await runCLI(['landmarks','update',pack,'--project',city,'--json'],{stdout:{write(){}},stderr:{write(){}}});assert.equal(result.status,'succeeded',JSON.stringify(result.diagnostics));
+    const manifest=JSON.parse(await readFile(path.join(city,'dist/manifest.json'),'utf8'));hashes.push(manifest.chunks.flatMap(chunk=>chunk.lods.filter(lod=>lod.id==='high').map(lod=>lod.hash)));await validateProject(city);
+  }
+  assert.notDeepEqual(hashes[0],hashes[1]);
+  const rollback=await runCLI(['landmarks','update','--rollback','--project',city,'--json'],{stdout:{write(){}},stderr:{write(){}}});assert.equal(rollback.status,'succeeded');
+  const restored=JSON.parse(await readFile(path.join(city,'dist/manifest.json'),'utf8')).chunks.flatMap(chunk=>chunk.lods.filter(lod=>lod.id==='high').map(lod=>lod.hash));assert.deepEqual(restored,hashes[0]);
+  return {versions:['1.0.1','1.1.0','1.0.1'],highGeometryHashes:[...hashes,restored],input:'Real OSM China Zun way/599547918 from repository snapshot; complete inline geometry'};
 });
 report.status=report.results.every(item=>item.status==='pass')?'pass':'fail';await writeFile(path.join(evidence,'e2e-results.json'),JSON.stringify(report,null,2));
 console.log(JSON.stringify({status:report.status,directory}));process.exitCode=report.status==='pass'?0:1;

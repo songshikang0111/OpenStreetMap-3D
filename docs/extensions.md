@@ -29,6 +29,8 @@ await viewer.setStyle('comic');
 
 在项目规则包中创建 `package.json` 与 `recipes.json`，沿用 [官方配方包](../packages/landmarks/README.md) 的结构。配方必须有 `schemaVersion/id/version/generator/engineCompatibility/match/anchor/orientation/parameters/materialRoles/source/provenance`。`match.osm` 使用精确的 type + ID，配合位置范围；不能只按模糊名称替换全球建筑。
 
+最小可运行例子：`node examples/quickstart/make-recipe-package.mjs ./work/my-landmarks`。它从官方中国尊配方生成本地 1.0.1 变体，改变竖肋宽度，保留精确身份、来源和兼容范围。编辑输出的 JSON 后使用以下命令；需要含中国尊的真实输入才能观察该规则命中，离线合成小街区不会冒充中国尊。
+
 ```sh
 city landmarks check ./my-landmarks --json
 city landmarks update ./my-landmarks --project ./my-city --json
