@@ -35,7 +35,7 @@ async function openProject(project,{pendingJob}={}) {
   const config=state.config;
   $('project-name').value=config.name; setArea(config.area);
   state.location=config.origin || {lat:(config.area.south+config.area.north)/2,lon:(config.area.west+config.area.east)/2};
-  $('style').value=config.style?.id || 'comic'; $('quality').value=config.quality || 'balanced';
+  $('style').value=config.style?.id || 'comic'; $('quality').value=config.quality==='draft'?'low':config.quality || 'balanced';
   $('seed').value=config.seed ?? 1;$('tile-size').value=config.tiling?.sizeMeters || 500;$('infer-roofs').checked=config.generation?.inferRoofs || false;$('landscape').checked=config.generation?.landscapeEnabled || false;$('landmarks').checked=config.landmarks?.enabled!==false;
   $('project-info').textContent=`${config.name} · ${state.project.relativePath || state.project.path || state.project.id} · 保存时固化范围、风格和相机`;
   remember(); enabled(); await listProjects();
@@ -56,7 +56,7 @@ async function preview() {
   await state.viewer?.dispose(); state.viewer=null;$('empty').hidden=false;enabled();
   const manifestUrl=state.project.manifestUrl || `/projects/${encodeURIComponent(state.project.id)}/dist/manifest.json`;
   state.manifest=await fetch(manifestUrl).then(async response=>{if(!response.ok)throw new Error('场景清单不可用；请先构建项目。');return response.json();});
-  const viewer=await createCityViewer({container:$('viewport'),manifestUrl,style:{id:$('style').value,parameters:state.config.style?.parameters || {}},quality:$('quality').value,onProgress:progress=>{$('job-status').textContent=`加载场景：${progress.stage || json(progress)}`;},onDiagnostic:diagnostic,onSelect:value=>{$('selection').textContent=json(value);}});
+  const viewer=await createCityViewer({container:$('viewport'),manifestUrl,style:{id:$('style').value,parameters:state.config.style?.parameters || {}},quality:$('quality').value,onProgress:progress=>{if(state.job&&!isTerminal(state.job))return;$('job-status').textContent=progress.complete?'场景已加载；拖动旋转，滚轮缩放，右键平移。':`加载场景：${progress.stage || json(progress)}`;},onDiagnostic:diagnostic,onSelect:value=>{$('selection').textContent=json(value);}});
   state.viewer=viewer; $('empty').hidden=true;
   if(state.config.camera) viewer.setView(state.config.camera);
   $('fov').value=viewer.getView().fov;
