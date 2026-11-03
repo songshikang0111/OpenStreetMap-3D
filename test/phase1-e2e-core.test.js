@@ -48,6 +48,7 @@ test('CINK partitions and far batches preserve roof/wall/structure roles for ext
     const seen=new Set();
     for(const chunk of result.manifest.chunks){
       const descriptor=chunk.lods.find(lod=>lod.id===level),group=await decodeChunk(result.assets[descriptor.uri],descriptor);
+      group.traverse(mesh=>{if(!mesh.isMesh||!mesh.geometry.userData.city?.materialRoles)return;const g=mesh.geometry;for(const part of g.groups)for(let i=part.start;i<part.start+part.count;i++){const vertex=g.index?g.index.getX(i):i;assert.equal(mesh.userData.city.materialRoleTable[g.attributes.cityMaterialRole.getX(vertex)],g.userData.city.materialRoles[part.materialIndex],`${level} role attribute disagrees with group`);}});
       const style={...getStyle('color'),id:'role-audit',createMaterial({object,role}){if(object.userData.city.featureIds.includes('w1'))seen.add(role);return new MeshStandardMaterial();}};
       const binding=bindSceneStyle(group,{style});binding.dispose();
     }

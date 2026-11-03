@@ -12,7 +12,7 @@ export { validateProjectConfig, CityBuildError };
 const slug=text=>text.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const sourceId=f=>`${f.osmType||'way'}/${f.osmId??f.id}`;
 const normalizeSourceId=id=>String(id).replace(/^w(\d+).*$/,'way/$1').replace(/^r(\d+).*$/,'relation/$1');
-const materialRoles=['unknown','wall','glass','roof','structure','road','ground','water','foliage'];
+const baseMaterialRoles=['unknown','wall','glass','roof','structure','road','ground','water','foliage','facility','landmark'];
 const unionBounds=(a,b)=>a?[...a.slice(0,3).map((v,i)=>Math.min(v,b[i])),...a.slice(3).map((v,i)=>Math.max(v,b[i+3]))]:[...b];
 const yieldTask=()=>new Promise(resolve=>setTimeout(resolve,0));
 const identity=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
@@ -120,6 +120,8 @@ export async function compileScene(raw, inputConfig, options = {}) {
     add('ground',{kind:'ground',provenance:{model:'flat-no-dem',source:'project-area'}});
     city.group.updateMatrixWorld(true);
     const meshes=[];city.group.traverseVisible(o=>{if(o.isMesh&&o.visible&&o.geometry.attributes.position?.count&&(!o.isInstancedMesh||o.count))meshes.push(o);});
+    const materialRoles=[...baseMaterialRoles,...[...new Set(meshes.flatMap(mesh=>[mesh.userData.city?.materialRole,...(mesh.geometry.userData.city?.materialRoles||[])])).values()].filter(role=>typeof role==='string'&&!baseMaterialRoles.includes(role)).sort()];
+    if(materialRoles.length>256)throw new CityBuildError('MATERIAL_ROLE_LIMIT','Scene protocol v1 supports at most 256 semantic roles.','geometry');
     for(const mesh of meshes){
       const building=mesh.userData.feature,original=mesh.userData.city;
       let ids,kind,role,lodRole='body';
@@ -150,6 +152,11 @@ export async function compileScene(raw, inputConfig, options = {}) {
     }
     const ids=Object.keys(featureIndex).sort();ids.forEach((id,i)=>featureIndex[id].renderId=i+1);const renderIds=[null,...ids],instanceGeometries=new Map();
     for(const mesh of meshes){
+      if(mesh.geometry.index&&Array.isArray(mesh.geometry.userData.city?.materialRoles)){
+        const source=mesh.geometry;mesh.geometry=source.toNonIndexed();mesh.geometry.userData=structuredClone(source.userData);
+        for(const [name,attribute]of Object.entries(source.attributes))if(attribute.isInstancedBufferAttribute)mesh.geometry.setAttribute(name,attribute.clone());
+        ownedGeometry.add(mesh.geometry);
+      }
       if(mesh.isInstancedMesh){const source=mesh.geometry,key=`${mesh.userData.city.kind}:${mesh.userData.city.materialRole}`;if(!instanceGeometries.has(source))instanceGeometries.set(source,new Map());const cached=instanceGeometries.get(source);if(!cached.has(key)){cached.set(key,source.clone());ownedGeometry.add(cached.get(key));}mesh.geometry=cached.get(key);}
       const n=mesh.geometry.attributes.position.count,values=new Uint32Array(n).fill(mesh.isInstancedMesh?0:featureIndex[mesh.userData.city.featureId].renderId);
       if(mesh===city.equipment&&mesh.geometry.attributes.objectId){
@@ -158,7 +165,10 @@ export async function compileScene(raw, inputConfig, options = {}) {
       }
       mesh.geometry.setAttribute('cityFeature',new THREE.Uint32BufferAttribute(values,1));
       const roles=new Uint8Array(n).fill(materialRoles.indexOf(mesh.userData.city.materialRole));
-      if(mesh.userData.city.kind==='building'&&mesh.geometry.attributes.normal){const normal=mesh.geometry.attributes.normal;for(let i=0;i<n;i++)if(normal.getY(i)>.5)roles[i]=3;else if(normal.getY(i)<-.5)roles[i]=4;}
+      const authoredRoles=mesh.geometry.userData.city?.materialRoles;
+      if(Array.isArray(authoredRoles)){
+        for(const part of mesh.geometry.groups){const role=materialRoles.indexOf(authoredRoles[part.materialIndex]);for(let i=part.start;i<Math.min(n,part.start+part.count);i++)roles[i]=role;}
+      }else if(mesh.userData.city.kind==='building'&&mesh.geometry.attributes.normal){const normal=mesh.geometry.attributes.normal;for(let i=0;i<n;i++)if(normal.getY(i)>.5)roles[i]=3;else if(normal.getY(i)<-.5)roles[i]=4;}
       mesh.geometry.setAttribute('cityMaterialRole',new THREE.Uint8BufferAttribute(roles,1));mesh.userData.city.materialRoleTable=materialRoles;mesh.userData.city.materialRoleAttribute='cityMaterialRole';
       if(mesh.isInstancedMesh){
         const box=new THREE.Box3().setFromBufferAttribute(mesh.geometry.attributes.position),matrix=new THREE.Matrix4();
