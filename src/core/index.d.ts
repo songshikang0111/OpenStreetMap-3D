@@ -19,9 +19,11 @@ export type Bounds3 = [number,number,number,number,number,number];
 export interface LODDescriptor {
   id: 'low' | 'medium' | 'high'; level: 0 | 1 | 2; uri: string; hash: string; bytes: number;
   residentBytes: number; triangles: number; drawCalls: number; instances: number; geometries: number; materials: number;
+  /** Optional exact submitted caster costs before shadow-frustum culling. */
+  shadowTriangles?:number; shadowDrawCalls?:number;
   bounds: Bounds3; geometricError: number; maxScreenSpaceError: number; description: string;
   /** Conservative per-mesh submission costs for runtime frustum budgets. */
-  drawUnits?: {bounds:Bounds3;triangles:number;drawCalls:number}[];
+  drawUnits?: {bounds:Bounds3;triangles:number;drawCalls:number;shadowTriangles?:number;shadowDrawCalls?:number}[];
   selection: {metric:'screen-space-error'; geometricErrorMeters:number; maxScreenSpaceError:number};
 }
 export interface FeatureRecord {

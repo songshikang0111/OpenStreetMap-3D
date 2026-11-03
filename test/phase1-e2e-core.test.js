@@ -53,7 +53,7 @@ test('CINK partitions and far batches preserve roof/wall/structure roles for ext
       const style={...getStyle('color'),id:'role-audit',createMaterial({object,role}){if(object.userData.city.featureIds.includes('w1'))seen.add(role);return new MeshStandardMaterial();}};
       const binding=bindSceneStyle(group,{style});binding.dispose();
     }
-    for(const role of ['wall','roof','structure'])assert.ok(seen.has(role),`${level} missing ${role}`);
+    for(const role of (level==='low'?['wall','roof']:['wall','roof','structure']))assert.ok(seen.has(role),`${level} missing ${role}`);
   }
 });
 

@@ -8,7 +8,7 @@ const finite = values => values.every(Number.isFinite);
 const MAX_PAYLOAD_BYTES = 512 * 1024 * 1024;
 
 export function sceneStats(group) {
-  const geometries=new Set(),materials=new Set(); let residentBytes=0,triangles=0,drawCalls=0,instances=0;
+  const geometries=new Set(),materials=new Set(); let residentBytes=0,triangles=0,drawCalls=0,instances=0,shadowTriangles=0,shadowDrawCalls=0;
   group.traverseVisible(o=>{
     if(!o.isMesh || !o.visible) return;
     if(!geometries.has(o.geometry)) {
@@ -21,9 +21,9 @@ export function sceneStats(group) {
     const total=o.geometry.index?.count??o.geometry.attributes.position.count,start=o.geometry.drawRange.start,end=Math.min(total,start+o.geometry.drawRange.count),copies=o.isInstancedMesh?o.count:1;
     const multi=Array.isArray(o.material),semanticGroups=Array.isArray(o.geometry.userData.city?.materialRoles);
     const ranges=multi||semanticGroups?o.geometry.groups.filter(g=>!multi||o.material[g.materialIndex]).map(g=>[Math.max(start,g.start),Math.min(end,g.start+g.count)]):[[start,end]];
-    for(const [lo,hi]of ranges){const count=Math.max(0,Math.floor((hi-lo)/3));triangles+=count*copies;if(count>0&&copies>0)drawCalls++;}
+    for(const [lo,hi]of ranges){const count=Math.max(0,Math.floor((hi-lo)/3));triangles+=count*copies;if(count>0&&copies>0){drawCalls++;if(o.castShadow)shadowDrawCalls++;}if(o.castShadow)shadowTriangles+=count*copies;}
   });
-  return {residentBytes,triangles,drawCalls,instances,geometries:geometries.size,materials:materials.size};
+  return {residentBytes,triangles,drawCalls,shadowTriangles,shadowDrawCalls,instances,geometries:geometries.size,materials:materials.size};
 }
 
 /** Binary typed arrays + deterministic JSON metadata. No Three UUIDs or code. */

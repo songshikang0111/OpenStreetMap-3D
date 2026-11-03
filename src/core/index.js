@@ -8,7 +8,9 @@ import { isNeedleCrown } from '../foliage.js';
 import { validateProjectConfig } from './config.js';
 import { GENERATOR_VERSION, STYLE_CONTRACT_VERSION, CityBuildError, canonicalStringify, checkCancelled, normalizeRaw, sha256 } from './contract.js';
 import { decodeChunk, encodeChunk, sceneStats } from './scene-codec.js';
-import { boundsOf, groundMesh, lowBuilding, mergeLowBuildings, partitionMesh } from './geometry.js';
+import { boundsOf, groundMesh, lowBuilding, partitionMesh } from './geometry.js';
+import { coarseRoadGeometries } from './lod-surfaces.js';
+import { batchStaticMeshes, batchTreeInstances, trunkGeometry, farCrownGeometry } from './lod-batching.js';
 export { validateProjectConfig, CityBuildError };
 
 const slug=text=>text.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
@@ -189,25 +191,39 @@ export async function compileScene(raw, inputConfig, options = {}) {
     }
     for(const [id,owner]of owners)featureIndex[id].ownerChunk=owner;
     await progress('geometry',.4);
-    const levels=[{id:'low',level:0,geometricError:12,maxScreenSpaceError:3,description:'Batched footprint/landmark silhouettes; 20-triangle crowns; exact shared roads and ground.'},{id:'medium',level:1,geometricError:1,maxScreenSpaceError:2,description:'Original building bodies and basic vegetation; exact shared roads and ground.'},{id:'high',level:2,geometricError:0,maxScreenSpaceError:0,description:'Original building geometry with roof equipment and inferred street furnishings.'}];
+    const levels=[{id:'low',level:0,geometricError:12,maxScreenSpaceError:3,description:'Batched silhouettes (footprint error <=0.15m), 6-face crowns/4-face trunks, continuous road/bridge envelopes. Inferred margins and lane paint remain in higher levels; far casters disabled.'},{id:'medium',level:1,geometricError:1,maxScreenSpaceError:2,description:'Batched original building bodies; 80-face crowns; continuous bridge/step envelopes, unchanged road/paint coverage.'},{id:'high',level:2,geometricError:0,maxScreenSpaceError:0,description:'Original building geometry with roof equipment and inferred street furnishings.'}];
     const assets={},chunkMap=new Map(grid.cells.map(c=>[c.id,{id:c.id,bounds:[c.bounds[0],0,c.bounds[1],c.bounds[2],0,c.bounds[3]],contentBounds:null,transform:identity,lods:[]}])) ;
     const lowMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9});ownedMaterial.add(lowMaterial);
     const lowGeometries=new Map();
     for(const mesh of meshes)if(mesh.userData.city.kind==='building'&&(!registryObjects.has(mesh)||['city-ink/china-zun','city-ink/cctv'].includes(mesh.userData.city.generatorId))){
       const b=data.buildings.find(b=>b.id===mesh.userData.city.featureId);if(!b)continue;
       const low=lowBuilding(b,lowMaterial,!!mesh.userData.city.generatorId,mesh.userData.city.recipeParameters),g=low.geometry,n=g.attributes.position.count;
+      g.deleteAttribute('uv');const encoded=mesh.geometry.attributes.objectId,objectCode=encoded?[encoded.getX(0),encoded.getY(0),encoded.getZ(0)]:[0,0,0];g.setAttribute('objectId',new THREE.Float32BufferAttribute(Array.from({length:n},()=>objectCode).flat(),3));
       const color=mesh.geometry.attributes.color,c=new THREE.Color();if(color?.count)c.fromBufferAttribute(color,0);else c.copy(mesh.material.color||new THREE.Color('#c7c7be'));
       g.setAttribute('color',new THREE.Float32BufferAttribute(Array.from({length:n},()=>c.toArray()).flat(),3));g.setAttribute('cityFeature',new THREE.Uint32BufferAttribute(new Uint32Array(n).fill(featureIndex[b.id].renderId),1));
       const roles=new Uint8Array(n).fill(materialRoles.indexOf(mesh.userData.city.materialRole));for(let i=0;i<n;i++)if(g.attributes.normal.getY(i)>.5)roles[i]=3;else if(g.attributes.normal.getY(i)<-.5)roles[i]=4;g.setAttribute('cityMaterialRole',new THREE.Uint8BufferAttribute(roles,1));
       low.userData={...mesh.userData,generatedFacade:false,city:{...mesh.userData.city,lodRole:'far'}};lowGeometries.set(mesh,low);ownedGeometry.add(g);
     }
-    const lowCrown=new THREE.IcosahedronGeometry(1,0),lowTrunk=new THREE.CylinderGeometry(1,1,1,4);ownedGeometry.add(lowCrown);ownedGeometry.add(lowTrunk);
+    const lowCrown=farCrownGeometry(),lowTrunk=trunkGeometry(),mediumCrown=new THREE.IcosahedronGeometry(1,1),mediumNeedle=new THREE.ConeGeometry(1,2,8,3).toNonIndexed();
+    for(const g of [lowCrown,lowTrunk,mediumCrown,mediumNeedle])ownedGeometry.add(g);
+    const roadGeometries=coarseRoadGeometries(city.roadPlan);for(const g of roadGeometries.values())ownedGeometry.add(g);
+    const coarseGeometries=new Map();
+    for(const original of meshes)if(roadGeometries.has(original.name)){
+      const mesh=original.clone(),g=roadGeometries.get(original.name),n=g.attributes.position.count;mesh.geometry=g;
+      if(g.userData.lodDoubleSided){mesh.material=original.material.clone();mesh.material.side=THREE.DoubleSide;ownedMaterial.add(mesh.material);}
+      const primary=featureIndex[mesh.userData.city.featureId].renderId;
+      g.setAttribute('cityFeature',new THREE.Uint32BufferAttribute(new Uint32Array(n).fill(primary),1));
+      g.setAttribute('cityMaterialRole',new THREE.Uint8BufferAttribute(new Uint8Array(n).fill(materialRoles.indexOf(mesh.userData.city.materialRole)),1));
+      const a=original.geometry.attributes.objectId,code=a?[a.getX(0),a.getY(0),a.getZ(0)]:[0,0,0];g.setAttribute('objectId',new THREE.Float32BufferAttribute(Array.from({length:n},()=>code).flat(),3));
+      coarseGeometries.set(original,mesh);
+    }
     for(const level of levels){
       const groups=new Map(grid.cells.map(c=>[c.id,new THREE.Group()]));
       for(const original of meshes){
         checkCancelled(signal);
         if(level.level<2&&original.userData.city.lodRole==='detail')continue;
-        let mesh=original;
+        let mesh=level.level<2&&(!original.userData.roadSurface||level.level===0)&&coarseGeometries.has(original)?coarseGeometries.get(original):original;
+        if(level.level===0&&['Junction-aware lane paint and inferred stop lines','Inferred roadside margins clipped at buildings'].includes(original.name))continue;
         if(level.level===0){
           if(lowGeometries.has(original))mesh=lowGeometries.get(original);
           else if(original.userData.city.kind==='tree'){
@@ -215,12 +231,21 @@ export async function compileScene(raw, inputConfig, options = {}) {
             const n=mesh.geometry.attributes.position.count;mesh.geometry.setAttribute('cityMaterialRole',new THREE.Uint8BufferAttribute(new Uint8Array(n).fill(materialRoles.indexOf(mesh.userData.city.materialRole)),1));mesh.geometry.setAttribute('cityFeature',new THREE.Uint32BufferAttribute(new Uint32Array(n).fill(mesh.isInstancedMesh?0:featureIndex[mesh.userData.city.featureId].renderId),1));
           }
         }
+        if(level.level===0&&original.userData.city.kind==='tree')mesh.castShadow=false;
+        if(level.level===0&&original===base){mesh=original.clone();mesh.geometry=groundMesh(data.bounds,Infinity).geometry;const n=mesh.geometry.attributes.position.count;ownedGeometry.add(mesh.geometry);mesh.geometry.setAttribute('cityFeature',new THREE.Uint32BufferAttribute(new Uint32Array(n).fill(featureIndex.ground.renderId),1));mesh.geometry.setAttribute('cityMaterialRole',new THREE.Uint8BufferAttribute(new Uint8Array(n).fill(materialRoles.indexOf('ground')),1));}
+        if(level.level===0&&original.name==='Inferred zebra crossings'){mesh=original.clone();mesh.geometry=new THREE.BufferGeometry();mesh.geometry.setAttribute('position',new THREE.Float32BufferAttribute([-.5,.5,-.5,-.5,.5,.5,.5,.5,.5,-.5,.5,-.5,.5,.5,.5,.5,.5,-.5],3));mesh.geometry.computeVertexNormals();const n=6;mesh.geometry.setAttribute('cityFeature',new THREE.Uint32BufferAttribute(new Uint32Array(n),1));mesh.geometry.setAttribute('cityMaterialRole',new THREE.Uint8BufferAttribute(new Uint8Array(n).fill(materialRoles.indexOf('road')),1));ownedGeometry.add(mesh.geometry);}
+        if(level.level===1&&original.userData.city.kind==='tree'&&original.userData.city.materialRole==='foliage'){
+          mesh=original.clone();mesh.geometry=(original.name.includes('cypress')||original.name.includes('conifer')?mediumNeedle:mediumCrown).clone();ownedGeometry.add(mesh.geometry);const n=mesh.geometry.attributes.position.count;
+          mesh.geometry.setAttribute('cityFeature',new THREE.Uint32BufferAttribute(new Uint32Array(n),1));mesh.geometry.setAttribute('cityMaterialRole',new THREE.Uint8BufferAttribute(new Uint8Array(n).fill(materialRoles.indexOf('foliage')),1));
+        }
+        if(level.level===0&&mesh.userData.city.kind==='ground'){mesh=mesh.clone();mesh.userData={...mesh.userData,inkClass:5,city:{...mesh.userData.city,inkClass:5}};}
         mesh.updateMatrixWorld(true);
         for(const [id,piece]of partitionMesh(mesh,grid,id=>owners.get(id),renderIds)){groups.get(id).add(piece);if(piece.geometry!==mesh.geometry)ownedGeometry.add(piece.geometry);}
       }
       for(const [id,group]of groups){
-        if(!group.children.length)continue;
-        if(level.level===0){mergeLowBuildings(group);remember(group);}
+        if(!group.children.length&&level.level!==0)continue;
+        if(level.level===0)group.traverse(o=>{if(o.isMesh)o.castShadow=false;});
+        if(level.level<2){batchStaticMeshes(group,{low:level.level===0});batchTreeInstances(group);remember(group);}
         group.userData={city:{schemaVersion:1,chunkId:id,lod:level.id,origin:config.origin,coordinateSystem:'x-east-y-up-z-south-meters',featureIndexVersion:1}};
         if(level.level===2 && city.runtimeDetails){
           group.userData.city.nearDetails={schemaVersion:1,
@@ -229,7 +254,7 @@ export async function compileScene(raw, inputConfig, options = {}) {
         }
         const chunk=chunkMap.get(id),bounds=boundsOf(group),stats=sceneStats(group),payload=encodeChunk(group),hash=await sha256(payload),uri=`chunks/${id}.${level.id}.${hash.slice(0,16)}.cink`;
         assets[uri]=payload;chunk.contentBounds=unionBounds(chunk.contentBounds,bounds);
-        const drawUnits=group.children.filter(o=>o.isMesh&&o.visible&&(!o.isInstancedMesh||o.count)).map(object=>{const cost=sceneStats(object);return {bounds:boundsOf(object),triangles:cost.triangles,drawCalls:cost.drawCalls};});
+        const drawUnits=group.children.filter(o=>o.isMesh&&o.visible&&(!o.isInstancedMesh||o.count)).map(object=>{const cost=sceneStats(object);return {bounds:boundsOf(object),triangles:cost.triangles,drawCalls:cost.drawCalls,shadowTriangles:cost.shadowTriangles,shadowDrawCalls:cost.shadowDrawCalls};});
         chunk.lods.push({...level,uri,hash,bytes:payload.byteLength,...stats,bounds,drawUnits,selection:{metric:'screen-space-error',geometricErrorMeters:level.geometricError,maxScreenSpaceError:level.maxScreenSpaceError}});
         group.traverse(o=>{for(const featureId of o.userData.city?.featureIds||[])if(!featureIndex[featureId].chunkIds.includes(id))featureIndex[featureId].chunkIds.push(id);});
       }

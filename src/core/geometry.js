@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { chinaZunScale, landmarkKind } from '../building-rules.js';
 import { cctvRing } from '../landmarks.js';
+import { simplifyClosedRing } from './lod-simplify.js';
 
 export function boundsOf(object) {
   const b=new THREE.Box3().setFromObject(object,true);
@@ -11,10 +12,14 @@ export function lowBuilding(building, material, enabled=true,parameters={}) {
   const kind=enabled?landmarkKind(building):null;
   let geometry;
   if(!kind){
-    const shape=new THREE.Shape(building.outer.map(([x,z])=>new THREE.Vector2(x,-z)));
-    for(const h of building.holes)shape.holes.push(new THREE.Path(h.map(([x,z])=>new THREE.Vector2(x,-z))));
+    const shape=new THREE.Shape(simplifyClosedRing(building.outer,.15).map(([x,z])=>new THREE.Vector2(x,-z)));
+    for(const h of building.holes)shape.holes.push(new THREE.Path(simplifyClosedRing(h,.15).map(([x,z])=>new THREE.Vector2(x,-z))));
     geometry=new THREE.ExtrudeGeometry(shape,{depth:building.height-building.minHeight,bevelEnabled:false,steps:1});
     geometry.rotateX(-Math.PI/2);geometry.translate(0,.45+building.minHeight,0);geometry.clearGroups();
+    if(building.minHeight===0){
+      const keep=[];for(let i=0;i<geometry.attributes.position.count;i+=3)if(geometry.attributes.normal.getY(i)>-.5)keep.push(i,i+1,i+2);
+      const result=new THREE.BufferGeometry();for(const [name,a]of Object.entries(geometry.attributes)){const values=new a.array.constructor(keep.length*a.itemSize);for(let j=0;j<keep.length;j++)for(let k=0;k<a.itemSize;k++)values[j*a.itemSize+k]=a.array[keep[j]*a.itemSize+k];result.setAttribute(name,new THREE.BufferAttribute(values,a.itemSize,a.normalized));}geometry.dispose();geometry=result;
+    }
   }else{
     const positions=[];
     const triangle=(a,b,c)=>positions.push(...a,...b,...c);
@@ -55,10 +60,10 @@ export function lowBuilding(building, material, enabled=true,parameters={}) {
 }
 
 /** Fixed world lattice, built once, shared by all levels and all tiling schemes. */
-export function groundMesh(bounds) {
+export function groundMesh(bounds,spacing=50) {
   const [x0,z0,x1,z1]=bounds,positions=[];
-  for(let z=z0;z<z1;z+=50)for(let x=x0;x<x1;x+=50){
-    const b=Math.min(x+50,x1),d=Math.min(z+50,z1);
+  for(let z=z0;z<z1;z+=spacing)for(let x=x0;x<x1;x+=spacing){
+    const b=Math.min(x+spacing,x1),d=Math.min(z+spacing,z1);
     positions.push(x,0,z,x,0,d,b,0,d,x,0,z,b,0,d,b,0,z);
   }
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.computeVertexNormals();

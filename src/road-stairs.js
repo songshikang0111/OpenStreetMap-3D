@@ -41,7 +41,7 @@ class Writer {
   }
 }
 
-function normaliseFlight(flight) {
+export function normaliseFlight(flight) {
   if (!Number.isFinite(flight.y0 + flight.y1 + flight.width) || flight.width <= 0 || Math.abs(flight.y1-flight.y0) < .04) return null;
   const points = (flight.points || []).filter((p,i,a) => p?.length===2 && p.every(Number.isFinite) && (!i || distance(p,a[i-1])>.001)).map(p=>[...p]);
   if (points.length<2) return null;
@@ -57,7 +57,7 @@ function normaliseFlight(flight) {
   return {key:flight.key,points,distances,length,y0,y1,width:flight.width,landing,count,rise:(y1-y0)/count,depth:(length-landing*2)/count,roadIds:flight.roadIds||[]};
 }
 
-function section(flight, t, width=flight.width) {
+export function section(flight, t, width=flight.width) {
   const {points,distances,length}=flight; t=clamp(t,0,length);
   let index=0;
   while(index<points.length-2 && distances[index+1]<t-EPS) index++;
@@ -77,7 +77,7 @@ function section(flight, t, width=flight.width) {
   return {point,left:[point[0]+normal[0]*offset,point[1]+normal[1]*offset],right:[point[0]-normal[0]*offset,point[1]-normal[1]*offset]};
 }
 
-const rampHeight=(f,t)=>f.y0+(f.y1-f.y0)*clamp((t-f.landing)/(f.length-2*f.landing),0,1);
+export const rampHeight=(f,t)=>f.y0+(f.y1-f.y0)*clamp((t-f.landing)/(f.length-2*f.landing),0,1);
 function treadHeight(f,t) {
   if(t<f.landing-EPS)return f.y0;
   if(t>=f.length-f.landing-EPS)return f.y1;

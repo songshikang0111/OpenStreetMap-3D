@@ -10,6 +10,7 @@ export function drawUnitsError(lod) {
     triangles += unit.triangles; drawCalls += unit.drawCalls;
   }
   if (!Number.isSafeInteger(triangles) || !Number.isSafeInteger(drawCalls) || triangles !== lod.triangles || drawCalls !== lod.drawCalls) return 'drawUnits costs must sum to the complete LOD triangles and drawCalls.';
+  for(const name of ['shadowTriangles','shadowDrawCalls'])if(lod[name]!==undefined){let sum=0;for(const unit of lod.drawUnits){if(!Number.isSafeInteger(unit[name])||unit[name]<0||unit[name]>unit[name==='shadowTriangles'?'triangles':'drawCalls'])return 'Invalid drawUnits caster cost.';sum+=unit[name];}if(sum!==lod[name])return 'drawUnits caster costs must sum to the complete caster cost.';}
   return null;
 }
 
@@ -40,6 +41,7 @@ export function validateSceneManifest(manifest) {
       if(!/^[0-9a-f]{64}$/.test(l.hash)||!Number.isSafeInteger(l.bytes)||l.bytes<=0||!Number.isSafeInteger(l.triangles)||l.triangles<0||!Number.isSafeInteger(l.residentBytes)||l.residentBytes<0)error(lp,'Valid hash, bytes, triangles and residentBytes required.');
       if(!box(l.bounds)||!Number.isFinite(l.geometricError)||l.geometricError<0||l.selection?.metric!=='screen-space-error'||!Number.isFinite(l.selection?.geometricErrorMeters)||l.selection.geometricErrorMeters<0||!Number.isFinite(l.selection?.maxScreenSpaceError)||l.selection.maxScreenSpaceError<0)error(lp,'LOD bounds and selection error required.');
       if(!Number.isSafeInteger(l.drawCalls)||l.drawCalls<0)error(lp,'Non-negative integer drawCalls required.');
+      for(const [name,total]of [['shadowTriangles',l.triangles],['shadowDrawCalls',l.drawCalls]])if(l[name]!==undefined&&(!Number.isSafeInteger(l[name])||l[name]<0||l[name]>total))error(`${lp}.${name}`,'Caster cost must be a non-negative integer within the complete resource cost.');
       const unitsError=drawUnitsError(l);if(unitsError)error(`${lp}.drawUnits`,unitsError);
     }}
   }

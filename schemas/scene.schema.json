@@ -128,10 +128,27 @@
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 9007199254740991
+              },
+              "shadowTriangles": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "shadowDrawCalls": {
+                "type": "integer",
+                "minimum": 0
               }
             }
           },
           "description": "Optional per-mesh bounds within LOD bounds; cost sums must equal complete LOD costs (runtime validator)."
+        },
+        "shadowTriangles": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Optional exact submitted caster triangles before shadow-frustum culling."
+        },
+        "shadowDrawCalls": {
+          "type": "integer",
+          "minimum": 0
         }
       }
     }
