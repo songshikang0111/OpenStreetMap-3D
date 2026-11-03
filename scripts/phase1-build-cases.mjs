@@ -2,7 +2,7 @@ import path from 'node:path';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import {spawn} from 'node:child_process';
+import {spawn,execFileSync} from 'node:child_process';
 import {projection} from '../src/osm.js';
 
 const repository=fileURLToPath(new URL('../',import.meta.url));
@@ -15,7 +15,7 @@ if(process.argv[2]==='--case') {
   await mkdir(request.directory,{recursive:true});let totalBytes=0;
   for(const [relative,bytes] of Object.entries(result.assets)) {const target=path.join(request.directory,relative);await mkdir(path.dirname(target),{recursive:true});await writeFile(target,bytes);totalBytes+=Buffer.byteLength(bytes);}
   const manifest=JSON.stringify(result.manifest,null,2);await writeFile(path.join(request.directory,'manifest.json'),manifest);totalBytes+=Buffer.byteLength(manifest);
-  const report={name:request.name,source:request.source,sourceHash:hash(source),seed:request.config.seed,config:request.config,inputElements:raw.elements.length,buildMs:performance.now()-started,maxRssKiB:process.resourceUsage().maxRSS,packageBytes:totalBytes,manifestHash:hash(manifest),chunks:result.manifest.chunks.length,features:Object.keys(result.manifest.featureIndex).length,lods:result.manifest.chunks.map(c=>({id:c.id,lods:c.lods.map(l=>({id:l.id,bytes:l.bytes,residentBytes:l.residentBytes,triangles:l.triangles,drawCalls:l.drawCalls}))})),report:result.report};
+  const report={compilerCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:repository,encoding:'utf8'}).trim(),name:request.name,source:request.source,sourceHash:hash(source),seed:request.config.seed,config:request.config,inputElements:raw.elements.length,buildMs:performance.now()-started,maxRssKiB:process.resourceUsage().maxRSS,packageBytes:totalBytes,manifestHash:hash(manifest),chunks:result.manifest.chunks.length,features:Object.keys(result.manifest.featureIndex).length,lods:result.manifest.chunks.map(c=>({id:c.id,lods:c.lods.map(l=>({id:l.id,bytes:l.bytes,residentBytes:l.residentBytes,triangles:l.triangles,drawCalls:l.drawCalls}))})),report:result.report};
   await writeFile(path.join(request.directory,'build-report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({name:report.name,chunks:report.chunks,features:report.features,buildMs:report.buildMs,packageBytes:totalBytes}));
 }else {
   const output=path.resolve(process.argv[2]||path.join(repository,'work/integration-scenes'));
