@@ -1,0 +1,78 @@
+{
+  "date": "2026-11-03T12:57:32.738Z",
+  "head": "2156d34291e21edd252366ace7cb148f05c02eb6",
+  "harnessFix": "6cd495d",
+  "mode": "Constructed evidence-integrity probes, not hardware measurements",
+  "positive": true,
+  "raisedBudgetRejected": true,
+  "rawP95Mismatch": {
+    "actualRawP95": 40,
+    "reportedP95": 8.400000000001455,
+    "completeSamples": true,
+    "p95Gate": true,
+    "status": "pass"
+  },
+  "actualPoseMismatch": {
+    "requested": {
+      "position": [
+        -54.465855332583416,
+        26.25,
+        -52.10670670317487
+      ],
+      "target": [
+        0.5427259487235006,
+        19.5,
+        -6.486136335879564
+      ],
+      "fov": 55
+    },
+    "actual": {
+      "position": [
+        -44.465855332583416,
+        26.25,
+        -52.10670670317487
+      ],
+      "target": [
+        0.5427259487235006,
+        19.5,
+        -6.486136335879564
+      ],
+      "fov": 55
+    },
+    "stationaryGate": true,
+    "status": "pass"
+  },
+  "requestSubsetMismatch": {
+    "phaseRequests": [
+      {
+        "url": "http://localhost/same.cink",
+        "observedAt": 101000
+      },
+      {
+        "url": "http://localhost/same.cink",
+        "observedAt": 102000
+      }
+    ],
+    "measuredRequests": [],
+    "stationaryGate": true,
+    "status": "pass"
+  },
+  "actualShortEpoch": {
+    "actualSeconds": 14.91,
+    "declaredSeconds": 15,
+    "checks": {
+      "defaultBudget": true,
+      "camera": true,
+      "duration": true,
+      "frames": true,
+      "continuousSamples": true,
+      "running": true,
+      "drawingTriangles": true,
+      "drawingCalls": true,
+      "stableLod": true,
+      "noCancelledRequests": true,
+      "noRepeatedRequests": true,
+      "coverage": true
+    }
+  }
+}

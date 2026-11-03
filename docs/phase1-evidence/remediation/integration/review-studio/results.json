@@ -1,0 +1,124 @@
+{
+  "date": "2026-11-03T12:45:58.504Z",
+  "head": "7ffaefb4fff0054d8d59d1a0f83717571f24bce8",
+  "scope": "Read-only product review; only Node fixtures under ignored work, no browser or GPU.",
+  "results": [
+    {
+      "name": "7587826 nonfinite parameter defect / 0d4f22a independent regression",
+      "status": "pass",
+      "details": {
+        "introduced": "7587826",
+        "fixed": "0d4f22a",
+        "before": [
+          {
+            "input": "{\"aoStrength\":1e400}",
+            "transportJSON": "{\"aoStrength\":null}"
+          },
+          {
+            "input": "{\"nested\":{\"values\":[0.12,-1e400]}}",
+            "transportJSON": "{\"nested\":{\"values\":[0.12,null]}}"
+          }
+        ],
+        "after": "rejects direct/nested positive and negative Infinity before JSON transport",
+        "finiteParametersPreserved": {
+          "aoStrength": 0.12,
+          "enabled": false,
+          "caption": "  用户保留的空白  ",
+          "empty": null,
+          "nested": {
+            "numbers": [
+              0,
+              1e-50,
+              -42
+            ],
+            "labels": [
+              "色彩",
+              "a/b"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "source and external style fields / compatibility / no input mutation",
+      "status": "pass",
+      "details": {
+        "source": {
+          "kind": "import",
+          "file": "data/custom-source.json",
+          "sourceLabel": "User label",
+          "provenance": {
+            "license": "ODbL",
+            "note": " untouched "
+          },
+          "endpoint": "https://example.test/api/interpreter",
+          "transport": "get",
+          "fallbackEndpoints": [
+            "https://fallback-one.test/api",
+            "http://127.0.0.1:9000/interpreter"
+          ],
+          "fallbackPolicy": "unavailable"
+        },
+        "style": {
+          "id": "project-user",
+          "parameters": {
+            "aoStrength": 0.12,
+            "label": " 色 彩 ",
+            "enabled": false,
+            "nested": [
+              null,
+              {
+                "value": 0.5
+              }
+            ]
+          },
+          "entry": "styles/my-style.ts",
+          "dependencies": {
+            "@local/palette": "styles/palette.js"
+          },
+          "assets": [
+            "styles/paper.svg",
+            "styles/font.woff2"
+          ]
+        }
+      }
+    },
+    {
+      "name": "45310d6 actual preview initialization / custom label / timer update",
+      "status": "pass",
+      "details": {
+        "savedStreetLabel": "street",
+        "afterUserMovement": "custom",
+        "selectedPreset": "skyline",
+        "noSavedCamera": "overview",
+        "usesActualMainAt": "45310d6",
+        "note": "DOM/API/SDK fixtures; actual browser route/UI remains not-run."
+      }
+    },
+    {
+      "name": "8bfcf0a real esbuild style preview / assets / failed input preserves cache",
+      "status": "pass",
+      "details": {
+        "id": "project-sepia",
+        "parameters": {
+          "warmth": 0.23
+        },
+        "declaredEntry": "styles/sepia.js",
+        "declaredAssets": [
+          "styles/paper.svg"
+        ],
+        "unchangedInput": true,
+        "previousCachePreservedOnFailure": true,
+        "assetBytes": 204449,
+        "hash": "46874add19cf95aed5d02d861583192b8338162539a7efa74d37aac5920eefb8",
+        "changedParametersHash": "46874add19cf95aed5d02d861583192b8338162539a7efa74d37aac5920eefb8",
+        "sameHashForParameterOnlyChange": true,
+        "previewMetadataAfterParameterChange": {
+          "warmth": 0.42
+        },
+        "note": "Compiled selection intentionally returns id/parameters; entry/dependencies/assets remain in the untouched project configuration and compiled descriptor/report. Same bundle hash can reuse SDK bytes; preview.json is mutable selection metadata."
+      }
+    }
+  ],
+  "status": "pass"
+}

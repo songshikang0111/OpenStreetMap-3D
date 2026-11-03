@@ -1,0 +1,56 @@
+{
+  "project": "work/remediation-studio-final/projects/dc749e86-c574-4bf2-8947-b7f68e924e88",
+  "sourceFileHash": "dac5f6e804b9b1352e2e99de58f961cd97f5cc50d085a0a391421f452a9f3a21",
+  "bytes": 298695,
+  "elements": 1111,
+  "buildingTaggedRecords": 5,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "metadata": {
+    "attribution": "© OpenStreetMap contributors",
+    "bbox": [
+      48.137,
+      11.575,
+      48.1375,
+      11.576
+    ],
+    "center": [
+      48.13725,
+      11.5755
+    ],
+    "contentHash": "69427e177a82fc1671deee1230ff438bccf6482af014e350dce82859c1c11aab",
+    "coordinateSystem": "WGS84 / EPSG:4326",
+    "endpoint": "https://ovp.dresel.systems/api/interpreter",
+    "fallbackPolicy": "none",
+    "incompleteReferences": [],
+    "license": "ODbL-1.0",
+    "licenseUrl": "https://www.openstreetmap.org/copyright",
+    "name": "Live Munich GET preflight 2026-11-03",
+    "osmBaseTimestamp": "2026-11-02T21:21:26Z",
+    "provider": "dresel-europe",
+    "query": "[out:json][timeout:60][maxsize:67108864];(nwr[building](48.137,11.575,48.1375,11.576);nwr[\"building:part\"](48.137,11.575,48.1375,11.576);nwr[highway](48.137,11.575,48.1375,11.576);nwr[waterway](48.137,11.575,48.1375,11.576);nwr[natural](48.137,11.575,48.1375,11.576);nwr[landuse](48.137,11.575,48.1375,11.576);nwr[landcover](48.137,11.575,48.1375,11.576);nwr[leisure](48.137,11.575,48.1375,11.576);nwr[\"area:highway\"](48.137,11.575,48.1375,11.576);nwr[amenity](48.137,11.575,48.1375,11.576);nwr[barrier](48.137,11.575,48.1375,11.576););(._;>>;);out meta;",
+    "queryVersion": 1,
+    "requestedEndpoint": "https://ovp.dresel.systems/api/interpreter",
+    "retrievedAt": "2026-11-03T13:57:49.409Z",
+    "sourceApi": "overpass",
+    "sourceAttempts": [
+      {
+        "elapsedMs": 7524,
+        "endpoint": "https://ovp.dresel.systems/api/interpreter",
+        "status": "succeeded",
+        "transport": "get"
+      }
+    ],
+    "sourceHash": "caa4e0dc9c7e4a493f5ba6fd688cdbf9e8c7f4759d04d4b0ed9690a58cc5d880",
+    "terrain": "Flat local ground; no elevation dataset.",
+    "transport": "get"
+  },
+  "objectVersionCount": 1111,
+  "objectVersionsSha256": "696824a15db0978f27b5266472f7c4daae77ec5704cce48d35377229b417ef82",
+  "cachePreservedSourceBytes": true,
+  "buildLockedSourceBytes": true,
+  "manifestSourceKind": "overpass",
+  "manifestSourceHash": "caa4e0dc9c7e4a493f5ba6fd688cdbf9e8c7f4759d04d4b0ed9690a58cc5d880",
+  "manifestHash": "16c4ab2eb2aa68d2247e9c7e9d7d9de4de01d9a36f617223d3b4c6f2da3eeb3b",
+  "features": 33,
+  "chunks": 1
+}

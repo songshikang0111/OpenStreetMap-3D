@@ -1,0 +1,152 @@
+{
+  "date": "2026-11-03T13:02:54.355Z",
+  "reviewedHead": "0e9d282863afbb5c6f1aa4ab01014a84566c1366",
+  "harnessCommit": "57625b593da8414161ef6bb780eb8774c17006e4",
+  "mode": "Read-only Node evidence-integrity units, explicitly not GPU measurements",
+  "positiveControl": true,
+  "rejections": [
+    {
+      "name": "wrong-baseline-pose",
+      "failed": [
+        "camera"
+      ]
+    },
+    {
+      "name": "wrong-middle-pose",
+      "failed": [
+        "camera"
+      ]
+    },
+    {
+      "name": "wrong-end-pose",
+      "failed": [
+        "camera"
+      ]
+    },
+    {
+      "name": "missing-actual-pose",
+      "failed": [
+        "camera"
+      ]
+    },
+    {
+      "name": "hidden-window-repeated-requests",
+      "failed": [
+        "requestEvidence",
+        "noRepeatedRequests"
+      ]
+    },
+    {
+      "name": "matching-repeated-requests",
+      "failed": [
+        "noRepeatedRequests"
+      ]
+    },
+    {
+      "name": "request-missing-clock",
+      "failed": [
+        "requestEvidence"
+      ]
+    },
+    {
+      "name": "actual-epoch-14.91",
+      "failed": [
+        "duration",
+        "continuousSamples"
+      ]
+    },
+    {
+      "name": "last-sample-under-15",
+      "failed": [
+        "continuousSamples"
+      ]
+    },
+    {
+      "name": "two-real-frame-window",
+      "failed": [
+        "frames"
+      ]
+    },
+    {
+      "name": "raised-phase-budget",
+      "failed": [
+        "defaultBudget"
+      ]
+    },
+    {
+      "name": "raised-baseline-budget",
+      "failed": [
+        "defaultBudget"
+      ]
+    },
+    {
+      "name": "paused-end",
+      "failed": [
+        "running"
+      ]
+    },
+    {
+      "name": "render-failed",
+      "failed": [
+        "running"
+      ]
+    },
+    {
+      "name": "sample-hole",
+      "failed": [
+        "continuousSamples"
+      ]
+    }
+  ],
+  "sourceHashes": {
+    "scripts/benchmark-integration/assessment.mjs": "db917850f6078ecb3f8fb20f22f6959ea5a8023828b1d99a522eb2486e4ddcf6",
+    "scripts/benchmark-integration/page.js": "05d6f8326264589c407824c0e89bd9f1f9914279b32e52480e0fc7d8b216c451",
+    "scripts/benchmark-integration/run.mjs": "6cedfc46f4af336977529bf9e64c954e20b1bd35b68667c5df77d727fab1f2df",
+    "scripts/phase1-summarize.mjs": "7436001280e770438c45a1b8aee41036554820814f1d3f8ddbc00cbdbd8cea63",
+    "src/cli/browser-session.js": "ad99c3453fdb7f68c745d542b43117c2f0b5c7ad4d5e5fbe71616e511ac61d32"
+  },
+  "validRequestControls": {
+    "differentUrls": true,
+    "outsideMeasurementWindow": true
+  },
+  "slowRaw": {
+    "reportedP95": 8.400000000001455,
+    "recomputedP95": 40,
+    "status": "fail"
+  },
+  "duplicateTargetRejected": true,
+  "summaryCli": {
+    "exit": 1,
+    "completedCases": 12,
+    "status": "fail",
+    "timingStatus": "fail",
+    "recomputedP95": 40
+  },
+  "originalRawUnchanged": true,
+  "status": "pass",
+  "frozenReferenceCamerasVerified": true,
+  "preservedOld12Cli": {
+    "exit": 1,
+    "completedCases": 12,
+    "status": "fail",
+    "timingStatus": "pass"
+  },
+  "finalHead": "0e9d282863afbb5c6f1aa4ab01014a84566c1366",
+  "frozenReferenceCamerasExactJsonVerified": true,
+  "authorTests": "4/4 pass",
+  "closedIssues": [
+    "complete stationary raw window and t13/t19 unique identities (2659144)",
+    "default baseline/end phase budgets and hard limits (6cd495d)",
+    "actual baseline/sample/end viewer.getView capture (57625b5)",
+    "raw-frame p95 recomputation and CLI summary reuse (57625b5)",
+    "complete request-window derivation and filtered-evidence consistency (57625b5)",
+    "actual epoch and final elapsed sample each >=15s (57625b5)"
+  ],
+  "openImportantFindings": [],
+  "limitations": [
+    "No GPU or new final 12-case browser matrix was executed. This approves the reviewed measurement/gating implementation, not remediation product acceptance.",
+    "Constructed probe frames/cameras are explicit data-integrity units, not purported hardware measurements.",
+    "observedAt remains Node receipt time; wider phaseRequests trace is preserved for final raw auditing.",
+    "Current A/D product integration changes beyond the harness are outside this retest and require the later final review."
+  ]
+}

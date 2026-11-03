@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-03T13:48:11.5091871Z",
+  "productCommit": "fef2f017244f7bb7538527d8b173371a602761e5",
+  "scope": "Current preflight Studio CUA, prior to final A coverage fixes",
+  "png": {
+    "path": "C:/Users/宋世康/Downloads/city-ink (4).png",
+    "bytes": 180059,
+    "sha256": "D65D3351D6179A7A3D14A0809DA303E9BD066E010E6C553E9E9441B4DB9926EC",
+    "signature": "89-50-4E-47-0D-0A-1A-0A",
+    "attributionVisuallyVerified": true
+  },
+  "glb": {
+    "path": "C:/Users/宋世康/Downloads/city-ink (3).glb",
+    "bytes": 101728,
+    "sha256": "5D2AB47ECAFE7526FF3171B0DF72C5A29739E069A6786CE7F586E05312156F1B",
+    "signature": "glTF",
+    "version": 2,
+    "declaredBytes": 101728,
+    "scope": "complete"
+  },
+  "notes": [
+    "CUA download event timed out for PNG; actual task-specific Downloads file timestamp, binary signature and image were verified.",
+    "Synthetic geometry validates UI/export behavior only; it is not live OSM or a performance case."
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-03T13:26:01.190Z",
+  "head": "29a2e360d1ac7f8613957a0675c677e57b2f1f70",
+  "harnessCommit": "521db91e2455a62e503d8a639bf153d1a73a58ec",
+  "mode": "Constructed integrity units; no browser/GPU",
+  "positive": true,
+  "closedProbes": [
+    {
+      "name": "away-frames",
+      "rejected": true
+    },
+    {
+      "name": "away-crownClusters",
+      "rejected": true
+    },
+    {
+      "name": "away-branches",
+      "rejected": true
+    },
+    {
+      "name": "away-profiles",
+      "rejected": true
+    },
+    {
+      "name": "near-bytes-over-total",
+      "rejected": true
+    },
+    {
+      "name": "negative-near-component",
+      "rejected": true
+    },
+    {
+      "name": "peak-below-raw-max",
+      "rejected": true
+    },
+    {
+      "name": "end-above-peak",
+      "rejected": true
+    },
+    {
+      "name": "sample-total-mismatch",
+      "rejected": true
+    },
+    {
+      "name": "sample-near-bytes-over-total",
+      "rejected": true
+    },
+    {
+      "name": "missing-sample-render",
+      "rejected": true
+    }
+  ],
+  "additionalProbes": [
+    {
+      "name": "sample-observed-resident-over-limit-and-end-peak",
+      "sampleResident": 134217729,
+      "rawFrameMax": 1000,
+      "endPeak": 1000,
+      "status": "pass",
+      "stationaryResources": {
+        "resourceEvidence": true,
+        "resident": true,
+        "nearDetails": true
+      }
+    }
+  ],
+  "exactResidentBoundaryPass": true
+}

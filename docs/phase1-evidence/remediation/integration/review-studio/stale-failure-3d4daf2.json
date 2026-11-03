@@ -1,0 +1,9 @@
+{
+  "mainSource": "3d4daf2:studio/main.js",
+  "scope": "Actual main + VM DOM/API/SyntheticModule engine; no GPU/browser.",
+  "project": "p2",
+  "viewerStyle": "line",
+  "before": "场景已加载；拖动旋转，滚轮缩放，右键平移。",
+  "after": "场景已加载；拖动旋转，滚轮缩放，右键平移。",
+  "diagnostics": "暂无诊断。"
+}

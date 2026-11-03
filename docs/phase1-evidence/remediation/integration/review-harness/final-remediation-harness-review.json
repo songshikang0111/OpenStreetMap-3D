@@ -1,0 +1,29 @@
+{
+  "reviewedHead": "8df77a3f2b566f893b5fd09caacb3bc841c54ab2",
+  "harnessCommit": "a929ceba548f20527798e91459fed6a14ddd9ac7",
+  "scope": "Node-only harness code and gate integrity",
+  "status": "closed-no-remaining-reproduced-P1-P2",
+  "authorTests": {
+    "passed": 5,
+    "failed": 0
+  },
+  "independent": {
+    "priorDynamicRejectionProbes": 11,
+    "sampleResidentRejectionProbes": 4,
+    "legalCompleteCase": "pass",
+    "stationaryExact128MiBBoundary": "pass",
+    "pathExact128MiBBoundary": "pass"
+  },
+  "earlierImportantGateFindingsClosed": 6,
+  "currentDynamicFindingsClosed": 4,
+  "originalPerformanceEvidenceDiff": "empty relative to dee3cc8",
+  "trackedFilesModified": false,
+  "gpuStarted": false,
+  "evidence": "dynamic-resource-retest-a929-results.json",
+  "pending": [
+    "D raw resource field producer wiring",
+    "frozen final production SDK and bundle",
+    "12 real >=60s path cases and 2 real >=15s stationary phases",
+    "independent final raw audit"
+  ]
+}

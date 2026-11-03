@@ -1,0 +1,129 @@
+{
+  "date": "2026-11-03T13:20:37.434Z",
+  "head": "351da1eb618d855291ec66584890b95bad851c77",
+  "harnessCommit": "9cfdb400d4c3af15198035ffc567584054bde2c7",
+  "mode": "Explicit constructed data-integrity units; no new SDK/GPU measurement",
+  "positive": true,
+  "rejections": [
+    {
+      "name": "missing-estimatedResidentBytes",
+      "failed": [
+        "resourceEvidence",
+        "resident"
+      ]
+    },
+    {
+      "name": "missing-bodyNearDetails",
+      "failed": [
+        "resourceEvidence"
+      ]
+    },
+    {
+      "name": "missing-nearAttachmentDetails",
+      "failed": [
+        "resourceEvidence"
+      ]
+    },
+    {
+      "name": "missing-totalNearDetails",
+      "failed": [
+        "resourceEvidence"
+      ]
+    },
+    {
+      "name": "missing-nearGeometryArrayBytes",
+      "failed": [
+        "resourceEvidence"
+      ]
+    },
+    {
+      "name": "raw-total-mismatch",
+      "failed": [
+        "resourceEvidence"
+      ]
+    },
+    {
+      "name": "one-frame-resident-over-with-headroom",
+      "failed": [
+        "resident"
+      ]
+    },
+    {
+      "name": "runtime-peak-only",
+      "failed": [
+        "resident"
+      ]
+    },
+    {
+      "name": "runtime-end-only",
+      "failed": [
+        "resident"
+      ]
+    },
+    {
+      "name": "combined-raw-near-over",
+      "failed": [
+        "nearDetails"
+      ]
+    },
+    {
+      "name": "combined-sample-near-over",
+      "failed": [
+        "nearDetails"
+      ]
+    },
+    {
+      "name": "missing-sample-near",
+      "failed": [
+        "resourceEvidence",
+        "nearDetails"
+      ]
+    }
+  ],
+  "falsePasses": [
+    {
+      "name": "away-near-frames",
+      "unloads": true,
+      "lifecycleStable": true,
+      "status": "pass"
+    },
+    {
+      "name": "away-near-crownClusters",
+      "unloads": true,
+      "lifecycleStable": true,
+      "status": "pass"
+    },
+    {
+      "name": "away-near-branches",
+      "unloads": true,
+      "lifecycleStable": true,
+      "status": "pass"
+    },
+    {
+      "name": "away-near-profiles",
+      "unloads": true,
+      "lifecycleStable": true,
+      "status": "pass"
+    },
+    {
+      "name": "near-geometry-larger-than-resident-limit-and-total",
+      "nearGeometryArrayBytes": 134217729,
+      "estimatedResidentBytes": 1000,
+      "status": "pass",
+      "stationary": true,
+      "resources": {
+        "resourceEvidence": true,
+        "resident": true,
+        "nearDetails": true
+      }
+    },
+    {
+      "name": "negative-component-masks-attachment-over",
+      "body": -1000,
+      "attachment": 19000,
+      "total": 18000,
+      "status": "pass",
+      "stationary": true
+    }
+  ]
+}
