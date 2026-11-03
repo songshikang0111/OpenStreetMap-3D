@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-11-03T12:51:30.231Z",
+  "fixture": true,
+  "injectedRunner": false,
+  "realBatchWorkers": 4,
+  "concurrency": 4,
+  "scope": "One parent CLI process brokers HTTP for its worker threads. No cross-process global rate limit is claimed.",
+  "endpoint": "http://127.0.0.1:64538/interpreter",
+  "relativeMs": [
+    0,
+    1114,
+    2222,
+    3327
+  ],
+  "gaps": [
+    1114,
+    1108,
+    1105
+  ],
+  "statuses": [
+    "succeeded",
+    "succeeded",
+    "succeeded",
+    "succeeded"
+  ],
+  "methods": [
+    "GET",
+    "GET",
+    "GET",
+    "GET"
+  ],
+  "projectRoot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-data-cli\\beijing-city-ink\\work\\data-remediation\\throttle-RUXf8P"
+}

@@ -49,7 +49,7 @@ studio flags 是该服务的默认值，优先级为 **job override > project.so
 - `GET /api/projects`、`GET /api/projects/:id` 的 project 含 `config.source` 原始配置和 `dataSource` 已解析有效配置。用户编辑 source 后 `PATCH /api/projects/:id`，例如 `{source:{provider:'dresel-europe'}}`，或自托管 `{source:{endpoint,transport,fallbackEndpoints,fallbackPolicy}}`。
 - 创建项目仍支持 source；显式 studio 默认会保存到新项目的 source。构建不联网，不自动刷新。
 - `POST /api/projects/:id/jobs`，`kind:fetch` 的 parameters（或兼容的扁平字段）接受 provider/endpoint/transport/fallbackEndpoints/fallbackPolicy 以及 refresh/offline。服务在入队前验证并固化有效 source；不接受 cacheDir/area/任意 requestOptions/headers/shell。
-- resume 可接受相同 source override，保留原项目与 job kind 检查。返回 job.result.source 为 `{endpoint,transport,retrievedAt,sourceHash,osmBaseTimestamp,cacheKey,attempts}`；UI 应显示实际源与 fallback/cache 诊断，不能把 cache 命中标成新下载。
+- resume 可接受相同 source override，保留原项目与 job kind 检查。返回 job.result.source 为 `{provider,endpoint,transport,retrievedAt,sourceHash,osmBaseTimestamp,cacheKey,attempts}`；UI 应显示实际源与 fallback/cache 诊断，不能把 cache 命中标成新下载。
 - `GET /api/search?...&projectId=...` 对 OSM 对象定位使用该项目的有效源与有限 fallback；普通文本仍走 Photon，旧默认查询缓存继续离线可读。坐标/官方地标保持离线可用。
 - source 若为区域服务，应展示 provider coverage，例如 Dresel 是欧洲区域每日快照，不能作为北京/全球默认或全球自动 fallback。没有建筑继续显示 NO_BUILDINGS，不编造建筑。
 
