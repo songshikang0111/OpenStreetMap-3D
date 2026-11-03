@@ -30,8 +30,14 @@
       "types": "./src/landmark-registry.d.ts",
       "import": "./src/landmark-registry.js"
     },
-    "./data": { "types": "./src/data/index.d.ts", "import": "./src/data/index.js" },
-    "./local-server": { "types": "./src/local-server/index.d.ts", "import": "./src/local-server/index.js" },
+    "./data": {
+      "types": "./src/data/index.d.ts",
+      "import": "./src/data/index.js"
+    },
+    "./local-server": {
+      "types": "./src/local-server/index.d.ts",
+      "import": "./src/local-server/index.js"
+    },
     "./schemas/*": "./schemas/*",
     "./package.json": "./package.json"
   },
@@ -67,6 +73,7 @@
     "data:fetch": "python scripts/fetch_osm.py"
   },
   "dependencies": {
+    "@types/node": "22.20.5",
     "@types/three": "0.187.0",
     "polygon-clipping": "0.15.7",
     "three": "0.186.1"

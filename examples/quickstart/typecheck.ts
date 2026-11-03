@@ -2,6 +2,8 @@ import {createCityViewer, type CityViewer} from 'beijing-city-ink';
 import {compileScene, validateProjectConfig, type ProjectConfig} from 'beijing-city-ink/core';
 import {registerStyle, getStyle} from 'beijing-city-ink/styles';
 import {createLandmarkRegistry} from 'beijing-city-ink/landmarks';
+import {normalizeOSM} from 'beijing-city-ink/data';
+import {createLocalServer} from 'beijing-city-ink/local-server';
 
 const config:ProjectConfig={schemaVersion:1,name:'typed consumer',area:{south:39.908,west:116.459,north:39.910,east:116.462},source:{kind:'import',file:'data/source.json'},quality:'low',landmarks:{enabled:true,packages:[{path:'rules/packages/local.json',hash:'hash'}]}};
 const validation=validateProjectConfig(config);
@@ -17,3 +19,7 @@ async function start(container:HTMLElement):Promise<CityViewer>{
   return viewer;
 }
 void start;
+const normalized=normalizeOSM({elements:[]},{area:config.area});
+void normalized.contentHash;
+async function localNodeServer(){const service=await createLocalServer({workspaceRoot:'work/studio',port:0});service.server.address();await service.close();}
+void localNodeServer;
