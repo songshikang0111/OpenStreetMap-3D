@@ -65,7 +65,7 @@ export async function compileScene(raw, inputConfig, options = {}) {
       catch(error){diagnostics.push({code:'LANDMARK_MATCH_FAILED',stage:'plan',message:error.message,hint:'Retained default shapes; fix the registry matcher.'});matches=[];}
       for(const match of matches.filter(m=>{if(m&&typeof m==='object'&&typeof m.recipeId==='string')return true;diagnostics.push({code:'INVALID_LANDMARK_CLAIM',stage:'plan',message:'Ignored malformed registry match.'});return false;}).sort((a,b)=>`${a.recipeId}:${a.claimedFeatureIds}`.localeCompare(`${b.recipeId}:${b.claimedFeatureIds}`,'en'))){
         checkCancelled(signal);
-        if(!Array.isArray(match.claimedFeatureIds)||!match.claimedFeatureIds.length||match.claimedFeatureIds.some(id=>!featureIndex[id]||claimed.has(id))){diagnostics.push({code:'INVALID_LANDMARK_CLAIM',stage:'plan',message:`Ignored invalid or overlapping claim for ${match.recipeId}.`});continue;}
+        if(!Array.isArray(match.claimedFeatureIds)||!match.claimedFeatureIds.length||new Set(match.claimedFeatureIds).size!==match.claimedFeatureIds.length||match.claimedFeatureIds.some(id=>!featureIndex[id]||claimed.has(id))){diagnostics.push({code:'INVALID_LANDMARK_CLAIM',stage:'plan',message:`Ignored invalid or overlapping claim for ${match.recipeId}.`});continue;}
         try {
           const generated=await options.landmarkRegistry.generate(match,context);
           if(!generated.group?.isGroup)throw new Error('Generator must return a Three.js Group.');
@@ -78,6 +78,7 @@ export async function compileScene(raw, inputConfig, options = {}) {
             mesh.userData.city={...mesh.userData.city,instanceFeatureIds:[...mapped]};
           }
           if(canonicalStringify([...(generated.claimedFeatureIds||[])].sort())!==canonicalStringify([...match.claimedFeatureIds].sort()))throw new Error('Generator claims must equal match claims.');
+          canonicalStringify(generated.provenance||{});
           const validated=await decodeChunk(encodeChunk(generated.group));
           remember(validated);
           if(sceneStats(validated).triangles<=0)throw new Error('Generator returned no drawn triangles.');
