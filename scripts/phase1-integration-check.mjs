@@ -11,7 +11,8 @@ import {createLocalServer} from '../src/local-server/index.js';
 import official from '../packages/landmarks/index.js';
 
 const root=fileURLToPath(new URL('../',import.meta.url)),directory=path.join(root,'work/integration-e2e',new Date().toISOString().replaceAll(/[:.]/g,'-'));
-const evidence=path.join(root,'docs/phase1-evidence/integration');await mkdir(directory,{recursive:true});await mkdir(evidence,{recursive:true});
+const options=process.argv.slice(2);if(options.some(arg=>!arg.startsWith('--output=')))throw new Error('Expected --output=directory.');
+const evidence=path.resolve(root,options.find(arg=>arg.startsWith('--output='))?.slice(9)||'docs/phase1-evidence/remediation/integration');await mkdir(directory,{recursive:true});await mkdir(evidence,{recursive:true});
 const report={date:new Date().toISOString(),commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),directory,node:process.version,results:[]};
 async function check(name,operation){const started=performance.now();try{const details=await operation();report.results.push({name,status:'pass',durationMs:performance.now()-started,details});console.log(JSON.stringify({name,status:'pass'}));}catch(error){report.results.push({name,status:'fail',durationMs:performance.now()-started,error:error.stack});console.error(JSON.stringify({name,status:'fail',error:error.message}));}await writeFile(path.join(evidence,'e2e-results.json'),JSON.stringify(report,null,2));}
 const project=path.join(directory,'sample'),second=path.join(directory,'sample-two'),broken=path.join(directory,'recovered');
