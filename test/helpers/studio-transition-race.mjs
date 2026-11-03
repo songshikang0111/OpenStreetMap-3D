@@ -30,5 +30,9 @@ try{
  pending[oldPending+1]();await opening;pending[oldPending]();await oldProject;
  assert.equal(context.review.state.project.id,'p2');assert.deepEqual(viewers.filter(v=>v.active).map(v=>v.id),[context.review.state.viewer.id]);assert.equal(loaded.filter(handle=>handle.active).length,1);await context.review.disposePreview();
  assert.equal(viewers.filter(v=>v.active).length,0);assert.equal(loaded.filter(handle=>handle.active).length,0);
+ for(const id of ['report','selection','diagnostics','job-status','stats'])element(id).textContent='Old project source / success';context.review.state.manifest={old:true};element('progress').value=.8;
+ context.fetch=async()=>({ok:false});await context.review.openProject({id:'p3'});
+ assert.equal(context.review.state.manifest,null);assert.equal(context.review.state.viewer,null);assert.equal(element('progress').value,0);
+ for(const id of ['report','selection','diagnostics','job-status','stats'])assert.doesNotMatch(element(id).textContent,/Old project/);
  assert.deepEqual(beforeDispose.activeViewers,[2]);assert.equal(beforeDispose.ownedViewer,2);assert.equal(beforeDispose.activeCSS,1);assert.deepEqual(afterDispose,{activeViewers:[],activeCSS:0});console.log(JSON.stringify({beforeDispose,afterDispose,trace}));
 }finally{globalThis.Option=previousOption;}

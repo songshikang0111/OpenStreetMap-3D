@@ -37,7 +37,16 @@ async function openProject(project,{pendingJob}={}) {
   if (!project.id) throw new Error('本地服务未返回项目 ID。');
   const detail = unwrap(await api.get(project.id), 'project');
   if(epoch!==state.projectEpoch)return;
-  if(state.project?.id!==project.id) {clearTimeout(state.polling);state.job=pendingJob||null;await disposePreview();state.preparedStyle=null;$('empty').hidden=false;}
+  if(state.project?.id!==project.id) {
+    clearTimeout(state.polling);state.job=pendingJob||null;await disposePreview();
+    if(epoch!==state.projectEpoch)return;
+    state.preparedStyle=null;state.manifest=null;state.disconnected=false;$('empty').hidden=false;
+    $('report').textContent='项目尚未构建；构建后显示此项目的质量与来源。';
+    $('selection').textContent='点击场景中的对象查看身份与来源。';$('stats').textContent='等待 SDK。';
+    $('diagnostics').textContent='暂无诊断。';$('diagnostics').classList.remove('error');$('progress').value=0;
+    $('job-status').textContent=pendingJob?'正在恢复此项目的任务…':'项目已打开；下载数据后构建，或直接构建离线样例。';
+    $('camera').value='custom';$('fov').value=detail.config?.camera?.fov||45;
+  }
   if(epoch!==state.projectEpoch)return;
   state.project = {...project,...detail}; state.config = detail.config || detail;
   const config=state.config;
