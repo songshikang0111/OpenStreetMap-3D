@@ -108,3 +108,7 @@ node bin/city.js export web --project ./work/extension-check --json
 ```
 
 固定相机和种子复现截图；需要性能结论时使用真实浏览器、1280×720/DPR 1、至少 60 秒路径，保留整帧 draws/triangles、p50/p95/p99、冷启动和五次资源往返。验收证据路径见 [集成报告](phase1-evidence/integration/acceptance.md)。
+
+Studio 中选择“项目外部画风”，在“画风参数与项目入口”填写 ID、项目相对入口、依赖映射、资产数组与参数 JSON，再点击“验证并应用画风”。配置保存前先完成本地打包与参数验证；切换官方画风时只保存该官方 ID 和参数，外部配置草稿在本次打开期间保留。修改画风文件后再次点击验证可重建预览。项目文件必须可信，本地模块会执行代码。
+
+本地 API `POST /api/projects/:id/style-preview` 接收 `{style?: ProjectStyleConfig}`，缺省使用已保存配置；不修改项目配置或静态站点。成功响应的 `preview` 包含 `style`、`styleModule`、`baseUrl`、`sdkUrl` 与输入/文件/hash 报告。客户端先动态导入 `sdkUrl`，再用该模块的 `loadProjectStyle` 和 `createCityViewer`，保持画风注册表一致。项目有运行或排队任务时返回 409；无效入口/依赖/资产/参数明确失败。生成文件仅从 `/projects/:id/style-preview/:hash/…` 的对应缓存子目录提供，metadata 使用可重新验证的缓存策略。

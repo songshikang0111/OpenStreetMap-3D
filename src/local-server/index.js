@@ -9,8 +9,9 @@ import { createProject, readProject, patchProject, importData } from '../cli/pro
 import { JobManager } from '../cli/jobs.js';
 import { withProjectLock } from '../cli/project-lock.js';
 import { resolveDataSource, expandDataSourceOverrides, DATA_SOURCE_FIELDS, DATA_SOURCE_PROVIDERS } from '../data/source.js';
+import {prepareProjectStyle,projectStyleCachePath} from './project-styles.js';
 
-const MIME={'.json':'application/json','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.html':'text/html','.png':'image/png','.glb':'model/gltf-binary','.svg':'image/svg+xml','.wasm':'application/wasm'};
+const MIME={'.json':'application/json','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.html':'text/html','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.gif':'image/gif','.avif':'image/avif','.woff':'font/woff','.woff2':'font/woff2','.ttf':'font/ttf','.glb':'model/gltf-binary','.svg':'image/svg+xml','.wasm':'application/wasm'};
 const envelope=(extra={})=>({schemaVersion:1,status:'succeeded',artifacts:[],diagnostics:[],...extra});
 function send(res,status,value){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(value));}
 async function body(req){
@@ -81,7 +82,7 @@ export async function createLocalServer({workspaceRoot,projectRoot,port=4178,hos
         const input=await body(req);keys(input,['relativePath']);if(typeof input.relativePath!=='string')throw new CityError('INVALID_PARAMETER','project','relativePath is required.');
         return send(res,200,envelope({project:await register(input.relativePath)}));
       }
-      const match=route.match(/^\/api\/projects\/([a-f0-9-]+)(?:\/(jobs|import))?$/);
+      const match=route.match(/^\/api\/projects\/([a-f0-9-]+)(?:\/(jobs|import|style-preview))?$/);
       if(match){
         const {p,root}=await locate(match[1]);
         if(!match[2]&&req.method==='GET'){const config=await readProject(root);return send(res,200,envelope({project:{...p,config,dataSource:resolveDataSource(sourceDefaults,config.source)},config}));}
@@ -89,6 +90,13 @@ export async function createLocalServer({workspaceRoot,projectRoot,port=4178,hos
           if([...jobs.jobs.values()].some(j=>j.project===root&&['running','queued'].includes(j.status)))throw new CityError('PROJECT_BUSY','config','Wait for or cancel this project’s jobs before editing.');
           const patch=await body(req);keys(patch,['name','area','origin','seed','source','generation','tiling','quality','style','landmarks','camera']);
           return send(res,200,envelope({project:{...p,config:await withProjectLock(root,()=>patchProject(root,patch))}}));
+        }
+        if(match[2]==='style-preview'&&req.method==='POST'){
+          if([...jobs.jobs.values()].some(j=>j.project===root&&['running','queued'].includes(j.status)))throw new CityError('PROJECT_BUSY','style','Wait for or cancel this project’s jobs before validating a style.');
+          const input=await body(req);keys(input,['style']);
+          if(input.style!==undefined&&(!input.style||typeof input.style!=='object'||Array.isArray(input.style)))throw new CityError('STYLE_CONFIG','style','style must be a project style object.');
+          const preview=await withProjectLock(root,async()=>prepareProjectStyle(root,p.id,input.style===undefined?(await readProject(root)).style:input.style));
+          return send(res,200,envelope({preview}));
         }
         if(match[2]==='import'&&req.method==='POST'){
           if([...jobs.jobs.values()].some(j=>j.project===root&&['running','queued'].includes(j.status)))throw new CityError('PROJECT_BUSY','import','Wait for or cancel this project’s jobs before importing.');
@@ -120,6 +128,11 @@ export async function createLocalServer({workspaceRoot,projectRoot,port=4178,hos
         const job=jobs.get(jobMatch[1]);if(![...projects.values()].some(p=>path.resolve(workspaceRoot,p.relativePath)===job.project))throw new CityError('JOB_NOT_FOUND','job','Job is not registered in this workspace.');
         if(req.method==='GET'&&!jobMatch[2])return send(res,200,envelope({job}));
         if(req.method==='POST'&&jobMatch[2]){await body(req);return send(res,200,envelope({job:await jobs.cancel(jobMatch[1])}));}
+      }
+      const styleAsset=route.match(/^\/projects\/([a-f0-9-]+)\/style-preview\/([a-f0-9]{64})\/(.+)$/);
+      if(styleAsset&&req.method==='GET'){
+        const {root}=await locate(styleAsset[1]);
+        return await staticFile(await safePath(root,projectStyleCachePath(styleAsset[2])),styleAsset[3],res);
       }
       const asset=route.match(/^\/projects\/([a-f0-9-]+)\/(dist|site)\/(.+)$/);
       if(asset&&req.method==='GET'){const {root}=await locate(asset[1]);return await staticFile(await safePath(root,asset[2]),asset[3],res);}
