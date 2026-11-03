@@ -3,7 +3,7 @@ import {createStudioApi, areaAround, validateArea, isTerminal, viewsForBounds, s
 import {createCityViewer} from '../src/sdk/index.js';
 
 const $ = id => document.getElementById(id), api = createStudioApi();
-const state = {project:null, config:null, viewer:null, manifest:null, job:null, polling:0, disconnected:false, location:{lat:39.9095, lon:116.4605}, lastKind:'build'};
+const state = {project:null, config:null, viewer:null, manifest:null, job:null, polling:0, disconnected:false, searchEpoch:0, location:{lat:39.9095, lon:116.4605}, lastKind:'build'};
 const json = value => JSON.stringify(value, null, 2);
 const unwrap = (value, key) => value[key] ?? value.data?.[key] ?? value.data ?? value;
 function diagnostic(error) { $('diagnostics').textContent = error.diagnostics?.length ? json(error.diagnostics) : String(error.message || error); $('diagnostics').classList.add('error'); }
@@ -53,7 +53,7 @@ async function save() {
   $('project-info').textContent=`${state.config.name} · 配置已保存（包括当前相机）`;
 }
 async function preview() {
-  await state.viewer?.dispose(); state.viewer=null;
+  await state.viewer?.dispose(); state.viewer=null;$('empty').hidden=false;enabled();
   const manifestUrl=state.project.manifestUrl || `/projects/${encodeURIComponent(state.project.id)}/dist/manifest.json`;
   state.manifest=await fetch(manifestUrl).then(async response=>{if(!response.ok)throw new Error('场景清单不可用；请先构建项目。');return response.json();});
   const viewer=await createCityViewer({container:$('viewport'),manifestUrl,style:{id:$('style').value,parameters:state.config.style?.parameters || {}},quality:$('quality').value,onProgress:progress=>{$('job-status').textContent=`加载场景：${progress.stage || json(progress)}`;},onDiagnostic:diagnostic,onSelect:value=>{$('selection').textContent=json(value);}});
@@ -71,7 +71,9 @@ async function pollJob() {
   clearTimeout(state.polling);
   if(!state.job) return;
   try {
-    state.job=unwrap(await api.job(state.job.id),'job'); state.disconnected=false; const job=state.job;
+    state.job=unwrap(await api.job(state.job.id),'job'); state.disconnected=false;
+  }catch(error){state.disconnected=true;diagnostic(error);$('job-status').textContent='服务连接中断；恢复后点击“恢复 / 重试任务”。';enabled();return;}
+    const job=state.job;
     const progress=typeof job.progress==='number' ? job.progress : job.progress?.fraction || 0;
     $('progress').value=Math.min(1,progress>1 ? progress/100 : progress);
     $('job-status').textContent=`${job.kind || state.lastKind} · ${job.status} · ${job.stage || job.progress?.stage || ''}`;
@@ -79,8 +81,9 @@ async function pollJob() {
     $('diagnostics').classList.toggle('error',job.status==='failed');
     remember(); enabled();
     if(!isTerminal(job)) state.polling=setTimeout(pollJob,500);
-    else if(job.status==='succeeded' && (job.kind || state.lastKind)==='build') await preview();
-  } catch(error) {state.disconnected=true;diagnostic(error); $('job-status').textContent='服务连接中断；恢复后点击“恢复 / 重试任务”。'; enabled();}
+    else if(job.status==='succeeded' && (job.kind || state.lastKind)==='build') {
+      try{await preview();}catch(error){diagnostic(error);$('job-status').textContent=`构建已完成，预览失败：${error.message}`;enabled();}
+    }
 }
 async function start(kind,parameters={},resume) {
   await save(); state.lastKind=kind;
@@ -89,8 +92,12 @@ async function start(kind,parameters={},resume) {
   remember(); enabled(); await pollJob();
 }
 $('search-form').addEventListener('submit',action(async()=>{
+  const epoch=++state.searchEpoch;
   $('candidates').textContent='正在定位…';
-  const results=unwrap(await api.search($('query').value),'candidates');
+  let results;
+  try{results=unwrap(await api.search($('query').value),'candidates');}
+  catch(error){if(epoch===state.searchEpoch)$('candidates').textContent='定位失败；请查看诊断或使用明确坐标。';throw error;}
+  if(epoch!==state.searchEpoch)return;
   $('candidates').replaceChildren();
   if(!results.length) {$('candidates').textContent='没有找到候选。请尝试明确坐标、OSM 链接或离线样例。';return;}
   for(const candidate of results) {
