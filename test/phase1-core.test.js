@@ -16,7 +16,7 @@ async function worldSignature(result,lod='high') {
   for(const c of result.manifest.chunks){
     const descriptor=c.lods.find(l=>l.id===lod),g=await decodeChunk(result.assets[descriptor.uri],descriptor);g.updateMatrixWorld(true);
     g.traverse(mesh=>{
-      if(!mesh.isMesh)return;
+      if(!mesh.isMesh||!mesh.isInstancedMesh&&mesh.userData.city.kind!=='building')return;
       const p=mesh.geometry.attributes.position,indices=mesh.geometry.index?.array,count=indices?.length??p.count;
       const m=new THREE.Matrix4(),v=new THREE.Vector3();
       if(mesh.isInstancedMesh){
@@ -43,12 +43,12 @@ test('same locked input produces byte-identical manifest and binary resources, i
   const changed=await compileScene(raw,{...config,seed:config.seed+1});assert.notEqual(first.manifest.hashes.world,changed.manifest.hashes.world);
 });
 
-test('fixed coverage 1/4/16 tiles preserves exact world triangles, bridge grades, water and stable object identities',async()=>{
+test('fixed coverage 1/4/16 preserves atomic world geometry and stable object identities; shared surfaces are clipped',async()=>{
   const one=await compiled(),{raw,config}=continuityFixture(),signature=await worldSignature(one),lowSignature=await worldSignature(one,'low');
   for(const divisions of [2,4]){
     const result=await compileScene(raw,{...config,tiling:{divisions}});
     assert.equal(result.manifest.chunks.length,divisions*divisions);
-    assert.equal(await worldSignature(result),signature,'shared geometry must not gain gaps, overlaps or moved points');
+    assert.equal(await worldSignature(result),signature,'atomic geometry must not gain missing, repeated or moved objects');
     assert.equal(await worldSignature(result,'low'),lowSignature);
     assert.equal(result.manifest.hashes.world,one.manifest.hashes.world);
     assert.deepEqual(Object.keys(result.manifest.featureIndex),Object.keys(one.manifest.featureIndex));

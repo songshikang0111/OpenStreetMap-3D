@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { clipPartition } from './spatial-partition.js';
 import { chinaZunScale, landmarkKind } from '../building-rules.js';
 import { cctvRing } from '../landmarks.js';
 import { simplifyClosedRing, preservePolygonTopology } from './lod-simplify.js';
@@ -9,6 +10,7 @@ function safeFootprint(building) {
 }
 
 export function boundsOf(object) {
+  const ancestors=[];for(let p=object.parent;p;p=p.parent)ancestors.unshift(p);for(const p of ancestors)p.updateWorldMatrix(false,false,true);object.updateWorldMatrix(false,true,true);
   const b=new THREE.Box3().setFromObject(object,true);
   return b.isEmpty()?[0,0,0,0,0,0]:[...b.min.toArray(),...b.max.toArray()];
 }
@@ -22,7 +24,8 @@ export function lowBuilding(building, material, enabled=true,parameters={},envel
       const points=source.map(p=>new THREE.Vector2(...p));if(THREE.ShapeUtils.isClockWise(points)!==!!i)points.reverse();const ring=points.map(p=>p.toArray());
       for(let j=0;j<ring.length;j++){
         const a=ring[j],b=ring[(j+1)%ring.length],dx=b[0]-a[0],dz=b[1]-a[1],length=Math.hypot(dx,dz);if(length<1e-6)continue;
-        for(const span of envelope.wall(a,b,[dz/length,0,-dx/length])){
+        const bands=new Map();for(const s of envelope.wall(a,b,[dz/length,0,-dx/length])){const key=`${s.lo}:${s.hi}`;if(!bands.has(key))bands.set(key,[]);const runs=bands.get(key),last=runs.at(-1);if(last&&Math.abs(last.t1-s.t0)<1e-10)last.t1=s.t1;else runs.push({...s});}
+        for(const span of [...bands.values()].flat()){
           const p=[a[0]+dx*span.t0,a[1]+dz*span.t0],q=[a[0]+dx*span.t1,a[1]+dz*span.t1],lo=.45+span.lo,hi=.45+span.hi;
           triangle([p[0],lo,p[1]],[p[0],hi,p[1]],[q[0],hi,q[1]]);triangle([p[0],lo,p[1]],[q[0],hi,q[1]],[q[0],lo,q[1]]);
         }
@@ -118,11 +121,12 @@ export function partitionMesh(mesh, grid, ownerFor, featureIds) {
         mesh.getMatrixAt(indices[j],matrix);copy.setMatrixAt(j,matrix);
         if(mesh.instanceColor)copy.setColorAt(j,new THREE.Color().fromBufferAttribute(mesh.instanceColor,indices[j]));
       }
-      copy.name=mesh.name;copy.matrix.copy(mesh.matrixWorld);copy.matrixAutoUpdate=false;copy.castShadow=mesh.castShadow;copy.receiveShadow=mesh.receiveShadow;
+      copy.name=mesh.name;copy.matrix.copy(mesh.matrixWorld);copy.matrixAutoUpdate=false;copy.matrixWorldNeedsUpdate=true;copy.castShadow=mesh.castShadow;copy.receiveShadow=mesh.receiveShadow;
       const ids=indices.map(i=>mesh.userData.city.instanceFeatureIds[i]);copy.userData={...mesh.userData,city:{...mesh.userData.city,featureIds:[...new Set(ids)].sort(),instanceFeatureIds:ids}};
       copy.computeBoundingBox();copy.computeBoundingSphere();return [tile,copy];
     });
   }
+  if(grid.cells&&grid.columns)return clipPartition(mesh,grid,ownerFor,featureIds);
   const index=g.index?.array,total=index?.length??g.attributes.position.count,feature=g.attributes.cityFeature;
   const point=new THREE.Vector3();
   const start=g.drawRange.start,end=Math.min(total,start+g.drawRange.count),multi=Array.isArray(mesh.material);
@@ -153,7 +157,7 @@ export function partitionMesh(mesh, grid, ownerFor, featureIds) {
         }
       }
     }
-    const copy=new THREE.Mesh(geometry,mesh.material);copy.name=mesh.name;copy.matrix.copy(mesh.matrixWorld);copy.matrixAutoUpdate=false;copy.castShadow=mesh.castShadow;copy.receiveShadow=mesh.receiveShadow;
+    const copy=new THREE.Mesh(geometry,mesh.material);copy.name=mesh.name;copy.matrix.copy(mesh.matrixWorld);copy.matrixAutoUpdate=false;copy.matrixWorldNeedsUpdate=true;copy.castShadow=mesh.castShadow;copy.receiveShadow=mesh.receiveShadow;
     const ids=[...new Set(indices.map(i=>featureIds[feature.getX(i)]))].sort();copy.userData={...mesh.userData,city:{...mesh.userData.city,featureIds:ids}};return [tile,copy];
   });
 }

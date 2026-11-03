@@ -10,8 +10,9 @@ export function preservePolygonTopology(original,candidate) {
     return cross(a,b,c)*cross(a,b,d)<=0&&cross(c,d,a)*cross(c,d,b)<=0;
   };
   const ringsCross=(a,b)=>edges(a).some(([p,q])=>edges(b).some(([r,s])=>intersects(p,q,r,s))),selfCross=r=>edges(r).some(([a,b],i)=>edges(r).some(([c,d],j)=>j>i+1&&!(i===0&&j===r.length-1)&&intersects(a,b,c,d)));
+  const area=r=>r.reduce((sum,p,i)=>{const q=r[(i+1)%r.length];return sum+p[0]*q[1]-q[0]*p[1];},0)/2;
   const [outer,...holes]=candidate;
-  const invalid=candidate.some(r=>r.length<3||selfCross(r))||holes.some(h=>h.some(p=>!inside(p,outer))||ringsCross(h,outer))||holes.some((h,i)=>holes.some((other,j)=>j>i&&(inside(h[0],other)||inside(other[0],h)||ringsCross(h,other))));
+  const invalid=candidate.some((r,i)=>r.length<3||selfCross(r)||Math.abs(area(r))<1e-10||area(r)*area(original[i])<=0)||holes.some(h=>h.some(p=>!inside(p,outer))||ringsCross(h,outer))||holes.some((h,i)=>holes.some((other,j)=>j>i&&(inside(h[0],other)||inside(other[0],h)||ringsCross(h,other))));
   return invalid?original.map(r=>r.map(p=>p.slice())):candidate;
 }
 

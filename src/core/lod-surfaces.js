@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import clipping from 'polygon-clipping';
 import { roadHeightAt } from '../road-grade.js';
 import { normaliseFlight, section, rampHeight } from '../road-stairs.js';
-import { inside } from '../osm.js';
 import { simplifyClosedRing, preservePolygonTopology } from './lod-simplify.js';
 
 class Writer {
@@ -27,7 +26,7 @@ const openRing=ring=>{
 /** Retrangulate the same union on the same height planes, before tiling.
  * The input fan matches the legacy road writer, including clamped ramp ends.
  * Paint is a near detail; its support is the complete un-inlaid carriageway. */
-export function planarPatches(items, height=roadHeightAt, extraKey=()=> '') {
+export function planarPatches(items, height=roadHeightAt, extraKey=()=> '', secondaryHeight) {
   const buckets=new Map();
   for(const item of items){
     const polygon=item.polygon;
@@ -36,12 +35,14 @@ export function planarPatches(items, height=roadHeightAt, extraKey=()=> '') {
       const dx=p[1][0]-p[0][0],dz=p[1][1]-p[0][1],ex=p[2][0]-p[0][0],ez=p[2][1]-p[0][1],det=dx*ez-dz*ex;
       if(Math.abs(det)<1e-9)continue;
       const a=((y[1]-y[0])*ez-(y[2]-y[0])*dz)/det,b=(dx*(y[2]-y[0])-ex*(y[1]-y[0]))/det,c=y[0]-a*p[0][0]-b*p[0][1];
-      const key=`${Math.round(a/1e-7)},${Math.round(b/1e-7)},${Math.round(c/1e-4)}:${extraKey(item)}`;
-      if(!buckets.has(key))buckets.set(key,{a,b,c,item,polygons:[]});
+      let secondary;
+      if(secondaryHeight){const h=p.map(q=>secondaryHeight(item,q)),sa=((h[1]-h[0])*ez-(h[2]-h[0])*dz)/det,sb=(dx*(h[2]-h[0])-ex*(h[1]-h[0]))/det;secondary={a:sa,b:sb,c:h[0]-sa*p[0][0]-sb*p[0][1]};}
+      const key=`${Math.round(a/1e-7)},${Math.round(b/1e-7)},${Math.round(c/1e-4)}:${secondary?[secondary.a,secondary.b,secondary.c].map((v,i)=>Math.round(v/(i===2?1e-4:1e-7))).join(','):''}:${extraKey(item)}`;
+      if(!buckets.has(key))buckets.set(key,{a,b,c,secondary,item,polygons:[]});
       const bucket=buckets.get(key);
       // A plane bucket may never move a source vertex by more than 1 mm.
-      if(p.some((q,j)=>Math.abs(bucket.a*q[0]+bucket.b*q[1]+bucket.c-y[j])>.001)){
-        buckets.set(`${key}:${buckets.size}`,{a,b,c,item,polygons:[[p]]});
+      if(p.some((q,j)=>Math.abs(bucket.a*q[0]+bucket.b*q[1]+bucket.c-y[j])>.0001||secondaryHeight&&Math.abs(bucket.secondary.a*q[0]+bucket.secondary.b*q[1]+bucket.secondary.c-secondaryHeight(item,q))>.0001)){
+        buckets.set(`${key}:${buckets.size}`,{a,b,c,secondary,item,polygons:[[p]]});
       }else bucket.polygons.push([p]);
     }
   }
@@ -70,50 +71,38 @@ export function surfaceGeometry(items,color){
 }
 
 export function deckGeometry(decks){
-  const writer=new Writer(),edges=new Map(),sides=[];let capTriangles=0;
+  const writer=new Writer(),sides=[],vertices=[],grid=new Map(),cellSize=12;
   const key=v=>v.map(x=>Math.round(x*1e5)).join(',');
-  for(const p of planarPatches(decks,roadHeightAt,d=>d.thickness)){
-    const top=q=>p.a*q[0]+p.b*q[1]+p.c,bottom=q=>Math.max(.18,top(q)-p.item.thickness);
-    const start=writer.positions.length;cap(writer,p.rings,bottom,'#969c97',false);capTriangles+=(writer.positions.length-start)/9;
+  const patches=planarPatches(decks,(d,q)=>Math.max(.18,roadHeightAt(d,q)-d.thickness),()=>'',roadHeightAt);
+  for(const p of patches){
+    const top=q=>p.secondary.a*q[0]+p.secondary.b*q[1]+p.secondary.c,bottom=q=>p.a*q[0]+p.b*q[1]+p.c;
+    cap(writer,p.rings,bottom,'#969c97',false);
     for(const [i,ring]of p.rings.entries()){
       const cw=THREE.ShapeUtils.isClockWise(ring.map(p=>new THREE.Vector2(...p))),r=cw!==!!i?[...ring].reverse():ring;
       for(let j=0;j<r.length;j++){
-        const a=r[j],b=r[(j+1)%r.length],v=[[a[0],bottom(a),a[1]],[a[0],top(a),a[1]],[b[0],top(b),b[1]],[b[0],bottom(b),b[1]]];
-        const ends=[`${key(v[0])}:${key(v[1])}`,`${key(v[3])}:${key(v[2])}`].sort(),edge=ends.join('|');edges.set(edge,(edges.get(edge)||0)+1);sides.push({edge,v});
+        const a=r[j],b=r[(j+1)%r.length],from=[a[0],a[1],top(a),bottom(a)],to=[b[0],b[1],top(b),bottom(b)];sides.push({from,to});vertices.push(from);
       }
     }
   }
-  for(const {edge,v}of sides)if(edges.get(edge)===1)writer.quad(...v,'#b8b8ac');
-  const geometry=writer.geometry();geometry.userData.lodOptimization={capTriangles};return geometry;
+  for(const v of vertices){const k=`${Math.floor(v[0]/cellSize)},${Math.floor(v[1]/cellSize)}`;if(!grid.has(k))grid.set(k,[]);grid.get(k).push(v);}
+  const pieces=[],counts=new Map();
+  for(const {from:a,to:b}of sides){
+    const dx=b[0]-a[0],dz=b[1]-a[1],lengthSq=dx*dx+dz*dz,ts=[0,1];if(lengthSq<1e-16)continue;
+    for(let x=Math.floor(Math.min(a[0],b[0])/cellSize);x<=Math.floor(Math.max(a[0],b[0])/cellSize);x++)for(let z=Math.floor(Math.min(a[1],b[1])/cellSize);z<=Math.floor(Math.max(a[1],b[1])/cellSize);z++)for(const v of grid.get(`${x},${z}`)||[]){
+      const t=((v[0]-a[0])*dx+(v[1]-a[1])*dz)/lengthSq;if(t<=1e-7||t>=1-1e-7)continue;
+      if(Math.hypot(v[0]-a[0]-t*dx,v[1]-a[1]-t*dz)<1e-5&&Math.abs(v[2]-a[2]-(b[2]-a[2])*t)<.0001&&Math.abs(v[3]-a[3]-(b[3]-a[3])*t)<.0001)ts.push(t);
+    }
+    const sorted=[...new Set(ts)].sort((a,b)=>a-b);
+    for(let i=1;i<sorted.length;i++){
+      const u=a.map((v,k)=>v+(b[k]-v)*sorted[i-1]),v=a.map((w,k)=>w+(b[k]-w)*sorted[i]),edge=[key(u),key(v)].sort().join('|');counts.set(edge,(counts.get(edge)||0)+1);pieces.push({edge,u,v});
+    }
+  }
+  for(const {edge,u,v}of pieces)if(counts.get(edge)===1)writer.quad([u[0],u[3],u[1]],[u[0],u[2],u[1]],[v[0],v[2],v[1]],[v[0],v[3],v[1]],'#b8b8ac');
+  return writer.geometry();
 }
 
-/** Far slabs retain each source way's complete footprint and exact sampled
- * outer grade, rather than boxing every four-metre grade sample separately. */
-export function farDeckGeometry(decks) {
-  const writer=new Writer(),groups=new Map();
-  // Height breaklines are constraints even when collinear in XZ. Earcut of a
-  // whole-way footprint would discard them and interpolate through the road.
-  for(const p of planarPatches(decks,(d,q)=>Math.max(.18,roadHeightAt(d,q)-d.thickness),d=>d.thickness))cap(writer,p.rings,q=>p.a*q[0]+p.b*q[1]+p.c,'#969c97',false);
-  for(const d of decks){const key=`${d.roadId}:${d.level}:${d.thickness}`;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(d);}
-  for(const items of groups.values()){
-    let polygons;try{polygons=clipping.union(...items.map(d=>[d.polygon.map(p=>p.map(Math.fround))]));}catch{polygons=items.map(d=>[d.polygon]);}
-    const height=q=>{
-      let best=items[0],nearest=Infinity;
-      for(const item of items){
-        if(inside(q,item.polygon))return roadHeightAt(item,q);
-        for(let i=0;i<item.polygon.length;i++){const a=item.polygon[i],b=item.polygon[(i+1)%item.polygon.length],dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((q[0]-a[0])*dx+(q[1]-a[1])*dz)/(dx*dx+dz*dz||1))),d=Math.hypot(q[0]-a[0]-t*dx,q[1]-a[1]-t*dz);if(d<nearest){nearest=d;best=item;}}
-      }return roadHeightAt(best,q);
-    };
-    for(const polygon of polygons){
-      const originalRings=polygon.map(openRing),rings=preservePolygonTopology(originalRings,originalRings.map(ring=>simplifyClosedRing(ring.map(p=>[p[0],height(p),p[1],Math.max(.18,height(p)-items[0].thickness)]),.009).map(([x,,z])=>[x,z])));
-      const bottom=q=>Math.max(.18,height(q)-items[0].thickness);
-      for(const [i,ring]of rings.entries()){
-        const cw=THREE.ShapeUtils.isClockWise(ring.map(p=>new THREE.Vector2(...p))),r=cw!==!!i?[...ring].reverse():ring;
-        for(let j=0;j<r.length;j++){const a=r[j],b=r[(j+1)%r.length];writer.quad([a[0],bottom(a),a[1]],[a[0],height(a),a[1]],[b[0],height(b),b[1]],[b[0],bottom(b),b[1]],'#b8b8ac');}
-      }
-    }
-  }return writer.geometry();
-}
+/** Shared structural shell; every LOD uses identical surfaces and ownership. */
+export function farDeckGeometry(decks){return deckGeometry(decks);}
 
 /** Only join touching segments of the same source/width, with a 2.5 cm
  * three-dimensional simplification bound. Real gaps and larger bends remain. */
@@ -172,13 +161,13 @@ export function stairGeometries(flights){
 
 export function coarseRoadGeometries(plan) {
   const structures=plan.structures;
-  const stairs=stairGeometries(plan.grades.stairs);
+  const stairs=stairGeometries(plan.grades.stairs);stairs[0].dispose();stairs[1].dispose();
   return new Map([
     ['Continuous carriageways',surfaceGeometry(plan.surfaces.filter(s=>s.kind==='drive'&&!s.stairFlight),'#777e7c')],
     ['OSM pedestrian paths and at-grade crossings',surfaceGeometry(plan.surfaces.filter(s=>s.kind==='walk'&&!s.stairFlight),'#d0c9b9')],
     ['Inferred roadside margins clipped at buildings',surfaceGeometry(plan.surfaces.filter(s=>s.kind==='paving'&&!s.stairFlight),'#ddd7c8')],
     ['Bridge deck thickness and soffits',farDeckGeometry(structures.decks)],
     ['Bridge parapets and pedestrian guardrails',railGeometry(structures.rails)],
-    ['Stair treads and endpoint landings',stairs[0]],['Stair risers, sides and soffits',stairs[1]],['Continuous stair handrails and posts',stairs[2]],
+    ['Continuous stair handrails and posts',stairs[2]],
   ]);
 }
