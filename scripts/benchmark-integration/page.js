@@ -35,7 +35,7 @@ globalThis.benchmark={
       const elapsed=(now-start)/1000,t=Math.min(60,elapsed/seconds*60);let i=keys.findIndex((key,index)=>index<keys.length-1&&t>=key.t&&t<=keys[index+1].t);if(i<0)i=keys.length-2;
       const a=keys[i],b=keys[i+1],u=Math.max(0,Math.min(1,(t-a.t)/(b.t-a.t))),mix=(x,y)=>x.map((value,index)=>value+(y[index]-value)*u);
       viewer.setView({position:mix(a.position,b.position),target:mix(a.target,b.target),fov:a.fov+(b.fov-a.fov)*u});
-      if(elapsed>=next){const stats=sample();samples.push({second:elapsed,runtime:stats.runtime,render:stats.rendering.last});next++;}
+      if(elapsed>=next){const stats=sample();samples.push({second:elapsed,runtime:stats.runtime,nearAttachments:stats.nearAttachments,render:stats.rendering.last});next++;}
       if(elapsed<seconds)requestAnimationFrame(step);else resolve();
     }requestAnimationFrame(step);});
     return {durationSeconds:seconds,keys,samples,stats:viewer.getStats({raw:true}),diagnostics:[...diagnostics],transfers:performance.getEntriesByType('resource').map(item=>({url:item.name,transferSize:item.transferSize,encodedBodySize:item.encodedBodySize,decodedBodySize:item.decodedBodySize,duration:item.duration}))};

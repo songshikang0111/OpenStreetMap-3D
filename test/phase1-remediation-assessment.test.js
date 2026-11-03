@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {assessCase,assessStationary,requestCounts,STATIONARY_VIEWS} from '../scripts/benchmark-integration/assessment.mjs';
+import {assessCase,assessStationary,assessResources,requestCounts,STATIONARY_VIEWS} from '../scripts/benchmark-integration/assessment.mjs';
 const historical=async name=>JSON.parse(await readFile(new URL(`../docs/phase1-evidence/integration/performance/${name}.json`,import.meta.url),'utf8'));
 
 test('new acceptance rejects historical triangle overflow despite its successful old frame-rate gates',async()=>{
@@ -14,11 +14,12 @@ test('new acceptance rejects historical triangle overflow despite its successful
 test('stationary evidence requires a complete real-time window and both saved camera identities',async()=>{
   // Deliberately constructed integrity units, not browser or GPU measurements.
   const raw=await historical('beijing-cbd-grow-1'),stats=structuredClone(raw.path.stats);
-  const frames=Array.from({length:1500},(_,i)=>({time:10+i*10,intervalMs:10,triangles:100,drawCalls:2}));
+  const frames=Array.from({length:1500},(_,i)=>({time:10+i*10,intervalMs:10,triangles:100,drawCalls:2,estimatedResidentBytes:1000,bodyNearDetails:0,nearAttachmentDetails:0,totalNearDetails:0,nearGeometryArrayBytes:0}));
   Object.assign(stats,{paused:false,disposed:false,diagnostics:[]});
+  stats.runtime.nearDetails=0;stats.runtime.peakEstimatedResidentBytes=stats.runtime.estimatedResidentBytes=1000;
   Object.assign(stats.rendering,{frames,frameCount:1501,windowFrames:1500});
   const phase={...STATIONARY_VIEWS[0],timeOrigin:100000,measurementEpochMs:100000,endedEpochMs:115000,durationSeconds:15,baseline:structuredClone(stats),stats,samples:Array.from({length:151},(_,i)=>({second:i/10,runtime:stats.runtime})),measuredRequests:[]};
-  phase.baselineView=phase.actualView=phase.view;phase.samples.forEach(item=>item.view=phase.view);phase.phaseRequests=[];
+  phase.baselineView=phase.actualView=phase.view;phase.samples.forEach(item=>{item.view=phase.view;item.nearAttachments={nearDetails:0};});phase.phaseRequests=[];
   assert.ok(Object.values(assessStationary(phase).checks).every(Boolean));
   const truncated=structuredClone(phase);truncated.stats.rendering.frames=frames.slice(0,2);truncated.stats.rendering.frameCount=3;truncated.stats.rendering.windowFrames=2;
   assert.equal(assessStationary(truncated).checks.frames,false);
@@ -40,6 +41,10 @@ test('stationary evidence requires a complete real-time window and both saved ca
   assert.equal(assessStationary(hiddenRequests).checks.requestEvidence,false);assert.equal(assessStationary(hiddenRequests).checks.noRepeatedRequests,false);
   const forged=structuredClone(raw);forged.stationary=[phase,t19];forged.path.stats.rendering.frames=Array.from({length:1500},(_,i)=>({time:40+i*40,intervalMs:40,triangles:100,drawCalls:2}));forged.path.stats.rendering.frameCount=1501;forged.path.stats.rendering.windowFrames=1500;
   assert.equal(assessCase(forged).checks.completeSamples,true);assert.equal(assessCase(forged).checks.p95,false);assert.equal(assessCase(forged).intervals.p95,40);
+  const residency=structuredClone(phase);residency.stats.rendering.frames[40].estimatedResidentBytes=128*1024*1024+1;residency.stats.diagnostics=[{code:'TRANSITION_HEADROOM'}];
+  assert.equal(assessStationary(residency).checks.resident,false);assert.equal(assessResources(residency.stats,residency.samples).residentFramesOver,1);
+  const near=structuredClone(phase);Object.assign(near.stats.rendering.frames[40],{bodyNearDetails:17000,nearAttachmentDetails:1001,totalNearDetails:18001});assert.equal(assessStationary(near).checks.nearDetails,false);
+  const peak=structuredClone(phase);peak.stats.runtime.peakEstimatedResidentBytes=128*1024*1024+1;assert.equal(assessStationary(peak).checks.resident,false);
 });
 test('whole-frame draw maximum cannot be hidden by a passing p95',async()=>{
   const raw=await historical('kyoto-gion-grow-1'),assessed=assessCase(raw);
