@@ -23,8 +23,8 @@ export async function openLocalBrowser({root,signal,headless=true,executable=pro
   });
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
   const url=new URL(startPath,`http://127.0.0.1:${server.address().port}/`).href;
-  const child=spawn(browser,[`--user-data-dir=${profile}`,'--remote-debugging-port=0','--no-first-run','--no-default-browser-check','--disable-background-networking','--disable-background-timer-throttling','--disable-renderer-backgrounding','--disable-backgrounding-occluded-windows',`--window-size=${width},${height}`,...(headless?['--headless=new']:[]),url],{stdio:'ignore',windowsHide:true});
-  let ws,sequence=0;const pending=new Map(),events=[];let exited=false;
+  const child=spawn(browser,[`--user-data-dir=${profile}`,'--remote-debugging-port=0','--no-first-run','--no-default-browser-check','--disable-background-networking','--disable-background-timer-throttling','--disable-renderer-backgrounding','--disable-backgrounding-occluded-windows',`--window-size=${width},${height}`,...(headless?['--headless=new']:[]),'about:blank'],{stdio:'ignore',windowsHide:true});
+  let ws,sequence=0,send;const pending=new Map(),events=[],network=[];let exited=false;
   child.on('error',()=>{exited=true;});child.on('exit',()=>{exited=true;});
   const abort=()=>child.kill();signal?.addEventListener('abort',abort,{once:true});
   async function close() {
@@ -42,7 +42,7 @@ export async function openLocalBrowser({root,signal,headless=true,executable=pro
     }
     if(!port)throw new Error('Browser debug endpoint timed out.');
     const targets=await fetch(`http://127.0.0.1:${port}/json/list`).then(r=>r.json());
-    const target=targets.find(item=>item.type==='page'&&item.url.startsWith(url));
+    const target=targets.find(item=>item.type==='page'&&item.url==='about:blank');
     if(!target)throw new Error('Local viewer browser target missing.');
     ws=new WebSocket(target.webSocketDebuggerUrl);
     await new Promise((resolve,reject)=>{ws.addEventListener('open',resolve,{once:true});ws.addEventListener('error',reject,{once:true});});
@@ -51,17 +51,24 @@ export async function openLocalBrowser({root,signal,headless=true,executable=pro
       if(item){pending.delete(response.id);response.error?item.reject(new Error(response.error.message)):item.resolve(response.result);}
       if(response.method==='Runtime.exceptionThrown')events.push({level:'error',type:'exception',message:response.params.exceptionDetails.exception?.description||response.params.exceptionDetails.text});
       if(response.method==='Runtime.consoleAPICalled'&&['error','warning'].includes(response.params.type))events.push({level:response.params.type,message:response.params.args.map(arg=>String(arg.value??arg.description??'')).join(' ').slice(0,8000)});
+      if(response.method==='Fetch.requestPaused'){
+        const request=response.params,parsed=new URL(request.request.url),local=['127.0.0.1','localhost','[::1]'].includes(parsed.hostname),allowed=!['http:','https:'].includes(parsed.protocol)||local;
+        network.push({url:request.request.url,allowed});
+        send(allowed?'Fetch.continueRequest':'Fetch.failRequest',{requestId:request.requestId,...(allowed?{}:{errorReason:'BlockedByClient'})}).catch(error=>events.push({level:'error',message:error.message}));
+      }
       if(events.length>1000)events.shift();
     });
     ws.addEventListener('close',()=>{for(const item of pending.values())item.reject(new Error('Browser connection closed'));pending.clear();});
-    const send=(method,params={})=>new Promise((resolve,reject)=>{
+    send=(method,params={})=>new Promise((resolve,reject)=>{
       const id=++sequence,timer=setTimeout(()=>{pending.delete(id);reject(new Error(`Browser ${method} timed out`));},120000);
       pending.set(id,{resolve:value=>{clearTimeout(timer);resolve(value);},reject:error=>{clearTimeout(timer);reject(error);}});
       ws.send(JSON.stringify({id,method,params}));
     });
     await send('Runtime.enable');
     await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});
-    return {url,browser,send,close,events,async evaluate(expression){
+    await send('Fetch.enable',{patterns:[{urlPattern:'*',requestStage:'Request'}]});
+    await send('Page.navigate',{url});
+    return {url,browser,send,close,events,network,networkPolicy:'loopback-only',async evaluate(expression){
       const result=await send('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true});
       if(result.exceptionDetails)throw new Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text);
       return result.result?.value;
