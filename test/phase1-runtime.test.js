@@ -85,6 +85,15 @@ test('asset failure diagnostics include resolved URL and bounded retries', async
   for (let i = 0; i < 8; i++) { s.update(camera(), 720); await tick(); now += 2000; }
   assert.equal(s.counters.failures, 2); assert.equal(diagnostics[0].stage, 'asset'); assert(diagnostics[0].url.startsWith('https://example.test/cities/site/nested/')); await s.dispose();
 });
+test('a failed offscreen chunk cannot poison idle state after the camera moves to healthy coverage or empty sky',async()=>{
+  let now=0;
+  const s=stream({manifest:manifest(2),now:()=>now,readAsset:async url=>{if(url.includes('/0-'))throw new Error('Broken first chunk');return new ArrayBuffer(8);}});
+  const first=camera([-45,25,60],[-45,25,-40]),second=camera([145,25,60],[145,25,-40]);
+  for(let i=0;i<4;i++){s.update(first,720,now);await tick();now+=1200;}
+  assert.equal(s.getBlockingFailure()?.code,'ASSET_REQUEST_FAILED');
+  await settle(s,second,2);assert.equal(s.getBlockingFailure(),null);assert.equal(s.isSettled(),true);assert(s.current.has('c1'));
+  s.update(camera([0,100,5000],[0,100,9000]),720,now);assert.equal(s.getBlockingFailure(),null);assert.equal(s.isSettled(),true);await s.dispose();
+});
 test('corrupt hash and decoder failures preserve diagnostic stages and clean decoded resources', async () => {
   const m = manifest(); m.chunks[0].lods[2].hash = '0'.repeat(64); const errors = [];
   const s = stream({ manifest: m, onDiagnostic: d => errors.push(d) }); s.update(camera(), 720); for(let i=0;i<10&&!errors.length;i++)await tick();

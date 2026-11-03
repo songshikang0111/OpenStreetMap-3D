@@ -19,6 +19,7 @@ export class ChunkStreamer {
   }
   update(camera, height, time = this.now(), { forceLod } = {}) {
     if (this.disposed) return;
+    this.hasScheduled = true;
     const projected = projectChunks(this.manifest.chunks, camera, height, this.budget.prefetchMargin);
     for (const item of projected) {
       const resident = this.current.get(item.chunk.id);
@@ -105,6 +106,7 @@ export class ChunkStreamer {
       const prepared = this.registry.retain(group); this.registry.release(resources); resources = prepared;
       if (controller.signal.aborted || this.disposed || task.epoch !== this.epoch) { this.releaseGroup(group); binding?.dispose?.(); this.registry.release(resources); return; }
       this.ready.push({ ...task, group, binding, resources, metrics: measureGroup(group), estimatedBytes: Math.max(lod.residentBytes ?? lod.bytes, this.groupBytes(group)) });
+      this.failures.delete(key);
       group = null;
     } catch (error) {
       if (group) { this.releaseGroup(group); binding?.dispose?.(); this.registry.release(resources || this.registry.retain(group)); }
@@ -158,6 +160,14 @@ export class ChunkStreamer {
     return bytes;
   }
   isSettled() { return this.pending.size === 0 && [...this.desired.values()].every(p => this.current.get(p.chunk.id)?.index === p.index); }
+  getBlockingFailure() {
+    for (const desired of this.desired.values()) {
+      const index = this.current.has(desired.chunk.id) ? desired.index : desired.chunk.lods.length - 1;
+      const failure = this.failures.get(`${desired.chunk.id}:${index}`);
+      if (failure?.attempts >= 2) return failure.error;
+    }
+    return null;
+  }
   stats() {
     const levels = {}, visibleIds = [], missingIds = []; let visibleTriangles = 0, sceneDrawCalls = 0, nearDetails = 0;
     for (const [id, e] of this.current) {

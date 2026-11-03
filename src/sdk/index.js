@@ -183,8 +183,8 @@ export async function createCityViewer(options) {
       const deadline = performance.now() + timeoutMs;
       while (!disposed && performance.now() < deadline) {
         if (renderFailed) throw runtimeError('RENDER_FAILED', 'render', 'Rendering stopped; inspect diagnostics.');
-        if (streamer?.isSettled() && streamer.current.size) return;
-        if (streamer?.failures.size && [...streamer.failures.values()].some(f => f.attempts >= 2)) throw [...streamer.failures.values()].find(f => f.attempts >= 2).error;
+        if (streamer?.hasScheduled && streamer.isSettled()) return;
+        const failure = streamer?.getBlockingFailure(); if (failure) throw failure;
         await new Promise(resolve => setTimeout(resolve, 30));
       }
       throw runtimeError(disposed ? 'VIEWER_DISPOSED' : 'LOAD_TIMEOUT', 'stream', 'Visible scene did not settle before the deadline.');
