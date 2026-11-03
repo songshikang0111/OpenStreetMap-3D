@@ -55,7 +55,7 @@ export function budgetPlan(projected, states, budget, now, passMultiplier = 1) {
   const total = () => requests.reduce((sum, p) => {
     const lod = p.chunk.lods[p.index];
     const cost = p.costs?.[p.index];
-    sum.bytes += lod.residentBytes ?? lod.bytes; sum.triangles += cost?.triangles ?? lod.triangles;
+    sum.bytes += p.residentCosts?.[p.index] ?? lod.residentBytes ?? lod.bytes; sum.triangles += cost?.triangles ?? lod.triangles;
     sum.calls += (cost?.drawCalls ?? lod.drawCalls ?? 1) * passMultiplier; sum.details += lod.nearDetails ?? 0;
     return sum;
   }, { bytes: 0, triangles: 0, calls: 0, details: 0 });

@@ -20,6 +20,10 @@ export class ChunkStreamer {
   update(camera, height, time = this.now(), { forceLod } = {}) {
     if (this.disposed) return;
     const projected = projectChunks(this.manifest.chunks, camera, height, this.budget.prefetchMargin);
+    for (const item of projected) {
+      const resident = this.current.get(item.chunk.id);
+      item.residentCosts = item.chunk.lods.map((lod, index) => resident?.index === index ? resident.estimatedBytes : Math.ceil((lod.residentBytes ?? lod.bytes) * 1.1));
+    }
     const plan = budgetPlan(projected, this.states, { ...this.budget, residentBytes: Math.max(0, this.budget.residentBytes - (this.extraResidentBytes || 0)), visibleTriangles: Math.max(0, this.budget.visibleTriangles - (this.extraTriangles || 0) * this.passMultiplier), drawCalls: Math.max(0, this.budget.drawCalls - (this.extraCalls || 0) * this.passMultiplier), nearDetails: Math.max(0, this.budget.nearDetails - (this.extraDetails || 0)) }, time, this.passMultiplier);
     if (forceLod != null) for (const p of plan.requests) p.index = Math.min(p.chunk.lods.length - 1, forceLod);
     this.desired = new Map(plan.requests.map(p => [p.chunk.id, p])); this.plan = plan;
