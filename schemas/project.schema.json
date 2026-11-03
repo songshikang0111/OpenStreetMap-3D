@@ -1,0 +1,20 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://city-ink.local/schemas/project.schema.json",
+  "title":"City Ink project v1",
+  "type":"object",
+  "required":["schemaVersion","name","area","source"],
+  "properties":{
+    "schemaVersion":{"const":1},"name":{"type":"string","minLength":1,"pattern":"\\S"},
+    "area":{"type":"object","required":["south","west","north","east"],"properties":{"south":{"type":"number","minimum":-80,"maximum":80},"north":{"type":"number","minimum":-80,"maximum":80},"west":{"type":"number","minimum":-180,"maximum":180},"east":{"type":"number","minimum":-180,"maximum":180}}},
+    "origin":{"type":"object","required":["lat","lon"],"properties":{"lat":{"type":"number","minimum":-80,"maximum":80},"lon":{"type":"number","minimum":-180,"maximum":180}}},
+    "seed":{"type":"integer","minimum":-9007199254740991,"maximum":9007199254740991,"default":1},
+    "source":{"type":"object","required":["kind","file"],"properties":{"kind":{"enum":["overpass","osm-map","local","sample"]},"file":{"type":"string","minLength":1,"pattern":"\\S"}}},
+    "generation":{"type":"object","properties":{"landscapeEnabled":{"type":"boolean","default":false},"inferRoofs":{"type":"boolean","default":false}}},
+    "tiling":{"type":"object","properties":{"sizeMeters":{"type":"number","minimum":25,"maximum":10000,"default":500},"divisions":{"type":"integer","minimum":1,"maximum":32,"description":"Optional N by N fixed-area comparison grid; overrides sizeMeters."}}},
+    "quality":{"enum":["draft","balanced","high"],"default":"balanced"},
+    "style":{"type":"object","required":["id"],"properties":{"id":{"type":"string","minLength":1},"parameters":{"type":"object","default":{}}}},
+    "landmarks":{"type":"object","properties":{"enabled":{"type":"boolean","default":true},"packages":{"type":"array","items":{"type":"string"},"default":[]}}}
+  },
+  "$comment":"Runtime validation additionally rejects unordered/date-line areas, spans over 10 km, origins outside the project, and grids over 4096 cells. This is a finite local projection build limit, not a browser support promise. Persist the initialized origin."
+}

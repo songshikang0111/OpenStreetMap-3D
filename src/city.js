@@ -87,7 +87,7 @@ function facadeMaterial(shared) {
   return material;
 }
 
-export function buildCity(data, { landscapeEnabled = false, inferRoofs = false } = {}) {
+export function buildCity(data, { landscapeEnabled = false, inferRoofs = false, landmarksEnabled = true } = {}) {
   const group = new THREE.Group(); group.name = 'Beijing CBD — OpenStreetMap';
   const shared = { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: {value:.5}, glassReflection: {value:.65}, toneSize:{value:4.2}, sunDirection:{value:new THREE.Vector3(.5,.707,-.5)}, projectionScale:{value:1000} };
   const material = facadeMaterial(shared);
@@ -108,9 +108,9 @@ export function buildCity(data, { landscapeEnabled = false, inferRoofs = false }
   const roofWriter=new MeshWriter(),roofDetails=[];
   const roofPlans=new Map(data.buildings.map(b=>[b.id,planRoof(b,{inferRoofs})]));
   const roofStats={tagged:0,inferred:0,unsupported:0};
-  const envelopes=planBuildingEnvelopes(data.buildings.map(b=>roofPlans.get(b.id).supported?{...b,height:roofPlans.get(b.id).eave-.45}:b),{exclude:landmarkKind});
+  const envelopes=planBuildingEnvelopes(data.buildings.map(b=>roofPlans.get(b.id).supported?{...b,height:roofPlans.get(b.id).eave-.45}:b),{exclude:landmarksEnabled?landmarkKind:()=>null});
   data.buildings.forEach((building,index)=>{
-    const writer=new MeshWriter(),id=index+1,style=buildingStyle(building,data.seed||1),landmark=landmarkKind(building);
+    const writer=new MeshWriter(),id=index+1,style=buildingStyle(building,data.seed||1),landmark=landmarksEnabled?landmarkKind(building):null;
     writer.style=style.code;writer.variant=style.variant;familyCounts[style.family]=(familyCounts[style.family]||0)+1;
     writer.surface=[style.surface,style.surfaceScale];surfaceCounts[style.surfaceName]=(surfaceCounts[style.surfaceName]||0)+1;
     const roof=roofPlans.get(building.id),bodyHeight=roof.supported?roof.eave-.45:building.height;
@@ -215,5 +215,5 @@ export function buildCity(data, { landscapeEnabled = false, inferRoofs = false }
     shared.provenance.value=on?1:0;
     for(const mesh of buildings){const colors=mesh.geometry.attributes.color;if(on){const c=mesh.userData.sourceColor;for(let i=0;i<colors.count;i++)colors.setXYZ(i,c.r,c.g,c.b);}else colors.array.set(mesh.userData.originalColors);colors.needsUpdate=true;}
   }
-  return {group,buildings,treeGroup,detailGroup,equipment,shared,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,landscapeStats:landscape.stats,roofStats,sourceColors,landmarks,familyCounts,grammarCounts,surfaceCounts,facadeStats:{candidateWalls:nearWalls.length,maxInstances:18000}};
+  return {group,buildings,treeGroup,detailGroup,equipment,shared,roadPlan:roadSurface.plan,streetlifePlan:streetlife.plan,updateLOD,setProvenance,treeCount:streetlife.treeCount,generatedTrees:streetlife.generatedTrees,streetGroup,streetStats:streetlife.stats,roadStats:roadSurface.stats,landscapeStats:landscape.stats,roofStats,sourceColors,landmarks,familyCounts,grammarCounts,surfaceCounts,facadeStats:{candidateWalls:nearWalls.length,maxInstances:18000}};
 }
