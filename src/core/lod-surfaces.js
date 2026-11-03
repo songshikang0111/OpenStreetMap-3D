@@ -91,7 +91,7 @@ export function deckGeometry(decks){
   // Two fitted source planes may differ by at most 2mm each at their shared
   // edge. Their duplicate interior skins are not exposed bridge boundaries.
   // Match only common XZ edges within that combined error, retaining true steps.
-  const pieces=[],counts=new Map(),edgeFamilies=new Map();
+  const pieces=[],edgeFamilies=new Map();
   for(const {from:a,to:b}of sides){
     const dx=b[0]-a[0],dz=b[1]-a[1],lengthSq=dx*dx+dz*dz,ts=[0,1];if(lengthSq<1e-16)continue;
     for(let x=Math.floor(Math.min(a[0],b[0])/cellSize);x<=Math.floor(Math.max(a[0],b[0])/cellSize);x++)for(let z=Math.floor(Math.min(a[1],b[1])/cellSize);z<=Math.floor(Math.max(a[1],b[1])/cellSize);z++)for(const v of grid.get(`${x},${z}`)||[]){
@@ -101,11 +101,12 @@ export function deckGeometry(decks){
     const sorted=[...new Set(ts)].sort((a,b)=>a-b);
     for(let i=1;i<sorted.length;i++){
       const u=a.map((v,k)=>v+(b[k]-v)*sorted[i-1]),v=a.map((w,k)=>w+(b[k]-w)*sorted[i]),ends=key(u)<key(v)?[u,v]:[v,u],family=ends.map(key).join('|');
-      if(!edgeFamilies.has(family))edgeFamilies.set(family,[]);const models=edgeFamilies.get(family);let match=models.findIndex(model=>ends.every((end,j)=>[2,3].every(k=>Math.abs(end[k]-model[j][k])<=.00401)));
-      if(match<0){match=models.length;models.push(ends);}const edge=family+':'+match;counts.set(edge,(counts.get(edge)||0)+1);pieces.push({edge,u,v});
+      if(!edgeFamilies.has(family))edgeFamilies.set(family,[]);const models=edgeFamilies.get(family);let model=models.find(model=>ends.every((end,j)=>[2,3].every(k=>Math.abs(end[k]-model.reference[j][k])<=.00401)));
+      if(!model){model={reference:ends,ends:ends.map(p=>p.slice()),directions:new Set()};models.push(model);pieces.push(model);}
+      model.directions.add(key(u)<key(v));for(let j=0;j<2;j++){model.ends[j][2]=Math.max(model.ends[j][2],ends[j][2]);model.ends[j][3]=Math.min(model.ends[j][3],ends[j][3]);}
     }
   }
-  for(const {edge,u,v}of pieces)if(counts.get(edge)===1)writer.quad([u[0],u[3],u[1]],[u[0],u[2],u[1]],[v[0],v[2],v[1]],[v[0],v[3],v[1]],'#b8b8ac');
+  for(const model of pieces)if(model.directions.size===1){const [u,v]=model.directions.has(true)?model.ends:[...model.ends].reverse();writer.quad([u[0],u[3],u[1]],[u[0],u[2],u[1]],[v[0],v[2],v[1]],[v[0],v[3],v[1]],'#b8b8ac');}
   return writer.geometry();
 }
 

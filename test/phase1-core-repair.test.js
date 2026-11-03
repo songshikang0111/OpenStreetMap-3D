@@ -63,6 +63,9 @@ test('repair slab union removes internal side duplicates within the bounded plan
   const countInterior=g=>{let count=0;const p=g.attributes.position;for(let i=0;i<p.count;i+=3)if([0,1,2].every(k=>Math.abs(p.getX(i+k)-10)<1e-6))count++;return count;};
   const merged=farDeckGeometry(decks);assert.equal(countInterior(merged),0);assert.ok(Math.abs(area(merged,true)-80)<1e-5);
   assert.equal(countInterior(farDeckGeometry([decks[0],{...decks[1],y:7.02}])),4);
+  const stacked=farDeckGeometry([decks[0],{...decks[0],y:7.0038}]),p=stacked.attributes.position,n=stacked.attributes.normal;let sides=0;
+  for(let i=0;i<p.count;i+=3)if(Math.abs(n.getY(i))<.1)sides++;assert.equal(sides,8,'same-facing outer skins must remain as one complete envelope');
+  stacked.computeBoundingBox();assert.ok(Math.abs(stacked.boundingBox.max.y-7.0038)<1e-6);assert.ok(Math.abs(stacked.boundingBox.min.y-6.35)<1e-6);
 });
 
 test('repair stair envelopes preserve both landings, width and connected endpoint heights',()=>{
