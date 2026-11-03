@@ -131,7 +131,7 @@ export async function compileScene(raw, inputConfig, options = {}) {
         }else{ids=[id];add(id,{kind,sourceIds:[...new Set(sources)].sort(),provenance:{source:mesh.userData.source||'shared-region-geometry',ruleVersion:GENERATOR_VERSION}});}
       }
       mesh.userData=cleanUserData(mesh);
-      mesh.userData.city={...original,featureId:ids[0],featureIds:[...new Set(ids)].sort(),sourceIds:[...new Set(ids.flatMap(id=>featureIndex[id].sourceIds))].sort(),kind,materialRole:role,lodRole};
+      mesh.userData.city={...original,featureId:registryObjects.has(mesh)?original.featureId:ids[0],featureIds:[...new Set(ids)].sort(),sourceIds:[...new Set(ids.flatMap(id=>featureIndex[id].sourceIds))].sort(),kind,materialRole:role,lodRole};
       if(mesh.isInstancedMesh)mesh.userData.city.instanceFeatureIds=ids;
     }
     const ids=Object.keys(featureIndex).sort();ids.forEach((id,i)=>featureIndex[id].renderId=i+1);const renderIds=[null,...ids],instanceGeometries=new Map();

@@ -184,3 +184,10 @@ test('independent review: malformed matches and non-finite generated geometry di
   assert.ok(badGeometry.report.diagnostics.some(d=>d.code==='LANDMARK_GENERATION_FAILED'));assert.equal(badGeometry.manifest.featureIndex.w1.provenance.recipeId,undefined);
   await assert.rejects(compileScene({elements:[{type:'node',id:1,lat:NaN,lon:1}]},config),{code:'INVALID_SOURCE_COORDINATES'});
 });
+
+test('independent review: multipart generators retain each authored primary feature ID through merged and full levels',async()=>{
+  const {raw,config}=continuityFixture(),r=await compileScene(raw,config,{landmarkRegistry:{match:()=>[{recipeId:'multipart',recipeVersion:'1',claimedFeatureIds:['w1','w2']}],generate:()=>{
+    const group=new THREE.Group();for(const [i,id]of ['w1','w2'].entries()){const mesh=new THREE.Mesh(new THREE.BoxGeometry(10,20,10),new THREE.MeshStandardMaterial());mesh.position.set(i*100,10,100);mesh.name=id;mesh.userData.city={featureId:id};group.add(mesh);}return {group,claimedFeatureIds:['w1','w2']};
+  }}});
+  for(const id of ['low','high']){const d=r.manifest.chunks[0].lods.find(d=>d.id===id),g=await decodeChunk(r.assets[d.uri],d),renderIds=new Set();g.traverse(m=>{if(m.isMesh&&m.userData.city.kind==='building')for(const v of m.geometry.attributes.cityFeature.array)renderIds.add(v);});for(const f of ['w1','w2'])assert.ok(renderIds.has(r.manifest.featureIndex[f].renderId));if(id==='high')for(const f of ['w1','w2'])assert.equal(g.children.find(m=>m.name===f).userData.city.featureId,f);}
+});
