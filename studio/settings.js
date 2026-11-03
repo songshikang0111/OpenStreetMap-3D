@@ -20,7 +20,7 @@ export function sourceFromForm(previous,form,defaults) {
   const fallbackEndpoints=(form.fallbackEndpoints||'').split(/\r?\n/).map(value=>value.trim()).filter(Boolean).map(endpoint);
   if(fallbackEndpoints.length>2||new Set([primary,...fallbackEndpoints]).size!==fallbackEndpoints.length+1)throw new Error('最多两个明确且互不重复的备用端点。');
   if(!['get','post'].includes(form.transport)||!['none','unavailable'].includes(form.fallbackPolicy))throw new Error('请选择有效的传输方式与故障回退策略。');
-  return {...previous,endpoint:primary,transport:form.transport,fallbackEndpoints,fallbackPolicy:form.fallbackPolicy};
+  return {...previous,...(form.provider?{provider:form.provider}:{}),endpoint:primary,transport:form.transport,fallbackEndpoints,fallbackPolicy:form.fallbackPolicy};
 }
 /** A project declares its one selected external entry; no filename scanning. */
 export function styleFromForm(form) {
