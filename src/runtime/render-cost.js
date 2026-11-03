@@ -81,7 +81,7 @@ export function drawUnitCost(units, context) {
     }
     // Unknown manifest units conservatively cast; decoded units refine this.
     if (context.shadowPasses && unit.castShadow !== false && (!context.shadow || unit.frustumCulled === false || context.shadow.intersectsSphere(sphere))) {
-      shadowTriangles += unit.triangles; shadowCalls += unit.drawCalls;
+      shadowTriangles += unit.shadowTriangles ?? unit.triangles; shadowCalls += unit.shadowDrawCalls ?? unit.drawCalls;
     }
   }
   return { triangles, drawCalls, shadowTriangles, shadowCalls,

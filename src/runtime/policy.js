@@ -28,7 +28,7 @@ export function projectChunks(chunks, camera, height, margin = 0, context, unitC
     const visible = frustum.intersectsBox(chunk.box);
     const costs = visible ? chunk.lods.map(lod => {
       const units = unitCache?.get(`${chunk.id}:${lod.url}`) || lod.drawUnits;
-      if (context) return drawUnitCost(units || [{ sphere: chunk.box.getBoundingSphere(new Sphere()), triangles: lod.triangles, drawCalls: lod.drawCalls ?? 1 }], context);
+      if (context) return drawUnitCost(units || [{ sphere: chunk.box.getBoundingSphere(new Sphere()), triangles: lod.triangles, drawCalls: lod.drawCalls ?? 1, shadowTriangles: lod.shadowTriangles, shadowDrawCalls: lod.shadowDrawCalls }], context);
       return units ? units.reduce((sum, unit) => { if (frustum.intersectsSphere(unit.sphere)) { sum.triangles += unit.triangles; sum.drawCalls += unit.drawCalls; } return sum; }, { triangles: 0, drawCalls: 0 }) : { triangles: lod.triangles, drawCalls: lod.drawCalls ?? 1 };
     }) : [];
     return { chunk, visible, pixels: size.length() * scale / Math.max(distance, depth), distance, scale, costs };
@@ -82,7 +82,11 @@ export function budgetPlan(projected, states, budget, now, passMultiplier = 1) {
     const state = states.get(p.chunk.id);
     if (!state || p.index >= state.index) continue;
     if (totals.triangles > budget.visibleTriangles * (1 - budget.hysteresis) || totals.calls > budget.drawCalls * (1 - budget.hysteresis)) {
-      p.index = state.index; totals = total();
+      const candidate = p.index; p.index = state.index;
+      const held = total();
+      // Spatial batching can make a coarser representation more expensive in
+      // this frustum. A dead band must never override a hard resource limit.
+      if (over(held)) p.index = candidate; else totals = held;
     }
   }
   return { requests: requests.sort((a, b) => b.pixels - a.pixels), totals, degraded, unavoidable: over(totals) };

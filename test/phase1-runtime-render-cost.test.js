@@ -12,6 +12,8 @@ test('frame costs separate view, offscreen shadow casters, groups, instances and
  const profile={scenePasses:4,colorPasses:1,shadowPasses:1,fixedCalls:3,fixedTriangles:6};
  const context=costContext(camera,profile);let units=collectDrawUnits(group),cost=drawUnitCost(units,context);
  assert.equal(cost.frameTriangles,72);assert.equal(cost.frameCalls,6);
+ const metadataCost=drawUnitCost([{...units[0],shadowTriangles:0,shadowDrawCalls:0}],context);
+ assert.equal(metadataCost.shadowTriangles,0);assert.equal(metadataCost.frameTriangles,60);
  mesh.position.x=30;units=collectDrawUnits(group);cost=drawUnitCost(units,context);
  assert.equal(cost.triangles,0);assert.equal(cost.shadowTriangles,12);assert.equal(cost.frameTriangles,12);
  mesh.castShadow=false;cost=drawUnitCost(collectDrawUnits(group),context);assert.equal(cost.frameTriangles,0);
@@ -35,6 +37,9 @@ test('budget upgrades require headroom while hard caps override residence',()=>{
  assert.equal(budgetPlan([p],new Map(),budget,1000).requests[0].index,0);
  assert.equal(budgetPlan([p],new Map([['x',{index:1,since:0}]]),budget,1000).requests[0].index,1);
  assert.equal(budgetPlan([p],new Map([['x',{index:0,since:999}]]),{...budget,minResidenceMs:750,visibleTriangles:400},1000).requests[0].index,1);
+ const spatial={...p,costs:[{frameTriangles:280,frameCalls:1},{frameTriangles:900,frameCalls:1},{frameTriangles:100,frameCalls:1}]};
+ const plan=budgetPlan([spatial],new Map([['x',{index:1,since:0}]]),{...budget,visibleTriangles:300},1000,{});
+ assert.equal(plan.requests[0].index,0);assert.equal(plan.totals.triangles,280);assert.equal(plan.unavoidable,false);
 });
 
 test('counted coarse standby preserves coverage during immediate camera budget changes and is released',async()=>{
@@ -65,4 +70,26 @@ test('cached world-space units remain isolated when chunks reuse one asset URL w
  const cache=new Map(manifest.chunks.map(chunk=>[`${chunk.id}:${chunk.lods[0].url}`,[{sphere:chunk.box.getBoundingSphere(new THREE.Sphere()),triangles:12,drawCalls:1}]]));
  const projected=projectChunks(manifest.chunks,camera,720,100,context,cache);
  assert.equal(projected[0].costs[0].frameTriangles,12);assert.equal(projected[1].costs[0].frameTriangles,0);
+});
+
+test('delayed replacement cancellation cannot mount stale geometry or lose standby coverage',async()=>{
+ const manifest=normalizeManifest({schemaVersion:1,bounds:[-5,-5,-5,5,5,5],chunks:[{id:'x',contentBounds:[-5,-5,-5,5,5,5],lods:[{uri:'high',level:0,bytes:1000,triangles:100,minScreenPixels:0},{uri:'low',level:1,bytes:1000,triangles:12}]}]},'https://example.test/manifest.json');
+ const camera=new THREE.PerspectiveCamera(50,1,.1,100);camera.position.set(0,0,10);camera.lookAt(0,0,0);
+ const away=camera.clone();away.position.set(1000,1000,1000);away.lookAt(2000,2000,2000);
+ const profile={scenePasses:4,colorPasses:1,shadowPasses:0,fixedCalls:3,fixedTriangles:6};
+ let highDecodes=0,releaseDelayed,staleDisposed=0;
+ const streamer=new ChunkStreamer({manifest,budget:createBudget({minResidenceMs:0,unloadDelayMs:0,concurrentLoads:1}),readAsset:async()=>new ArrayBuffer(0),decodeChunk:async(_bytes,lod)=>{
+  const group=new THREE.Group(),geometry=new THREE.BoxGeometry();group.add(new THREE.Mesh(geometry,new THREE.MeshBasicMaterial()));
+  if(lod.level===0&&++highDecodes===2){geometry.addEventListener('dispose',()=>staleDisposed++);await new Promise(resolve=>{releaseDelayed=resolve;});}
+  return group;
+ }});
+ const tick=()=>new Promise(r=>setTimeout(r,0));let time=0;
+ async function update(view,forceLod){streamer.update(view,720,time+=40,{forceLod,renderContext:costContext(view,profile)});await tick();}
+ for(let i=0;i<10;i++)await update(camera,0);
+ assert.equal(streamer.standby.size,1);await update(camera,1);assert.equal(streamer.current.get('x').index,1);assert.equal(streamer.stats().missingChunks.length,0);
+ await update(camera,0);assert.equal(typeof releaseDelayed,'function');await update(away);assert.equal(streamer.counters.cancelled,1);
+ await update(camera,0);assert.equal(streamer.pending.size,1);releaseDelayed();await tick();assert.equal(staleDisposed,1);
+ for(let i=0;i<12;i++)await update(camera,0);
+ assert.equal(streamer.current.get('x').index,0);assert.equal(streamer.standby.size,1);assert.equal(streamer.counters.peakConcurrentLoads,1);assert(streamer.isSettled());
+ await streamer.dispose();assert.equal(streamer.registry.refs.size,0);assert.equal(streamer.estimatedBytes(),0);
 });
