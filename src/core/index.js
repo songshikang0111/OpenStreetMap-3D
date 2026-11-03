@@ -4,6 +4,8 @@ import * as THREE from 'three';
 import { parseOSM, projection } from '../osm.js';
 import { buildCity } from '../city.js';
 import { createLandmarkRegistry } from '../landmark-registry.js';
+import { planBuildingEnvelopes } from '../building-envelope.js';
+import { landmarkKind } from '../building-rules.js';
 import { isNeedleCrown } from '../foliage.js';
 import { validateProjectConfig } from './config.js';
 import { GENERATOR_VERSION, STYLE_CONTRACT_VERSION, CityBuildError, canonicalStringify, checkCancelled, normalizeRaw, sha256 } from './contract.js';
@@ -191,13 +193,13 @@ export async function compileScene(raw, inputConfig, options = {}) {
     }
     for(const [id,owner]of owners)featureIndex[id].ownerChunk=owner;
     await progress('geometry',.4);
-    const levels=[{id:'low',level:0,geometricError:12,maxScreenSpaceError:3,description:'Batched silhouettes (footprint error <=0.15m), 6-face crowns/4-face trunks, continuous road/bridge envelopes. Inferred margins and lane paint remain in higher levels; far casters disabled.'},{id:'medium',level:1,geometricError:1,maxScreenSpaceError:2,description:'Batched original building bodies; 80-face crowns; continuous bridge/step envelopes, unchanged road/paint coverage.'},{id:'high',level:2,geometricError:0,maxScreenSpaceError:0,description:'Original building geometry with roof equipment and inferred street furnishings.'}];
+    const levels=[{id:'low',level:0,geometricError:12,maxScreenSpaceError:3,description:'Batched silhouettes (footprint error <=0.15m), 4-face crowns/4-face trunks, continuous road/bridge envelopes. Inferred margins and lane paint remain in higher levels; far casters disabled.'},{id:'medium',level:1,geometricError:1,maxScreenSpaceError:2,description:'Batched original building bodies; 80-face crowns; continuous bridge/step envelopes, unchanged road/paint coverage.'},{id:'high',level:2,geometricError:0,maxScreenSpaceError:0,description:'Original building geometry with roof equipment and inferred street furnishings.'}];
     const assets={},chunkMap=new Map(grid.cells.map(c=>[c.id,{id:c.id,bounds:[c.bounds[0],0,c.bounds[1],c.bounds[2],0,c.bounds[3]],contentBounds:null,transform:identity,lods:[]}])) ;
     const lowMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9});ownedMaterial.add(lowMaterial);
-    const lowGeometries=new Map();
+    const lowGeometries=new Map(),envelopes=planBuildingEnvelopes(data.buildings,{exclude:b=>!!featureIndex[b.id].provenance.recipeId||config.landmarks.enabled&&!!landmarkKind(b)});
     for(const mesh of meshes)if(mesh.userData.city.kind==='building'&&(!registryObjects.has(mesh)||['city-ink/china-zun','city-ink/cctv'].includes(mesh.userData.city.generatorId))){
       const b=data.buildings.find(b=>b.id===mesh.userData.city.featureId);if(!b)continue;
-      const low=lowBuilding(b,lowMaterial,!!mesh.userData.city.generatorId,mesh.userData.city.recipeParameters),g=low.geometry,n=g.attributes.position.count;
+      const low=lowBuilding(b,lowMaterial,!!mesh.userData.city.generatorId,mesh.userData.city.recipeParameters,envelopes.get(b.id)),g=low.geometry,n=g.attributes.position.count;
       g.deleteAttribute('uv');const encoded=mesh.geometry.attributes.objectId,objectCode=encoded?[encoded.getX(0),encoded.getY(0),encoded.getZ(0)]:[0,0,0];g.setAttribute('objectId',new THREE.Float32BufferAttribute(Array.from({length:n},()=>objectCode).flat(),3));
       const color=mesh.geometry.attributes.color,c=new THREE.Color();if(color?.count)c.fromBufferAttribute(color,0);else c.copy(mesh.material.color||new THREE.Color('#c7c7be'));
       g.setAttribute('color',new THREE.Float32BufferAttribute(Array.from({length:n},()=>c.toArray()).flat(),3));g.setAttribute('cityFeature',new THREE.Uint32BufferAttribute(new Uint32Array(n).fill(featureIndex[b.id].renderId),1));
@@ -223,7 +225,7 @@ export async function compileScene(raw, inputConfig, options = {}) {
         checkCancelled(signal);
         if(level.level<2&&original.userData.city.lodRole==='detail')continue;
         let mesh=level.level<2&&(!original.userData.roadSurface||level.level===0)&&coarseGeometries.has(original)?coarseGeometries.get(original):original;
-        if(level.level===0&&['Junction-aware lane paint and inferred stop lines','Inferred roadside margins clipped at buildings'].includes(original.name))continue;
+        if(level.level===0&&['Junction-aware lane paint and inferred stop lines','Inferred zebra crossings','Inferred roadside margins clipped at buildings'].includes(original.name))continue;
         if(level.level===0){
           if(lowGeometries.has(original))mesh=lowGeometries.get(original);
           else if(original.userData.city.kind==='tree'){

@@ -9,10 +9,10 @@ export function trunkGeometry() {
   const result=g.toNonIndexed();g.dispose();result.computeVertexNormals();return result;
 }
 
-/** Closed six-face crown with unchanged centre, height and radial envelope. */
+/** Closed four-face far crown, within the original height/radial envelope. */
 export function farCrownGeometry() {
-  const g=new THREE.BufferGeometry(),points=[];for(let i=0;i<3;i++){const a=i/3*Math.PI*2;points.push(Math.cos(a),0,Math.sin(a));}points.push(0,1,0,0,-1,0);
-  g.setAttribute('position',new THREE.Float32BufferAttribute(points,3));const indices=[];for(let i=0;i<3;i++){const j=(i+1)%3;indices.push(i,3,j,i,j,4);}g.setIndex(indices);const result=g.toNonIndexed();g.dispose();result.computeVertexNormals();return result;
+  const g=new THREE.BufferGeometry(),points=[];for(let i=0;i<3;i++){const a=i/3*Math.PI*2;points.push(Math.cos(a),-1,Math.sin(a));}points.push(0,1,0);
+  g.setAttribute('position',new THREE.Float32BufferAttribute(points,3));g.setIndex([0,1,2,0,3,1,1,3,2,2,3,0]);const result=g.toNonIndexed();g.dispose();result.computeVertexNormals();return result;
 }
 
 function materialKey(material) {
@@ -29,7 +29,8 @@ export function batchStaticMeshes(group,{low=false}={}) {
     if(!mesh.isMesh||mesh.isInstancedMesh)continue;
     const city=mesh.userData.city;
     // Arbitrary externally authored shaders/material arrays keep their own units.
-    if(!low&&(city.kind!=='building'||city.recipeId&&!['city-ink/china-zun','city-ink/cctv'].includes(city.generatorId)))continue;
+    if(Array.isArray(mesh.material)||city.recipeId&&!['city-ink/china-zun','city-ink/cctv'].includes(city.generatorId))continue;
+    if(!low&&city.kind!=='building')continue;
     const attributes=Object.keys(mesh.geometry.attributes).sort();
     if(attributes.some(k=>mesh.geometry.attributes[k].isInstancedBufferAttribute))continue;
     const key=canonicalStringify({kind:city.kind,inkClass:mesh.userData.inkClass,shader:low?undefined:city.shader,castShadow:mesh.castShadow,receiveShadow:mesh.receiveShadow,attributes:attributes.map(k=>[k,mesh.geometry.attributes[k].itemSize,mesh.geometry.attributes[k].array.constructor.name,mesh.geometry.attributes[k].normalized]),material:materialKey(mesh.material)});

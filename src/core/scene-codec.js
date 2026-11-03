@@ -123,7 +123,17 @@ export async function decodeChunk(payload, descriptor = {}) {
       if(!Array.isArray(spec.matrix)||spec.matrix.length!==16||!finite(spec.matrix))fail('Invalid object transform.');
       mesh.matrix.fromArray(spec.matrix);mesh.matrixAutoUpdate=false;mesh.name=spec.name||'';mesh.userData=spec.userData||{};mesh.castShadow=!!spec.castShadow;mesh.receiveShadow=!!spec.receiveShadow;group.add(mesh);
     }
-    if(descriptor.triangles!==undefined&&sceneStats(group).triangles!==descriptor.triangles)fail('Triangle count does not match manifest.');
+    group.updateMatrixWorld(true);
+    const actual=sceneStats(group);
+    for(const key of ['triangles','shadowTriangles','shadowDrawCalls'])if(descriptor[key]!==undefined&&actual[key]!==descriptor[key])fail(`${key} cost does not match decoded geometry/castShadow flags.`);
+    if(Array.isArray(descriptor.drawUnits)&&descriptor.drawUnits.some(u=>u.shadowTriangles!==undefined||u.shadowDrawCalls!==undefined)){
+      const units=group.children.map(mesh=>{const box=new THREE.Box3().setFromObject(mesh,true);return {bounds:[...box.min.toArray(),...box.max.toArray()],...sceneStats(mesh)};});
+      for(const unit of descriptor.drawUnits){
+        if(unit.shadowTriangles===undefined&&unit.shadowDrawCalls===undefined)continue;
+        const index=units.findIndex(actual=>Array.isArray(unit.bounds)&&unit.bounds.length===6&&actual.bounds.every((v,i)=>Math.abs(v-unit.bounds[i])<=1e-6)&&actual.triangles===unit.triangles&&actual.drawCalls===unit.drawCalls&&['shadowTriangles','shadowDrawCalls'].every(k=>unit[k]===undefined||unit[k]===actual[k]));
+        if(index<0)fail('drawUnits caster cost does not match decoded geometry/castShadow flags.');units.splice(index,1);
+      }
+    }
     return group;
   }catch(error){for(const g of allocatedGeometries)g.dispose();for(const m of allocatedMaterials)m.dispose();if(error instanceof CityBuildError)throw error;fail(`Malformed chunk: ${error.message}`);}
 }

@@ -1,19 +1,41 @@
 import * as THREE from 'three';
 import { chinaZunScale, landmarkKind } from '../building-rules.js';
 import { cctvRing } from '../landmarks.js';
-import { simplifyClosedRing } from './lod-simplify.js';
+import { simplifyClosedRing, preservePolygonTopology } from './lod-simplify.js';
+
+function safeFootprint(building) {
+  const rings=[building.outer,...building.holes],safe=preservePolygonTopology(rings,rings.map(r=>simplifyClosedRing(r,.15)));
+  return {outer:safe[0],holes:safe.slice(1)};
+}
 
 export function boundsOf(object) {
   const b=new THREE.Box3().setFromObject(object,true);
   return b.isEmpty()?[0,0,0,0,0,0]:[...b.min.toArray(),...b.max.toArray()];
 }
 
-export function lowBuilding(building, material, enabled=true,parameters={}) {
+export function lowBuilding(building, material, enabled=true,parameters={},envelope) {
   const kind=enabled?landmarkKind(building):null;
   let geometry;
-  if(!kind){
-    const shape=new THREE.Shape(simplifyClosedRing(building.outer,.15).map(([x,z])=>new THREE.Vector2(x,-z)));
-    for(const h of building.holes)shape.holes.push(new THREE.Path(simplifyClosedRing(h,.15).map(([x,z])=>new THREE.Vector2(x,-z))));
+  if(!kind&&envelope?.neighbors){
+    const positions=[],triangle=(a,b,c)=>positions.push(...a,...b,...c);
+    for(const [i,source]of [building.outer,...building.holes].entries()){
+      const points=source.map(p=>new THREE.Vector2(...p));if(THREE.ShapeUtils.isClockWise(points)!==!!i)points.reverse();const ring=points.map(p=>p.toArray());
+      for(let j=0;j<ring.length;j++){
+        const a=ring[j],b=ring[(j+1)%ring.length],dx=b[0]-a[0],dz=b[1]-a[1],length=Math.hypot(dx,dz);if(length<1e-6)continue;
+        for(const span of envelope.wall(a,b,[dz/length,0,-dx/length])){
+          const p=[a[0]+dx*span.t0,a[1]+dz*span.t0],q=[a[0]+dx*span.t1,a[1]+dz*span.t1],lo=.45+span.lo,hi=.45+span.hi;
+          triangle([p[0],lo,p[1]],[p[0],hi,p[1]],[q[0],hi,q[1]]);triangle([p[0],lo,p[1]],[q[0],hi,q[1]],[q[0],lo,q[1]]);
+        }
+      }
+    }
+    for(const [polygons,y,up]of [[envelope.roof,.45+building.height,true],...(building.minHeight>0?[[envelope.bottom,.45+building.minHeight,false]]:[])])for(const rings of polygons){
+      const vectors=rings.map(r=>r.map(p=>new THREE.Vector2(...p))),faces=THREE.ShapeUtils.triangulateShape(vectors[0],vectors.slice(1)),all=vectors.flat();
+      for(const face of faces){const v=face.map(i=>[all[i].x,y,all[i].y]),signed=(v[1][2]-v[0][2])*(v[2][0]-v[0][0])-(v[1][0]-v[0][0])*(v[2][2]-v[0][2]);if((signed>0)!==up)[v[1],v[2]]=[v[2],v[1]];triangle(...v);}
+    }
+    geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.computeVertexNormals();
+  }else if(!kind){
+    const footprint=safeFootprint(building),shape=new THREE.Shape(footprint.outer.map(([x,z])=>new THREE.Vector2(x,-z)));
+    for(const h of footprint.holes)shape.holes.push(new THREE.Path(h.map(([x,z])=>new THREE.Vector2(x,-z))));
     geometry=new THREE.ExtrudeGeometry(shape,{depth:building.height-building.minHeight,bevelEnabled:false,steps:1});
     geometry.rotateX(-Math.PI/2);geometry.translate(0,.45+building.minHeight,0);geometry.clearGroups();
     if(building.minHeight===0){

@@ -3,7 +3,7 @@ import clipping from 'polygon-clipping';
 import { roadHeightAt } from '../road-grade.js';
 import { normaliseFlight, section, rampHeight } from '../road-stairs.js';
 import { inside } from '../osm.js';
-import { simplifyClosedRing } from './lod-simplify.js';
+import { simplifyClosedRing, preservePolygonTopology } from './lod-simplify.js';
 
 class Writer {
   positions=[]; colors=[];
@@ -19,14 +19,10 @@ class Writer {
   }
 }
 
-// Remove only sub-micrometre collinear noise. Corners and islands remain exact.
-function ringWithoutCollinear(ring) {
-  let points=ring.slice(0,-1).map(p=>p.slice());
-  if(ring[0][0]!==ring.at(-1)[0]||ring[0][1]!==ring.at(-1)[1])points=ring.map(p=>p.slice());
-  let changed=true;
-  while(changed&&points.length>3){changed=false;points=points.filter((p,i,a)=>{const b=a[(i+a.length-1)%a.length],c=a[(i+1)%a.length],len=Math.hypot(c[0]-b[0],c[1]-b[1]);const remove=len>1e-8&&Math.abs((p[0]-b[0])*(c[1]-b[1])-(p[1]-b[1])*(c[0]-b[0]))/len<1e-6&&(p[0]-b[0])*(p[0]-c[0])+(p[1]-b[1])*(p[1]-c[1])<=0;if(remove)changed=true;return !remove;});}
-  return points;
-}
+const openRing=ring=>{
+  const closed=ring.length>1&&ring[0][0]===ring.at(-1)[0]&&ring[0][1]===ring.at(-1)[1];
+  return (closed?ring.slice(0,-1):ring).map(p=>p.slice());
+};
 
 /** Retrangulate the same union on the same height planes, before tiling.
  * The input fan matches the legacy road writer, including clamped ramp ends.
@@ -58,7 +54,7 @@ export function planarPatches(items, height=roadHeightAt, extraKey=()=> '') {
       while(batches.length>1){const next=[];for(let i=0;i<batches.length;i+=32)next.push(clipping.union(...batches.slice(i,i+32)));batches=next;}
       polygons=batches[0];
     }catch{polygons=bucket.polygons;} // Preserve complete geometry on boolean failure.
-    for(const rings of polygons)patches.push({...bucket,rings:rings.map(ringWithoutCollinear),polygons:undefined});
+    for(const rings of polygons){const original=rings.map(openRing);patches.push({...bucket,rings:preservePolygonTopology(original,original.map(r=>simplifyClosedRing(r,.002))),polygons:undefined});}
   }
   return patches;
 }
@@ -95,6 +91,9 @@ export function deckGeometry(decks){
  * outer grade, rather than boxing every four-metre grade sample separately. */
 export function farDeckGeometry(decks) {
   const writer=new Writer(),groups=new Map();
+  // Height breaklines are constraints even when collinear in XZ. Earcut of a
+  // whole-way footprint would discard them and interpolate through the road.
+  for(const p of planarPatches(decks,(d,q)=>Math.max(.18,roadHeightAt(d,q)-d.thickness),d=>d.thickness))cap(writer,p.rings,q=>p.a*q[0]+p.b*q[1]+p.c,'#969c97',false);
   for(const d of decks){const key=`${d.roadId}:${d.level}:${d.thickness}`;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(d);}
   for(const items of groups.values()){
     let polygons;try{polygons=clipping.union(...items.map(d=>[d.polygon.map(p=>p.map(Math.fround))]));}catch{polygons=items.map(d=>[d.polygon]);}
@@ -106,8 +105,8 @@ export function farDeckGeometry(decks) {
       }return roadHeightAt(best,q);
     };
     for(const polygon of polygons){
-      const rings=polygon.map(ring=>simplifyClosedRing(ring.slice(0,-1).map(p=>[p[0],height(p),p[1]]),.009).map(([x,,z])=>[x,z]));
-      const bottom=q=>Math.max(.18,height(q)-items[0].thickness);cap(writer,rings,bottom,'#969c97',false);
+      const originalRings=polygon.map(openRing),rings=preservePolygonTopology(originalRings,originalRings.map(ring=>simplifyClosedRing(ring.map(p=>[p[0],height(p),p[1],Math.max(.18,height(p)-items[0].thickness)]),.009).map(([x,,z])=>[x,z])));
+      const bottom=q=>Math.max(.18,height(q)-items[0].thickness);
       for(const [i,ring]of rings.entries()){
         const cw=THREE.ShapeUtils.isClockWise(ring.map(p=>new THREE.Vector2(...p))),r=cw!==!!i?[...ring].reverse():ring;
         for(let j=0;j<r.length;j++){const a=r[j],b=r[(j+1)%r.length];writer.quad([a[0],bottom(a),a[1]],[a[0],height(a),a[1]],[b[0],height(b),b[1]],[b[0],bottom(b),b[1]],'#b8b8ac');}

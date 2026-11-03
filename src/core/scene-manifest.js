@@ -1,5 +1,6 @@
 /** Optional per-mesh costs must preserve the resource's complete cost. */
 export function drawUnitsError(lod) {
+  for(const [name,total]of [['shadowTriangles',lod.triangles],['shadowDrawCalls',lod.drawCalls]])if(lod[name]!==undefined&&(!Number.isSafeInteger(lod[name])||lod[name]<0||lod[name]>total))return 'Caster cost must be a non-negative safe integer within total cost.';
   if (lod.drawUnits === undefined) return null;
   if (!Array.isArray(lod.drawUnits)) return 'drawUnits must be an array.';
   let triangles = 0, drawCalls = 0;
@@ -10,7 +11,15 @@ export function drawUnitsError(lod) {
     triangles += unit.triangles; drawCalls += unit.drawCalls;
   }
   if (!Number.isSafeInteger(triangles) || !Number.isSafeInteger(drawCalls) || triangles !== lod.triangles || drawCalls !== lod.drawCalls) return 'drawUnits costs must sum to the complete LOD triangles and drawCalls.';
-  for(const name of ['shadowTriangles','shadowDrawCalls'])if(lod[name]!==undefined){let sum=0;for(const unit of lod.drawUnits){if(!Number.isSafeInteger(unit[name])||unit[name]<0||unit[name]>unit[name==='shadowTriangles'?'triangles':'drawCalls'])return 'Invalid drawUnits caster cost.';sum+=unit[name];}if(sum!==lod[name])return 'drawUnits caster costs must sum to the complete caster cost.';}
+  for(const name of ['shadowTriangles','shadowDrawCalls']){
+    let sum=0;
+    for(const unit of lod.drawUnits){
+      if(unit[name]===undefined){if(lod[name]!==undefined)return 'Aggregate caster cost requires matching per-unit costs.';continue;}
+      if(!Number.isSafeInteger(unit[name])||unit[name]<0||unit[name]>unit[name==='shadowTriangles'?'triangles':'drawCalls'])return 'Invalid drawUnits caster cost.';
+      sum+=unit[name];
+    }
+    if(lod[name]!==undefined&&sum!==lod[name])return 'drawUnits caster costs must sum to the complete caster cost.';
+  }
   return null;
 }
 
