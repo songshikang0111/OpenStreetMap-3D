@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-03T15:37:26.676Z",
+  "commit": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "mode": "Actual Chrome CUA using fresh public CLI Studio server",
+  "url": "http://127.0.0.1:4183",
+  "workspace": "work/remediation-studio-55862f0",
+  "source": "Explicit synthetic UI fixture; formal-live-cli.json is separate real OSM acquisition proof",
+  "steps": [
+    "Open project-sepia saved street view",
+    "Apply aoStrength .12 / warmth .42",
+    "Switch quality low",
+    "Save configuration and camera",
+    "Reload; parameters/quality recovered and street identified after preview completes",
+    "Switch to white; canvas rendered and external CSS released",
+    "Switch back; full external declaration draft recovered",
+    "Export static web via actual Studio button succeeded",
+    "Apply recovered external draft; project CSS and canvas render; export job status retained"
+  ],
+  "officialWhite": {
+    "camera": "street",
+    "canvas": true,
+    "css": "",
+    "quality": "low",
+    "style": "white"
+  },
+  "final": {
+    "assets": "[\n  \"styles/paper #1%25.svg\"\n]",
+    "camera": "street",
+    "canvas": true,
+    "css": "yes",
+    "dependencies": "{\n  \"local-palette\": \"styles/vendor.js\"\n}",
+    "entry": "styles/sepia.js",
+    "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.42\n}",
+    "quality": "low",
+    "status": "export-web · succeeded · complete",
+    "style": "external"
+  },
+  "consoleErrors": []
+}
