@@ -19,7 +19,7 @@ test('stationary evidence requires a complete real-time window and both saved ca
   stats.runtime.nearDetails=0;stats.runtime.peakEstimatedResidentBytes=stats.runtime.estimatedResidentBytes=1000;
   Object.assign(stats.rendering,{frames,frameCount:1501,windowFrames:1500});
   const phase={...STATIONARY_VIEWS[0],timeOrigin:100000,measurementEpochMs:100000,endedEpochMs:115000,durationSeconds:15,baseline:structuredClone(stats),stats,samples:Array.from({length:151},(_,i)=>({second:i/10,runtime:stats.runtime})),measuredRequests:[]};
-  phase.baselineView=phase.actualView=phase.view;phase.samples.forEach(item=>{item.view=phase.view;item.nearAttachments={nearDetails:0};});phase.phaseRequests=[];
+  phase.baselineView=phase.actualView=phase.view;phase.samples.forEach(item=>{item.view=phase.view;item.nearAttachments={nearDetails:0,geometryArrayBytes:0};item.render=frames.at(-1);});phase.phaseRequests=[];
   assert.ok(Object.values(assessStationary(phase).checks).every(Boolean));
   const truncated=structuredClone(phase);truncated.stats.rendering.frames=frames.slice(0,2);truncated.stats.rendering.frameCount=3;truncated.stats.rendering.windowFrames=2;
   assert.equal(assessStationary(truncated).checks.frames,false);
@@ -45,6 +45,8 @@ test('stationary evidence requires a complete real-time window and both saved ca
   assert.equal(assessStationary(residency).checks.resident,false);assert.equal(assessResources(residency.stats,residency.samples).residentFramesOver,1);
   const near=structuredClone(phase);Object.assign(near.stats.rendering.frames[40],{bodyNearDetails:17000,nearAttachmentDetails:1001,totalNearDetails:18001});assert.equal(assessStationary(near).checks.nearDetails,false);
   const peak=structuredClone(phase);peak.stats.runtime.peakEstimatedResidentBytes=128*1024*1024+1;assert.equal(assessStationary(peak).checks.resident,false);
+  const impossibleBytes=structuredClone(phase);impossibleBytes.stats.rendering.frames[40].nearGeometryArrayBytes=1001;assert.equal(assessStationary(impossibleBytes).checks.resourceEvidence,false);
+  const negative=structuredClone(phase);negative.samples[0].runtime.nearDetails=-1000;negative.samples[0].nearAttachments.nearDetails=19000;assert.equal(assessStationary(negative).checks.resourceEvidence,false);
 });
 test('whole-frame draw maximum cannot be hidden by a passing p95',async()=>{
   const raw=await historical('kyoto-gion-grow-1'),assessed=assessCase(raw);
@@ -59,4 +61,13 @@ test('stationary gate rejects repeated transitions, cancellation and repeated as
   const assessed=assessStationary(phase);
   assert.equal(assessed.checks.stableLod,false);assert.equal(assessed.checks.noCancelledRequests,false);assert.equal(assessed.checks.noRepeatedRequests,false);
   assert.ok(assessed.requests.maxPerUrl>10);assert.equal(requestCounts([{url:'http://localhost/a.cink'},{url:'http://localhost/a.cink'},{url:'http://localhost/manifest.json'}]).maxPerUrl,2);
+});
+
+test('leaving the scene must also release near instances and cached profiles',async()=>{
+  const raw=await historical('beijing-cbd-grow-4');
+  assert.equal(assessCase(raw).checks.unloads,true);
+  for(const key of ['frames','crownClusters','branches','profiles']){
+    const changed=structuredClone(raw);changed.lifecycle[0].away.nearAttachments[key]=7;
+    assert.equal(assessCase(changed).checks.unloads,false,key);
+  }
 });
