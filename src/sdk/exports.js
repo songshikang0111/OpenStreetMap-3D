@@ -1,4 +1,4 @@
-import { Group, Matrix4, Mesh, MeshStandardMaterial } from 'three';
+import { Color, Group, Matrix4, Mesh, MeshStandardMaterial } from 'three';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { ResourceRegistry } from '../runtime/resources.js';
 import { runtimeError } from '../runtime/manifest.js';
@@ -32,7 +32,7 @@ export async function exportViewerPNG(ctx, { width = ctx.width, height = ctx.hei
   } finally { try { if (!ctx.isDisposed()) { ctx.renderer.setPixelRatio(previous.ratio); ctx.resize(previous.width, previous.height); } } finally { resume(); } }
 }
 
-function portableClone(group, ownedMaterials) {
+function portableClone(group, ownedMaterials, featureIndex = {}) {
   const clone = group.clone(true), instances = [];
   clone.traverse(o => {
     if (o.isInstancedMesh) instances.push(o);
@@ -46,9 +46,22 @@ function portableClone(group, ownedMaterials) {
   });
   for (const inst of instances) {
     const replacement = new Group(); replacement.name = inst.name; replacement.matrix.copy(inst.matrix); replacement.matrixAutoUpdate = false; replacement.userData = { ...inst.userData };
+    const palettes = new Map(), instanceColor = new Color();
+    const coloredMaterial = material => {
+      if (!inst.instanceColor) return material;
+      const key = instanceColor.toArray().join(',');
+      if (!palettes.has(material)) palettes.set(material, new Map());
+      const palette = palettes.get(material);
+      if (!palette.has(key)) { const colored = material.clone(); colored.color.multiply(instanceColor); palette.set(key, colored); ownedMaterials.add(colored); }
+      return palette.get(key);
+    };
     for (let i = 0; i < inst.count; i++) {
-      const mesh = new Mesh(inst.geometry, inst.material); inst.getMatrixAt(i, mesh.matrix); mesh.matrixAutoUpdate = false;
-      mesh.userData = { city: inst.userData.cityInstances?.[i] || inst.userData.city || {} }; replacement.add(mesh);
+      if (inst.instanceColor) inst.getColorAt(i, instanceColor);
+      const material = Array.isArray(inst.material) ? inst.material.map(coloredMaterial) : coloredMaterial(inst.material);
+      const mesh = new Mesh(inst.geometry, material); inst.getMatrixAt(i, mesh.matrix); mesh.matrixAutoUpdate = false;
+      const city = { ...inst.userData.city, ...inst.userData.cityInstances?.[i] }, featureId = city.instanceFeatureIds?.[i] || city.featureId;
+      delete city.instanceFeatureIds;
+      mesh.userData = { ...inst.userData, city: featureId ? { ...city, ...featureIndex[featureId], featureId, featureIds: [featureId] } : city }; replacement.add(mesh);
     }
     inst.parent.add(replacement); inst.removeFromParent();
   }
@@ -79,17 +92,18 @@ export async function exportViewerGLB(ctx, { scope, lod = 0, signal, maxBytes = 
         const original = registry.retain(decoded);
         try { bindings.push(await ctx.bindGroup(decoded)); }
         finally { retained.push(registry.retain(decoded)); registry.release(original); }
-        aborted(); group.add(portableClone(decoded, materials)); chunkIds.push(chunk.id);
+        aborted(); group.add(portableClone(decoded, materials, ctx.manifest.featureIndex)); chunkIds.push(chunk.id);
       }
     } else {
       // A clone shares geometry; no mutation or disposal of live scene assets.
-      for (const [id, entry] of ctx.streamer.current) { group.add(portableClone(entry.group, materials)); chunkIds.push(id); }
-      if (ctx.nearGroup) group.add(portableClone(ctx.nearGroup, materials));
+      for (const [id, entry] of ctx.streamer.current) { group.add(portableClone(entry.group, materials, ctx.manifest.featureIndex)); chunkIds.push(id); }
+      if (ctx.nearGroup) group.add(portableClone(ctx.nearGroup, materials, ctx.manifest.featureIndex));
     }
     aborted();
     group.userData = { attribution: attributionText(ctx.manifest), license: 'See source manifest', scope, chunkIds, limitations, origin: ctx.manifest.origin, coordinateSystem: ctx.manifest.coordinateSystem };
     group.updateMatrixWorld(true);
     const buffer = await new GLTFExporter().parseAsync(group, { binary: true, onlyVisible: false });
+    aborted();
     return { blob: new Blob([buffer], { type: 'model/gltf-binary' }), scope, chunkIds, limitations, attribution: attributionText(ctx.manifest) };
   } finally { for (const binding of bindings) binding?.dispose?.(); for (const resources of retained) registry.release(resources); for (const material of materials) material.dispose(); group.clear(); }
 }
