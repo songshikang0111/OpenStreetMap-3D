@@ -53,7 +53,7 @@ export async function openLocalBrowser({root,signal,headless=true,executable=pro
       if(response.method==='Runtime.consoleAPICalled'&&['error','warning'].includes(response.params.type))events.push({level:response.params.type,message:response.params.args.map(arg=>String(arg.value??arg.description??'')).join(' ').slice(0,8000)});
       if(response.method==='Fetch.requestPaused'){
         const request=response.params,parsed=new URL(request.request.url),local=['127.0.0.1','localhost','[::1]'].includes(parsed.hostname),allowed=!['http:','https:'].includes(parsed.protocol)||local;
-        network.push({url:request.request.url,allowed});
+        network.push({url:request.request.url,allowed,observedAt:Date.now()});
         send(allowed?'Fetch.continueRequest':'Fetch.failRequest',{requestId:request.requestId,...(allowed?{}:{errorReason:'BlockedByClient'})}).catch(error=>events.push({level:'error',message:error.message}));
       }
       if(events.length>1000)events.shift();

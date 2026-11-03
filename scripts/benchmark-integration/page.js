@@ -4,9 +4,9 @@ let viewer,manifest;const diagnostics=[];
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const sample=()=>viewer.getStats();
 globalThis.benchmark={
-  async load(name,bounds){
+  async load(name,bounds,manifestUrl){
     await viewer?.dispose();const startupResources=performance.getEntriesByType('resource').map(item=>({url:item.name,transferSize:item.transferSize,encodedBodySize:item.encodedBodySize,duration:item.duration}));performance.clearResourceTimings();diagnostics.length=0;
-    const url=new URL(`../../work/integration-scenes/${name}/manifest.json`,import.meta.url);
+    const url=new URL(manifestUrl||`../../work/remediation-integration-scenes/${name}/manifest.json`,import.meta.url);
     // Camera bounds come from the same manifest read by the Node runner. Asset
     // loading here follows the SDK's real default fetch path exactly once.
     manifest={bounds};const started=performance.now();
@@ -40,6 +40,17 @@ globalThis.benchmark={
     }requestAnimationFrame(step);});
     return {durationSeconds:seconds,keys,samples,stats:viewer.getStats({raw:true}),diagnostics:[...diagnostics],transfers:performance.getEntriesByType('resource').map(item=>({url:item.name,transferSize:item.transferSize,encodedBodySize:item.encodedBodySize,decodedBodySize:item.decodedBodySize,duration:item.duration}))};
   },
+  async stationary(view,seconds=15){
+    viewer.setLodMode('auto');viewer.setView(view);await viewer.whenIdle({timeoutMs:90000});await sleep(2000);
+    const baseline=sample();viewer.resetStats();const samples=[],start=performance.now(),measurementEpochMs=performance.timeOrigin+start;let next=0;
+    await new Promise(resolve=>{function step(now){
+      const elapsed=(now-start)/1000;
+      if(elapsed>=next){const stats=sample();samples.push({second:elapsed,runtime:stats.runtime,nearAttachments:stats.nearAttachments,render:stats.rendering.last});next+=.1;}
+      if(elapsed<seconds)requestAnimationFrame(step);else resolve();
+    }requestAnimationFrame(step);});
+    return {view,measurementEpochMs,endedEpochMs:performance.timeOrigin+performance.now(),durationSeconds:(performance.now()-start)/1000,baseline,samples,stats:viewer.getStats({raw:true})};
+  },
+  resources:()=>performance.getEntriesByType('resource').map(item=>({url:item.name,transferSize:item.transferSize,encodedBodySize:item.encodedBodySize,decodedBodySize:item.decodedBodySize,duration:item.duration})),
   async comparisons(){
     const home=viewer.getView(),result={};
     for(const mode of ['far','full','far']){
