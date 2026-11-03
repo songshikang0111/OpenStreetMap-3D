@@ -6,7 +6,7 @@ export class MeshWriter {
     const ab = new THREE.Vector3().subVectors(new THREE.Vector3(...b), new THREE.Vector3(...a));
     const ac = new THREE.Vector3().subVectors(new THREE.Vector3(...c), new THREE.Vector3(...a));
     if (ab.cross(ac).dot(new THREE.Vector3(...normal)) < 0) { [b, c] = [c, b]; if (uv) uv = [uv[0], uv[2], uv[1]]; }
-    const role=this.style>0 ? ([1,5,6].includes(this.style)?'glass':'wall') : normal[1]>.7?'roof':'structure';
+    const role=this.materialRole||(this.style>0 ? ([1,5,6].includes(this.style)?'glass':'wall') : normal[1]>.7?'roof':'structure');
     const run=this.materialRuns.at(-1);
     if(run?.role===role)run.count+=3;else this.materialRuns.push({start:this.positions.length/3,count:3,role});
     const col = color.isColor ? color : new THREE.Color(color);
@@ -75,11 +75,11 @@ export function polygon(writer, feature, y, color, id = 0) {
 }
 
 function orientedBox(writer,center,axes,dimensions,color,id=0){
-  const old=writer.style;writer.style=0;
+  const old=writer.style,oldRole=writer.materialRole;writer.style=0;writer.materialRole='structure';
   const p=([x,y,z])=>center.map((v,k)=>v+axes[0][k]*x*dimensions[0]/2+axes[1][k]*y*dimensions[1]/2+axes[2][k]*z*dimensions[2]/2);
   const signs=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],points=signs.map(p);
   for(const [ix,axis,sign]of [[[0,1,2,3],2,-1],[[4,7,6,5],2,1],[[0,4,5,1],1,-1],[[3,2,6,7],1,1],[[0,3,7,4],0,-1],[[1,5,6,2],0,1]])writer.quad(ix.map(i=>points[i]),axes[axis].map(v=>v*sign),color,id);
-  writer.style=old;
+  writer.style=old;writer.materialRole=oldRole;
 }
 export function addBox(writer,center,dimensions,color,id=0,angle=0){const c=Math.cos(angle),s=Math.sin(angle);orientedBox(writer,center,[[c,0,-s],[0,1,0],[s,0,c]],dimensions,color,id);}
 export function addBeam(writer,a,b,width,color,id=0){

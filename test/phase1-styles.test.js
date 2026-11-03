@@ -119,3 +119,14 @@ test('foliage material service supports a generic material source safely',()=>{
     const shader={uniforms:{},vertexShader:THREE.ShaderLib.standard.vertexShader,fragmentShader:THREE.ShaderLib.standard.fragmentShader};material.onBeforeCompile(shader);assert(shader.fragmentShader.includes('leafTexture(vLeafWorld'));material.dispose();
   }
 });
+
+test('ordinary building batches preserve wall, glass, roof and structure roles for external styles',()=>{
+  const feature=(id,x,tags)=>({id,osmType:'way',osmId:id==='plain-office'?1:2,tags,outer:[[x,0],[x+30,0],[x+30,20],[x,20]],holes:[],height:60,minHeight:0,levels:15,area:600,center:[x+15,10],source:'height'});
+  const buildings=[feature('plain-office',0,{building:'office'}),feature('plain-brick',60,{building:'apartments','building:material':'brick'})];
+  const city=buildCity({...data,buildings,roads:[],water:[],trees:[],streetNodes:[],treeRows:[]}),seen=new Set();
+  const external={...cel,id:'role-audit',createMaterial({role}){seen.add(role);return new THREE.MeshBasicMaterial({color:{wall:'white',glass:'blue',roof:'red',structure:'green'}[role]||'gray'});}};
+  const decoded=new THREE.ObjectLoader().parse(JSON.parse(JSON.stringify(city.group.toJSON())));
+  const binding=bindSceneStyle(decoded,{style:external});
+  for(const role of ['wall','glass','roof','structure'])assert(seen.has(role),`Missing ordinary ${role}`);
+  assert(city.buildings.every(mesh=>mesh.geometry.groups.length<=4));binding.dispose();
+});

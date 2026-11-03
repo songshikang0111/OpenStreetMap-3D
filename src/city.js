@@ -107,12 +107,13 @@ export function buildCity(data, { landscapeEnabled = false, inferRoofs = false, 
         if(!ringIndex&&len>7&&spans.length===1&&spans[0].t0===0&&spans[0].t1===1&&spans[0].lo===building.minHeight&&spans[0].hi===bodyHeight)nearWalls.push({key:`${building.id}:${i}`,a,dx,dz,len,normal,angle,layout,baseY,style});
       }
       grammarCounts[grammarName]=(grammarCounts[grammarName]||0)+1;
-      writer.style=0;
+      writer.style=0;writer.materialRole='roof';
       if(roof.supported){
         const rawColor=building.tags['roof:colour']||building.tags['roof:color'];
         const roofColor=rawColor&&(/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(rawColor)||THREE.Color.NAMES[rawColor.toLowerCase()]!==undefined)?rawColor:'#a5a8a0';
         writeRoof(writer,building,roof,roofColor,id,wall);
       }else for(const [outer,...holes]of envelope.roof)polygon(writer,{outer,holes},topY,'#e1e3dd',id);
+      writer.materialRole=null;
       if(building.minHeight>0){
         const start=writer.positions.length;for(const [outer,...holes]of envelope.bottom)polygon(writer,{outer,holes},baseY,wall,id);
         for(let i=start;i<writer.positions.length;i+=9){for(let c=0;c<3;c++)[writer.positions[i+3+c],writer.positions[i+6+c]]=[writer.positions[i+6+c],writer.positions[i+3+c]];for(let c=0;c<3;c++)writer.normals[i+c*3+1]=-1;}
@@ -132,7 +133,7 @@ export function buildCity(data, { landscapeEnabled = false, inferRoofs = false, 
         roofDetails.push({start,end:roofWriter.positions.length,anchor:[box.x,topY,box.z],size:Math.max(box.w,box.d),weight:1});
       }
     }
-    const mesh=writer.mesh(material,building.tags.name||building.id);mesh.userData.feature=building;mesh.userData.generatedFacade=true;mesh.userData.inkClass=1;
+    const mesh=writer.mesh(material,building.tags.name||building.id,{groupRoles:true});mesh.userData.feature=building;mesh.userData.generatedFacade=true;mesh.userData.inkClass=1;
     mesh.userData.facadeFamily=style.family;mesh.userData.landmark=profile;
     mesh.userData.facadeSurface=style.surfaceName;mesh.userData.facadeGrammar=style.grammar;
     if(profile){landmarks.push({...profile,osmId:building.osmId});building.generatedShape=profile.name;building.generatedShapeNote=profile.note;}
