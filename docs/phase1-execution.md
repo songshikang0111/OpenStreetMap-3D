@@ -1,0 +1,57 @@
+# 一期开发执行清单
+
+日期：2026-11-03。本文件记录已派发的任务和恢复入口，不代表一期已经开发完成。
+
+## 集成分支实际进度（E 更新）
+
+- C 已完成独立审查与交接，`8300ee7` 及其功能/修复提交已合入 E；C + E 的针对性测试 25/25 通过。组件报告：`docs/phase1-evidence/landmarks/handoff.md`。
+- E 工作台、包/构建入口、静态/浏览器导出、文档与验收脚本已提交；独立初阶段审查的四项 P2 已修复复验，记录于 `docs/phase1-evidence/integration/review-studio-initial.md`。
+- A/B/D 仍在独立复验与交接中；其初始功能提交不能代替最终完成状态。E 尚未执行整合后的真实端到端、全部性能矩阵和两个最终独立验收，当前不得宣称一期完成。
+- 已发现待集成处理：相机/实时画风的配置 hash 不应令几何构建过期；公共项目 Schema/类型与 CLI/runtime 的 low/import/规则包锁对象需要统一；SDK 必须实际打包 CINK 与风格默认适配器。最终以修复与原始验收证据为准。
+
+## 已完成的规划准备
+
+- 完整规格：[一期规划](phase1-plan.md)，包含使用流程、架构、交付物、冻结接口、任务所有权和 AC01–AC27。
+- 规划提交：ed0820b02761ca918508c3d8c25af1e936e433c8。
+- 代码基线：164af05。重新验证 npm test：138/138 通过；npm run build 成功，保留既有 500 kB 分包提示。
+- 规划已由独立 gpt-6.1-sol / xhigh subagent 只读审查，无阻碍派发的重大问题；已采纳它关于地标协议、打开项目和 readAsset 的三条细化建议。
+- 五个开发任务均由 create_thread 创建并实际启动；首次 wait_threads 快照均为 active / inProgress，无 turn error。组件开发、集成及最终验收尚未完成。
+
+## 子对话与隔离分支
+
+所有任务模型为 gpt-6.1-sol，推理强度 xhigh（极高），hostId 为 local。工作区列相对 Windows 用户目录下 .codex/worktrees/；每个任务使用独立 worktree，原 main 不作为开发目录。
+
+| 任务 | 职责 | 分支 | 工作区 | threadId |
+| --- | --- | --- | --- | --- |
+| A | 核心模型与连续场景构建 | codex/phase1-core | phase1-core/beijing-city-ink | 01a1a075-d1ab-79e1-9cde-cda1c3030dc2 |
+| B | 地图下载、CLI 与本地任务服务 | codex/phase1-data-cli | phase1-data-cli/beijing-city-ink | 01a1a075-d41a-7a92-aea8-a401d14d3146 |
+| C | 地标生成配方与可插拔风格 | codex/phase1-landmarks | phase1-landmarks/beijing-city-ink | 01a1a075-d687-72b3-821b-9d5c93cd4cd1 |
+| D | Web SDK、LOD 与扩区性能 | codex/phase1-runtime | phase1-runtime/beijing-city-ink | 01a1a075-d9d0-71f3-a65c-64bac779745b |
+| E | 本地工作台、集成与独立总验收 | codex/phase1-integration | phase1-integration/beijing-city-ink | 01a1a077-0c08-7220-bcc3-e0b4c60d3a3b |
+
+## 交付与验收安排
+
+A、B、C、D 各自完成实现、针对性测试、独立 review subagent 审查和修复，按项目 AGENTS.md 提交。各自报告分别位于：
+
+- A：docs/phase1-evidence/core/handoff.md。
+- B：docs/phase1-evidence/data/handoff.md。
+- C：docs/phase1-evidence/landmarks/handoff.md。
+- D：docs/phase1-evidence/runtime/handoff.md。
+
+E 一边实现工作台和打包文档，一边使用 wait_threads 跟踪 A–D。组件完成后，E 在 codex/phase1-integration 上集成、解决冲突、执行实际端到端与扩区性能验证，另启两个独立验收角色复核。最终证据应位于 docs/phase1-evidence/integration/handoff.md 和 acceptance.md。上述证据在各自提交/集成后才存在，当前不声称已经生成。
+
+重点保留最新补充要求：区分视觉衰减与真正 LOD；验证固定范围不同切块以及实际扩大连续覆盖；记录真实浏览器帧统计、绘制/驻留成本和往返资源回收。不能只看截图或 Node 构建计时。
+
+若上游存在实现缺口，E 接手补齐并复验；不得把未接线接口或 mock 成功当作完成。真实外部阻塞必须写清恢复步骤，其他独立工作持续完成。未经实际验证的项目保留 fail/not-run，不通过删减规划掩盖。
+
+## 主对话结束后的行为
+
+主对话在规划提交、任务派发和启动确认完成后可结束当前 turn，不主动中断这五个子对话。E 已收到继续开发、等待、集成与独立验收的完整指令。系统/应用运行条件仍影响任务能否持续执行；不承诺主对话自动醒来或后台一定永不中断。
+
+用户稍后唤醒主对话时，先读取本清单，使用 wait_threads 对上述 threadId 和 hostId=local 取得紧凑快照，再检查实际分支提交与 handoff。不要只按本文件的初始“运行中”状态推断当前进度。
+
+恢复顺序：确认各任务状态 → 检查组件提交及缺口 → 检查 E 集成与 AC 矩阵 → 复核现场操作/性能证据 → 执行用户验收。不要重复创建同名任务或覆盖已有工作区。
+
+## 仓库边界
+
+规划与本执行清单已在原 main 本地提交。开发代码只在各自 codex/ 分支提交；最终集成结果留在 codex/phase1-integration 供用户复核。后台不覆盖 main，不推送远端、不发布 npm 包、不部署公共站点，也不改变仓库可见性。
