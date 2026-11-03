@@ -5,6 +5,13 @@ import * as THREE from 'three';
 export function clipPartition(mesh,grid,ownerFor,featureIds) {
   const g=mesh.geometry,index=g.index?.array,attributes=Object.entries(g.attributes),position=g.attributes.position,feature=g.attributes.cityFeature;
   const start=g.drawRange.start,end=Math.min(index?.length??position.count,start+g.drawRange.count),grouped=Array.isArray(mesh.material)||Array.isArray(g.userData.city?.materialRoles),output=new Map(),point=new THREE.Vector3();
+  // Select candidates with the same actual planes used by clip(), rather than
+  // grid.at's (value-origin)/width arithmetic: origin subtraction can round a
+  // tiny negative coordinate onto an internal boundary before clipping it.
+  // Upper-bound search gives an exact-boundary vertical face one half-open
+  // owner, while a genuinely straddling face includes both adjacent cells.
+  const xPlanes=grid.cells.slice(0,grid.columns).map(c=>c.bounds[0]),zPlanes=grid.cells.filter((_,i)=>i%grid.columns===0).map(c=>c.bounds[1]);
+  const cellAt=(planes,value)=>{let lo=0,hi=planes.length;while(lo<hi){const mid=(lo+hi)>>>1;if(planes[mid]<=value)lo=mid+1;else hi=mid;}return Math.max(0,lo-1);};
   const vertex=i=>{point.fromBufferAttribute(position,i).applyMatrix4(mesh.matrixWorld);return {world:point.toArray(),values:Object.fromEntries(attributes.map(([name,a])=>[name,Array.from(a.array.subarray(i*a.itemSize,(i+1)*a.itemSize))]))};};
   const lerp=(a,b,t,axis,bound)=>{
     const world=a.world.map((v,i)=>v+(b.world[i]-v)*t);world[axis]=bound;
@@ -23,7 +30,7 @@ export function clipPartition(mesh,grid,ownerFor,featureIds) {
     const part=grouped?g.groups.find(s=>t>=s.start&&t+2<s.start+s.count):null;if(Array.isArray(mesh.material)&&(!part||!mesh.material[part.materialIndex]))continue;
     const ix=[0,1,2].map(k=>index?index[t+k]:t+k),triangle=ix.map(vertex),id=featureIds[feature.getX(ix[0])],owner=ownerFor(id),materialIndex=part?.materialIndex??0;
     if(owner){append(owner,triangle,materialIndex);continue;}
-    const xs=triangle.map(v=>v.world[0]),zs=triangle.map(v=>v.world[2]),[left,top]=grid.at(Math.min(...xs),Math.min(...zs)).split('_').map(Number),[right,bottom]=grid.at(Math.max(...xs),Math.max(...zs)).split('_').map(Number);
+    const xs=triangle.map(v=>v.world[0]),zs=triangle.map(v=>v.world[2]),left=cellAt(xPlanes,Math.min(...xs)),top=cellAt(zPlanes,Math.min(...zs)),right=cellAt(xPlanes,Math.max(...xs)),bottom=cellAt(zPlanes,Math.max(...zs));
     for(let z=top;z<=bottom;z++)for(let x=left;x<=right;x++){
       const cell=grid.cells[z*grid.columns+x],[x0,z0,x1,z1]=cell.bounds;
       let polygon=triangle;for(const [axis,bound,sign]of [[0,x0,1],[0,x1,-1],[2,z0,1],[2,z1,-1]]){polygon=clip(polygon,axis,bound,sign);if(polygon.length<3)break;}

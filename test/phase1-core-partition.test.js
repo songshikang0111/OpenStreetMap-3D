@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import {compileScene,validateSceneManifest} from '../src/core/index.js';
 import {decodeChunk} from '../src/core/scene-codec.js';
 import {farDeckGeometry} from '../src/core/lod-surfaces.js';
-import {lowBuilding} from '../src/core/geometry.js';
+import {lowBuilding,partitionMesh} from '../src/core/geometry.js';
 import {continuityFixture} from './phase1-core-fixture.js';
 
 const contains=(triangle,p)=>{const s=triangle.map((a,i)=>{const b=triangle[(i+1)%3];return (b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]);});return s.every(v=>v>1e-7)||s.every(v=>v< -1e-7);};
@@ -69,4 +69,33 @@ test('independent repair review: collinear simplification falls back and bridge 
   const g=farDeckGeometry([{roadId:1,level:'7',thickness:.65,polygon:[[0,0],[100,0],[100,8],[50,8.005],[0,8]],y:7}]),pos=g.attributes.position,normal=g.attributes.normal;
   const caps=[],sides=[];for(let i=0;i<pos.count;i++){const point=[pos.getX(i),pos.getY(i),pos.getZ(i)];if(Math.abs(normal.getY(i))>.9)caps.push(point);else sides.push(point);}
   assert.ok(caps.some(p=>p[0]===50&&Math.abs(p[2]-8.005)<1e-5));assert.ok(sides.some(p=>p[0]===50&&Math.abs(p[2]-8.005)<1e-5));
+});
+
+test('rounded near-boundary cell candidates preserve complete walls, attributes and one owner per surface point',()=>{
+  for(const divisions of [1,2,4])for(const axis of [0,2])for(const tilt of [-1e-17,0,1e-17])for(const offset of [-1e-17,0,1e-17]){
+    const cells=[],width=20/divisions;for(let z=0;z<divisions;z++)for(let x=0;x<divisions;x++)cells.push({id:`${x}_${z}`,bounds:[-10+x*width,-10+z*width,-10+(x+1)*width,-10+(z+1)*width]});
+    const grid={cells,columns:divisions,at:(x,z)=>`${Math.max(0,Math.min(divisions-1,Math.floor((x+10)/width)))}_${Math.max(0,Math.min(divisions-1,Math.floor((z+10)/width)))}`};
+    const points=[[-8,1],[-8,3],[8,3],[-8,1],[8,3],[8,1]],values=points.flatMap(([x,y])=>axis===2?[x,y,offset+x/8*tilt]:[offset+x/8*tilt,y,x]);
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(values,3));g.computeVertexNormals();g.setAttribute('cityFeature',new THREE.Uint32BufferAttribute(new Uint32Array(6).fill(1),1));g.setAttribute('uv',new THREE.Float32BufferAttribute(points.flatMap(([x,y])=>[(x+8)/16,(y-1)/2]),2));g.setAttribute('cityMaterialRole',new THREE.Uint8BufferAttribute([0,0,0,1,1,1],1));g.addGroup(0,3,0);g.addGroup(3,3,1);g.userData.city={materialRoles:['road','structure']};
+    const materials=[new THREE.MeshStandardMaterial(),new THREE.MeshStandardMaterial()],mesh=new THREE.Mesh(g,materials);mesh.userData.city={kind:'road',featureId:'road',featureIds:['road']};mesh.updateMatrixWorld(true);
+    const pieces=partitionMesh(mesh,grid,()=>undefined,[null,'road']),projected=[];let area=0;
+    for(const [id,piece]of pieces){assert.equal(piece.material,materials);const p=piece.geometry.attributes.position,uv=piece.geometry.attributes.uv,role=piece.geometry.attributes.cityMaterialRole,f=piece.geometry.attributes.cityFeature,cell=cells.find(c=>c.id===id);
+      for(let i=0;i<p.count;i++){const x=p.getComponent(i,axis===2?0:2),y=p.getY(i);assert.ok(Math.abs(uv.getX(i)-(x+8)/16)<1e-6);assert.ok(Math.abs(uv.getY(i)-(y-1)/2)<1e-6);assert.equal(f.getX(i),1);assert.ok(p.getX(i)>=cell.bounds[0]&&p.getX(i)<=cell.bounds[2]&&p.getZ(i)>=cell.bounds[1]&&p.getZ(i)<=cell.bounds[3]);}
+      for(let i=0;i<p.count;i+=3){const vertices=[0,1,2].map(k=>new THREE.Vector3().fromBufferAttribute(p,i+k));area+=new THREE.Triangle(...vertices).getArea();projected.push(vertices.map(v=>[axis===2?v.x:v.z,v.y]));const part=piece.geometry.groups.find(s=>i>=s.start&&i+2<s.start+s.count);assert.ok(part);for(let k=0;k<3;k++)assert.equal(role.getX(i+k),part.materialIndex);}
+    }
+    assert.ok(Math.abs(area-32)<1e-6,`divisions=${divisions} axis=${axis} tilt=${tilt} offset=${offset}: area ${area}`);
+    for(const x of [-7.13,-4.37,-1.21,1.63,4.31,7.17])for(const y of [1.23,1.71,2.29,2.83])assert.equal(projected.filter(t=>contains(t,[x,y])).length,1,`wall ${x},${y} must be covered once`);
+  }
+});
+
+test('high guardrail exterior area and every source face center survive fixed 1/4/16 cell partitioning',async()=>{
+  const {raw,config}=continuityFixture();let baseline;
+  for(const divisions of [1,2,4]){
+    const result=await compileScene(raw,{...config,tiling:{divisions}}),id=result.manifest.featureIndex['generated:bridge-parapets-and-pedestrian-guardrails'].renderId,faces=[];
+    for(const chunk of result.manifest.chunks){const d=chunk.lods.find(d=>d.id==='high'),group=await decodeChunk(result.assets[d.uri],d);group.updateMatrixWorld(true);group.traverse(o=>{if(!o.isMesh||o.isInstancedMesh)return;const g=o.geometry,p=g.attributes.position,f=g.attributes.cityFeature,ix=g.index?.array;for(let i=0;i<(ix?.length??p.count);i+=3)if(f.getX(ix?ix[i]:i)===id)faces.push(new THREE.Triangle(...[0,1,2].map(k=>new THREE.Vector3().fromBufferAttribute(p,ix?ix[i+k]:i+k).applyMatrix4(o.matrixWorld))));});}
+    const area=faces.reduce((sum,t)=>sum+t.getArea(),0);if(!baseline){baseline={area,faces};continue;}
+    assert.ok(Math.abs(area-baseline.area)<.0001,`${divisions**2} cells: ${area} vs ${baseline.area}`);
+    const buckets=new Map();for(const face of faces){const b=new THREE.Box3().setFromPoints([face.a,face.b,face.c]).expandByScalar(.00001);for(let x=Math.floor(b.min.x/10);x<=Math.floor(b.max.x/10);x++)for(let y=Math.floor(b.min.y/10);y<=Math.floor(b.max.y/10);y++)for(let z=Math.floor(b.min.z/10);z<=Math.floor(b.max.z/10);z++){const key=`${x},${y},${z}`;if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(face);}}
+    for(const source of baseline.faces){const center=source.getMidpoint(new THREE.Vector3()),normal=source.getNormal(new THREE.Vector3()),key=center.toArray().map(v=>Math.floor(v/10)).join(','),near=buckets.get(key)||[];assert.ok(near.some(t=>normal.dot(t.getNormal(new THREE.Vector3()))>.999&&t.closestPointToPoint(center,new THREE.Vector3()).distanceTo(center)<.00001),`missing oriented guardrail center ${center.toArray()}`);}
+  }
 });
