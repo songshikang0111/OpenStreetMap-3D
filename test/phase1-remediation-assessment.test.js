@@ -25,6 +25,9 @@ test('stationary evidence requires a complete real-time window and both saved ca
   assert.equal(assessStationary(sparse).checks.continuousSamples,false);
   const paused=structuredClone(phase);paused.stats.paused=true;
   assert.equal(assessStationary(paused).checks.running,false);
+  const raised=structuredClone(phase);raised.stats.budget.visibleTriangles=900000;raised.stats.budget.drawCalls=1500;raised.stats.rendering.frames.forEach(frame=>{frame.triangles=700000;frame.drawCalls=1300;});
+  const raisedChecks=assessStationary(raised).checks;assert.equal(raisedChecks.defaultBudget,false);assert.equal(raisedChecks.drawingTriangles,false);assert.equal(raisedChecks.drawingCalls,false);
+  const raisedBaseline=structuredClone(phase);raisedBaseline.baseline.budget.visibleTriangles=900000;assert.equal(assessStationary(raisedBaseline).checks.defaultBudget,false);
   assert.equal(assessCase({...raw,stationary:[phase,structuredClone(phase)]}).checks.stationary,false);
   const wrongCamera={...phase,...STATIONARY_VIEWS[1],view:phase.view};
   assert.equal(assessStationary(wrongCamera).checks.camera,false);
