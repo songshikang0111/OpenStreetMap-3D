@@ -6,3 +6,7 @@ import {fileURLToPath} from 'node:url';
 test('actual Studio module releases stale viewers and CSS when preview creation finishes out of order',async()=>{
   await promisify(execFile)(process.execPath,['--experimental-vm-modules',fileURLToPath(new URL('./helpers/studio-transition-race.mjs',import.meta.url))],{cwd:fileURLToPath(new URL('../',import.meta.url))});
 });
+
+test('an old project CSS failure cannot overwrite the new project status or diagnostics',async()=>{
+  await promisify(execFile)(process.execPath,['--experimental-vm-modules',fileURLToPath(new URL('./helpers/studio-stale-failure.mjs',import.meta.url))],{cwd:fileURLToPath(new URL('../',import.meta.url))});
+});

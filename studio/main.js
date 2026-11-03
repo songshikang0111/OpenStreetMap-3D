@@ -84,6 +84,7 @@ async function previewIfBuilt() {
 async function preview() {
   const epoch=++state.previewEpoch,project=state.project,config=state.config,style=settings.style(),quality=$('quality').value;
   const current=()=>epoch===state.previewEpoch&&project.id===state.project?.id;
+  try {
   const prepared=await prepareStyle(style,{projectId:project.id});if(!current())return;
   await disposePreview();if(!current())return;$('empty').hidden=false;enabled();
   const manifestUrl=project.manifestUrl || `/projects/${encodeURIComponent(project.id)}/dist/manifest.json`;
@@ -109,11 +110,13 @@ async function preview() {
   await viewer.whenIdle();
   if(current())$('job-status').textContent='场景已加载；拖动旋转，滚轮缩放，右键平移。';
   }catch(error){if(current()){await disposePreview();$('empty').hidden=false;enabled();throw error;}else{try{await viewer.dispose();}finally{loaded.dispose();}}}
+  }catch(error){if(current())throw error;}
 }
 async function pollJob() {
   clearTimeout(state.polling);
   if(!state.job) return;
   const jobId=state.job.id,epoch=state.projectEpoch;
+  const currentJob=()=>epoch===state.projectEpoch&&state.job?.id===jobId;
   try {
     const job=unwrap(await api.job(jobId),'job');if(epoch!==state.projectEpoch||state.job?.id!==jobId)return;
     state.job=job; state.disconnected=false;
@@ -127,12 +130,13 @@ async function pollJob() {
     remember(); enabled();
     if(!isTerminal(job)) state.polling=setTimeout(pollJob,500);
     else if(job.status==='succeeded' && (job.kind || state.lastKind)==='build') {
-      try{await preview();}catch(error){diagnostic(error);$('job-status').textContent=`构建已完成，预览失败：${error.message}`;enabled();}
+      try{await preview();}catch(error){if(!currentJob())return;diagnostic(error);$('job-status').textContent=`构建已完成，预览失败：${error.message}`;enabled();}
     }else if(!state.viewer){
       try{
         const existing=await fetch(`/projects/${encodeURIComponent(state.project.id)}/dist/manifest.json`);
-        if(existing.ok){await preview();$('job-status').textContent=`${job.kind || state.lastKind} · ${job.status} · 预览已有构建；输入变化后请重新构建。`;}
-      }catch(error){diagnostic(error);$('job-status').textContent=`${job.status} · 已有构建预览失败：${error.message}`;enabled();}
+        if(!currentJob())return;
+        if(existing.ok){await preview();if(!currentJob())return;$('job-status').textContent=`${job.kind || state.lastKind} · ${job.status} · 预览已有构建；输入变化后请重新构建。`;}
+      }catch(error){if(!currentJob())return;diagnostic(error);$('job-status').textContent=`${job.status} · 已有构建预览失败：${error.message}`;enabled();}
     }
 }
 async function start(kind,parameters={},resume) {
