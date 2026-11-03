@@ -41,6 +41,9 @@ export async function createCityViewer(options) {
   const statistics = new FrameStatistics(); let streamer, manifest, activeUrl, pipeline, style, nearDetails;
   let width = 1, height = 1, animation, disposed = false, loading, loadEpoch = 0, paused = false, renderFailed = false, lodMode = 'auto';
   let selectionStart, allLoadedMs = null, sceneStarted = 0, sceneOperations = Promise.resolve(), internalPauses = 0, disposal;
+  let viewRevision = 0, scheduledRevision = -1;
+  const invalidateSchedule = () => { viewRevision++; };
+  controls.addEventListener('change', invalidateSchedule);
   const acquirePause = () => { internalPauses++; let released = false; return () => { if (!released) { released = true; internalPauses--; } }; };
   function queueOperation(operation) {
     if (disposed) return Promise.reject(runtimeError('VIEWER_DISPOSED', 'lifecycle', 'Viewer is disposed.'));
@@ -74,7 +77,7 @@ export async function createCityViewer(options) {
       pipeline.resize(Math.round(width * renderer.getPixelRatio()), Math.round(height * renderer.getPixelRatio()));
       if (pipeline.ink) { pipeline.ink.aoEnabled = budget.aoQuality > 0; pipeline.ink.material.uniforms.aoStrength.value = budget.aoQuality > 0 ? .65 : 0; }
       if (streamer) await streamer.rebind(bindGroup, prepareGroup);
-      nearDetails?.rebind(bindGroup); renderFailed = false;
+      nearDetails?.rebind(bindGroup); renderFailed = false; invalidateSchedule();
     } catch (error) { renderFailed = true; diagnose({ code: 'STYLE_BIND_FAILED', stage: 'style', message: error.message }); throw error; }
     finally { resume(); }
   }
@@ -83,6 +86,7 @@ export async function createCityViewer(options) {
     width = Math.max(1, Math.round(w || 1)); height = Math.max(1, Math.round(h || 1));
     renderer.setSize(width, height, false); camera.aspect = width / height; camera.updateProjectionMatrix();
     pipeline?.resize(Math.round(width * renderer.getPixelRatio()), Math.round(height * renderer.getPixelRatio()));
+    invalidateSchedule();
   }
   function setView(view) {
     if (disposed) throw runtimeError('VIEWER_DISPOSED', 'camera', 'Viewer is disposed.');
@@ -91,7 +95,7 @@ export async function createCityViewer(options) {
     if (view.target) controls.target.fromArray(view.target);
     if (view.fov != null) camera.fov = view.fov;
     if (view.near != null) { if (!Number.isFinite(view.near) || view.near <= 0) throw new TypeError('near must be positive.'); camera.near = view.near; }
-    camera.updateProjectionMatrix(); controls.update();
+    camera.updateProjectionMatrix(); controls.update(); invalidateSchedule();
   }
   const getView = () => ({ position: camera.position.toArray(), target: controls.target.toArray(), fov: camera.fov, near: camera.near });
   function fitView() {
@@ -142,6 +146,7 @@ export async function createCityViewer(options) {
     const before = performance.now();
     try {
       streamer?.update(camera, height, time, { forceLod: lodMode === 'auto' ? undefined : lodMode === 'full' ? 0 : manifest.chunks[0].lods.length - 1 });
+      scheduledRevision = viewRevision;
       const main = streamer?.stats(), multiplier = streamer?.passMultiplier || 5;
       const mainResident = (streamer?.estimatedBytes() || 0) - (streamer?.extraResidentBytes || 0);
       nearDetails?.update(streamer?.current.values() || [], camera, time, budget.visibleTriangles - (main?.visibleTriangles || 0) * multiplier, multiplier, { residentBytes: budget.residentBytes - mainResident, drawCalls: budget.drawCalls - (main?.sceneDrawCalls || 0) * multiplier - 3 });
@@ -177,14 +182,16 @@ export async function createCityViewer(options) {
     setStyle(input) { return queueOperation(() => applyStyle(input)); },
     getStats({ raw = false } = {}) { return { schemaVersion: 1, manifestUrl: activeUrl, quality: options.quality || 'balanced', budget: { ...budget }, viewport: { width, height, pixelRatio: renderer.getPixelRatio(), devicePixelRatio: globalThis.devicePixelRatio || 1 }, runtime: streamer?.stats() || null, nearAttachments: nearDetails?.stats() || null, rendering: statistics.snapshot(raw), allLoadedMs, diagnostics: diagnostics.map(d => ({ ...d })), disposed, paused: paused || internalPauses > 0, userPaused: paused, lodMode }; },
     resetStats() { statistics.reset(); },
-    setLodMode(mode) { if (!['auto', 'full', 'far'].includes(mode)) throw new TypeError('LOD mode must be auto/full/far.'); lodMode = mode; },
+    setLodMode(mode) { if (!['auto', 'full', 'far'].includes(mode)) throw new TypeError('LOD mode must be auto/full/far.'); lodMode = mode; invalidateSchedule(); },
     pause(value = true) { paused = !!value; },
     async whenIdle({ timeoutMs = 30000 } = {}) {
       const deadline = performance.now() + timeoutMs;
       while (!disposed && performance.now() < deadline) {
         if (renderFailed) throw runtimeError('RENDER_FAILED', 'render', 'Rendering stopped; inspect diagnostics.');
-        if (streamer?.hasScheduled && streamer.isSettled()) return;
-        const failure = streamer?.getBlockingFailure(); if (failure) throw failure;
+        if (scheduledRevision === viewRevision) {
+          if (streamer?.hasScheduled && streamer.isSettled()) return;
+          const failure = streamer?.getBlockingFailure(); if (failure) throw failure;
+        }
         await new Promise(resolve => setTimeout(resolve, 30));
       }
       throw runtimeError(disposed ? 'VIEWER_DISPOSED' : 'LOAD_TIMEOUT', 'stream', 'Visible scene did not settle before the deadline.');
@@ -194,7 +201,7 @@ export async function createCityViewer(options) {
     dispose() {
       if (disposal) return disposal;
       disposed = true; ++loadEpoch; loading?.abort(); cancelAnimationFrame(animation); observer?.disconnect();
-      renderer.domElement.removeEventListener('pointerdown', pointerDown); renderer.domElement.removeEventListener('pointerup', pointerUp); controls.dispose();
+      renderer.domElement.removeEventListener('pointerdown', pointerDown); renderer.domElement.removeEventListener('pointerup', pointerUp); controls.removeEventListener('change', invalidateSchedule); controls.dispose();
       disposal = (async () => {
         await sceneOperations.catch(() => {}); nearDetails?.dispose(); await streamer?.dispose(); pipeline?.dispose();
         sun.shadow.dispose(); scene.clear(); renderer.renderLists.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); statistics.reset();
