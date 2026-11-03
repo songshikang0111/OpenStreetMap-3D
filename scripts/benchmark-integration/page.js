@@ -48,7 +48,7 @@ globalThis.benchmark={
       if(elapsed>=next){const stats=sample();samples.push({second:elapsed,runtime:stats.runtime,nearAttachments:stats.nearAttachments,render:stats.rendering.last});next+=.1;}
       if(elapsed<seconds)requestAnimationFrame(step);else resolve();
     }requestAnimationFrame(step);});
-    return {view,measurementEpochMs,endedEpochMs:performance.timeOrigin+performance.now(),durationSeconds:(performance.now()-start)/1000,baseline,samples,stats:viewer.getStats({raw:true})};
+    return {view,timeOrigin:performance.timeOrigin,measurementEpochMs,endedEpochMs:performance.timeOrigin+performance.now(),durationSeconds:(performance.now()-start)/1000,baseline,samples,stats:viewer.getStats({raw:true})};
   },
   resources:()=>performance.getEntriesByType('resource').map(item=>({url:item.name,transferSize:item.transferSize,encodedBodySize:item.encodedBodySize,decodedBodySize:item.decodedBodySize,duration:item.duration})),
   async comparisons(){
