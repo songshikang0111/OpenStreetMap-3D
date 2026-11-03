@@ -29,7 +29,7 @@ test('registration rejects unsupported schema rules and inconsistent bounds/defa
     {type:'number',minimum:NaN},{type:'number',minimum:'0'},{type:'number',maximum:Infinity},{type:'number',minimum:3,maximum:2},
     {type:'number',minimum:0,default:-1},{type:'number',default:null},{type:'number',default:undefined},
     {type:'boolean',minimum:0},{type:'boolean',default:0},{type:'string',maximum:3},{type:'string',default:1},
-    {type:'number',enum:[]},{type:'number',enum:[0,-0]},{type:'number',enum:[NaN]},{type:'number',enum:[1,'1']},
+    {type:'number',enum:[]},{type:'number',enum:Array(1)},{type:'number',enum:[1,,]},{type:'number',enum:[0,-0]},{type:'number',enum:[NaN]},{type:'number',enum:[1,'1']},
     {type:'number',minimum:0,enum:[-1,1]},{type:'integer',enum:[1,1.25]},{type:'boolean',enum:[true,null]},
     {type:'string',enum:['a','a']},{type:'string',enum:['a'],default:'b'},
     {type:'number',multipleOf:2},{type:'string',pattern:'x'},{type:'number',title:2}];
@@ -65,6 +65,10 @@ test('real bundle/export rejects illegal saved integer parameters and schema whi
     }
     for(const rule of [{type:'object'},{...integer,default:1.25},{...integer,enum:[-1,1]},{...integer,enum:[1,2],default:3}]){
       await write(rule);await patchProject(root,{style:selection});await assert.rejects(exportProject(root,{format:'web'}),error=>error.code==='STYLE_MODULE_INVALID');assert((await readFile(path.join(root,'site/viewer-config.json'))).equals(site));
+    }
+    for(const expression of ["{type:'integer',enum:Array(1)}","{type:'integer',enum:[1,,]}"]){
+      await writeFile(path.join(root,'styles/integer.js'),original.replace('properties:{}',`properties:{count:${expression}}`));
+      await assert.rejects(bundleProjectStyle(root,selection),error=>error.code==='STYLE_MODULE_INVALID');await assert.rejects(exportProject(root,{format:'web'}),error=>error.code==='STYLE_MODULE_INVALID');assert((await readFile(path.join(root,'site/viewer-config.json'))).equals(site));
     }
   }finally{assert(path.resolve(root).startsWith(path.resolve(os.tmpdir())+path.sep));await rm(root,{recursive:true,force:true});}
 });

@@ -28,7 +28,8 @@ export function validateStyleParametersSchema(schema){
     if(rule.type==='integer'&&Math.max(Number.MIN_SAFE_INTEGER,Math.ceil(rule.minimum??Number.MIN_SAFE_INTEGER))>Math.min(Number.MAX_SAFE_INTEGER,Math.floor(rule.maximum??Number.MAX_SAFE_INTEGER)))invalid(key,'Bounds contain no safe integer.');
     if(own(rule,'enum')){
       if(!Array.isArray(rule.enum)||!rule.enum.length||new Set(rule.enum).size!==rule.enum.length)invalid(`${key}.enum`,'Expected a nonempty unique primitive array.');
-      if(rule.enum.some(value=>!validValue(value,rule)))invalid(`${key}.enum`,'Every value must match the type and bounds.');
+      // for-of visits sparse slots as undefined; Array.some would skip them.
+      for(const value of rule.enum)if(!validValue(value,rule))invalid(`${key}.enum`,'Every value must match the type and bounds.');
     }
     if(own(rule,'default')&&(!validValue(rule.default,rule)||(own(rule,'enum')&&!rule.enum.includes(rule.default))))invalid(`${key}.default`,'Default must match the type, bounds and enum.');
   }
