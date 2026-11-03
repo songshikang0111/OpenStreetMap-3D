@@ -40,7 +40,7 @@ export async function createCityViewer(options) {
   const shared = adapters.createShared?.() || { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: { value: .5 }, glassReflection: { value: .65 }, toneSize: { value: 4.2 }, projectionScale: { value: 1000 } };
   const statistics = new FrameStatistics(); let streamer, manifest, activeUrl, pipeline, style, nearDetails;
   let width = 1, height = 1, animation, disposed = false, loading, loadEpoch = 0, paused = false, renderFailed = false, lodMode = 'auto';
-  let selectionStart, allLoadedMs = null, sceneStarted = 0, sceneOperations = Promise.resolve(), internalPauses = 0, disposal;
+  let selectionStart, allLoadedMs = null, firstRenderedMs = null, firstRenderedAtMs = null, sceneStarted = 0, sceneOperations = Promise.resolve(), internalPauses = 0, disposal;
   let viewRevision = 0, scheduledRevision = -1;
   const invalidateSchedule = () => { viewRevision++; };
   controls.addEventListener('change', invalidateSchedule);
@@ -110,6 +110,7 @@ export async function createCityViewer(options) {
     const epoch = ++loadEpoch; loading?.abort(); const controller = new AbortController(); loading = controller;
     const abort = () => controller.abort(signal?.reason); signal?.addEventListener('abort', abort, { once: true }); if (signal?.aborted) abort();
     const resolved = new URL(url, document.baseURI).href;
+    const requestedAt = performance.now();
     try {
       onProgress({ stage: 'manifest', url: resolved, complete: false });
       let json;
@@ -127,7 +128,7 @@ export async function createCityViewer(options) {
         try {
           const previous = streamer; nearDetails?.dispose(); nearDetails = null; await previous?.dispose();
           if (controller.signal.aborted || epoch !== loadEpoch || disposed) throw new DOMException('Load cancelled', 'AbortError');
-          manifest = next; activeUrl = resolved; allLoadedMs = null; sceneStarted = performance.now();
+          manifest = next; activeUrl = resolved; allLoadedMs = null; firstRenderedMs = firstRenderedAtMs = null; sceneStarted = requestedAt;
           streamer = new ChunkStreamer({ manifest, readAsset, decodeChunk: adapters.decodeChunk, budget, bindGroup, prepareGroup, releaseGroup, onDiagnostic: diagnose, onProgress });
           nearDetails = new NearDetails({ budget, bindGroup, releaseGroup }); root.add(nearDetails.group);
           root.add(streamer.group); fitView(); if (view) setView(view);
@@ -158,6 +159,7 @@ export async function createCityViewer(options) {
       statistics.record(time, renderer, { cpuFrameMs: performance.now() - before, estimatedResidentBytes: streamer?.estimatedBytes() || 0, chunks: streamer?.current.size || 0 });
       // Whole-frame counters include all scene, shadow and screen-space passes.
       const runtime = streamer?.stats(), calls = renderer.info.render.calls, triangles = renderer.info.render.triangles;
+      if (firstRenderedMs == null && runtime?.visibleChunks && triangles > 6) { firstRenderedAtMs = performance.now(); firstRenderedMs = firstRenderedAtMs - sceneStarted; }
       if (streamer && runtime.sceneDrawCalls > 0) streamer.passMultiplier = Math.max(1, Math.min(16, Math.max((calls - 3) / (runtime.sceneDrawCalls + (streamer.extraCalls || 0)), triangles / Math.max(1, runtime.visibleTriangles + (streamer.extraTriangles || 0)))));
       if (streamer && lodMode === 'auto' && (calls > budget.drawCalls || triangles > budget.visibleTriangles)) streamer.diagnostic('MEASURED_DRAW_BUDGET', 'Whole-frame renderer counters exceed budget; the next schedule reduces geometric detail.', { drawCalls: calls, triangles });
       if (runtime?.settled && runtime.visibleChunks && allLoadedMs == null) allLoadedMs = performance.now() - sceneStarted;
@@ -180,7 +182,7 @@ export async function createCityViewer(options) {
   const controllerApi = {
     load, resize, setView, getView,
     setStyle(input) { return queueOperation(() => applyStyle(input)); },
-    getStats({ raw = false } = {}) { return { schemaVersion: 1, manifestUrl: activeUrl, quality: options.quality || 'balanced', budget: { ...budget }, viewport: { width, height, pixelRatio: renderer.getPixelRatio(), devicePixelRatio: globalThis.devicePixelRatio || 1 }, runtime: streamer?.stats() || null, nearAttachments: nearDetails?.stats() || null, rendering: statistics.snapshot(raw), allLoadedMs, diagnostics: diagnostics.map(d => ({ ...d })), disposed, paused: paused || internalPauses > 0, userPaused: paused, lodMode }; },
+    getStats({ raw = false } = {}) { return { schemaVersion: 1, manifestUrl: activeUrl, quality: options.quality || 'balanced', budget: { ...budget }, viewport: { width, height, pixelRatio: renderer.getPixelRatio(), devicePixelRatio: globalThis.devicePixelRatio || 1 }, runtime: streamer?.stats() || null, nearAttachments: nearDetails?.stats() || null, rendering: statistics.snapshot(raw), firstRenderedMs, firstRenderedAtMs, allLoadedMs, loadRequestedAtMs: sceneStarted, diagnostics: diagnostics.map(d => ({ ...d })), disposed, paused: paused || internalPauses > 0, userPaused: paused, lodMode }; },
     resetStats() { statistics.reset(); },
     setLodMode(mode) { if (!['auto', 'full', 'far'].includes(mode)) throw new TypeError('LOD mode must be auto/full/far.'); lodMode = mode; invalidateSchedule(); },
     pause(value = true) { paused = !!value; },
