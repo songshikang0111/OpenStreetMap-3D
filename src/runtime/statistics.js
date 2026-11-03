@@ -10,7 +10,7 @@ export class FrameStatistics {
   record(time, renderer, extra = {}) {
     const intervalMs = this.lastTime == null ? null : time - this.lastTime;
     this.lastTime = time;
-    this.last = { time, intervalMs, drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles, lines: renderer.info.render.lines, points: renderer.info.render.points, rendererGeometries: renderer.info.memory.geometries, rendererTextures: renderer.info.memory.textures, ...extra };
+    this.last = { time, intervalMs, drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles, lines: renderer.info.render.lines, points: renderer.info.render.points, rendererGeometries: renderer.info.memory.geometries, rendererTextures: renderer.info.memory.textures, rendererPrograms: renderer.info.programs?.length ?? 0, ...extra };
     if (intervalMs != null) { this.frames.push(this.last); if (this.frames.length > this.limit) this.frames.shift(); }
     this.frameCount++;
   }

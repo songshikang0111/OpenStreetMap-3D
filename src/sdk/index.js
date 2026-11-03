@@ -4,6 +4,7 @@ import { normalizeManifest, fetchAsset, runtimeError } from '../runtime/manifest
 import { createBudget } from '../runtime/policy.js';
 import { ChunkStreamer } from '../runtime/streamer.js';
 import { FrameStatistics } from '../runtime/statistics.js';
+import { GpuFrameTimer } from '../runtime/gpu-timer.js';
 import { loadDefaultAdapters } from '../runtime/integrations.js';
 import { NearDetails } from '../runtime/near-details.js';
 import { exportViewerPNG, exportViewerGLB } from './exports.js';
@@ -38,7 +39,7 @@ export async function createCityViewer(options) {
   Object.assign(sun.shadow.camera, { left: -700, right: 700, top: 700, bottom: -700, near: 1, far: 4000 });
   scene.add(ambient, sun, sun.target);
   const shared = adapters.createShared?.() || { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: { value: .5 }, glassReflection: { value: .65 }, toneSize: { value: 4.2 }, projectionScale: { value: 1000 } };
-  const statistics = new FrameStatistics(); let streamer, manifest, activeUrl, pipeline, style, nearDetails;
+  const statistics = new FrameStatistics(), gpuTimer = new GpuFrameTimer(renderer.getContext()); let streamer, manifest, activeUrl, pipeline, style, nearDetails;
   let width = 1, height = 1, animation, disposed = false, loading, loadEpoch = 0, paused = false, renderFailed = false, lodMode = 'auto';
   let selectionStart, allLoadedMs = null, firstRenderedMs = null, firstRenderedAtMs = null, sceneStarted = 0, sceneOperations = Promise.resolve(), internalPauses = 0, disposal;
   let viewRevision = 0, scheduledRevision = -1;
@@ -132,7 +133,7 @@ export async function createCityViewer(options) {
           streamer = new ChunkStreamer({ manifest, readAsset, decodeChunk: adapters.decodeChunk, budget, bindGroup, prepareGroup, releaseGroup, onDiagnostic: diagnose, onProgress });
           nearDetails = new NearDetails({ budget, bindGroup, releaseGroup }); root.add(nearDetails.group);
           root.add(streamer.group); fitView(); if (view) setView(view);
-          statistics.reset(); renderer.renderLists.dispose(); renderFailed = false;
+          statistics.reset(); gpuTimer.reset(); renderer.renderLists.dispose(); renderFailed = false;
         } finally { resume(); }
       });
       return controllerApi;
@@ -151,7 +152,9 @@ export async function createCityViewer(options) {
       const main = streamer?.stats(), multiplier = streamer?.passMultiplier || 5;
       const mainResident = (streamer?.estimatedBytes() || 0) - (streamer?.extraResidentBytes || 0);
       nearDetails?.update(streamer?.current.values() || [], camera, time, budget.visibleTriangles - (main?.visibleTriangles || 0) * multiplier, multiplier, { residentBytes: budget.residentBytes - mainResident, drawCalls: budget.drawCalls - (main?.sceneDrawCalls || 0) * multiplier - 3 });
-      renderer.info.reset(); pipeline.render(); streamer?.refreshResources(); nearDetails?.refreshResources();
+      renderer.info.reset(); gpuTimer.begin(time);
+      try { pipeline.render(); } finally { gpuTimer.end(); }
+      streamer?.refreshResources(); nearDetails?.refreshResources();
       if (streamer) {
         const near = nearDetails?.stats(); streamer.extraResidentBytes = near?.geometryArrayBytes || 0; streamer.extraTriangles = near?.triangles || 0; streamer.extraCalls = near?.drawCalls || 0; streamer.extraDetails = near?.nearDetails || 0;
         streamer.counters.peakEstimatedResidentBytes = Math.max(streamer.counters.peakEstimatedResidentBytes, streamer.estimatedBytes());
@@ -182,8 +185,8 @@ export async function createCityViewer(options) {
   const controllerApi = {
     load, resize, setView, getView,
     setStyle(input) { return queueOperation(() => applyStyle(input)); },
-    getStats({ raw = false } = {}) { return { schemaVersion: 1, manifestUrl: activeUrl, quality: options.quality || 'balanced', budget: { ...budget }, viewport: { width, height, pixelRatio: renderer.getPixelRatio(), devicePixelRatio: globalThis.devicePixelRatio || 1 }, runtime: streamer?.stats() || null, nearAttachments: nearDetails?.stats() || null, rendering: statistics.snapshot(raw), firstRenderedMs, firstRenderedAtMs, allLoadedMs, loadRequestedAtMs: sceneStarted, diagnostics: diagnostics.map(d => ({ ...d })), disposed, paused: paused || internalPauses > 0, userPaused: paused, lodMode }; },
-    resetStats() { statistics.reset(); },
+    getStats({ raw = false } = {}) { return { schemaVersion: 1, manifestUrl: activeUrl, quality: options.quality || 'balanced', budget: { ...budget }, viewport: { width, height, pixelRatio: renderer.getPixelRatio(), devicePixelRatio: globalThis.devicePixelRatio || 1 }, runtime: streamer?.stats() || null, nearAttachments: nearDetails?.stats() || null, rendering: { ...statistics.snapshot(raw), gpuTime: gpuTimer.snapshot({ raw }) }, firstRenderedMs, firstRenderedAtMs, allLoadedMs, loadRequestedAtMs: sceneStarted, diagnostics: diagnostics.map(d => ({ ...d })), disposed, paused: paused || internalPauses > 0, userPaused: paused, lodMode }; },
+    resetStats() { statistics.reset(); gpuTimer.reset(); },
     setLodMode(mode) { if (!['auto', 'full', 'far'].includes(mode)) throw new TypeError('LOD mode must be auto/full/far.'); lodMode = mode; invalidateSchedule(); },
     pause(value = true) { paused = !!value; },
     async whenIdle({ timeoutMs = 30000 } = {}) {
@@ -206,7 +209,7 @@ export async function createCityViewer(options) {
       renderer.domElement.removeEventListener('pointerdown', pointerDown); renderer.domElement.removeEventListener('pointerup', pointerUp); controls.removeEventListener('change', invalidateSchedule); controls.dispose();
       disposal = (async () => {
         await sceneOperations.catch(() => {}); nearDetails?.dispose(); await streamer?.dispose(); pipeline?.dispose();
-        sun.shadow.dispose(); scene.clear(); renderer.renderLists.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); statistics.reset();
+        gpuTimer.dispose(); sun.shadow.dispose(); scene.clear(); renderer.renderLists.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); statistics.reset();
       })();
       return disposal;
     },

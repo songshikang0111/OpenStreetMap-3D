@@ -16,6 +16,7 @@ test('integrated compiler uses official registry once and records grouped rule p
   assert.equal(new Set(cctv.map(feature=>feature.atomicGroupId)).size,1);assert.ok(cctv.every(feature=>feature.provenance.recipeId==='cctv-headquarters'));
   for(const descriptor of result.manifest.chunks.flatMap(chunk=>chunk.lods)){
     const group=await decodeChunk(result.assets[descriptor.uri],descriptor),binding=bindSceneStyle(group,{style:'comic'});binding.dispose();
+    for(const wall of group.userData.city?.nearDetails?.facadeWalls||[])assert.equal(result.manifest.featureIndex[wall.featureId].provenance.recipeId,undefined,'claimed landmarks must not retain generic near facade frames');
     group.traverse(mesh=>{mesh.geometry?.dispose();for(const material of Array.isArray(mesh.material)?mesh.material:[mesh.material])material?.dispose();});
   }
 });

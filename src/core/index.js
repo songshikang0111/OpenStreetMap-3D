@@ -224,7 +224,7 @@ export async function compileScene(raw, inputConfig, options = {}) {
         group.userData={city:{schemaVersion:1,chunkId:id,lod:level.id,origin:config.origin,coordinateSystem:'x-east-y-up-z-south-meters',featureIndexVersion:1}};
         if(level.level===2 && city.runtimeDetails){
           group.userData.city.nearDetails={schemaVersion:1,
-            facadeWalls:city.runtimeDetails.facadeWalls.filter(w=>owners.get(w.key.slice(0,w.key.lastIndexOf(':')))===id).map(w=>({...w,featureId:w.key.slice(0,w.key.lastIndexOf(':'))})),
+            facadeWalls:city.runtimeDetails.facadeWalls.filter(w=>{const featureId=w.key.slice(0,w.key.lastIndexOf(':'));return owners.get(featureId)===id&&!featureIndex[featureId]?.provenance.recipeId;}).map(w=>({...w,featureId:w.key.slice(0,w.key.lastIndexOf(':'))})),
             trees:city.runtimeDetails.trees.filter(t=>owners.get(`tree:${t.key}`)===id).map(({key,x,z,h,seed,rotation,variation,shape})=>({key,x,z,h,seed,rotation,variation,shape,featureId:`tree:${key}`}))};
         }
         const chunk=chunkMap.get(id),bounds=boundsOf(group),stats=sceneStats(group),payload=encodeChunk(group),hash=await sha256(payload),uri=`chunks/${id}.${level.id}.${hash.slice(0,16)}.cink`;
