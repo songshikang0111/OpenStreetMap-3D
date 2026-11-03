@@ -314,7 +314,7 @@ export class InkRenderer {
     this.clayMaterial=new THREE.MeshStandardMaterial({color:'#e5e5df',roughness:1});
     this.clayMaterial.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','');};
     this.clayMaterial.customProgramCacheKey=()=> 'neutral-clay-no-instance-color-v1';
-    this._classification=new WeakMap();this.prepareScene();
+    this._classification=new WeakMap();this._classificationClones=new Map();this._disposed=false;this.prepareScene();
   }
 
   prepareScene(){
@@ -322,7 +322,16 @@ export class InkRenderer {
       if(!object.isMesh||!object.geometry?.attributes.position)return;
       const kind=inferredClass(object)+(object.userData.generatedFacade ? .25 : 0);
       if(this._classification.get(object)===kind)return;
-      if(object.geometry.userData.inkClass!==undefined && object.geometry.userData.inkClass!==kind)object.geometry=object.geometry.clone();
+      if(object.geometry.userData.inkClass!==undefined && object.geometry.userData.inkClass!==kind){
+        const original=object.geometry,clone=original.clone();
+        // BufferGeometry.copy shares userData. Isolate classification metadata;
+        // otherwise a clone changes its source and every later style switch clones again.
+        clone.userData=JSON.parse(JSON.stringify(original.userData));
+        const prior=this._classificationClones.get(object);
+        if(prior)prior.clone.dispose();
+        this._classificationClones.set(object,{original:prior?.original||original,clone});
+        object.geometry=clone;
+      }
       const geometry=object.geometry,count=geometry.attributes.position.count;
       geometry.userData.inkClass=kind;
       geometry.setAttribute('inkClass',new THREE.Float32BufferAttribute(new Float32Array(count).fill(kind),1));
@@ -369,6 +378,9 @@ export class InkRenderer {
   }
 
   dispose(){
+    if(this._disposed)return;this._disposed=true;
+    for(const [object,{original,clone}] of this._classificationClones){if(object.geometry===clone)object.geometry=original;clone.dispose();}
+    this._classificationClones.clear();
     for(const target of [this.color,this.light,this.normal,this.ids,this.ao,this.composite])target.dispose();
     for(const m of [this.normalMaterial,this.idMaterial,this.material,this.aoMaterial,this.clayMaterial,this.lightMaterial,this.resolveMaterial])m.dispose();
     this.screenGeometry.dispose();

@@ -5,7 +5,7 @@ function cap(writer,ring,y,color,id,up=true){
   const c=ring.reduce((a,p)=>[a[0]+p[0]/ring.length,a[1]+p[1]/ring.length],[0,0]);
   for(let i=0;i<ring.length;i++)writer.triangle([c[0],y,c[1]],[ring[i][0],y,ring[i][1]],[ring[(i+1)%ring.length][0],y,ring[(i+1)%ring.length][1]],[0,up?1:-1,0],color,id);
 }
-function roundedRing(building,scale){
+export function roundedRing(building,scale){
   const xs=building.outer.map(p=>p[0]),zs=building.outer.map(p=>p[1]),cx=(Math.min(...xs)+Math.max(...xs))/2,cz=(Math.min(...zs)+Math.max(...zs))/2;
   const x=(Math.max(...xs)-Math.min(...xs))*.5*scale,z=(Math.max(...zs)-Math.min(...zs))*.5*scale,r=Math.min(x,z)*.26,points=[];
   // Counter-clockwise in map coordinates so exterior walls face outward.
@@ -17,17 +17,21 @@ function roundedRing(building,scale){
   return points;
 }
 
-export function buildChinaZun(writer,b,id,addBeam){
+export function buildChinaZun(writer,b,id,addBeam,parameters={}){
   const oldStyle=writer.style;writer.style=6;
-  const steps=44,levels=[];for(let i=0;i<=steps;i++)levels.push(roundedRing(b,chinaZunScale(i/steps)));
+  const steps=parameters.steps??44;
+  if(!Number.isInteger(steps)||steps<4||steps>128)throw new RangeError('China Zun steps must be 4..128');
+  const ribStride=parameters.ribStride??2,ribWidth=parameters.ribWidth??.48,crownInset=parameters.crownInset??.88;
+  if(!Number.isInteger(ribStride)||ribStride<1||ribStride>32||!Number.isFinite(ribWidth)||ribWidth<=0||ribWidth>3||!Number.isFinite(crownInset)||crownInset<=.5||crownInset>=1)throw new RangeError('Invalid China Zun rib/crown parameters');
+  const levels=[];for(let i=0;i<=steps;i++)levels.push(roundedRing(b,chinaZunScale(i/steps)));
   for(let i=0;i<steps;i++)skin(writer,levels[i],levels[i+1],.45+b.height*i/steps,.45+b.height*(i+1)/steps,'#a8bcc6',id,4.8,levels[0]);
   // Continuous pale ribs follow the taper instead of becoming rectangular tower seams.
-  for(let side=0;side<levels[0].length;side+=2)for(let i=0;i<steps;i++){
+  for(let side=0;side<levels[0].length;side+=ribStride)for(let i=0;i<steps;i++){
     const a=levels[i][side],c=levels[i+1][side];
-    addBeam(writer,[a[0],.45+b.height*i/steps,a[1]],[c[0],.45+b.height*(i+1)/steps,c[1]],.48,'#cddade',id);
+    addBeam(writer,[a[0],.45+b.height*i/steps,a[1]],[c[0],.45+b.height*(i+1)/steps,c[1]],ribWidth,'#cddade',id);
   }
   writer.style=0;
-  const crown=levels.at(-1),inner=roundedRing(b,chinaZunScale(1)*.88);
+  const crown=levels.at(-1),inner=roundedRing(b,chinaZunScale(1)*crownInset);
   for(let i=0;i<crown.length;i++){
     const j=(i+1)%crown.length;
     writer.quad([[crown[i][0],b.height+.45,crown[i][1]],[crown[j][0],b.height+.45,crown[j][1]],[inner[j][0],b.height+.45,inner[j][1]],[inner[i][0],b.height+.45,inner[i][1]]],[0,1,0],'#dce4e4',id);
@@ -41,11 +45,11 @@ export function buildChinaZun(writer,b,id,addBeam){
 }
 
 const cctvShifts={548126516:[13,23],548126517:[-21,-11]};
-export function cctvOffset(building,y){
-  const shift=cctvShifts[building.osmId];return shift?shift.map(v=>v*Math.max(0,Math.min(1,y/building.height))):[0,0];
+export function cctvOffset(building,y,shifts=cctvShifts){
+  const shift=shifts[building.osmId];return shift?shift.map(v=>v*Math.max(0,Math.min(1,y/building.height))):[0,0];
 }
-export function cctvRing(building,y){
-  if(cctvShifts[building.osmId]){const s=cctvOffset(building,y);return building.outer.map(p=>[p[0]+s[0],p[1]+s[1]]);}
+export function cctvRing(building,y,shifts=cctvShifts){
+  if(shifts[building.osmId]){const s=cctvOffset(building,y,shifts);return building.outer.map(p=>[p[0]+s[0],p[1]+s[1]]);}
   if(building.osmId===547523487){
     // Connect the sloping legs at the cantilever. The six-point OSM L-shaped part
     // supplies the topology; this interpolation supplies the missing sloped form.
@@ -54,9 +58,11 @@ export function cctvRing(building,y){
   return building.outer;
 }
 
-export function buildCctv(writer,b,id,polygon,addBeam){
+export function buildCctv(writer,b,id,polygon,addBeam,parameters={}){
+  const shifts=parameters.legShifts??cctvShifts,beamWidth=parameters.beamWidth??.8;
+  if(!Number.isFinite(beamWidth)||beamWidth<=0||beamWidth>3||Object.values(shifts).some(s=>!Array.isArray(s)||s.length!==2||s.some(n=>!Number.isFinite(n)||Math.abs(n)>100)))throw new RangeError('Invalid CCTV beam/lean parameters');
   writer.style=5;const base=.45+b.minHeight,top=.45+b.height;
-  const a=cctvRing(b,b.minHeight),c=cctvRing(b,b.height);
+  const a=cctvRing(b,b.minHeight,shifts),c=cctvRing(b,b.height,shifts);
   // Use horizontal rings for cap triangulation (including concave upper L).
   skin(writer,a,c,base,top,'#b0bcc1',id,4.2);
   writer.style=0;polygon(writer,{outer:c,holes:[]},top,'#d7dddc',id);
@@ -64,6 +70,6 @@ export function buildCctv(writer,b,id,polygon,addBeam){
     const start=writer.positions.length;polygon(writer,{outer:a,holes:[]},base,'#64767e',id);
     for(let i=start;i<writer.positions.length;i+=9){for(let j=0;j<3;j++)[writer.positions[i+3+j],writer.positions[i+6+j]]=[writer.positions[i+6+j],writer.positions[i+3+j]];for(let j=0;j<3;j++)writer.normals[i+j*3+1]=-1;}
   }
-  for(let i=0;i<a.length;i++)addBeam(writer,[a[i][0],base,a[i][1]],[c[i][0],top,c[i][1]],.8,'#667b86',id);
+  for(let i=0;i<a.length;i++)addBeam(writer,[a[i][0],base,a[i][1]],[c[i][0],top,c[i][1]],beamWidth,'#667b86',id);
   return {kind:'cctv',name:'央视总部 · 参数化形体近似',note:'基于四个 OSM 分部补充倾斜与连接；空中部件保留 min_height=161 m。'};
 }
