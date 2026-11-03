@@ -1,0 +1,1 @@
+原始独立验收脚本与结果。为保持实际审查时的相对 import，复现前将本目录 .mjs 复制到仓库 work/independent-studio-review/，再运行对应脚本；生成的 consumer/workspace 不提交。独立 CUA 工作台流程因工具无法确认当前 Windows 窗口 URL 而 not-run；实现者 Chrome extension/CUA 复验另见 ../studio-final.jpg 和 ../studio-ui-results.json。

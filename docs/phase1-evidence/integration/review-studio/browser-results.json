@@ -1,0 +1,1915 @@
+{
+  "date": "2026-11-03T10:31:34.662Z",
+  "commit": "2c013fb0f8114c2dd1cba67ee1a2cd131e565aed",
+  "node": "v22.11.0",
+  "results": [
+    {
+      "name": "independent installed-package SDK / nested static / outside network denied / four official and tutorial external style",
+      "status": "pass",
+      "details": {
+        "styles": [
+          {
+            "style": "comic",
+            "stats": {
+              "schemaVersion": 1,
+              "manifestUrl": "http://127.0.0.1:55762/work/independent-studio-review/consumer/app/scene/manifest.json",
+              "quality": "balanced",
+              "budget": {
+                "residentBytes": 134217728,
+                "visibleTriangles": 600000,
+                "drawCalls": 1200,
+                "concurrentLoads": 3,
+                "pixelRatio": 1,
+                "nearDetails": 18000,
+                "shadowQuality": 1,
+                "aoQuality": 1,
+                "hysteresis": 0.18,
+                "minResidenceMs": 750,
+                "unloadDelayMs": 1200,
+                "prefetchMargin": 0.15
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 720,
+                "pixelRatio": 1,
+                "devicePixelRatio": 1
+              },
+              "runtime": {
+                "loads": 2,
+                "unloads": 1,
+                "cancelled": 0,
+                "failures": 0,
+                "fetchedBytes": 113176,
+                "swaps": 1,
+                "peakConcurrentLoads": 1,
+                "peakEstimatedResidentBytes": 87760,
+                "geometries": 7,
+                "textures": 0,
+                "materials": 9,
+                "geometryArrayBytes": 79810,
+                "estimatedResidentBytes": 79810,
+                "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+                "currentChunks": 1,
+                "pendingLoads": 0,
+                "visibleChunks": 1,
+                "missingChunks": [],
+                "visibleIds": [
+                  "0_0"
+                ],
+                "levels": {
+                  "2": 1
+                },
+                "visibleTriangles": 428,
+                "sceneDrawCalls": 9,
+                "nearDetails": 1,
+                "settled": true,
+                "firstUsableMs": 13.700000047683716
+              },
+              "nearAttachments": {
+                "geometries": 0,
+                "textures": 0,
+                "materials": 0,
+                "geometryArrayBytes": 0,
+                "triangles": 0,
+                "drawCalls": 0,
+                "nearDetails": 0,
+                "frames": 0,
+                "crownClusters": 0,
+                "branches": 0,
+                "profiles": 0
+              },
+              "rendering": {
+                "frameCount": 26,
+                "windowFrames": 25,
+                "intervalsMs": {
+                  "count": 25,
+                  "p50": 8.300000000000068,
+                  "p95": 133.39999999999998,
+                  "p99": 541.8,
+                  "max": 541.8
+                },
+                "longFrames50ms": 2,
+                "longFrames33ms": 2,
+                "drawCalls": {
+                  "count": 25,
+                  "p50": 45,
+                  "p95": 45,
+                  "p99": 45,
+                  "max": 45
+                },
+                "triangles": {
+                  "count": 25,
+                  "p50": 2080,
+                  "p95": 2080,
+                  "p99": 2080,
+                  "max": 2080
+                },
+                "last": {
+                  "time": 1379.5,
+                  "intervalMs": 8.400000000000091,
+                  "drawCalls": 45,
+                  "triangles": 2080,
+                  "lines": 0,
+                  "points": 0,
+                  "rendererGeometries": 8,
+                  "rendererTextures": 10,
+                  "rendererPrograms": 20,
+                  "cpuFrameMs": 0.8999999761581421,
+                  "estimatedResidentBytes": 79810,
+                  "chunks": 1
+                },
+                "gpuTime": {
+                  "available": true,
+                  "reason": null,
+                  "measurement": "gpu-elapsed",
+                  "unit": "ms",
+                  "samples": 24,
+                  "p50": 0.305152,
+                  "p95": 60.642304,
+                  "p99": 92.035072,
+                  "max": 92.035072,
+                  "pending": 2,
+                  "active": false,
+                  "maxPending": 8,
+                  "maxSamples": 18000,
+                  "disposed": false,
+                  "lastDisjoint": false,
+                  "unreleased": 2,
+                  "lastError": null,
+                  "created": 28,
+                  "deleted": 26,
+                  "collected": 24,
+                  "dropped": 2,
+                  "budgetDropped": 0,
+                  "disjoint": 0,
+                  "disjointDropped": 0,
+                  "invalidResults": 0,
+                  "occupiedDropped": 0,
+                  "skippedActive": 0,
+                  "evictedSamples": 0,
+                  "errors": 0,
+                  "deleteErrors": 0,
+                  "resetDropped": 2,
+                  "disposeDropped": 0,
+                  "errorDropped": 0,
+                  "resets": 1
+                }
+              },
+              "firstRenderedMs": 559.7999999523163,
+              "firstRenderedAtMs": 646.7999999523163,
+              "allLoadedMs": 587.1999999284744,
+              "loadRequestedAtMs": 87,
+              "diagnostics": [],
+              "disposed": false,
+              "paused": false,
+              "userPaused": false,
+              "lodMode": "auto"
+            },
+            "screenshot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\screenshots\\external-comic.png"
+          },
+          {
+            "style": "line",
+            "stats": {
+              "schemaVersion": 1,
+              "manifestUrl": "http://127.0.0.1:55762/work/independent-studio-review/consumer/app/scene/manifest.json",
+              "quality": "balanced",
+              "budget": {
+                "residentBytes": 134217728,
+                "visibleTriangles": 600000,
+                "drawCalls": 1200,
+                "concurrentLoads": 3,
+                "pixelRatio": 1,
+                "nearDetails": 18000,
+                "shadowQuality": 1,
+                "aoQuality": 1,
+                "hysteresis": 0.18,
+                "minResidenceMs": 750,
+                "unloadDelayMs": 1200,
+                "prefetchMargin": 0.15
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 720,
+                "pixelRatio": 1,
+                "devicePixelRatio": 1
+              },
+              "runtime": {
+                "loads": 2,
+                "unloads": 1,
+                "cancelled": 0,
+                "failures": 0,
+                "fetchedBytes": 113176,
+                "swaps": 1,
+                "peakConcurrentLoads": 1,
+                "peakEstimatedResidentBytes": 87760,
+                "geometries": 7,
+                "textures": 0,
+                "materials": 9,
+                "geometryArrayBytes": 79810,
+                "estimatedResidentBytes": 79810,
+                "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+                "currentChunks": 1,
+                "pendingLoads": 0,
+                "visibleChunks": 1,
+                "missingChunks": [],
+                "visibleIds": [
+                  "0_0"
+                ],
+                "levels": {
+                  "2": 1
+                },
+                "visibleTriangles": 428,
+                "sceneDrawCalls": 9,
+                "nearDetails": 1,
+                "settled": true,
+                "firstUsableMs": 13.700000047683716
+              },
+              "nearAttachments": {
+                "geometries": 0,
+                "textures": 0,
+                "materials": 0,
+                "geometryArrayBytes": 0,
+                "triangles": 0,
+                "drawCalls": 0,
+                "nearDetails": 0,
+                "frames": 0,
+                "crownClusters": 0,
+                "branches": 0,
+                "profiles": 0
+              },
+              "rendering": {
+                "frameCount": 50,
+                "windowFrames": 49,
+                "intervalsMs": {
+                  "count": 49,
+                  "p50": 8.299999999999955,
+                  "p95": 33.30000000000018,
+                  "p99": 541.8,
+                  "max": 541.8
+                },
+                "longFrames50ms": 2,
+                "longFrames33ms": 3,
+                "drawCalls": {
+                  "count": 49,
+                  "p50": 36,
+                  "p95": 45,
+                  "p99": 45,
+                  "max": 45
+                },
+                "triangles": {
+                  "count": 49,
+                  "p50": 1652,
+                  "p95": 2080,
+                  "p99": 2080,
+                  "max": 2080
+                },
+                "last": {
+                  "time": 1604.4,
+                  "intervalMs": 8.200000000000045,
+                  "drawCalls": 36,
+                  "triangles": 1652,
+                  "lines": 0,
+                  "points": 0,
+                  "rendererGeometries": 8,
+                  "rendererTextures": 9,
+                  "rendererPrograms": 17,
+                  "cpuFrameMs": 1.399999976158142,
+                  "estimatedResidentBytes": 79810,
+                  "chunks": 1
+                },
+                "gpuTime": {
+                  "available": true,
+                  "reason": null,
+                  "measurement": "gpu-elapsed",
+                  "unit": "ms",
+                  "samples": 48,
+                  "p50": 0.305152,
+                  "p95": 8.055808,
+                  "p99": 92.035072,
+                  "max": 92.035072,
+                  "pending": 2,
+                  "active": false,
+                  "maxPending": 8,
+                  "maxSamples": 18000,
+                  "disposed": false,
+                  "lastDisjoint": false,
+                  "unreleased": 2,
+                  "lastError": null,
+                  "created": 52,
+                  "deleted": 50,
+                  "collected": 48,
+                  "dropped": 2,
+                  "budgetDropped": 0,
+                  "disjoint": 0,
+                  "disjointDropped": 0,
+                  "invalidResults": 0,
+                  "occupiedDropped": 0,
+                  "skippedActive": 0,
+                  "evictedSamples": 0,
+                  "errors": 0,
+                  "deleteErrors": 0,
+                  "resetDropped": 2,
+                  "disposeDropped": 0,
+                  "errorDropped": 0,
+                  "resets": 1
+                }
+              },
+              "firstRenderedMs": 559.7999999523163,
+              "firstRenderedAtMs": 646.7999999523163,
+              "allLoadedMs": 587.1999999284744,
+              "loadRequestedAtMs": 87,
+              "diagnostics": [],
+              "disposed": false,
+              "paused": false,
+              "userPaused": false,
+              "lodMode": "auto"
+            },
+            "screenshot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\screenshots\\external-line.png"
+          },
+          {
+            "style": "color",
+            "stats": {
+              "schemaVersion": 1,
+              "manifestUrl": "http://127.0.0.1:55762/work/independent-studio-review/consumer/app/scene/manifest.json",
+              "quality": "balanced",
+              "budget": {
+                "residentBytes": 134217728,
+                "visibleTriangles": 600000,
+                "drawCalls": 1200,
+                "concurrentLoads": 3,
+                "pixelRatio": 1,
+                "nearDetails": 18000,
+                "shadowQuality": 1,
+                "aoQuality": 1,
+                "hysteresis": 0.18,
+                "minResidenceMs": 750,
+                "unloadDelayMs": 1200,
+                "prefetchMargin": 0.15
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 720,
+                "pixelRatio": 1,
+                "devicePixelRatio": 1
+              },
+              "runtime": {
+                "loads": 2,
+                "unloads": 1,
+                "cancelled": 0,
+                "failures": 0,
+                "fetchedBytes": 113176,
+                "swaps": 1,
+                "peakConcurrentLoads": 1,
+                "peakEstimatedResidentBytes": 87760,
+                "geometries": 7,
+                "textures": 0,
+                "materials": 9,
+                "geometryArrayBytes": 79810,
+                "estimatedResidentBytes": 79810,
+                "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+                "currentChunks": 1,
+                "pendingLoads": 0,
+                "visibleChunks": 1,
+                "missingChunks": [],
+                "visibleIds": [
+                  "0_0"
+                ],
+                "levels": {
+                  "2": 1
+                },
+                "visibleTriangles": 428,
+                "sceneDrawCalls": 9,
+                "nearDetails": 1,
+                "settled": true,
+                "firstUsableMs": 13.700000047683716
+              },
+              "nearAttachments": {
+                "geometries": 0,
+                "textures": 0,
+                "materials": 0,
+                "geometryArrayBytes": 0,
+                "triangles": 0,
+                "drawCalls": 0,
+                "nearDetails": 0,
+                "frames": 0,
+                "crownClusters": 0,
+                "branches": 0,
+                "profiles": 0
+              },
+              "rendering": {
+                "frameCount": 74,
+                "windowFrames": 73,
+                "intervalsMs": {
+                  "count": 73,
+                  "p50": 8.299999999999955,
+                  "p95": 33.30000000000018,
+                  "p99": 541.8,
+                  "max": 541.8
+                },
+                "longFrames50ms": 2,
+                "longFrames33ms": 4,
+                "drawCalls": {
+                  "count": 73,
+                  "p50": 36,
+                  "p95": 45,
+                  "p99": 45,
+                  "max": 45
+                },
+                "triangles": {
+                  "count": 73,
+                  "p50": 1652,
+                  "p95": 2080,
+                  "p99": 2080,
+                  "max": 2080
+                },
+                "last": {
+                  "time": 1829.5,
+                  "intervalMs": 8.299999999999955,
+                  "drawCalls": 36,
+                  "triangles": 1652,
+                  "lines": 0,
+                  "points": 0,
+                  "rendererGeometries": 8,
+                  "rendererTextures": 9,
+                  "rendererPrograms": 17,
+                  "cpuFrameMs": 0.5999999046325684,
+                  "estimatedResidentBytes": 79810,
+                  "chunks": 1
+                },
+                "gpuTime": {
+                  "available": true,
+                  "reason": null,
+                  "measurement": "gpu-elapsed",
+                  "unit": "ms",
+                  "samples": 72,
+                  "p50": 0.274432,
+                  "p95": 8.185856,
+                  "p99": 92.035072,
+                  "max": 92.035072,
+                  "pending": 2,
+                  "active": false,
+                  "maxPending": 8,
+                  "maxSamples": 18000,
+                  "disposed": false,
+                  "lastDisjoint": false,
+                  "unreleased": 2,
+                  "lastError": null,
+                  "created": 76,
+                  "deleted": 74,
+                  "collected": 72,
+                  "dropped": 2,
+                  "budgetDropped": 0,
+                  "disjoint": 0,
+                  "disjointDropped": 0,
+                  "invalidResults": 0,
+                  "occupiedDropped": 0,
+                  "skippedActive": 0,
+                  "evictedSamples": 0,
+                  "errors": 0,
+                  "deleteErrors": 0,
+                  "resetDropped": 2,
+                  "disposeDropped": 0,
+                  "errorDropped": 0,
+                  "resets": 1
+                }
+              },
+              "firstRenderedMs": 559.7999999523163,
+              "firstRenderedAtMs": 646.7999999523163,
+              "allLoadedMs": 587.1999999284744,
+              "loadRequestedAtMs": 87,
+              "diagnostics": [],
+              "disposed": false,
+              "paused": false,
+              "userPaused": false,
+              "lodMode": "auto"
+            },
+            "screenshot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\screenshots\\external-color.png"
+          },
+          {
+            "style": "white",
+            "stats": {
+              "schemaVersion": 1,
+              "manifestUrl": "http://127.0.0.1:55762/work/independent-studio-review/consumer/app/scene/manifest.json",
+              "quality": "balanced",
+              "budget": {
+                "residentBytes": 134217728,
+                "visibleTriangles": 600000,
+                "drawCalls": 1200,
+                "concurrentLoads": 3,
+                "pixelRatio": 1,
+                "nearDetails": 18000,
+                "shadowQuality": 1,
+                "aoQuality": 1,
+                "hysteresis": 0.18,
+                "minResidenceMs": 750,
+                "unloadDelayMs": 1200,
+                "prefetchMargin": 0.15
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 720,
+                "pixelRatio": 1,
+                "devicePixelRatio": 1
+              },
+              "runtime": {
+                "loads": 2,
+                "unloads": 1,
+                "cancelled": 0,
+                "failures": 0,
+                "fetchedBytes": 113176,
+                "swaps": 1,
+                "peakConcurrentLoads": 1,
+                "peakEstimatedResidentBytes": 87760,
+                "geometries": 7,
+                "textures": 0,
+                "materials": 9,
+                "geometryArrayBytes": 79810,
+                "estimatedResidentBytes": 79810,
+                "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+                "currentChunks": 1,
+                "pendingLoads": 0,
+                "visibleChunks": 1,
+                "missingChunks": [],
+                "visibleIds": [
+                  "0_0"
+                ],
+                "levels": {
+                  "2": 1
+                },
+                "visibleTriangles": 428,
+                "sceneDrawCalls": 9,
+                "nearDetails": 1,
+                "settled": true,
+                "firstUsableMs": 13.700000047683716
+              },
+              "nearAttachments": {
+                "geometries": 0,
+                "textures": 0,
+                "materials": 0,
+                "geometryArrayBytes": 0,
+                "triangles": 0,
+                "drawCalls": 0,
+                "nearDetails": 0,
+                "frames": 0,
+                "crownClusters": 0,
+                "branches": 0,
+                "profiles": 0
+              },
+              "rendering": {
+                "frameCount": 97,
+                "windowFrames": 96,
+                "intervalsMs": {
+                  "count": 96,
+                  "p50": 8.299999999999955,
+                  "p95": 33.30000000000018,
+                  "p99": 541.8,
+                  "max": 541.8
+                },
+                "longFrames50ms": 3,
+                "longFrames33ms": 5,
+                "drawCalls": {
+                  "count": 96,
+                  "p50": 36,
+                  "p95": 45,
+                  "p99": 45,
+                  "max": 45
+                },
+                "triangles": {
+                  "count": 96,
+                  "p50": 1652,
+                  "p95": 2080,
+                  "p99": 2080,
+                  "max": 2080
+                },
+                "last": {
+                  "time": 2112.8,
+                  "intervalMs": 8.300000000000182,
+                  "drawCalls": 36,
+                  "triangles": 1652,
+                  "lines": 0,
+                  "points": 0,
+                  "rendererGeometries": 8,
+                  "rendererTextures": 9,
+                  "rendererPrograms": 15,
+                  "cpuFrameMs": 0.3999999761581421,
+                  "estimatedResidentBytes": 79810,
+                  "chunks": 1
+                },
+                "gpuTime": {
+                  "available": true,
+                  "reason": null,
+                  "measurement": "gpu-elapsed",
+                  "unit": "ms",
+                  "samples": 95,
+                  "p50": 0.30208,
+                  "p95": 8.244224,
+                  "p99": 92.035072,
+                  "max": 92.035072,
+                  "pending": 2,
+                  "active": false,
+                  "maxPending": 8,
+                  "maxSamples": 18000,
+                  "disposed": false,
+                  "lastDisjoint": false,
+                  "unreleased": 2,
+                  "lastError": null,
+                  "created": 99,
+                  "deleted": 97,
+                  "collected": 95,
+                  "dropped": 2,
+                  "budgetDropped": 0,
+                  "disjoint": 0,
+                  "disjointDropped": 0,
+                  "invalidResults": 0,
+                  "occupiedDropped": 0,
+                  "skippedActive": 0,
+                  "evictedSamples": 0,
+                  "errors": 0,
+                  "deleteErrors": 0,
+                  "resetDropped": 2,
+                  "disposeDropped": 0,
+                  "errorDropped": 0,
+                  "resets": 1
+                }
+              },
+              "firstRenderedMs": 559.7999999523163,
+              "firstRenderedAtMs": 646.7999999523163,
+              "allLoadedMs": 587.1999999284744,
+              "loadRequestedAtMs": 87,
+              "diagnostics": [],
+              "disposed": false,
+              "paused": false,
+              "userPaused": false,
+              "lodMode": "auto"
+            },
+            "screenshot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\screenshots\\external-white.png"
+          },
+          {
+            "style": "project-sepia",
+            "stats": {
+              "schemaVersion": 1,
+              "manifestUrl": "http://127.0.0.1:55762/work/independent-studio-review/consumer/app/scene/manifest.json",
+              "quality": "balanced",
+              "budget": {
+                "residentBytes": 134217728,
+                "visibleTriangles": 600000,
+                "drawCalls": 1200,
+                "concurrentLoads": 3,
+                "pixelRatio": 1,
+                "nearDetails": 18000,
+                "shadowQuality": 1,
+                "aoQuality": 1,
+                "hysteresis": 0.18,
+                "minResidenceMs": 750,
+                "unloadDelayMs": 1200,
+                "prefetchMargin": 0.15
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 720,
+                "pixelRatio": 1,
+                "devicePixelRatio": 1
+              },
+              "runtime": {
+                "loads": 2,
+                "unloads": 1,
+                "cancelled": 0,
+                "failures": 0,
+                "fetchedBytes": 113176,
+                "swaps": 1,
+                "peakConcurrentLoads": 1,
+                "peakEstimatedResidentBytes": 87760,
+                "geometries": 7,
+                "textures": 0,
+                "materials": 9,
+                "geometryArrayBytes": 79810,
+                "estimatedResidentBytes": 79810,
+                "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+                "currentChunks": 1,
+                "pendingLoads": 0,
+                "visibleChunks": 1,
+                "missingChunks": [],
+                "visibleIds": [
+                  "0_0"
+                ],
+                "levels": {
+                  "2": 1
+                },
+                "visibleTriangles": 428,
+                "sceneDrawCalls": 9,
+                "nearDetails": 1,
+                "settled": true,
+                "firstUsableMs": 13.700000047683716
+              },
+              "nearAttachments": {
+                "geometries": 0,
+                "textures": 0,
+                "materials": 0,
+                "geometryArrayBytes": 0,
+                "triangles": 0,
+                "drawCalls": 0,
+                "nearDetails": 0,
+                "frames": 0,
+                "crownClusters": 0,
+                "branches": 0,
+                "profiles": 0
+              },
+              "rendering": {
+                "frameCount": 121,
+                "windowFrames": 120,
+                "intervalsMs": {
+                  "count": 120,
+                  "p50": 8.300000000000182,
+                  "p95": 16.700000000000045,
+                  "p99": 133.39999999999998,
+                  "max": 541.8
+                },
+                "longFrames50ms": 3,
+                "longFrames33ms": 5,
+                "drawCalls": {
+                  "count": 120,
+                  "p50": 36,
+                  "p95": 45,
+                  "p99": 45,
+                  "max": 45
+                },
+                "triangles": {
+                  "count": 120,
+                  "p50": 1652,
+                  "p95": 2080,
+                  "p99": 2080,
+                  "max": 2080
+                },
+                "last": {
+                  "time": 2329.5,
+                  "intervalMs": 8.400000000000091,
+                  "drawCalls": 36,
+                  "triangles": 1652,
+                  "lines": 0,
+                  "points": 0,
+                  "rendererGeometries": 8,
+                  "rendererTextures": 9,
+                  "rendererPrograms": 15,
+                  "cpuFrameMs": 0.30000007152557373,
+                  "estimatedResidentBytes": 79810,
+                  "chunks": 1
+                },
+                "gpuTime": {
+                  "available": true,
+                  "reason": null,
+                  "measurement": "gpu-elapsed",
+                  "unit": "ms",
+                  "samples": 119,
+                  "p50": 0.305152,
+                  "p95": 8.34048,
+                  "p99": 60.642304,
+                  "max": 92.035072,
+                  "pending": 2,
+                  "active": false,
+                  "maxPending": 8,
+                  "maxSamples": 18000,
+                  "disposed": false,
+                  "lastDisjoint": false,
+                  "unreleased": 2,
+                  "lastError": null,
+                  "created": 123,
+                  "deleted": 121,
+                  "collected": 119,
+                  "dropped": 2,
+                  "budgetDropped": 0,
+                  "disjoint": 0,
+                  "disjointDropped": 0,
+                  "invalidResults": 0,
+                  "occupiedDropped": 0,
+                  "skippedActive": 0,
+                  "evictedSamples": 0,
+                  "errors": 0,
+                  "deleteErrors": 0,
+                  "resetDropped": 2,
+                  "disposeDropped": 0,
+                  "errorDropped": 0,
+                  "resets": 1
+                }
+              },
+              "firstRenderedMs": 559.7999999523163,
+              "firstRenderedAtMs": 646.7999999523163,
+              "allLoadedMs": 587.1999999284744,
+              "loadRequestedAtMs": 87,
+              "diagnostics": [],
+              "disposed": false,
+              "paused": false,
+              "userPaused": false,
+              "lodMode": "auto"
+            },
+            "screenshot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\screenshots\\external-project-sepia.png"
+          }
+        ],
+        "cycles": [
+          {
+            "geometries": 8,
+            "textures": 10,
+            "bytes": 79810
+          },
+          {
+            "geometries": 8,
+            "textures": 10,
+            "bytes": 79810
+          },
+          {
+            "geometries": 8,
+            "textures": 10,
+            "bytes": 79810
+          },
+          {
+            "geometries": 8,
+            "textures": 10,
+            "bytes": 79810
+          },
+          {
+            "geometries": 8,
+            "textures": 10,
+            "bytes": 79810
+          }
+        ],
+        "network": {
+          "blocked": [],
+          "resources": [
+            "http://127.0.0.1:55762/work/independent-studio-review/consumer/app/assets/index-6QQI0ruX.js",
+            "http://127.0.0.1:55762/work/independent-studio-review/consumer/app/scene/manifest.json",
+            "http://127.0.0.1:55762/favicon.ico",
+            "http://127.0.0.1:55762/work/independent-studio-review/consumer/app/scene/chunks/0_0.low.be0185e5813c91fb.cink",
+            "http://127.0.0.1:55762/work/independent-studio-review/consumer/app/scene/chunks/0_0.high.20a74b6316aa66fc.cink"
+          ],
+          "origin": "http://127.0.0.1:55762",
+          "diagnostics": []
+        },
+        "png": {
+          "scope": "current-view-loaded-lods",
+          "attribution": "© OpenStreetMap contributors · https://www.openstreetmap.org/copyright",
+          "loadedChunkIds": [
+            "0_0"
+          ]
+        }
+      }
+    },
+    {
+      "name": "real OSM China Zun / complete GLB from unloaded view / finite output and all manifest chunks",
+      "status": "pass",
+      "details": {
+        "before": {
+          "schemaVersion": 1,
+          "manifestUrl": "http://127.0.0.1:63356/work/independent-studio-review/consumer/real-zun/dist/manifest.json",
+          "quality": "balanced",
+          "budget": {
+            "residentBytes": 536870912,
+            "visibleTriangles": 20000000,
+            "drawCalls": 100000,
+            "concurrentLoads": 3,
+            "pixelRatio": 1,
+            "nearDetails": 18000,
+            "shadowQuality": 1,
+            "aoQuality": 1,
+            "hysteresis": 0.18,
+            "minResidenceMs": 750,
+            "unloadDelayMs": 1200,
+            "prefetchMargin": 0.15
+          },
+          "viewport": {
+            "width": 1280,
+            "height": 720,
+            "pixelRatio": 1,
+            "devicePixelRatio": 1
+          },
+          "runtime": {
+            "loads": 16,
+            "unloads": 16,
+            "cancelled": 0,
+            "failures": 0,
+            "fetchedBytes": 3547660,
+            "swaps": 8,
+            "peakConcurrentLoads": 3,
+            "peakEstimatedResidentBytes": 3606288,
+            "geometries": 0,
+            "textures": 0,
+            "materials": 0,
+            "geometryArrayBytes": 0,
+            "estimatedResidentBytes": 0,
+            "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+            "currentChunks": 0,
+            "pendingLoads": 0,
+            "visibleChunks": 0,
+            "missingChunks": [],
+            "visibleIds": [],
+            "levels": {},
+            "visibleTriangles": 0,
+            "sceneDrawCalls": 0,
+            "nearDetails": 0,
+            "settled": true,
+            "firstUsableMs": 13.199999928474426
+          },
+          "nearAttachments": {
+            "geometries": 0,
+            "textures": 0,
+            "materials": 0,
+            "geometryArrayBytes": 0,
+            "triangles": 0,
+            "drawCalls": 0,
+            "nearDetails": 0,
+            "frames": 0,
+            "crownClusters": 0,
+            "branches": 0,
+            "profiles": 0
+          },
+          "rendering": {
+            "frameCount": 237,
+            "windowFrames": 236,
+            "intervalsMs": {
+              "count": 236,
+              "p50": 8.300000000000182,
+              "p95": 8.400000000000091,
+              "p99": 33.30000000000007,
+              "max": 150
+            },
+            "longFrames50ms": 2,
+            "longFrames33ms": 3,
+            "drawCalls": {
+              "count": 236,
+              "p50": 3,
+              "p95": 38,
+              "p99": 50,
+              "max": 50
+            },
+            "triangles": {
+              "count": 236,
+              "p50": 6,
+              "p95": 57286,
+              "p99": 57382,
+              "max": 57382
+            },
+            "last": {
+              "time": 2778.1,
+              "intervalMs": 8.400000000000091,
+              "drawCalls": 3,
+              "triangles": 6,
+              "lines": 0,
+              "points": 0,
+              "rendererGeometries": 1,
+              "rendererTextures": 10,
+              "rendererPrograms": 7,
+              "cpuFrameMs": 0.2999999523162842,
+              "estimatedResidentBytes": 0,
+              "chunks": 0
+            },
+            "gpuTime": {
+              "available": true,
+              "reason": null,
+              "measurement": "gpu-elapsed",
+              "unit": "ms",
+              "samples": 235,
+              "p50": 0.293888,
+              "p95": 8.27904,
+              "p99": 8.462336,
+              "max": 8.469504,
+              "pending": 2,
+              "active": false,
+              "maxPending": 8,
+              "maxSamples": 18000,
+              "disposed": false,
+              "lastDisjoint": false,
+              "unreleased": 2,
+              "lastError": null,
+              "created": 239,
+              "deleted": 237,
+              "collected": 235,
+              "dropped": 2,
+              "budgetDropped": 0,
+              "disjoint": 0,
+              "disjointDropped": 0,
+              "invalidResults": 0,
+              "occupiedDropped": 0,
+              "skippedActive": 0,
+              "evictedSamples": 0,
+              "errors": 0,
+              "deleteErrors": 0,
+              "resetDropped": 2,
+              "disposeDropped": 0,
+              "errorDropped": 0,
+              "resets": 1
+            }
+          },
+          "firstRenderedMs": 563,
+          "firstRenderedAtMs": 666.8999999761581,
+          "allLoadedMs": 841.8000000715256,
+          "loadRequestedAtMs": 103.89999997615814,
+          "diagnostics": [],
+          "disposed": false,
+          "paused": false,
+          "userPaused": false,
+          "lodMode": "full"
+        },
+        "exact": {
+          "requested": {
+            "position": [
+              50,
+              12,
+              100
+            ],
+            "target": [
+              0,
+              18,
+              0
+            ],
+            "fov": 55
+          },
+          "actual": {
+            "position": [
+              50,
+              11.999999999999991,
+              100
+            ],
+            "target": [
+              0,
+              18,
+              0
+            ],
+            "fov": 55,
+            "near": 0.25
+          }
+        },
+        "exported": {
+          "scope": "complete",
+          "chunkIds": [
+            "0_0",
+            "1_0",
+            "2_0",
+            "0_1",
+            "1_1",
+            "2_1",
+            "0_2",
+            "1_2",
+            "2_2"
+          ],
+          "limitations": "Standard colors and geometry only. Procedural windows, glass shaders, ink and postprocessing are not portable GLB effects. Camera-dependent near attachments are included only with scope loaded; complete exports every persisted LOD chunk.",
+          "attribution": "© OpenStreetMap contributors · https://www.openstreetmap.org/copyright"
+        },
+        "bytes": 3660820,
+        "meshCount": 10,
+        "refused": {
+          "code": "EXPORT_RESOURCE_BUDGET",
+          "message": "Complete GLB needs an estimated 3467736 bytes; export budget is 1. No partial file was produced."
+        }
+      }
+    },
+    {
+      "name": "old demo and same-input four-chunk SDK / Beijing key viewpoints",
+      "status": "pass",
+      "details": {
+        "input": {
+          "input": "Same complete Beijing source + street-details + landscape-details + landscape-profile as old demo",
+          "seed": 1,
+          "origin": [
+            39.909499999999994,
+            116.4605
+          ],
+          "buildings": 477,
+          "roads": 785,
+          "views": {
+            "overview": {
+              "position": [
+                1533.987748304107,
+                1415.9886907422526,
+                1669.9508657174918
+              ],
+              "target": [
+                0,
+                60,
+                0
+              ],
+              "fov": 42
+            },
+            "citic": {
+              "position": [
+                367.39633995226916,
+                270,
+                437.8154800630898
+              ],
+              "target": [
+                -22.603660047730862,
+                265,
+                -222.1845199369102
+              ],
+              "fov": 42
+            },
+            "cctv": {
+              "position": [
+                -563.3260276110079,
+                150,
+                -50.08173748263988
+              ],
+              "target": [
+                -243.32602761100787,
+                130,
+                -450.0817374826399
+              ],
+              "fov": 42
+            },
+            "crossing": {
+              "position": [
+                48.08397576791564,
+                2.1,
+                329.3628392323997
+              ],
+              "target": [
+                46.58397576791564,
+                4,
+                244.36283923239972
+              ],
+              "fov": 65
+            }
+          },
+          "contentHash": "c46fd3fe5607bdc80ccfd28284142cedbac87a11c0d8ba74f1dd70dc7784103b"
+        },
+        "viewport": {
+          "x": 302,
+          "y": 82,
+          "width": 1298,
+          "height": 918,
+          "scale": 1
+        },
+        "oldStats": {
+          "buildings": "477",
+          "roads": "785"
+        },
+        "pairs": [
+          {
+            "name": "overview",
+            "requested": {
+              "position": [
+                1533.987748304107,
+                1415.9886907422526,
+                1669.9508657174918
+              ],
+              "target": [
+                0,
+                60,
+                0
+              ],
+              "fov": 42
+            },
+            "oldReadout": "机位 1534.0, 1416.0, 1670.0 m · FOV 42.0°",
+            "oldScreenshot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\screenshots\\beijing-old-overview.png",
+            "actual": {
+              "position": [
+                1533.9877483041073,
+                1415.9886907422526,
+                1669.950865717492
+              ],
+              "target": [
+                0,
+                60,
+                0
+              ],
+              "fov": 42,
+              "near": 0.25
+            },
+            "stats": {
+              "schemaVersion": 1,
+              "manifestUrl": "http://127.0.0.1:60504/work/independent-studio-review/beijing-visual/dist/manifest.json",
+              "quality": "balanced",
+              "budget": {
+                "residentBytes": 536870912,
+                "visibleTriangles": 20000000,
+                "drawCalls": 100000,
+                "concurrentLoads": 3,
+                "pixelRatio": 1,
+                "nearDetails": 18000,
+                "shadowQuality": 1,
+                "aoQuality": 1,
+                "hysteresis": 0.18,
+                "minResidenceMs": 750,
+                "unloadDelayMs": 1200,
+                "prefetchMargin": 0.15
+              },
+              "viewport": {
+                "width": 1298,
+                "height": 918,
+                "pixelRatio": 1,
+                "devicePixelRatio": 1
+              },
+              "runtime": {
+                "loads": 8,
+                "unloads": 4,
+                "cancelled": 0,
+                "failures": 0,
+                "fetchedBytes": 174241308,
+                "swaps": 4,
+                "peakConcurrentLoads": 3,
+                "peakEstimatedResidentBytes": 168072644,
+                "geometries": 578,
+                "textures": 0,
+                "materials": 1326,
+                "geometryArrayBytes": 108441531,
+                "estimatedResidentBytes": 108441531,
+                "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+                "currentChunks": 4,
+                "pendingLoads": 0,
+                "visibleChunks": 4,
+                "missingChunks": [],
+                "visibleIds": [
+                  "1_0",
+                  "0_1",
+                  "1_1",
+                  "0_0"
+                ],
+                "levels": {
+                  "2": 4
+                },
+                "visibleTriangles": 1604981,
+                "sceneDrawCalls": 1326,
+                "nearDetails": 7883,
+                "settled": true,
+                "firstUsableMs": 54.799999952316284
+              },
+              "nearAttachments": {
+                "geometries": 0,
+                "textures": 0,
+                "materials": 0,
+                "geometryArrayBytes": 0,
+                "triangles": 0,
+                "drawCalls": 0,
+                "nearDetails": 0,
+                "frames": 0,
+                "crownClusters": 0,
+                "branches": 0,
+                "profiles": 0
+              },
+              "rendering": {
+                "frameCount": 73,
+                "windowFrames": 72,
+                "intervalsMs": {
+                  "count": 72,
+                  "p50": 8.399999999999977,
+                  "p95": 175,
+                  "p99": 508.29999999999995,
+                  "max": 508.29999999999995
+                },
+                "longFrames50ms": 5,
+                "longFrames33ms": 6,
+                "drawCalls": {
+                  "count": 72,
+                  "p50": 3860,
+                  "p95": 6250,
+                  "p99": 6250,
+                  "max": 6250
+                },
+                "triangles": {
+                  "count": 72,
+                  "p50": 5177547,
+                  "p95": 7914683,
+                  "p99": 7914683,
+                  "max": 7914683
+                },
+                "last": {
+                  "time": 2681.1,
+                  "intervalMs": 8.400000000000091,
+                  "drawCalls": 6250,
+                  "triangles": 7914683,
+                  "lines": 0,
+                  "points": 0,
+                  "rendererGeometries": 576,
+                  "rendererTextures": 10,
+                  "rendererPrograms": 21,
+                  "cpuFrameMs": 10.099999904632568,
+                  "estimatedResidentBytes": 108441531,
+                  "chunks": 4
+                },
+                "gpuTime": {
+                  "available": true,
+                  "reason": null,
+                  "measurement": "gpu-elapsed",
+                  "unit": "ms",
+                  "samples": 72,
+                  "p50": 6.59968,
+                  "p95": 20.2496,
+                  "p99": 227.87584,
+                  "max": 227.87584,
+                  "pending": 1,
+                  "active": false,
+                  "maxPending": 8,
+                  "maxSamples": 18000,
+                  "disposed": false,
+                  "lastDisjoint": false,
+                  "unreleased": 1,
+                  "lastError": null,
+                  "created": 78,
+                  "deleted": 77,
+                  "collected": 76,
+                  "dropped": 1,
+                  "budgetDropped": 0,
+                  "disjoint": 0,
+                  "disjointDropped": 0,
+                  "invalidResults": 0,
+                  "occupiedDropped": 0,
+                  "skippedActive": 0,
+                  "evictedSamples": 0,
+                  "errors": 0,
+                  "deleteErrors": 0,
+                  "resetDropped": 1,
+                  "disposeDropped": 0,
+                  "errorDropped": 0,
+                  "resets": 1
+                }
+              },
+              "firstRenderedMs": 1032.1999999284744,
+              "firstRenderedAtMs": 1144.5999999046326,
+              "allLoadedMs": 2211.2999999523163,
+              "loadRequestedAtMs": 112.39999997615814,
+              "diagnostics": [],
+              "disposed": false,
+              "paused": false,
+              "userPaused": false,
+              "lodMode": "full"
+            },
+            "sdkScreenshot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\screenshots\\beijing-sdk-overview.png"
+          },
+          {
+            "name": "citic",
+            "requested": {
+              "position": [
+                367.39633995226916,
+                270,
+                437.8154800630898
+              ],
+              "target": [
+                -22.603660047730862,
+                265,
+                -222.1845199369102
+              ],
+              "fov": 42
+            },
+            "oldReadout": "机位 367.4, 270.0, 437.8 m · FOV 42.0°",
+            "oldScreenshot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\screenshots\\beijing-old-citic.png",
+            "actual": {
+              "position": [
+                367.3963399522691,
+                269.99999999999994,
+                437.8154800630898
+              ],
+              "target": [
+                -22.603660047730862,
+                265,
+                -222.1845199369102
+              ],
+              "fov": 42,
+              "near": 0.25
+            },
+            "stats": {
+              "schemaVersion": 1,
+              "manifestUrl": "http://127.0.0.1:60504/work/independent-studio-review/beijing-visual/dist/manifest.json",
+              "quality": "balanced",
+              "budget": {
+                "residentBytes": 536870912,
+                "visibleTriangles": 20000000,
+                "drawCalls": 100000,
+                "concurrentLoads": 3,
+                "pixelRatio": 1,
+                "nearDetails": 18000,
+                "shadowQuality": 1,
+                "aoQuality": 1,
+                "hysteresis": 0.18,
+                "minResidenceMs": 750,
+                "unloadDelayMs": 1200,
+                "prefetchMargin": 0.15
+              },
+              "viewport": {
+                "width": 1298,
+                "height": 918,
+                "pixelRatio": 1,
+                "devicePixelRatio": 1
+              },
+              "runtime": {
+                "loads": 8,
+                "unloads": 4,
+                "cancelled": 0,
+                "failures": 0,
+                "fetchedBytes": 174241308,
+                "swaps": 4,
+                "peakConcurrentLoads": 3,
+                "peakEstimatedResidentBytes": 168072644,
+                "geometries": 578,
+                "textures": 0,
+                "materials": 1326,
+                "geometryArrayBytes": 108441531,
+                "estimatedResidentBytes": 108441531,
+                "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+                "currentChunks": 4,
+                "pendingLoads": 0,
+                "visibleChunks": 4,
+                "missingChunks": [],
+                "visibleIds": [
+                  "1_0",
+                  "0_1",
+                  "1_1",
+                  "0_0"
+                ],
+                "levels": {
+                  "2": 4
+                },
+                "visibleTriangles": 1540914,
+                "sceneDrawCalls": 495,
+                "nearDetails": 7883,
+                "settled": true,
+                "firstUsableMs": 54.799999952316284
+              },
+              "nearAttachments": {
+                "geometries": 0,
+                "textures": 0,
+                "materials": 0,
+                "geometryArrayBytes": 0,
+                "triangles": 0,
+                "drawCalls": 0,
+                "nearDetails": 0,
+                "frames": 0,
+                "crownClusters": 0,
+                "branches": 0,
+                "profiles": 0
+              },
+              "rendering": {
+                "frameCount": 118,
+                "windowFrames": 117,
+                "intervalsMs": {
+                  "count": 117,
+                  "p50": 8.400000000000091,
+                  "p95": 41.700000000000045,
+                  "p99": 300.10000000000014,
+                  "max": 508.29999999999995
+                },
+                "longFrames50ms": 5,
+                "longFrames33ms": 6,
+                "drawCalls": {
+                  "count": 117,
+                  "p50": 2818,
+                  "p95": 6250,
+                  "p99": 6250,
+                  "max": 6250
+                },
+                "triangles": {
+                  "count": 117,
+                  "p50": 7554207,
+                  "p95": 7914683,
+                  "p99": 7914683,
+                  "max": 7914683
+                },
+                "last": {
+                  "time": 3239.4,
+                  "intervalMs": 24.90000000000009,
+                  "drawCalls": 2730,
+                  "triangles": 7554207,
+                  "lines": 0,
+                  "points": 0,
+                  "rendererGeometries": 576,
+                  "rendererTextures": 10,
+                  "rendererPrograms": 21,
+                  "cpuFrameMs": 14.299999952316284,
+                  "estimatedResidentBytes": 108441531,
+                  "chunks": 4
+                },
+                "gpuTime": {
+                  "available": true,
+                  "reason": null,
+                  "measurement": "gpu-elapsed",
+                  "unit": "ms",
+                  "samples": 117,
+                  "p50": 6.90688,
+                  "p95": 9.915392,
+                  "p99": 35.196928,
+                  "max": 227.87584,
+                  "pending": 1,
+                  "active": false,
+                  "maxPending": 8,
+                  "maxSamples": 18000,
+                  "disposed": false,
+                  "lastDisjoint": false,
+                  "unreleased": 1,
+                  "lastError": null,
+                  "created": 123,
+                  "deleted": 122,
+                  "collected": 121,
+                  "dropped": 1,
+                  "budgetDropped": 0,
+                  "disjoint": 0,
+                  "disjointDropped": 0,
+                  "invalidResults": 0,
+                  "occupiedDropped": 0,
+                  "skippedActive": 0,
+                  "evictedSamples": 0,
+                  "errors": 0,
+                  "deleteErrors": 0,
+                  "resetDropped": 1,
+                  "disposeDropped": 0,
+                  "errorDropped": 0,
+                  "resets": 1
+                }
+              },
+              "firstRenderedMs": 1032.1999999284744,
+              "firstRenderedAtMs": 1144.5999999046326,
+              "allLoadedMs": 2211.2999999523163,
+              "loadRequestedAtMs": 112.39999997615814,
+              "diagnostics": [],
+              "disposed": false,
+              "paused": false,
+              "userPaused": false,
+              "lodMode": "full"
+            },
+            "sdkScreenshot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\screenshots\\beijing-sdk-citic.png"
+          },
+          {
+            "name": "cctv",
+            "requested": {
+              "position": [
+                -563.3260276110079,
+                150,
+                -50.08173748263988
+              ],
+              "target": [
+                -243.32602761100787,
+                130,
+                -450.0817374826399
+              ],
+              "fov": 42
+            },
+            "oldReadout": "机位 -563.3, 150.0, -50.1 m · FOV 42.0°",
+            "oldScreenshot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\screenshots\\beijing-old-cctv.png",
+            "actual": {
+              "position": [
+                -563.3260276110079,
+                150.00000000000006,
+                -50.08173748263977
+              ],
+              "target": [
+                -243.3260276110079,
+                130,
+                -450.0817374826399
+              ],
+              "fov": 42,
+              "near": 0.25
+            },
+            "stats": {
+              "schemaVersion": 1,
+              "manifestUrl": "http://127.0.0.1:60504/work/independent-studio-review/beijing-visual/dist/manifest.json",
+              "quality": "balanced",
+              "budget": {
+                "residentBytes": 536870912,
+                "visibleTriangles": 20000000,
+                "drawCalls": 100000,
+                "concurrentLoads": 3,
+                "pixelRatio": 1,
+                "nearDetails": 18000,
+                "shadowQuality": 1,
+                "aoQuality": 1,
+                "hysteresis": 0.18,
+                "minResidenceMs": 750,
+                "unloadDelayMs": 1200,
+                "prefetchMargin": 0.15
+              },
+              "viewport": {
+                "width": 1298,
+                "height": 918,
+                "pixelRatio": 1,
+                "devicePixelRatio": 1
+              },
+              "runtime": {
+                "loads": 8,
+                "unloads": 4,
+                "cancelled": 0,
+                "failures": 0,
+                "fetchedBytes": 174241308,
+                "swaps": 4,
+                "peakConcurrentLoads": 3,
+                "peakEstimatedResidentBytes": 168072644,
+                "geometries": 578,
+                "textures": 0,
+                "materials": 1326,
+                "geometryArrayBytes": 108441531,
+                "estimatedResidentBytes": 108441531,
+                "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+                "currentChunks": 4,
+                "pendingLoads": 0,
+                "visibleChunks": 4,
+                "missingChunks": [],
+                "visibleIds": [
+                  "1_0",
+                  "0_1",
+                  "1_1",
+                  "0_0"
+                ],
+                "levels": {
+                  "2": 4
+                },
+                "visibleTriangles": 1146773,
+                "sceneDrawCalls": 506,
+                "nearDetails": 7883,
+                "settled": true,
+                "firstUsableMs": 54.799999952316284
+              },
+              "nearAttachments": {
+                "geometries": 0,
+                "textures": 0,
+                "materials": 0,
+                "geometryArrayBytes": 0,
+                "triangles": 0,
+                "drawCalls": 0,
+                "nearDetails": 0,
+                "frames": 0,
+                "crownClusters": 0,
+                "branches": 0,
+                "profiles": 0
+              },
+              "rendering": {
+                "frameCount": 157,
+                "windowFrames": 156,
+                "intervalsMs": {
+                  "count": 156,
+                  "p50": 8.400000000000091,
+                  "p95": 25,
+                  "p99": 300.10000000000014,
+                  "max": 508.29999999999995
+                },
+                "longFrames50ms": 5,
+                "longFrames33ms": 6,
+                "drawCalls": {
+                  "count": 156,
+                  "p50": 2810,
+                  "p95": 6250,
+                  "p99": 6250,
+                  "max": 6250
+                },
+                "triangles": {
+                  "count": 156,
+                  "p50": 7554207,
+                  "p95": 7914683,
+                  "p99": 7914683,
+                  "max": 7914683
+                },
+                "last": {
+                  "time": 3847.9,
+                  "intervalMs": 16.700000000000273,
+                  "drawCalls": 2810,
+                  "triangles": 5863883,
+                  "lines": 0,
+                  "points": 0,
+                  "rendererGeometries": 576,
+                  "rendererTextures": 10,
+                  "rendererPrograms": 21,
+                  "cpuFrameMs": 15,
+                  "estimatedResidentBytes": 108441531,
+                  "chunks": 4
+                },
+                "gpuTime": {
+                  "available": true,
+                  "reason": null,
+                  "measurement": "gpu-elapsed",
+                  "unit": "ms",
+                  "samples": 156,
+                  "p50": 7.313408,
+                  "p95": 9.915392,
+                  "p99": 35.196928,
+                  "max": 227.87584,
+                  "pending": 1,
+                  "active": false,
+                  "maxPending": 8,
+                  "maxSamples": 18000,
+                  "disposed": false,
+                  "lastDisjoint": false,
+                  "unreleased": 1,
+                  "lastError": null,
+                  "created": 162,
+                  "deleted": 161,
+                  "collected": 160,
+                  "dropped": 1,
+                  "budgetDropped": 0,
+                  "disjoint": 0,
+                  "disjointDropped": 0,
+                  "invalidResults": 0,
+                  "occupiedDropped": 0,
+                  "skippedActive": 0,
+                  "evictedSamples": 0,
+                  "errors": 0,
+                  "deleteErrors": 0,
+                  "resetDropped": 1,
+                  "disposeDropped": 0,
+                  "errorDropped": 0,
+                  "resets": 1
+                }
+              },
+              "firstRenderedMs": 1032.1999999284744,
+              "firstRenderedAtMs": 1144.5999999046326,
+              "allLoadedMs": 2211.2999999523163,
+              "loadRequestedAtMs": 112.39999997615814,
+              "diagnostics": [],
+              "disposed": false,
+              "paused": false,
+              "userPaused": false,
+              "lodMode": "full"
+            },
+            "sdkScreenshot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\screenshots\\beijing-sdk-cctv.png"
+          },
+          {
+            "name": "crossing",
+            "requested": {
+              "position": [
+                48.08397576791564,
+                2.1,
+                329.3628392323997
+              ],
+              "target": [
+                46.58397576791564,
+                4,
+                244.36283923239972
+              ],
+              "fov": 65
+            },
+            "oldReadout": "机位 48.1, 2.1, 329.4 m · FOV 65.0°",
+            "oldScreenshot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\screenshots\\beijing-old-crossing.png",
+            "actual": {
+              "position": [
+                48.08397576791564,
+                2.099999999999998,
+                329.3628392323997
+              ],
+              "target": [
+                46.58397576791564,
+                4,
+                244.36283923239972
+              ],
+              "fov": 65,
+              "near": 0.25
+            },
+            "stats": {
+              "schemaVersion": 1,
+              "manifestUrl": "http://127.0.0.1:60504/work/independent-studio-review/beijing-visual/dist/manifest.json",
+              "quality": "balanced",
+              "budget": {
+                "residentBytes": 536870912,
+                "visibleTriangles": 20000000,
+                "drawCalls": 100000,
+                "concurrentLoads": 3,
+                "pixelRatio": 1,
+                "nearDetails": 18000,
+                "shadowQuality": 1,
+                "aoQuality": 1,
+                "hysteresis": 0.18,
+                "minResidenceMs": 750,
+                "unloadDelayMs": 1200,
+                "prefetchMargin": 0.15
+              },
+              "viewport": {
+                "width": 1298,
+                "height": 918,
+                "pixelRatio": 1,
+                "devicePixelRatio": 1
+              },
+              "runtime": {
+                "loads": 8,
+                "unloads": 4,
+                "cancelled": 0,
+                "failures": 0,
+                "fetchedBytes": 174241308,
+                "swaps": 4,
+                "peakConcurrentLoads": 3,
+                "peakEstimatedResidentBytes": 168072644,
+                "geometries": 578,
+                "textures": 0,
+                "materials": 1326,
+                "geometryArrayBytes": 108441531,
+                "estimatedResidentBytes": 108952659,
+                "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+                "currentChunks": 4,
+                "pendingLoads": 0,
+                "visibleChunks": 4,
+                "missingChunks": [],
+                "visibleIds": [
+                  "1_0",
+                  "0_1",
+                  "1_1",
+                  "0_0"
+                ],
+                "levels": {
+                  "2": 4
+                },
+                "visibleTriangles": 1540271,
+                "sceneDrawCalls": 683,
+                "nearDetails": 7883,
+                "settled": true,
+                "firstUsableMs": 54.799999952316284
+              },
+              "nearAttachments": {
+                "geometries": 3,
+                "textures": 0,
+                "materials": 3,
+                "geometryArrayBytes": 511128,
+                "triangles": 343812,
+                "drawCalls": 3,
+                "nearDetails": 7031,
+                "frames": 5927,
+                "crownClusters": 828,
+                "branches": 276,
+                "profiles": 46
+              },
+              "rendering": {
+                "frameCount": 196,
+                "windowFrames": 195,
+                "intervalsMs": {
+                  "count": 195,
+                  "p50": 16.59999999999991,
+                  "p95": 25.099999999999454,
+                  "p99": 300.10000000000014,
+                  "max": 508.29999999999995
+                },
+                "longFrames50ms": 5,
+                "longFrames33ms": 7,
+                "drawCalls": {
+                  "count": 195,
+                  "p50": 2810,
+                  "p95": 6250,
+                  "p99": 6250,
+                  "max": 6250
+                },
+                "triangles": {
+                  "count": 195,
+                  "p50": 7554207,
+                  "p95": 9335027,
+                  "p99": 9335027,
+                  "max": 9335027
+                },
+                "last": {
+                  "time": 4572.8,
+                  "intervalMs": 16.699999999999818,
+                  "drawCalls": 3589,
+                  "triangles": 9335027,
+                  "lines": 0,
+                  "points": 0,
+                  "rendererGeometries": 579,
+                  "rendererTextures": 10,
+                  "rendererPrograms": 21,
+                  "cpuFrameMs": 19.5,
+                  "estimatedResidentBytes": 108952659,
+                  "chunks": 4
+                },
+                "gpuTime": {
+                  "available": true,
+                  "reason": null,
+                  "measurement": "gpu-elapsed",
+                  "unit": "ms",
+                  "samples": 195,
+                  "p50": 7.549632,
+                  "p95": 11.554816,
+                  "p99": 35.196928,
+                  "max": 227.87584,
+                  "pending": 1,
+                  "active": false,
+                  "maxPending": 8,
+                  "maxSamples": 18000,
+                  "disposed": false,
+                  "lastDisjoint": false,
+                  "unreleased": 1,
+                  "lastError": null,
+                  "created": 201,
+                  "deleted": 200,
+                  "collected": 199,
+                  "dropped": 1,
+                  "budgetDropped": 0,
+                  "disjoint": 0,
+                  "disjointDropped": 0,
+                  "invalidResults": 0,
+                  "occupiedDropped": 0,
+                  "skippedActive": 0,
+                  "evictedSamples": 0,
+                  "errors": 0,
+                  "deleteErrors": 0,
+                  "resetDropped": 1,
+                  "disposeDropped": 0,
+                  "errorDropped": 0,
+                  "resets": 1
+                }
+              },
+              "firstRenderedMs": 1032.1999999284744,
+              "firstRenderedAtMs": 1144.5999999046326,
+              "allLoadedMs": 2211.2999999523163,
+              "loadRequestedAtMs": 112.39999997615814,
+              "diagnostics": [],
+              "disposed": false,
+              "paused": false,
+              "userPaused": false,
+              "lodMode": "full"
+            },
+            "sdkScreenshot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\screenshots\\beijing-sdk-crossing.png"
+          }
+        ],
+        "diagnostics": [],
+        "note": "Full-detail visual reference uses an explicit 512 MiB / 20M triangles / 100000 draws comparison budget. It is not a default-budget performance pass; SDK lighting differs from the old demo."
+      }
+    }
+  ],
+  "status": "pass"
+}

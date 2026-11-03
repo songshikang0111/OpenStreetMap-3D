@@ -1,0 +1,92 @@
+{
+  "date": "2026-11-03T10:39:15.138756+00:00",
+  "role": "implementer, not independent UI evidence",
+  "productCommit": "2c013fb0f8114c2dd1cba67ee1a2cd131e565aed",
+  "method": "Chrome extension / CUA locators; actual local studio UI, actual API and SDK; no JS mutations or mock jobs",
+  "url": "http://127.0.0.1:4179",
+  "source": "Explicit synthetic sample for offline onboarding, not live OSM",
+  "results": {
+    "sampleBuild": "succeeded",
+    "style": "color",
+    "savedAndReloadedFov": 55,
+    "sliderRange": [
+      5,
+      140
+    ],
+    "streetPositionY": 12,
+    "streetTargetY": 18,
+    "png": "current-view-loaded-lods, actual file with OSM text and copyright URL",
+    "glb": "complete, chunk 0_0, actual file",
+    "web": "succeeded, site/index.html"
+  },
+  "savedProject": [
+    {
+      "id": "815089b7-660c-4f73-ab3e-774db9a1005d",
+      "config": {
+        "area": {
+          "east": 116.462,
+          "north": 39.91,
+          "south": 39.908,
+          "west": 116.459
+        },
+        "camera": {
+          "fov": 55,
+          "near": 0.25,
+          "position": [
+            25.652154541015626,
+            12,
+            51.30430908203125
+          ],
+          "target": [
+            0,
+            18,
+            0
+          ]
+        },
+        "generation": {
+          "inferRoofs": false,
+          "landscapeEnabled": false
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        },
+        "name": "offline-sample-1793702204440",
+        "origin": {
+          "lat": 39.909,
+          "lon": 116.4605
+        },
+        "quality": "balanced",
+        "schemaVersion": 1,
+        "seed": 1,
+        "source": {
+          "file": "data/source.json",
+          "kind": "sample"
+        },
+        "style": {
+          "id": "color",
+          "parameters": {}
+        },
+        "tiling": {
+          "sizeMeters": 500
+        }
+      }
+    }
+  ],
+  "downloads": [
+    {
+      "name": "city-ink (2).png",
+      "bytes": 446126,
+      "magic": "89504e470d0a1a0a",
+      "sha256": "f4f5b52617e8b73a26d41a9a0422fe5ec6effa4c4bb736cf0251743304be1749"
+    },
+    {
+      "name": "city-ink (1).glb",
+      "bytes": 101244,
+      "magic": "676c544602000000",
+      "sha256": "9f58dd1381a34fb3ec15ccad51e7bcf3bf91b1c794cd487f448ce80977faf9ce"
+    }
+  ],
+  "screenshot": "studio-final.jpg",
+  "independentUiStatus": "not-run due Computer Use URL confidence stop; independent SDK browser/CLI/extension flows verified separately"
+}

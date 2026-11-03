@@ -1,8 +1,9 @@
 {
-  "date": "2026-11-03T10:06:22.383Z",
+  "date": "2026-11-03T10:36:58.773Z",
   "node": "v22.11.0",
   "cases": [
     {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
       "name": "beijing-cbd-fixed-1",
       "source": "public/data/beijing-cbd.json",
       "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
@@ -43,8 +44,8 @@
         }
       },
       "inputElements": 1376,
-      "buildMs": 8330.625699999999,
-      "maxRssKiB": 982184,
+      "buildMs": 8280.600499999999,
+      "maxRssKiB": 983332,
       "packageBytes": 281868152,
       "manifestHash": "f4b6f5d91cd7ac2924b5a299950ce6ede48beccf29d919725ec49a205cfb3319",
       "chunks": 1,
@@ -208,6 +209,7 @@
       }
     },
     {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
       "name": "beijing-cbd-fixed-4",
       "source": "public/data/beijing-cbd.json",
       "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
@@ -248,8 +250,8 @@
         }
       },
       "inputElements": 1376,
-      "buildMs": 8098.0856,
-      "maxRssKiB": 934188,
+      "buildMs": 8196.1217,
+      "maxRssKiB": 956432,
       "packageBytes": 283669086,
       "manifestHash": "e3321f92fe943188056ae2d440dca9be16b3e3f034e3377983c86f7785f4383a",
       "chunks": 4,
@@ -491,6 +493,7 @@
       }
     },
     {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
       "name": "beijing-cbd-fixed-16",
       "source": "public/data/beijing-cbd.json",
       "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
@@ -531,8 +534,8 @@
         }
       },
       "inputElements": 1376,
-      "buildMs": 8425.256599999999,
-      "maxRssKiB": 949868,
+      "buildMs": 8704.5674,
+      "maxRssKiB": 979512,
       "packageBytes": 288929383,
       "manifestHash": "d38b56eda7996d6e6e3a8ada2caef3b9b27862fe7a8822cf2891b3fbb239de07",
       "chunks": 16,
@@ -1086,6 +1089,7 @@
       }
     },
     {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
       "name": "beijing-cbd-grow-1",
       "source": "public/data/beijing-cbd.json",
       "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
@@ -1126,8 +1130,8 @@
         }
       },
       "inputElements": 1376,
-      "buildMs": 614.5359,
-      "maxRssKiB": 178044,
+      "buildMs": 653.4873,
+      "maxRssKiB": 189076,
       "packageBytes": 22119165,
       "manifestHash": "47afbd8d545f60db3121006cdc84fcd0d2416cfb01d73871b019f23bcb63a043",
       "chunks": 1,
@@ -1282,6 +1286,7 @@
       }
     },
     {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
       "name": "beijing-cbd-grow-4",
       "source": "public/data/beijing-cbd.json",
       "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
@@ -1322,8 +1327,8 @@
         }
       },
       "inputElements": 1376,
-      "buildMs": 1868.1222,
-      "maxRssKiB": 360680,
+      "buildMs": 1852.0134,
+      "maxRssKiB": 364032,
       "packageBytes": 83710248,
       "manifestHash": "b2aa4ff1e7420862b8d07678938c23678d22fb92144d483db2096c48b2588e91",
       "chunks": 4,
@@ -1575,6 +1580,7 @@
       }
     },
     {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
       "name": "beijing-cbd-grow-9",
       "source": "public/data/beijing-cbd.json",
       "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
@@ -1615,8 +1621,8 @@
         }
       },
       "inputElements": 1376,
-      "buildMs": 4192.308599999999,
-      "maxRssKiB": 624684,
+      "buildMs": 4304.2134,
+      "maxRssKiB": 625604,
       "packageBytes": 179763956,
       "manifestHash": "78cb0f99c6f4d5fb888813f5153dfe460b5b1066ea0bc14bd00b45934a1336c9",
       "chunks": 9,
@@ -1987,6 +1993,7 @@
       }
     },
     {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
       "name": "kyoto-gion-fixed-1",
       "source": "public/data/kyoto-gion.json",
       "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
@@ -2027,8 +2034,8 @@
         }
       },
       "inputElements": 7014,
-      "buildMs": 20735.24,
-      "maxRssKiB": 1846908,
+      "buildMs": 20347.96,
+      "maxRssKiB": 1846692,
       "packageBytes": 549089046,
       "manifestHash": "e50ab09b48f46bde221ec35928e29d5d3ed3f929df686ed1f201d7a546cc4a11",
       "chunks": 1,
@@ -2196,6 +2203,7 @@
       }
     },
     {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
       "name": "kyoto-gion-fixed-4",
       "source": "public/data/kyoto-gion.json",
       "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
@@ -2236,8 +2244,8 @@
         }
       },
       "inputElements": 7014,
-      "buildMs": 20646.9732,
-      "maxRssKiB": 1723864,
+      "buildMs": 20430.952,
+      "maxRssKiB": 1713828,
       "packageBytes": 551304663,
       "manifestHash": "c26c65cf03fde2b07075346c3e78706484e84f7345bd805f102848217d3ad140",
       "chunks": 4,
@@ -2483,6 +2491,7 @@
       }
     },
     {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
       "name": "kyoto-gion-fixed-16",
       "source": "public/data/kyoto-gion.json",
       "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
@@ -2523,8 +2532,8 @@
         }
       },
       "inputElements": 7014,
-      "buildMs": 20338.1903,
-      "maxRssKiB": 1755788,
+      "buildMs": 21178.1156,
+      "maxRssKiB": 1716568,
       "packageBytes": 559145037,
       "manifestHash": "94cce5893c1603d4891dc4634a2b3e7e958defadec71b001d022bde7bec7e138",
       "chunks": 16,
@@ -3082,6 +3091,7 @@
       }
     },
     {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
       "name": "kyoto-gion-grow-1",
       "source": "public/data/kyoto-gion.json",
       "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
@@ -3122,8 +3132,8 @@
         }
       },
       "inputElements": 7014,
-      "buildMs": 1049.5235,
-      "maxRssKiB": 282576,
+      "buildMs": 1079.8385,
+      "maxRssKiB": 282940,
       "packageBytes": 39545209,
       "manifestHash": "037da99ad24b406e51f6fbce06f21bd4810ab7d0ed81bbbb8efa9fe91773b7b3",
       "chunks": 1,
@@ -3279,6 +3289,7 @@
       }
     },
     {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
       "name": "kyoto-gion-grow-4",
       "source": "public/data/kyoto-gion.json",
       "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
@@ -3319,8 +3330,8 @@
         }
       },
       "inputElements": 7014,
-      "buildMs": 3730.6975,
-      "maxRssKiB": 692904,
+      "buildMs": 3807.5636999999997,
+      "maxRssKiB": 689736,
       "packageBytes": 183755277,
       "manifestHash": "32e2f3a9c94cec2a6b8e7fb666050ed198aedc3ee1a8f048c8b2825a7b59bfe7",
       "chunks": 4,
@@ -3563,6 +3574,7 @@
       }
     },
     {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
       "name": "kyoto-gion-grow-9",
       "source": "public/data/kyoto-gion.json",
       "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
@@ -3603,8 +3615,8 @@
         }
       },
       "inputElements": 7014,
-      "buildMs": 14161.2851,
-      "maxRssKiB": 1441352,
+      "buildMs": 14243.9402,
+      "maxRssKiB": 1439792,
       "packageBytes": 457683073,
       "manifestHash": "f68dee9e64b290a20b360fadeb62da17e8be82bfa24c400d98bacbb12d6796d0",
       "chunks": 9,

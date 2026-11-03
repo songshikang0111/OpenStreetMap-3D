@@ -1,13 +1,13 @@
 {
-  "date": "2026-11-03T10:04:05.917Z",
-  "commit": "e2ad1b28552446a90ad3aab1538a0ead44d0fb98",
-  "directory": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\integration-e2e\\2026-11-03T10-04-05-916Z",
+  "date": "2026-11-03T10:36:08.823Z",
+  "commit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+  "directory": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\integration-e2e\\2026-11-03T10-36-08-821Z",
   "node": "v22.11.0",
   "results": [
     {
       "name": "offline project / deterministic rebuild",
       "status": "pass",
-      "durationMs": 419.03139999999996,
+      "durationMs": 377.7767,
       "details": {
         "contentHash": "59e2a5b63d701106b01e22a4010338331ff655248ff71cc5cedcd7a1606d57d1",
         "report": {
@@ -132,32 +132,32 @@
     {
       "name": "runtime-only settings do not stale geometry; geometry input does",
       "status": "pass",
-      "durationMs": 64.87110000000001
+      "durationMs": 59.68290000000002
     },
     {
       "name": "CLI JSON / batch partial failure and resume",
       "status": "pass",
-      "durationMs": 615.9945,
+      "durationMs": 608.5263,
       "details": {
         "partial": [
           {
-            "id": "0d953146-8527-4f45-a0d6-2ed821fc794b",
+            "id": "f0cdd38c-0fff-45f9-97a6-67e63e51dacc",
             "status": "succeeded",
             "diagnostics": []
           },
           {
-            "id": "418cb754-ae6a-465d-9e4e-df1f83ff4127",
+            "id": "e0bfabf2-8c3f-436a-86e2-d12f41437c78",
             "status": "succeeded",
             "diagnostics": []
           },
           {
-            "id": "9aaf7c8f-d15b-4449-b487-0cf301c60053",
+            "id": "592d2795-3362-4a07-a03a-d27e5e5dd557",
             "status": "failed",
             "diagnostics": [
               {
                 "code": "ENOENT",
                 "stage": "task",
-                "message": "ENOENT: no such file or directory, realpath 'C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\integration-e2e\\2026-11-03T10-04-05-916Z\\recovered\\data\\source.json'",
+                "message": "ENOENT: no such file or directory, realpath 'C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\integration-e2e\\2026-11-03T10-36-08-821Z\\recovered\\data\\source.json'",
                 "hint": "Check the input and retry."
               }
             ]
@@ -165,15 +165,15 @@
         ],
         "resumed": [
           {
-            "id": "0d953146-8527-4f45-a0d6-2ed821fc794b",
+            "id": "f0cdd38c-0fff-45f9-97a6-67e63e51dacc",
             "status": "succeeded"
           },
           {
-            "id": "418cb754-ae6a-465d-9e4e-df1f83ff4127",
+            "id": "e0bfabf2-8c3f-436a-86e2-d12f41437c78",
             "status": "succeeded"
           },
           {
-            "id": "9aaf7c8f-d15b-4449-b487-0cf301c60053",
+            "id": "592d2795-3362-4a07-a03a-d27e5e5dd557",
             "status": "succeeded"
           }
         ],
@@ -184,7 +184,7 @@
     {
       "name": "complete static export / nested output / cancellation preserves old site",
       "status": "pass",
-      "durationMs": 131.87080000000014,
+      "durationMs": 124.3474000000001,
       "details": {
         "output": [
           "exports/nested/index.html"
@@ -195,9 +195,9 @@
     {
       "name": "actual local API / origin and path boundary / worker cancel and resume",
       "status": "pass",
-      "durationMs": 11217.6935,
+      "durationMs": 11244.5668,
       "details": {
-        "registered": "55be78aa-ba39-43ff-b099-af2d42b446c9",
+        "registered": "337d69a5-5ed2-4de2-b611-eb6ce4413c04",
         "coordinates": [
           {
             "id": "coordinate:39.9095,116.4605",
@@ -223,11 +223,11 @@
           }
         ],
         "cancelled": {
-          "id": "24ee603a-23f9-43b6-b2e6-4b2019d3269c",
+          "id": "b34e2185-4e8c-4139-a0e5-033bf99964e8",
           "status": "cancelled"
         },
         "resumed": {
-          "id": "24ee603a-23f9-43b6-b2e6-4b2019d3269c",
+          "id": "b34e2185-4e8c-4139-a0e5-033bf99964e8",
           "status": "succeeded",
           "report": {
             "schemaVersion": 1,
@@ -235,8 +235,8 @@
             "diagnostics": [],
             "hashes": {
               "config": "cc52bc786640d6bf50ac2481cd0bdc03272b1756392d19efa6928efe6296d1c8",
-              "source": "aaadfffbfb040eed195cd4439a5474016da0004dd85dee98c4c5ce00ec153b19",
-              "world": "fffb377749e5a53eda1c7b46ac7cd56036057fddcfb4ec6c408645bb47647641"
+              "source": "2fd5eb4a01eb5d1acc7bcebec8de0924061b4de3f75377c14203cfbc3328b6b5",
+              "world": "176c30b0356f19dc3ade598aaed26e95e806199bd55baae711ecd6b3611a9d1e"
             },
             "counts": {
               "inputElements": 1376,
@@ -364,7 +364,7 @@
     {
       "name": "CLI PNG and complete GLB signatures",
       "status": "pass",
-      "durationMs": 2866.247300000001,
+      "durationMs": 2949.2533999999996,
       "details": {
         "png": {
           "schemaVersion": 1,
@@ -375,7 +375,7 @@
           "diagnostics": [],
           "scope": "current-view",
           "browser": "C:/Program Files/Google/Chrome/Application/chrome.exe",
-          "bytes": 62769
+          "bytes": 66306
         },
         "glb": {
           "schemaVersion": 1,
@@ -387,14 +387,14 @@
           "scope": "complete-area",
           "browser": "C:/Program Files/Google/Chrome/Application/chrome.exe",
           "limitations": "Basic materials and geometry; procedural facade shaders and comic postprocessing are not portable.",
-          "bytes": 100436
+          "bytes": 101244
         }
       }
     },
     {
       "name": "real CLI recipe versions / geometry change / locked rollback",
       "status": "pass",
-      "durationMs": 2294.0236000000004,
+      "durationMs": 2261.271999999999,
       "details": {
         "versions": [
           "1.0.1",

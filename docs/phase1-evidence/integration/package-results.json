@@ -1,12 +1,12 @@
 {
-  "date": "2026-11-03T10:04:10.974Z",
+  "date": "2026-11-03T10:31:08.054Z",
   "status": "pass",
   "archive": {
     "filename": "beijing-city-ink-0.8.1.tgz",
-    "size": 700949,
-    "unpackedSize": 2605401,
-    "integrity": "sha512-qMuL8MdpmkGSUGO/Ay+BPct29Ct0eWeI3Se+qPF4nN24r7JwfWdVg/oTT2Q6Kc2eKouJgbRJsP2mkxI26y7fdQ==",
-    "shasum": "65b7baf93866efa7b4dee3b210cc42f849dcfa0d",
+    "size": 703770,
+    "unpackedSize": 2617028,
+    "integrity": "sha512-3TuLZ0Z81bUcVKLCTtv+JoLSs7os2CXoh0+nFlYop3JJr0gcRrgg0p80NEQy8jMlOVbl/NoVOIX3igaX0F3k7Q==",
+    "shasum": "575489408774421628219eb7cc1953ddd6e7b818",
     "files": [
       {
         "path": "CONTRIBUTING.md",
@@ -35,12 +35,12 @@
       },
       {
         "path": "dist-sdk/city-ink.js",
-        "size": 1109332,
+        "size": 1111451,
         "mode": 420
       },
       {
         "path": "docs/extensions.md",
-        "size": 4477,
+        "size": 4734,
         "mode": 420
       },
       {
@@ -150,12 +150,12 @@
       },
       {
         "path": "schemas/project.schema.json",
-        "size": 2844,
+        "size": 2826,
         "mode": 420
       },
       {
         "path": "schemas/scene.schema.json",
-        "size": 2917,
+        "size": 6737,
         "mode": 420
       },
       {
@@ -290,7 +290,7 @@
       },
       {
         "path": "src/core/scene-manifest.js",
-        "size": 4777,
+        "size": 6053,
         "mode": 420
       },
       {
@@ -474,6 +474,11 @@
         "mode": 420
       },
       {
+        "path": "src/runtime/camera.js",
+        "size": 1281,
+        "mode": 420
+      },
+      {
         "path": "src/runtime/gpu-timer.js",
         "size": 10022,
         "mode": 420
@@ -485,7 +490,7 @@
       },
       {
         "path": "src/runtime/manifest.js",
-        "size": 3742,
+        "size": 3959,
         "mode": 420
       },
       {
@@ -515,17 +520,17 @@
       },
       {
         "path": "src/sdk/exports.js",
-        "size": 7734,
+        "size": 8887,
         "mode": 420
       },
       {
         "path": "src/sdk/index.d.ts",
-        "size": 3099,
+        "size": 3089,
         "mode": 420
       },
       {
         "path": "src/sdk/index.js",
-        "size": 20436,
+        "size": 19775,
         "mode": 420
       },
       {
@@ -574,23 +579,23 @@
         "mode": 420
       },
       {
-        "path": "studio/dist/assets/index-DQozuCOP.js",
-        "size": 728796,
+        "path": "studio/dist/assets/index-ZlZywfMO.js",
+        "size": 730613,
         "mode": 420
       },
       {
         "path": "studio/dist/index.html",
-        "size": 5870,
+        "size": 5903,
         "mode": 420
       },
       {
         "path": "studio/index.html",
-        "size": 5765,
+        "size": 5798,
         "mode": 420
       },
       {
         "path": "studio/main.js",
-        "size": 12591,
+        "size": 12901,
         "mode": 420
       },
       {
@@ -631,7 +636,7 @@
       {
         "args": [
           "init",
-          "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-JWreKM\\consumer\\city",
+          "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-NjqYs0\\consumer\\city",
           "--sample",
           "--json"
         ],
@@ -644,7 +649,7 @@
             "data/source.json"
           ],
           "diagnostics": [],
-          "project": "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-JWreKM\\consumer\\city",
+          "project": "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-NjqYs0\\consumer\\city",
           "config": {
             "schemaVersion": 1,
             "name": "city",
@@ -687,7 +692,7 @@
         "args": [
           "build",
           "--project",
-          "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-JWreKM\\consumer\\city",
+          "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-NjqYs0\\consumer\\city",
           "--offline",
           "--json"
         ],
@@ -701,9 +706,9 @@
           "diagnostics": [],
           "job": {
             "schemaVersion": 1,
-            "id": "3c90b960-07d2-4290-932d-b68147ffad1f",
+            "id": "9a2af152-da83-4736-9aff-9aebd290bfcb",
             "kind": "build",
-            "project": "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-JWreKM\\consumer\\city",
+            "project": "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-NjqYs0\\consumer\\city",
             "parameters": {},
             "status": "succeeded",
             "stage": "complete",
@@ -714,8 +719,8 @@
             ],
             "diagnostics": [],
             "attempt": 1,
-            "createdAt": "2026-11-03T10:04:10.143Z",
-            "startedAt": "2026-11-03T10:04:10.145Z",
+            "createdAt": "2026-11-03T10:31:06.762Z",
+            "startedAt": "2026-11-03T10:31:06.764Z",
             "result": {
               "schemaVersion": 1,
               "status": "succeeded",
@@ -842,7 +847,7 @@
                 }
               }
             },
-            "finishedAt": "2026-11-03T10:04:10.392Z"
+            "finishedAt": "2026-11-03T10:31:07.035Z"
           }
         },
         "progressOnStderr": true
@@ -851,7 +856,7 @@
         "args": [
           "validate",
           "--project",
-          "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-JWreKM\\consumer\\city",
+          "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-NjqYs0\\consumer\\city",
           "--offline",
           "--json"
         ],
@@ -870,7 +875,7 @@
           "export",
           "web",
           "--project",
-          "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-JWreKM\\consumer\\city",
+          "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-NjqYs0\\consumer\\city",
           "--json"
         ],
         "result": {
@@ -882,9 +887,9 @@
           "diagnostics": [],
           "job": {
             "schemaVersion": 1,
-            "id": "d5486d03-3368-429c-af96-816ca8c88aff",
+            "id": "f0b48588-7860-45c7-ae73-21d1b22d7a1e",
             "kind": "export-web",
-            "project": "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-JWreKM\\consumer\\city",
+            "project": "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-package-NjqYs0\\consumer\\city",
             "parameters": {},
             "status": "succeeded",
             "stage": "complete",
@@ -894,8 +899,8 @@
             ],
             "diagnostics": [],
             "attempt": 1,
-            "createdAt": "2026-11-03T10:04:10.674Z",
-            "startedAt": "2026-11-03T10:04:10.677Z",
+            "createdAt": "2026-11-03T10:31:07.385Z",
+            "startedAt": "2026-11-03T10:31:07.389Z",
             "result": {
               "schemaVersion": 1,
               "status": "succeeded",
@@ -906,7 +911,7 @@
               "scope": "complete-area",
               "attribution": "© OpenStreetMap contributors; ODbL"
             },
-            "finishedAt": "2026-11-03T10:04:10.830Z"
+            "finishedAt": "2026-11-03T10:31:07.570Z"
           }
         },
         "progressOnStderr": true

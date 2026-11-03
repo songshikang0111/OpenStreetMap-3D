@@ -1,0 +1,29 @@
+{
+  "commit": "6f778598b0b141d2db886c99342e8770c8f45409",
+  "status": "pass",
+  "result": [
+    {
+      "fov": 4.9,
+      "accepted": false,
+      "fileUnchanged": true
+    },
+    {
+      "fov": 140.1,
+      "accepted": false,
+      "fileUnchanged": true
+    },
+    {
+      "fov": 170,
+      "accepted": false,
+      "fileUnchanged": true
+    },
+    {
+      "fov": 5,
+      "accepted": true
+    },
+    {
+      "fov": 140,
+      "accepted": true
+    }
+  ]
+}

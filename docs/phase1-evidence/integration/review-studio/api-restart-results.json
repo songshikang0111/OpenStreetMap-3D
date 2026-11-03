@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-03T10:17:48.640Z",
+  "commit": "6f778598b0b141d2db886c99342e8770c8f45409",
+  "input": "Complete committed Beijing OSM snapshot, not a live download",
+  "results": [
+    {
+      "name": "actual worker process crash / restart / same-ID resume",
+      "status": "pass",
+      "id": "a51408dc-fd41-44b8-869e-f8ce611a6864",
+      "interruptedStage": "parse",
+      "restoredStatus": "failed",
+      "attempt": 2,
+      "contentHash": "1d6cc47fb53e04284a557a3c9c4e6d62bbe62bfd78cb9f247dc23131d309938c"
+    },
+    {
+      "name": "actual worker cancellation preserves output / resume deterministic",
+      "status": "pass",
+      "id": "24264c17-a569-4e9e-a348-559784f52376",
+      "cancelled": "cancelled",
+      "attempt": 2,
+      "contentHash": "1d6cc47fb53e04284a557a3c9c4e6d62bbe62bfd78cb9f247dc23131d309938c"
+    }
+  ],
+  "status": "pass"
+}
