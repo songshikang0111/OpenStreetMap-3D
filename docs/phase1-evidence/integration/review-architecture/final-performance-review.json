@@ -1,0 +1,1353 @@
+{
+  "date": "2026-11-03T11:10:18.702Z",
+  "reviewer": "/root/architecture_review",
+  "mode": "Independent recomputation of existing raw JSON; no browser/GPU launched",
+  "frozenCommit": "9407af9c752b6b7cfc32eb4fb17622824e453cfd",
+  "productCommit": "2c013fb0f8114c2dd1cba67ee1a2cd131e565aed",
+  "bundleSha256": "d22408bc6be5535a5ddd2645bdb22ddcde79c25103cd6721407a2abe5a2a0900",
+  "summarizerSha256": "02bf05859c5a4817f305fe1775219e023c42233e528d7ef45ed2504760f483a8",
+  "environment": {
+    "date": "2026-11-03T10:39:30.482Z",
+    "commit": "9407af9c752b6b7cfc32eb4fb17622824e453cfd",
+    "platform": "win32",
+    "release": "10.0.26300",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13600KF",
+    "logicalCpus": 20,
+    "memoryBytes": 34163961856,
+    "node": "v22.11.0",
+    "viewport": {
+      "width": 1280,
+      "height": 720,
+      "dpr": 1
+    },
+    "quality": "balanced",
+    "seconds": 60,
+    "bundleSha256": "d22408bc6be5535a5ddd2645bdb22ddcde79c25103cd6721407a2abe5a2a0900",
+    "notes": [
+      "Integrated production A/C/D bundle and protocol, no fixture decoder.",
+      "renderer.info autoReset=false; all scene/shadow/AO/composite passes accumulated.",
+      "Resource bytes are CPU arrays / estimates, never actual GPU VRAM.",
+      "GPU elapsed uses non-blocking EXT_disjoint_timer_query_webgl2 when available; requestAnimationFrame intervals remain wall-clock."
+    ]
+  },
+  "expectedCases": 12,
+  "completedCases": 12,
+  "auditStatus": "pass",
+  "errors": [],
+  "totals": {
+    "frames": 86109,
+    "gpuSamples": 86109,
+    "longFrames50ms": 13,
+    "cycles": 60,
+    "minActualElapsedSeconds": 60.00000000007152,
+    "maxActualElapsedSeconds": 60.008000000095365,
+    "minGpuP95": 4.77184,
+    "maxGpuP95": 7.036928,
+    "maxAutoPathEstimatedBytes": 105491697,
+    "trianglesP95Failures": [
+      "beijing-cbd-fixed-1",
+      "beijing-cbd-fixed-4",
+      "beijing-cbd-fixed-16",
+      "beijing-cbd-grow-4",
+      "beijing-cbd-grow-9",
+      "kyoto-gion-fixed-1",
+      "kyoto-gion-fixed-4",
+      "kyoto-gion-fixed-16",
+      "kyoto-gion-grow-4",
+      "kyoto-gion-grow-9"
+    ],
+    "drawCallsP95Failures": [
+      "beijing-cbd-fixed-16",
+      "kyoto-gion-fixed-16"
+    ],
+    "anyTriangleOverrunFrames": [
+      "beijing-cbd-fixed-1",
+      "beijing-cbd-fixed-4",
+      "beijing-cbd-fixed-16",
+      "beijing-cbd-grow-4",
+      "beijing-cbd-grow-9",
+      "kyoto-gion-fixed-1",
+      "kyoto-gion-fixed-4",
+      "kyoto-gion-fixed-16",
+      "kyoto-gion-grow-4",
+      "kyoto-gion-grow-9"
+    ],
+    "anyDrawCallOverrunFrames": [
+      "beijing-cbd-fixed-16",
+      "kyoto-gion-fixed-16",
+      "kyoto-gion-grow-1",
+      "kyoto-gion-grow-9"
+    ]
+  },
+  "interpretation": {
+    "statisticsAndP95TimingTarget": "pass",
+    "drawingBudget": "fail",
+    "combinedAcceptance": "fail",
+    "AC20": "pass for explicitly scoped 60-second evidence/statistics/p95 frame-interval target; does not imply full budget compliance",
+    "AC18": "fail",
+    "notes": [
+      "All raw frames and hardware GPU samples were used in nearest-rank recomputation.",
+      "61 elapsed samples establish start-to-final camera-path duration; raw RAF span can end a few milliseconds earlier due to frame boundaries.",
+      "Budget pass/fail in the publisher summary uses p95; individual-frame overruns and maxima are additionally retained here.",
+      "Lifecycle resident peak counters include forced full/far comparisons; these are distinct from the bounded automatic measured path.",
+      "This review verifies saved raw measurements and source wiring, not an independent hardware rerun."
+    ]
+  },
+  "cases": [
+    {
+      "name": "beijing-cbd-fixed-1",
+      "rawSha256": "e6019007fb46347fe4090458af6c05f118c237bc730513d494e5dabfeb143153",
+      "sourceSha256": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "source": "public/data/beijing-cbd.json",
+      "chunks": 1,
+      "features": 13293,
+      "area": {
+        "south": 39.9015,
+        "west": 116.449,
+        "north": 39.9175,
+        "east": 116.472
+      },
+      "origin": {
+        "lat": 39.909499999999994,
+        "lon": 116.4605
+      },
+      "tiling": {
+        "divisions": 1
+      },
+      "worldHash": "9402cab19881d7246db5d247da5aad8efc8178963c00c15bbc8c91d16b25311d",
+      "requestedSeconds": 60,
+      "actualElapsedSeconds": 60.00160000004769,
+      "rawFrameSpanSeconds": 59.994200000000006,
+      "frames": 7199,
+      "raf": {
+        "count": 7199,
+        "p50": 8.30000000000291,
+        "p95": 8.400000000001455,
+        "p99": 8.5,
+        "max": 9.19999999999709
+      },
+      "gpu": {
+        "count": 7199,
+        "p50": 4.34176,
+        "p95": 5.661696,
+        "p99": 6.519808,
+        "max": 7.913472
+      },
+      "cpu": {
+        "count": 7199,
+        "p50": 0.6000000238418579,
+        "p95": 0.9000000953674316,
+        "p99": 1.1999999284744263,
+        "max": 2.899999976158142
+      },
+      "longFrames50ms": 0,
+      "longFrames33ms": 0,
+      "drawing": {
+        "budgetTriangles": 600000,
+        "budgetCalls": 1200,
+        "triangles": {
+          "count": 7199,
+          "p50": 2638236,
+          "p95": 2638236,
+          "p99": 2638236,
+          "max": 2638236
+        },
+        "drawCalls": {
+          "count": 7199,
+          "p50": 118,
+          "p95": 118,
+          "p99": 118,
+          "max": 118
+        },
+        "trianglesP95Within": false,
+        "drawCallsP95Within": true,
+        "trianglesOverFrames": 7199,
+        "drawCallsOverFrames": 0
+      },
+      "autoPathPeakEstimatedBytes": 69948810,
+      "lifetimePeakIncludingForcedComparisons": 172686119,
+      "cycles": 5,
+      "returnedResources": [
+        22,
+        26,
+        0,
+        69948810,
+        69948810,
+        23,
+        10,
+        19
+      ],
+      "awayResources": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        10,
+        15
+      ],
+      "maxPending": 8,
+      "queryUnreleasedAtPath": 1,
+      "peakConcurrentLoads": 1,
+      "network": {
+        "requests": 2,
+        "transferBytes": 82232703,
+        "encodedBodyBytes": 82232103
+      },
+      "nonDrawingChecks": true,
+      "verified": true
+    },
+    {
+      "name": "beijing-cbd-fixed-4",
+      "rawSha256": "aba59112f3261d5c738059dbef4d448b6d3a89fb98cf4d18492f0eaedd5b477e",
+      "sourceSha256": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "source": "public/data/beijing-cbd.json",
+      "chunks": 4,
+      "features": 13293,
+      "area": {
+        "south": 39.9015,
+        "west": 116.449,
+        "north": 39.9175,
+        "east": 116.472
+      },
+      "origin": {
+        "lat": 39.909499999999994,
+        "lon": 116.4605
+      },
+      "tiling": {
+        "divisions": 2
+      },
+      "worldHash": "9402cab19881d7246db5d247da5aad8efc8178963c00c15bbc8c91d16b25311d",
+      "requestedSeconds": 60,
+      "actualElapsedSeconds": 60.000999999904636,
+      "rawFrameSpanSeconds": 59.9941,
+      "frames": 7199,
+      "raf": {
+        "count": 7199,
+        "p50": 8.30000000000291,
+        "p95": 8.400000000001455,
+        "p99": 8.5,
+        "max": 8.599999999998545
+      },
+      "gpu": {
+        "count": 7199,
+        "p50": 3.92704,
+        "p95": 5.075968,
+        "p99": 5.563392,
+        "max": 7.9872
+      },
+      "cpu": {
+        "count": 7199,
+        "p50": 1.2999999523162842,
+        "p95": 1.7000000476837158,
+        "p99": 2.1999999284744263,
+        "max": 6.100000023841858
+      },
+      "longFrames50ms": 0,
+      "longFrames33ms": 0,
+      "drawing": {
+        "budgetTriangles": 600000,
+        "budgetCalls": 1200,
+        "triangles": {
+          "count": 7199,
+          "p50": 2637078,
+          "p95": 2638230,
+          "p99": 2638230,
+          "max": 2638230
+        },
+        "drawCalls": {
+          "count": 7199,
+          "p50": 426,
+          "p95": 430,
+          "p99": 430,
+          "max": 430
+        },
+        "trianglesP95Within": false,
+        "drawCallsP95Within": true,
+        "trianglesOverFrames": 7199,
+        "drawCallsOverFrames": 0
+      },
+      "autoPathPeakEstimatedBytes": 69972930,
+      "lifetimePeakIncludingForcedComparisons": 132916385,
+      "cycles": 5,
+      "returnedResources": [
+        81,
+        97,
+        0,
+        69972930,
+        69972930,
+        82,
+        10,
+        19
+      ],
+      "awayResources": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        10,
+        15
+      ],
+      "maxPending": 8,
+      "queryUnreleasedAtPath": 1,
+      "peakConcurrentLoads": 3,
+      "network": {
+        "requests": 5,
+        "transferBytes": 82668925,
+        "encodedBodyBytes": 82667425
+      },
+      "nonDrawingChecks": true,
+      "verified": true
+    },
+    {
+      "name": "beijing-cbd-fixed-16",
+      "rawSha256": "901288588b5a6bd9f813faa3f33cb1a357072e8ca7c2894b2c2c49d467da1527",
+      "sourceSha256": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "source": "public/data/beijing-cbd.json",
+      "chunks": 16,
+      "features": 13293,
+      "area": {
+        "south": 39.9015,
+        "west": 116.449,
+        "north": 39.9175,
+        "east": 116.472
+      },
+      "origin": {
+        "lat": 39.909499999999994,
+        "lon": 116.4605
+      },
+      "tiling": {
+        "divisions": 4
+      },
+      "worldHash": "9402cab19881d7246db5d247da5aad8efc8178963c00c15bbc8c91d16b25311d",
+      "requestedSeconds": 60,
+      "actualElapsedSeconds": 60.00720000007153,
+      "rawFrameSpanSeconds": 60.00260000000001,
+      "frames": 7187,
+      "raf": {
+        "count": 7187,
+        "p50": 8.30000000000291,
+        "p95": 8.400000000001455,
+        "p99": 8.5,
+        "max": 33.400000000001455
+      },
+      "gpu": {
+        "count": 7187,
+        "p50": 5.505024,
+        "p95": 6.808576,
+        "p99": 7.622656,
+        "max": 14.508032
+      },
+      "cpu": {
+        "count": 7187,
+        "p50": 3.0999999046325684,
+        "p95": 3.799999952316284,
+        "p99": 4.600000023841858,
+        "max": 11.200000047683716
+      },
+      "longFrames50ms": 0,
+      "longFrames33ms": 1,
+      "drawing": {
+        "budgetTriangles": 600000,
+        "budgetCalls": 1200,
+        "triangles": {
+          "count": 7187,
+          "p50": 2270639,
+          "p95": 2531375,
+          "p99": 2531375,
+          "max": 2531375
+        },
+        "drawCalls": {
+          "count": 7187,
+          "p50": 1126,
+          "p95": 1298,
+          "p99": 1298,
+          "max": 1298
+        },
+        "trianglesP95Within": false,
+        "drawCallsP95Within": false,
+        "trianglesOverFrames": 7167,
+        "drawCallsOverFrames": 3031
+      },
+      "autoPathPeakEstimatedBytes": 70042338,
+      "lifetimePeakIncludingForcedComparisons": 131747302,
+      "cycles": 5,
+      "returnedResources": [
+        247,
+        303,
+        0,
+        70042338,
+        70042338,
+        248,
+        10,
+        19
+      ],
+      "awayResources": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        10,
+        15
+      ],
+      "maxPending": 8,
+      "queryUnreleasedAtPath": 1,
+      "peakConcurrentLoads": 3,
+      "network": {
+        "requests": 42,
+        "transferBytes": 184820262,
+        "encodedBodyBytes": 184807662
+      },
+      "nonDrawingChecks": true,
+      "verified": true
+    },
+    {
+      "name": "beijing-cbd-grow-1",
+      "rawSha256": "43def67f0c37ef7be8ab1322a305bab6ede6b759954e6ccc805f11a4ecb9ed65",
+      "sourceSha256": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "source": "public/data/beijing-cbd.json",
+      "chunks": 1,
+      "features": 778,
+      "area": {
+        "south": 39.90724843674913,
+        "west": 116.45757624783512,
+        "north": 39.91175156325086,
+        "east": 116.46342375216487
+      },
+      "origin": {
+        "lat": 39.909499999999994,
+        "lon": 116.4605
+      },
+      "tiling": {
+        "sizeMeters": 500
+      },
+      "worldHash": "b72777b68399055bf471cdda8025322859a2624f7464fd9923d5c6c54aa1da39",
+      "requestedSeconds": 60,
+      "actualElapsedSeconds": 60.001100000047686,
+      "rawFrameSpanSeconds": 59.9941,
+      "frames": 7061,
+      "raf": {
+        "count": 7061,
+        "p50": 8.30000000000291,
+        "p95": 8.400000000001455,
+        "p99": 8.5,
+        "max": 66.70000000000073
+      },
+      "gpu": {
+        "count": 7061,
+        "p50": 4.21376,
+        "p95": 5.920768,
+        "p99": 9.510912,
+        "max": 52.32128
+      },
+      "cpu": {
+        "count": 7061,
+        "p50": 1.0999999046325684,
+        "p95": 1.6999999284744263,
+        "p99": 2.899999976158142,
+        "max": 56.90000009536743
+      },
+      "longFrames50ms": 7,
+      "longFrames33ms": 25,
+      "drawing": {
+        "budgetTriangles": 600000,
+        "budgetCalls": 1200,
+        "triangles": {
+          "count": 7061,
+          "p50": 590438,
+          "p95": 592086,
+          "p99": 595658,
+          "max": 599918
+        },
+        "drawCalls": {
+          "count": 7061,
+          "p50": 326,
+          "p95": 350,
+          "p99": 350,
+          "max": 350
+        },
+        "trianglesP95Within": true,
+        "drawCallsP95Within": true,
+        "trianglesOverFrames": 0,
+        "drawCallsOverFrames": 0
+      },
+      "autoPathPeakEstimatedBytes": 18118212,
+      "lifetimePeakIncludingForcedComparisons": 18118212,
+      "cycles": 5,
+      "returnedResources": [
+        33,
+        71,
+        0,
+        9540465,
+        9540465,
+        34,
+        10,
+        21
+      ],
+      "awayResources": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        10,
+        15
+      ],
+      "maxPending": 8,
+      "queryUnreleasedAtPath": 1,
+      "peakConcurrentLoads": 1,
+      "network": {
+        "requests": 182,
+        "transferBytes": 250990544,
+        "encodedBodyBytes": 250970744
+      },
+      "nonDrawingChecks": true,
+      "verified": true
+    },
+    {
+      "name": "beijing-cbd-grow-4",
+      "rawSha256": "17dd762c8bbc01554b0c7db6a226718c1368bd048f523103c6f7107285ec8740",
+      "sourceSha256": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "source": "public/data/beijing-cbd.json",
+      "chunks": 4,
+      "features": 5476,
+      "area": {
+        "south": 39.90499687349826,
+        "west": 116.45465249567025,
+        "north": 39.914003126501726,
+        "east": 116.46634750432975
+      },
+      "origin": {
+        "lat": 39.909499999999994,
+        "lon": 116.4605
+      },
+      "tiling": {
+        "sizeMeters": 500
+      },
+      "worldHash": "6d564de3577495171e4ebc90af321abba3807fa6a3c3510f22f65dc00db30220",
+      "requestedSeconds": 60,
+      "actualElapsedSeconds": 60.0056,
+      "rawFrameSpanSeconds": 60.0026,
+      "frames": 7200,
+      "raf": {
+        "count": 7200,
+        "p50": 8.30000000000291,
+        "p95": 8.400000000001455,
+        "p99": 8.5,
+        "max": 8.60000000000582
+      },
+      "gpu": {
+        "count": 7200,
+        "p50": 3.610624,
+        "p95": 4.77184,
+        "p99": 5.465088,
+        "max": 9.004032
+      },
+      "cpu": {
+        "count": 7200,
+        "p50": 1.100000023841858,
+        "p95": 1.600000023841858,
+        "p99": 1.9000000953674316,
+        "max": 5.799999952316284
+      },
+      "longFrames50ms": 0,
+      "longFrames33ms": 0,
+      "drawing": {
+        "budgetTriangles": 600000,
+        "budgetCalls": 1200,
+        "triangles": {
+          "count": 7200,
+          "p50": 808249,
+          "p95": 810569,
+          "p99": 810569,
+          "max": 810569
+        },
+        "drawCalls": {
+          "count": 7200,
+          "p50": 360,
+          "p95": 368,
+          "p99": 368,
+          "max": 368
+        },
+        "trianglesP95Within": false,
+        "drawCallsP95Within": true,
+        "trianglesOverFrames": 7113,
+        "drawCallsOverFrames": 0
+      },
+      "autoPathPeakEstimatedBytes": 27741887,
+      "lifetimePeakIncludingForcedComparisons": 49068206,
+      "cycles": 5,
+      "returnedResources": [
+        68,
+        84,
+        0,
+        19991754,
+        19991754,
+        69,
+        10,
+        19
+      ],
+      "awayResources": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        10,
+        15
+      ],
+      "maxPending": 8,
+      "queryUnreleasedAtPath": 1,
+      "peakConcurrentLoads": 3,
+      "network": {
+        "requests": 7,
+        "transferBytes": 24610327,
+        "encodedBodyBytes": 24608227
+      },
+      "nonDrawingChecks": true,
+      "verified": true
+    },
+    {
+      "name": "beijing-cbd-grow-9",
+      "rawSha256": "dbcffe19a7d1a7ce89d49bfc879bb9b396cc25af55d21507f4adc5088db7d78b",
+      "sourceSha256": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "source": "public/data/beijing-cbd.json",
+      "chunks": 9,
+      "features": 9417,
+      "area": {
+        "south": 39.9027453102474,
+        "west": 116.45172874350537,
+        "north": 39.91625468975259,
+        "east": 116.46927125649462
+      },
+      "origin": {
+        "lat": 39.909499999999994,
+        "lon": 116.4605
+      },
+      "tiling": {
+        "sizeMeters": 500
+      },
+      "worldHash": "882af445c6802d0aa5aefed76213f2b9c611d4f6a1ea72f7d7eac134be79cc9d",
+      "requestedSeconds": 60,
+      "actualElapsedSeconds": 60.00000000007152,
+      "rawFrameSpanSeconds": 59.99409999999999,
+      "frames": 7189,
+      "raf": {
+        "count": 7189,
+        "p50": 8.30000000000291,
+        "p95": 8.400000000001455,
+        "p99": 8.5,
+        "max": 25.099999999998545
+      },
+      "gpu": {
+        "count": 7189,
+        "p50": 4.48,
+        "p95": 5.90848,
+        "p99": 6.6304,
+        "max": 9.877504
+      },
+      "cpu": {
+        "count": 7189,
+        "p50": 2,
+        "p95": 2.8000000715255737,
+        "p99": 4.199999928474426,
+        "max": 8.699999928474426
+      },
+      "longFrames50ms": 0,
+      "longFrames33ms": 0,
+      "drawing": {
+        "budgetTriangles": 600000,
+        "budgetCalls": 1200,
+        "triangles": {
+          "count": 7189,
+          "p50": 1581048,
+          "p95": 1632516,
+          "p99": 1632516,
+          "max": 1632516
+        },
+        "drawCalls": {
+          "count": 7189,
+          "p50": 691,
+          "p95": 731,
+          "p99": 731,
+          "max": 731
+        },
+        "trianglesP95Within": false,
+        "drawCallsP95Within": true,
+        "trianglesOverFrames": 6858,
+        "drawCallsOverFrames": 0
+      },
+      "autoPathPeakEstimatedBytes": 50529425,
+      "lifetimePeakIncludingForcedComparisons": 87935851,
+      "cycles": 5,
+      "returnedResources": [
+        135,
+        167,
+        0,
+        41734971,
+        41734971,
+        136,
+        10,
+        19
+      ],
+      "awayResources": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        10,
+        15
+      ],
+      "maxPending": 8,
+      "queryUnreleasedAtPath": 1,
+      "peakConcurrentLoads": 3,
+      "network": {
+        "requests": 33,
+        "transferBytes": 110039263,
+        "encodedBodyBytes": 110032363
+      },
+      "nonDrawingChecks": true,
+      "verified": true
+    },
+    {
+      "name": "kyoto-gion-fixed-1",
+      "rawSha256": "177591b23247d891c06450b2ce4a36ddbcee4fdf6f5abd91f46156b502670097",
+      "sourceSha256": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "source": "public/data/kyoto-gion.json",
+      "chunks": 1,
+      "features": 8281,
+      "area": {
+        "south": 34.9995,
+        "west": 135.7688,
+        "north": 35.0078,
+        "east": 135.7812
+      },
+      "origin": {
+        "lat": 35.00365,
+        "lon": 135.775
+      },
+      "tiling": {
+        "divisions": 1
+      },
+      "worldHash": "e08a46b8fd257b3a52fbbfd68493d9fb6a62378e0cb85a9030a5981c25fc73fc",
+      "requestedSeconds": 60,
+      "actualElapsedSeconds": 60.0003,
+      "rawFrameSpanSeconds": 59.9942,
+      "frames": 7199,
+      "raf": {
+        "count": 7199,
+        "p50": 8.30000000000291,
+        "p95": 8.400000000001455,
+        "p99": 8.5,
+        "max": 8.599999999998545
+      },
+      "gpu": {
+        "count": 7199,
+        "p50": 4.497408,
+        "p95": 5.8112,
+        "p99": 6.375424,
+        "max": 7.723008
+      },
+      "cpu": {
+        "count": 7199,
+        "p50": 0.7999999523162842,
+        "p95": 1.2999999523162842,
+        "p99": 1.600000023841858,
+        "max": 3.5
+      },
+      "longFrames50ms": 0,
+      "longFrames33ms": 0,
+      "drawing": {
+        "budgetTriangles": 600000,
+        "budgetCalls": 1200,
+        "triangles": {
+          "count": 7199,
+          "p50": 3090196,
+          "p95": 3090196,
+          "p99": 3090196,
+          "max": 3090196
+        },
+        "drawCalls": {
+          "count": 7199,
+          "p50": 126,
+          "p95": 126,
+          "p99": 126,
+          "max": 126
+        },
+        "trianglesP95Within": false,
+        "drawCallsP95Within": true,
+        "trianglesOverFrames": 7199,
+        "drawCallsOverFrames": 0
+      },
+      "autoPathPeakEstimatedBytes": 102218323,
+      "lifetimePeakIncludingForcedComparisons": 310425736,
+      "cycles": 5,
+      "returnedResources": [
+        26,
+        28,
+        0,
+        102218323,
+        102218323,
+        27,
+        10,
+        19
+      ],
+      "awayResources": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        10,
+        15
+      ],
+      "maxPending": 8,
+      "queryUnreleasedAtPath": 1,
+      "peakConcurrentLoads": 1,
+      "network": {
+        "requests": 2,
+        "transferBytes": 119065213,
+        "encodedBodyBytes": 119064613
+      },
+      "nonDrawingChecks": true,
+      "verified": true
+    },
+    {
+      "name": "kyoto-gion-fixed-4",
+      "rawSha256": "4b74bcd82ff039b929ffc29009d7b60282c13998309e1ae15dd0d7e1c6c5aed7",
+      "sourceSha256": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "source": "public/data/kyoto-gion.json",
+      "chunks": 4,
+      "features": 8281,
+      "area": {
+        "south": 34.9995,
+        "west": 135.7688,
+        "north": 35.0078,
+        "east": 135.7812
+      },
+      "origin": {
+        "lat": 35.00365,
+        "lon": 135.775
+      },
+      "tiling": {
+        "divisions": 2
+      },
+      "worldHash": "e08a46b8fd257b3a52fbbfd68493d9fb6a62378e0cb85a9030a5981c25fc73fc",
+      "requestedSeconds": 60,
+      "actualElapsedSeconds": 60.000899999976156,
+      "rawFrameSpanSeconds": 59.994200000000006,
+      "frames": 7199,
+      "raf": {
+        "count": 7199,
+        "p50": 8.30000000000291,
+        "p95": 8.400000000001455,
+        "p99": 8.5,
+        "max": 8.600000000002183
+      },
+      "gpu": {
+        "count": 7199,
+        "p50": 4.063232,
+        "p95": 5.20192,
+        "p99": 5.753856,
+        "max": 7.84384
+      },
+      "cpu": {
+        "count": 7199,
+        "p50": 1.4000000953674316,
+        "p95": 1.899999976158142,
+        "p99": 2.3000000715255737,
+        "max": 7.100000023841858
+      },
+      "longFrames50ms": 0,
+      "longFrames33ms": 0,
+      "drawing": {
+        "budgetTriangles": 600000,
+        "budgetCalls": 1200,
+        "triangles": {
+          "count": 7199,
+          "p50": 3086496,
+          "p95": 3090196,
+          "p99": 3090196,
+          "max": 3090196
+        },
+        "drawCalls": {
+          "count": 7199,
+          "p50": 451,
+          "p95": 475,
+          "p99": 475,
+          "max": 475
+        },
+        "trianglesP95Within": false,
+        "drawCallsP95Within": true,
+        "trianglesOverFrames": 7199,
+        "drawCallsOverFrames": 0
+      },
+      "autoPathPeakEstimatedBytes": 101761603,
+      "lifetimePeakIncludingForcedComparisons": 250251169,
+      "cycles": 5,
+      "returnedResources": [
+        99,
+        107,
+        0,
+        101761603,
+        101761603,
+        100,
+        10,
+        19
+      ],
+      "awayResources": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        10,
+        15
+      ],
+      "maxPending": 8,
+      "queryUnreleasedAtPath": 1,
+      "peakConcurrentLoads": 3,
+      "network": {
+        "requests": 5,
+        "transferBytes": 119267062,
+        "encodedBodyBytes": 119265562
+      },
+      "nonDrawingChecks": true,
+      "verified": true
+    },
+    {
+      "name": "kyoto-gion-fixed-16",
+      "rawSha256": "38653ad2b43be7cfc12427153ed491b5d0810be25f7206b0a525cc41947959f2",
+      "sourceSha256": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "source": "public/data/kyoto-gion.json",
+      "chunks": 16,
+      "features": 8281,
+      "area": {
+        "south": 34.9995,
+        "west": 135.7688,
+        "north": 35.0078,
+        "east": 135.7812
+      },
+      "origin": {
+        "lat": 35.00365,
+        "lon": 135.775
+      },
+      "tiling": {
+        "divisions": 4
+      },
+      "worldHash": "e08a46b8fd257b3a52fbbfd68493d9fb6a62378e0cb85a9030a5981c25fc73fc",
+      "requestedSeconds": 60,
+      "actualElapsedSeconds": 60.005499999928475,
+      "rawFrameSpanSeconds": 60.00240000000001,
+      "frames": 7185,
+      "raf": {
+        "count": 7185,
+        "p50": 8.30000000000291,
+        "p95": 8.400000000001455,
+        "p99": 8.5,
+        "max": 58.29999999999927
+      },
+      "gpu": {
+        "count": 7185,
+        "p50": 5.67296,
+        "p95": 7.036928,
+        "p99": 7.3472,
+        "max": 11.602944
+      },
+      "cpu": {
+        "count": 7185,
+        "p50": 3.600000023841858,
+        "p95": 4.399999976158142,
+        "p99": 5.200000047683716,
+        "max": 11.5
+      },
+      "longFrames50ms": 1,
+      "longFrames33ms": 2,
+      "drawing": {
+        "budgetTriangles": 600000,
+        "budgetCalls": 1200,
+        "triangles": {
+          "count": 7185,
+          "p50": 2860872,
+          "p95": 3090196,
+          "p99": 3090196,
+          "max": 3090196
+        },
+        "drawCalls": {
+          "count": 7185,
+          "p50": 1268,
+          "p95": 1404,
+          "p99": 1404,
+          "max": 1404
+        },
+        "trianglesP95Within": false,
+        "drawCallsP95Within": false,
+        "trianglesOverFrames": 7185,
+        "drawCallsOverFrames": 4063
+      },
+      "autoPathPeakEstimatedBytes": 101850703,
+      "lifetimePeakIncludingForcedComparisons": 227971537,
+      "cycles": 5,
+      "returnedResources": [
+        289,
+        321,
+        0,
+        101850703,
+        101850703,
+        290,
+        10,
+        19
+      ],
+      "awayResources": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        10,
+        15
+      ],
+      "maxPending": 8,
+      "queryUnreleasedAtPath": 1,
+      "peakConcurrentLoads": 3,
+      "network": {
+        "requests": 38,
+        "transferBytes": 220155616,
+        "encodedBodyBytes": 220144216
+      },
+      "nonDrawingChecks": true,
+      "verified": true
+    },
+    {
+      "name": "kyoto-gion-grow-1",
+      "rawSha256": "7fb907b223454c75141fc86d97a706b1cd0d4b409d3ba2ddc9025293d64606d5",
+      "sourceSha256": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "source": "public/data/kyoto-gion.json",
+      "chunks": 1,
+      "features": 883,
+      "area": {
+        "south": 35.00229793628537,
+        "west": 135.77335678027748,
+        "north": 35.00500206371463,
+        "east": 135.77664321972253
+      },
+      "origin": {
+        "lat": 35.00365,
+        "lon": 135.775
+      },
+      "tiling": {
+        "sizeMeters": 300
+      },
+      "worldHash": "ae5a5b1f688da1f62b885c8ef2723e06dc72f3838e0a9573a116c450b50665c1",
+      "requestedSeconds": 60,
+      "actualElapsedSeconds": 60.0013,
+      "rawFrameSpanSeconds": 59.994200000000006,
+      "frames": 7125,
+      "raf": {
+        "count": 7125,
+        "p50": 8.30000000000291,
+        "p95": 8.400000000001455,
+        "p99": 8.5,
+        "max": 333.40000000000146
+      },
+      "gpu": {
+        "count": 7125,
+        "p50": 4.0192,
+        "p95": 6.350848,
+        "p99": 9.767936,
+        "max": 236.583936
+      },
+      "cpu": {
+        "count": 7125,
+        "p50": 0.6000000238418579,
+        "p95": 1,
+        "p99": 1.2000000476837158,
+        "max": 251.89999997615814
+      },
+      "longFrames50ms": 3,
+      "longFrames33ms": 3,
+      "drawing": {
+        "budgetTriangles": 600000,
+        "budgetCalls": 1200,
+        "triangles": {
+          "count": 7125,
+          "p50": 83980,
+          "p95": 83980,
+          "p99": 83980,
+          "max": 497820
+        },
+        "drawCalls": {
+          "count": 7125,
+          "p50": 81,
+          "p95": 81,
+          "p99": 81,
+          "max": 2626
+        },
+        "trianglesP95Within": true,
+        "drawCallsP95Within": true,
+        "trianglesOverFrames": 0,
+        "drawCallsOverFrames": 10
+      },
+      "autoPathPeakEstimatedBytes": 20024790,
+      "lifetimePeakIncludingForcedComparisons": 20024790,
+      "cycles": 5,
+      "returnedResources": [
+        16,
+        18,
+        0,
+        2872795,
+        2872795,
+        17,
+        10,
+        19
+      ],
+      "awayResources": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        10,
+        15
+      ],
+      "maxPending": 8,
+      "queryUnreleasedAtPath": 1,
+      "peakConcurrentLoads": 1,
+      "network": {
+        "requests": 7,
+        "transferBytes": 46840748,
+        "encodedBodyBytes": 46838948
+      },
+      "nonDrawingChecks": true,
+      "verified": true
+    },
+    {
+      "name": "kyoto-gion-grow-4",
+      "rawSha256": "e48ca7fb74bcac7cf70d9af7704deb2a48a24d8d8ca392e5dbd4f2d6984c7cb5",
+      "sourceSha256": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "source": "public/data/kyoto-gion.json",
+      "chunks": 4,
+      "features": 3329,
+      "area": {
+        "south": 35.000945872570746,
+        "west": 135.77171356055496,
+        "north": 35.006354127429255,
+        "east": 135.77828643944505
+      },
+      "origin": {
+        "lat": 35.00365,
+        "lon": 135.775
+      },
+      "tiling": {
+        "sizeMeters": 300
+      },
+      "worldHash": "9c59fea47f8d2873ab03b91b68cd944fd3e14ec186ff2462a5b5a9e3a3259986",
+      "requestedSeconds": 60,
+      "actualElapsedSeconds": 60.00279999990463,
+      "rawFrameSpanSeconds": 60.0025,
+      "frames": 7200,
+      "raf": {
+        "count": 7200,
+        "p50": 8.30000000000291,
+        "p95": 8.400000000001455,
+        "p99": 8.5,
+        "max": 8.800000000000182
+      },
+      "gpu": {
+        "count": 7200,
+        "p50": 3.648512,
+        "p95": 4.852736,
+        "p99": 5.368832,
+        "max": 7.42912
+      },
+      "cpu": {
+        "count": 7200,
+        "p50": 1.2000000476837158,
+        "p95": 1.7000000476837158,
+        "p99": 2.100000023841858,
+        "max": 5.199999928474426
+      },
+      "longFrames50ms": 0,
+      "longFrames33ms": 0,
+      "drawing": {
+        "budgetTriangles": 600000,
+        "budgetCalls": 1200,
+        "triangles": {
+          "count": 7200,
+          "p50": 783920,
+          "p95": 785420,
+          "p99": 785420,
+          "max": 785420
+        },
+        "drawCalls": {
+          "count": 7200,
+          "p50": 322,
+          "p95": 342,
+          "p99": 342,
+          "max": 342
+        },
+        "trianglesP95Within": false,
+        "drawCallsP95Within": true,
+        "trianglesOverFrames": 7199,
+        "drawCallsOverFrames": 0
+      },
+      "autoPathPeakEstimatedBytes": 26622724,
+      "lifetimePeakIncludingForcedComparisons": 95753240,
+      "cycles": 5,
+      "returnedResources": [
+        70,
+        78,
+        0,
+        26622724,
+        26622724,
+        71,
+        10,
+        19
+      ],
+      "awayResources": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        10,
+        15
+      ],
+      "maxPending": 8,
+      "queryUnreleasedAtPath": 1,
+      "peakConcurrentLoads": 3,
+      "network": {
+        "requests": 5,
+        "transferBytes": 31063640,
+        "encodedBodyBytes": 31062140
+      },
+      "nonDrawingChecks": true,
+      "verified": true
+    },
+    {
+      "name": "kyoto-gion-grow-9",
+      "rawSha256": "362f3bed67dcbc784d786f7dbe3f34c46f94d1a88d740c3e275529652710223b",
+      "sourceSha256": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "source": "public/data/kyoto-gion.json",
+      "chunks": 9,
+      "features": 6698,
+      "area": {
+        "south": 34.99959380885612,
+        "west": 135.77007034083243,
+        "north": 35.00770619114388,
+        "east": 135.77992965916758
+      },
+      "origin": {
+        "lat": 35.00365,
+        "lon": 135.775
+      },
+      "tiling": {
+        "sizeMeters": 300
+      },
+      "worldHash": "83d5e149c3c4cdc4398dd6cdf80132679836a5dff7bc93459654dd2e1570079d",
+      "requestedSeconds": 60,
+      "actualElapsedSeconds": 60.008000000095365,
+      "rawFrameSpanSeconds": 60.0024,
+      "frames": 7166,
+      "raf": {
+        "count": 7166,
+        "p50": 8.30000000000291,
+        "p95": 8.400000000001455,
+        "p99": 8.5,
+        "max": 100
+      },
+      "gpu": {
+        "count": 7166,
+        "p50": 4.619264,
+        "p95": 5.896192,
+        "p99": 6.474752,
+        "max": 37.429248
+      },
+      "cpu": {
+        "count": 7166,
+        "p50": 2.299999952316284,
+        "p95": 2.700000047683716,
+        "p99": 3.3000000715255737,
+        "max": 10.600000023841858
+      },
+      "longFrames50ms": 2,
+      "longFrames33ms": 6,
+      "drawing": {
+        "budgetTriangles": 600000,
+        "budgetCalls": 1200,
+        "triangles": {
+          "count": 7166,
+          "p50": 2469712,
+          "p95": 2499436,
+          "p99": 2499436,
+          "max": 2499436
+        },
+        "drawCalls": {
+          "count": 7166,
+          "p50": 742,
+          "p95": 806,
+          "p99": 806,
+          "max": 1627
+        },
+        "trianglesP95Within": false,
+        "drawCallsP95Within": true,
+        "trianglesOverFrames": 6943,
+        "drawCallsOverFrames": 7
+      },
+      "autoPathPeakEstimatedBytes": 105491697,
+      "lifetimePeakIncludingForcedComparisons": 194110046,
+      "cycles": 5,
+      "returnedResources": [
+        165,
+        183,
+        0,
+        83717857,
+        83717857,
+        166,
+        10,
+        19
+      ],
+      "awayResources": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        10,
+        15
+      ],
+      "maxPending": 8,
+      "queryUnreleasedAtPath": 1,
+      "peakConcurrentLoads": 3,
+      "network": {
+        "requests": 33,
+        "transferBytes": 232102484,
+        "encodedBodyBytes": 232095284
+      },
+      "nonDrawingChecks": true,
+      "verified": true
+    }
+  ],
+  "reviewHead": "4dd35b3985c45ad8f7416612050e6033700199e8",
+  "inputHashes": {
+    "summary.json": "3d43df8b61ae6c63f51482e5b666edbb0395179d148187404546025944070a16",
+    "assessment.json": "7179f80ce095c90bd352d961cd020348e8f15530029fddd0c26bd5a947e89d47",
+    "README.md": "8bd5c88a922a1c8ca1956195ec71fc45e79d5174a2f4dcc667eef8dbb7b75a45"
+  },
+  "checkedAssessmentMaximaAndOverrunCounts": true
+}

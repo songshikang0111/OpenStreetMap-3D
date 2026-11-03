@@ -2,9 +2,9 @@
 
 日期：2026-11-03（Windows x64，Node v22.11.0）。角色：`/root/architecture_review`，非实现者。工作仅在 `codex/phase1-integration` 的指定 worktree；未修改产品文件、未暂存、未提交、未操作 main／其他 worktree。只新增获准的 ignored `work/architecture-review/` 复现脚本和结果。
 
-主要审查功能提交：`2c013fb0f8114c2dd1cba67ee1a2cd131e565aed`。此前核心／协议／导出完整定向复验功能提交为 `6f77859`，此次追加真实 Three.js／OrbitControls 相机复验。当前 `29ebab7` 仅修 CLI 测试的时序假设，实际产品代码仍为 `2c013fb`。旧 `73738b3` GPU 八案矩阵已取消并整体移入 ignored `work/performance-before-street-camera-fix/`，不再作为正式最终矩阵；正式 `performance/` 只接受最终相机修复后 bundle 的 12 案。
+主要审查产品提交：`2c013fb0f8114c2dd1cba67ee1a2cd131e565aed`；完整正式GPU矩阵冻结运行提交为 `9407af9c752b6b7cfc32eb4fb17622824e453cfd`，SDK bundle SHA-256为 `d22408bc6be5535a5ddd2645bdb22ddcde79c25103cd6721407a2abe5a2a0900`。此前核心／协议／导出定向复验功能提交为 `6f77859`，相机修复在2c独立复验。当前4dd35b3为文档／汇总脚本提交。旧737八案取消归档，仅作修前历史，不混入本次正式12案。
 
-结论：本角色已复现的代码 P1/P2 均已由实现者修复并复验关闭；新增上视相机／残余阻尼缺陷由另一独立角色发现，本角色已在 `2c013fb` 独立复验关闭。审查范围内未再发现未关闭的 P1/P2。**一期整体不能宣布全部通过**：AC04 真实下载仍失败；旧 GPU 样本有默认三角预算未达风险，最终 AC18／AC20 结论必须等待相机修复后新 bundle 的完整 12 项矩阵。本角色未启动任何 GPU 浏览器，Node 资源往返不是 GPU 内存测量。
+结论：本角色发现的代码P1/P2均已由实现者修复并复验关闭，另一角色发现的相机缺陷也已由本角色独立复验。正式12案raw已全部独立重算，统计一致性和AC20帧率／统计目标pass，AC18绘制预算fail；最新AC04真实下载仍fail，整体AC27因另一独立UI角色未能进入UI而not-run。因此**一期整体不能宣布全部通过**。本角色未启动GPU浏览器，本次只读核算已有硬件结果，Node资源往返不是GPU内存测量。
 
 ## 发现及关闭
 
@@ -53,19 +53,20 @@ node work/architecture-review/review-streaming.mjs
 | AC12 道路／水域 | 共享三角形不随切块改变的 CPU 断言 pass；最终真实画面接缝 not-run（本角色） |
 | AC15 地标更新 | pass：真实 worker 两版规则、锁、重建和精确回退 |
 | AC16 LOD | pass（真实不同 CPU 资产）；真实 WebGL 提交由父任务原始实验及另一角色验收 |
-| AC18 全部预算达成 | **未通过／等待最终矩阵**：修前 737 raw 的整帧 triangles p95=2638236>默认600000，为历史风险，不能当成 2c013fb 正式结果；明确诊断不等于预算达成 |
-| AC19 生命周期 | pass（本角色 Node 引用／数组五往返）；最终硬件矩阵 not-run（本角色），旧 737 raw 抽查只保留为修前历史 |
+| AC18 全部预算达成 | **fail**：正式12案10案三角p95>600000、两16块案draws p95>1200；另有逐帧短时超限，详见最终性能独立复算 |
+| AC19 生命周期 | pass（本角色Node；正式12案raw全部60次资源往返已独立核算稳定，无持续增长）；本角色没有重新运行GPU |
+| AC20 扩区性能 | pass（完整60秒证据、统计口径与p95帧间隔目标）；不覆盖AC18预算fail，不能解释为综合性能全部通过 |
 | AC25 服务边界 | pass（Node 测试：loopback/Host/Origin、路径／junction、项目／队列锁、取消和固定任务枚举） |
 | AC26 包边界 | pass（当前 dry-run 文件和入口）；最终隔离安装／生产 bundle 的最新修复验收由集成者收尾，本角色 not-run |
-| AC27 独立审查 | 此架构角色完成且所有发现复验关闭；另一独立 UI／SDK／硬件角色及最终矩阵须另有结论 |
+| AC27 独立审查 | **not-run（整体）**：本架构角色及raw核算完成；据协调者记录，另一独立UI角色被URL工具拒绝／浏览器不可用而未进入UI，作者UI操作不能替代规划§15双角色要求 |
 
-其他验收：AC01 全量旧测试／build、AC02/03/08/13/14/17/21 的完整 UI／静态浏览器流程、AC22 PNG 像素／署名实际图像、AC23 的真实多项目总链、AC24 陌生开发者浏览器扩展，不由本角色本轮独立重跑，不借作者组件 pass 宣称整项完成。AC04 当前仍为 **fail**：最新已读 `integration/network-results.json` 日期 2026-11-03T10:14:09.362Z，默认源 TIMEOUT；本角色没有再发外网请求。AC20 修前 737 八案矩阵已取消并归档，最终 2c013fb 新 bundle 的 12 案矩阵待重新运行，维持 **not-run／未完成汇总**；旧样本不能用作最终通过依据。
+其他验收：AC01 全量旧测试／build、AC02/03/08/13/14/17/21 的完整 UI／静态浏览器流程、AC22 PNG 像素／署名实际图像、AC23 的真实多项目总链、AC24 陌生开发者浏览器扩展，不由本角色本轮独立重跑，不借作者组件 pass 宣称整项完成。AC04 当前仍为 **fail**：最新真实获取记录截至2026-11-03T10:50:50Z仍为默认源TIMEOUT；本角色没有再发外网请求。AC20最终9407冻结的12案已全部完成并只读独立核算，帧间隔／统计目标pass，但AC18预算fail，整体仍不通过。
 
 ## 修前 73738b3 GPU raw 的历史抽样审计（不作为最终矩阵）
 
 当时只读审计父任务的修前 fixed-1 JSON；完整原始文件现单独保存为 `work/architecture-review/fixed1-before-camera.json`，来源为 `work/performance-before-street-camera-fix/beijing-cbd-fixed-1.json`，对应旧 `73738b3` bundle，不会与今后正式目录的同名结果混淆：60 秒路径，7199 个原始帧、帧时间跨度 59985.8 ms；独立用 nearest-rank 重算 RAF p95=8.4 ms、GPU p95=5.479424 ms，与报告一致。硬件记录 Chrome 156、WebGL2、NVIDIA RTX4090；GPU query created-deleted=1≤maxPending8，7199 个硬件样本；五个生命周期循环存在。源码 `GpuFrameTimer.begin/end` 包裹整个 pipeline.render，renderer.info.autoReset=false 后每帧 reset，rendererPrograms 在全帧统计中记录。
 
-同一 raw 的三角 p95=2638236 > 600000；存在 LOD_BUDGET_DOWNGRADE、MEASURED_DRAW_BUDGET、COVERAGE_EXCEEDS_BUDGET。帧率目标达到、最低覆盖预算未达是两个独立结论。旧 737 八案均已取消／归档；没有将其作为最终全矩阵结果。最终相机修复后新 12 案完成后再追加只读 raw 复核。本角色没有抢用 GPU，也没有将 CPU 数据称为硬件 GPU／显存证明。非 Windows、移动 GPU 未验证。
+同一 raw 的三角 p95=2638236 > 600000；存在 LOD_BUDGET_DOWNGRADE、MEASURED_DRAW_BUDGET、COVERAGE_EXCEEDS_BUDGET。帧率目标达到、最低覆盖预算未达是两个独立结论。旧 737 八案均已取消／归档；没有将其作为最终全矩阵结果。最终12案已完成，新的独立复算见后附正式章节；历史样本不参与正式结论。本角色没有抢用 GPU，也没有将 CPU 数据称为硬件 GPU／显存证明。非 Windows、移动 GPU 未验证。
 
 ## 2c013fb 相机修复独立追加复验
 
@@ -74,6 +75,12 @@ node work/architecture-review/review-streaming.mjs
 - 使用真实 Three.js PerspectiveCamera 与 OrbitControls，无 DOM、无 WebGL；旧 `.495π` 限制在原街道上视机位产生 3.23568112276681 m 位置偏差，确认了原问题。
 - 修复后四个机位包含两个街道上视、一个低机位上视及一个俯视；在真实 controls 中先留下旋转／平移／dolly 阻尼残量，再 applyView，连续更新30次。位置最大误差 3.18e-14 m，target 最大误差 1.01e-14 m，视线方向最大误差 3.52e-16，均远小于 1e-8；fov／near 正确，enableDamping 恢复。
 - 九类无效输入（含 null/undefined、NaN near、FOV越界、缺维target、非有限position/target、near0）全部在任何 camera／target／FOV／near／projection／damping 状态改变前拒绝，验证异常原子性。
-- 只读核对 SDK 初始化 `controls.maxPolarAngle=Math.PI`，setView 委托 applyView 后 invalidateSchedule；实际 SDK 模块可在 Node import。本角色没有创建 WebGLRenderer 或抢用浏览器；视觉与硬件指标仍由另一角色及最终新矩阵给出。
+- 只读核对 SDK 初始化 `controls.maxPolarAngle=Math.PI`，setView 委托 applyView 后 invalidateSchedule；实际 SDK 模块可在 Node import。本角色没有创建 WebGLRenderer 或抢用浏览器；独立UI验收整体仍not-run，正式硬件raw复算结论见后附12案章节。
 
 此前角色／编码／worker／生命周期结论未因本次仅相机接线改动而重新冒充全量重跑；本节记录的是上述实际新增验证。
+
+## 正式12案矩阵完成后的独立追加复算
+
+详见同目录 `final-performance-review.md`／`final-performance-review.json`，命令 `node work/architecture-review/review-performance.mjs`。使用全部86109帧及86109 GPU样本重算最近秩p50/p95/p99/max，0项不一致；实际相机路径elapsed均≥60秒；13个>50ms长帧保留；60轮资源返回基线精确稳定，GPU查询数量有界。正式bundle哈希与summary一致；旧737 raw保持历史标签。
+
+12案RAF p95均8.4ms，GPU p95为4.771840–7.036928ms，自动路径峰估算100.60MiB。10案三角p95和两16块案draws p95未达默认预算，assessment/README没有掩盖整体fail。京都grow1/9另有10／7帧draws瞬时超限，p95列通过不等于逐帧硬上限通过。AC20采用明确限定的统计／帧间隔目标pass；AC18 fail、AC04 fail、整体AC27 not-run，一期整体不通过。本角色没有重新运行硬件实验。

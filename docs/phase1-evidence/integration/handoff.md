@@ -1,6 +1,6 @@
 # 一期 E：工作台、集成与总验收交接
 
-分支：`codex/phase1-integration`。唯一开发目录：`C:\Users\宋世康\.codex\worktrees\phase1-integration\beijing-city-ink`。未在原main开发、合并main、推送、远端发布或部署。产品功能修复至 `2c013fb`，最终浏览器性能冻结入口提交 `9407af9`。**当前最后矩阵正在运行；一期不是全部验收通过状态。**
+分支：`codex/phase1-integration`。唯一开发目录：`C:\Users\宋世康\.codex\worktrees\phase1-integration\beijing-city-ink`。未在原main开发、合并main、推送、远端发布或部署。产品功能修复至 `2c013fb`，最终浏览器性能冻结入口提交 `9407af9`。**集成与最终矩阵已完成；AC04、AC18未通过，独立UI子项not-run，一期不是全部验收通过状态。**
 
 ## 集成和实现
 
@@ -16,9 +16,9 @@ A `198a8e0`、B `e626097`、C `8300ee7` 已完整合入；D自有实现及最终
 
 ## 验证
 
-已完成264/264测试、严格TS、三套build、真实端到端七项、121文件pack/隔离离线安装、两个独立角色审查与缺陷复验。实现者最终工作台实际操作与截图已归档；独立CUA工作台流程受工具URL确认限制not-run，见 acceptance.md 明确边界。最后12×60秒真实北京/京都性能与每例五次往返正在运行；完成前不宣布性能全通过。
+已完成264/264测试、严格TS、三套build、真实端到端七项、121文件pack/隔离离线安装、两个独立角色审查与缺陷复验。实现者最终工作台实际操作与截图已归档；独立CUA工作台流程受工具URL确认限制not-run，见 acceptance.md 明确边界。最终12×60秒真实北京/京都路径p95均8.4ms，GPU p95为4.77–7.04ms，共60次资源往返稳定；10/12样本默认整帧三角预算未达，两组16块draws也超限。性能目标pass与预算fail分别记录，不宣布一期全部通过。
 
-原始证据入口：[逐项AC](acceptance.md)、[端到端](e2e-results.json)、[包](package-results.json)、[CPU构建](build-results.json)、[真实网络失败](network-results.json)、[工作台](studio-ui-results.json)、[架构独立审查](review-architecture/final-review.md)、[SDK独立审查](review-studio/README.md)。
+原始证据入口：[逐项AC](acceptance.md)、[端到端](e2e-results.json)、[包](package-results.json)、[CPU构建](build-results.json)、[真实网络失败](network-results.json)、[最终性能](performance/README.md)、[工作台](studio-ui-results.json)、[架构独立审查](review-architecture/final-review.md)、[SDK独立审查](review-studio/README.md)。
 
 ## 运行与恢复
 
