@@ -1,3 +1,4 @@
+import { drawUnitsError } from '../core/scene-manifest.js';
 import { Box3, Matrix4, Sphere, Vector3 } from 'three';
 
 export function runtimeError(code, stage, message, details = {}) {
@@ -37,6 +38,8 @@ export function normalizeManifest(manifest, url) {
       if (typeof lod.uri !== 'string' || !Number.isFinite(lod.bytes) || lod.bytes < 0 || !Number.isFinite(lod.triangles) || lod.triangles < 0) {
         throw runtimeError('INVALID_LOD', 'manifest', `Invalid LOD resource in ${chunk.id}.`, { tileId: chunk.id, url });
       }
+      const unitsError = drawUnitsError(lod);
+      if (unitsError) throw runtimeError('INVALID_LOD', 'manifest', unitsError, { tileId: chunk.id, url });
       const detailRank = rank(lod.id ?? lod.level);
       const drawUnits = lod.drawUnits?.map(unit => ({ ...unit, sphere: boundsBox(unit.bounds).getBoundingSphere(new Sphere()) }));
       return { ...lod, drawUnits, level: lod.level ?? lod.id ?? i, rank: Number.isFinite(detailRank) ? detailRank : i, url: new URL(lod.uri, url).href };

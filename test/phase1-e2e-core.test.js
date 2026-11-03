@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {compileScene,validateProjectConfig} from '../src/core/index.js';
+import {compileScene,validateProjectConfig,validateSceneManifest} from '../src/core/index.js';
 import {decodeChunk} from '../src/core/scene-codec.js';
 import {createLandmarkRegistry} from '../src/landmark-registry.js';
 import {bindSceneStyle} from '../src/styles/index.js';
@@ -55,4 +55,15 @@ test('CINK partitions and far batches preserve roof/wall/structure roles for ext
     }
     for(const role of ['wall','roof','structure'])assert.ok(seen.has(role),`${level} missing ${role}`);
   }
+});
+
+test('actual compiler drawUnits validate before budget scheduling and reject malformed or underestimated costs',async()=>{
+  const {normalizeManifest}=await import('../src/runtime/manifest.js');
+  const {raw,config}=continuityFixture(),{manifest}=await compileScene(raw,config);
+  assert.equal(validateSceneManifest(manifest).valid,true);normalizeManifest(manifest,'https://example.test/manifest.json');
+  for(const mutate of [lod=>lod.drawUnits={},lod=>lod.drawUnits[0].triangles=-1e9,lod=>lod.drawUnits[0].drawCalls=NaN,lod=>lod.drawUnits[0].bounds=[1,0,0,0,1,1],lod=>lod.drawUnits=[],lod=>lod.drawUnits[0].triangles=0,lod=>lod.drawUnits[0].bounds=[-1e10,0,0,1e10,1,1]]){
+    const invalid=structuredClone(manifest);mutate(invalid.chunks[0].lods[0]);
+    assert.equal(validateSceneManifest(invalid).valid,false);assert.throws(()=>normalizeManifest(invalid,'https://example.test/manifest.json'),{code:'INVALID_LOD',stage:'manifest'});
+  }
+  const legacy=structuredClone(manifest);for(const chunk of legacy.chunks)for(const lod of chunk.lods)delete lod.drawUnits;assert.equal(validateSceneManifest(legacy).valid,true);normalizeManifest(legacy,'https://example.test/manifest.json');
 });

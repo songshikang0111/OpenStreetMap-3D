@@ -1,3 +1,18 @@
+/** Optional per-mesh costs must preserve the resource's complete cost. */
+export function drawUnitsError(lod) {
+  if (lod.drawUnits === undefined) return null;
+  if (!Array.isArray(lod.drawUnits)) return 'drawUnits must be an array.';
+  let triangles = 0, drawCalls = 0;
+  for (const unit of lod.drawUnits) {
+    const b = unit?.bounds;
+    if (!Array.isArray(b) || b.length !== 6 || !b.every(Number.isFinite) || [0,1,2].some(i => b[i] > b[i+3]) || !Number.isSafeInteger(unit.triangles) || unit.triangles < 0 || !Number.isSafeInteger(unit.drawCalls) || unit.drawCalls < 0) return 'drawUnits require ordered finite bounds and non-negative safe integer costs.';
+    if (Array.isArray(lod.bounds) && lod.bounds.length === 6 && [0,1,2].some(i => b[i] < lod.bounds[i] - 1e-6 || b[i+3] > lod.bounds[i+3] + 1e-6)) return 'drawUnits bounds must remain inside LOD bounds.';
+    triangles += unit.triangles; drawCalls += unit.drawCalls;
+  }
+  if (!Number.isSafeInteger(triangles) || !Number.isSafeInteger(drawCalls) || triangles !== lod.triangles || drawCalls !== lod.drawCalls) return 'drawUnits costs must sum to the complete LOD triangles and drawCalls.';
+  return null;
+}
+
 export function validateSceneManifest(manifest) {
   const diagnostics=[],error=(path,message)=>diagnostics.push({code:'INVALID_SCENE_MANIFEST',stage:'manifest',path,message});
   if(!manifest||typeof manifest!=='object')return {valid:false,diagnostics:[{code:'INVALID_SCENE_MANIFEST',stage:'manifest',message:'Manifest must be an object.'}]};
@@ -25,6 +40,7 @@ export function validateSceneManifest(manifest) {
       if(!/^[0-9a-f]{64}$/.test(l.hash)||!Number.isSafeInteger(l.bytes)||l.bytes<=0||!Number.isSafeInteger(l.triangles)||l.triangles<0||!Number.isSafeInteger(l.residentBytes)||l.residentBytes<0)error(lp,'Valid hash, bytes, triangles and residentBytes required.');
       if(!box(l.bounds)||!Number.isFinite(l.geometricError)||l.geometricError<0||l.selection?.metric!=='screen-space-error'||!Number.isFinite(l.selection?.geometricErrorMeters)||l.selection.geometricErrorMeters<0||!Number.isFinite(l.selection?.maxScreenSpaceError)||l.selection.maxScreenSpaceError<0)error(lp,'LOD bounds and selection error required.');
       if(!Number.isSafeInteger(l.drawCalls)||l.drawCalls<0)error(lp,'Non-negative integer drawCalls required.');
+      const unitsError=drawUnitsError(l);if(unitsError)error(`${lp}.drawUnits`,unitsError);
     }}
   }
   const renderIds=new Set();for(const [id,f]of Object.entries(manifest.featureIndex||{})){
