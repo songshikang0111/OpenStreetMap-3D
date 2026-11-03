@@ -45,6 +45,12 @@ test('a higher-priority provider replaces lower endpoint/transport in batch and 
   const first=await runCLI(['data','fetch','--project','resume','--endpoint','http://old-source.test/api','--transport','post','--json'],io);assert.equal(first.status,'failed');
   const resumed=await runCLI(['jobs','resume',first.job.id,'--project','resume','--provider','dresel-europe','--json'],{...io,runner:async job=>{captured=job.parameters;return {status:'succeeded'};}});assert.equal(resumed.status,'succeeded');assert.equal(captured.endpoint,'https://ovp.dresel.systems/api/interpreter');assert.equal(captured.transport,'get');
 });
+test('fallback-only overrides validate against the actual project primary, not a missing override default',async()=>{
+  const root=await temp();await createProject(root,{sample:true,source:{endpoint:'http://custom-primary.test/api',transport:'get'}});
+  const patch={fallbackEndpoints:[DATA_SOURCE_DEFAULTS.endpoint],fallbackPolicy:'unavailable'};
+  await patchProject(root,{source:patch});const config=await readJSON(path.join(root,'city.config.json'));assert.equal(resolveDataSource(config.source).endpoint,'http://custom-primary.test/api');
+  let captured;const result=await runCLI(['data','fetch','--project',root,'--fallback-endpoint',DATA_SOURCE_DEFAULTS.endpoint,'--json'],{stdout:{write:()=>{}},stderr:{write:()=>{}},runner:async job=>{captured=job.parameters;return {status:'succeeded'};}});assert.equal(result.status,'succeeded');assert.deepEqual(resolveDataSource(config.source,captured).fallbackEndpoints,[DATA_SOURCE_DEFAULTS.endpoint]);
+});
 test('OSM object search shares explicit GET fallback semantics and default legacy search caches remain offline',async()=>{
   let calls=[];
   const candidates=await searchPlaces('way/123',{endpoint:'https://search-primary.test/api',transport:'get',fallbackEndpoints:['https://search-backup.test/api'],fallbackPolicy:'unavailable',request:async url=>{const endpoint=new URL(url).origin;calls.push(endpoint);if(endpoint==='https://search-primary.test')throw new CityError('HTTP_ERROR','download','502','retry',{httpStatus:502});return {elements:[{type:'way',id:123,center:{lat:10,lon:20}}]};}});

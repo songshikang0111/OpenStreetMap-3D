@@ -21,10 +21,22 @@ export function dataSourceOverrides(value={}){
   if(!value||typeof value!=='object'||Array.isArray(value))throw new CityError('INVALID_SOURCE','source','Data source must be an object.');
   return Object.fromEntries(DATA_SOURCE_FIELDS.filter(k=>value[k]!==undefined).map(k=>[k,value[k]]));
 }
+function normalizedOverrides(value){
+  const override=dataSourceOverrides(value);
+  if(override.endpoint!==undefined)override.endpoint=validateEndpoint(override.endpoint);
+  if(override.transport!==undefined&&!['post','get'].includes(override.transport))throw new CityError('INVALID_SOURCE','source','source.transport must be post or get.');
+  if(override.fallbackPolicy!==undefined&&!['none','unavailable'].includes(override.fallbackPolicy))throw new CityError('INVALID_SOURCE','source','source.fallbackPolicy must be none or unavailable.');
+  if(override.fallbackEndpoints!==undefined){
+    if(!Array.isArray(override.fallbackEndpoints)||override.fallbackEndpoints.length>2)throw new CityError('INVALID_SOURCE','source','Use at most two explicit fallback endpoints.');
+    override.fallbackEndpoints=override.fallbackEndpoints.map(validateEndpoint);
+    if(new Set(override.fallbackEndpoints).size!==override.fallbackEndpoints.length)throw new CityError('INVALID_SOURCE','source','Fallback endpoints must be distinct.');
+  }
+  return override;
+}
 export function resolveDataSource(...values){
   let config={...DATA_SOURCE_DEFAULTS};
   for(const value of values){
-    const override=dataSourceOverrides(value);
+    const override=normalizedOverrides(value);
     if(override.provider!==undefined){
       const preset=DATA_SOURCE_PROVIDERS.find(p=>p.id===override.provider);
       if(preset)config={...config,provider:preset.id,endpoint:preset.endpoint,transport:preset.transport};
@@ -34,18 +46,16 @@ export function resolveDataSource(...values){
   }
   config.endpoint=validateEndpoint(config.endpoint);
   config.provider=DATA_SOURCE_PROVIDERS.find(p=>p.endpoint===config.endpoint)?.id||'custom';
-  if(!['post','get'].includes(config.transport))throw new CityError('INVALID_SOURCE','source','source.transport must be post or get.');
-  if(!['none','unavailable'].includes(config.fallbackPolicy))throw new CityError('INVALID_SOURCE','source','source.fallbackPolicy must be none or unavailable.');
-  if(!Array.isArray(config.fallbackEndpoints)||config.fallbackEndpoints.length>2)throw new CityError('INVALID_SOURCE','source','Use at most two explicit fallback endpoints.');
-  config.fallbackEndpoints=config.fallbackEndpoints.map(validateEndpoint);
   if(new Set([config.endpoint,...config.fallbackEndpoints]).size!==config.fallbackEndpoints.length+1)throw new CityError('INVALID_SOURCE','source','Primary and fallback endpoints must be distinct.');
   return config;
 }
 // Expand only fields supplied by a preset, before flattening parameter layers.
 // Unrelated fallback defaults must not overwrite an entry's explicit policy.
 export function expandDataSourceOverrides(value={}){
-  const override=dataSourceOverrides(value),resolved=resolveDataSource(override);
-  return override.provider===undefined?override:{...override,endpoint:resolved.endpoint,transport:resolved.transport};
+  const override=normalizedOverrides(value);
+  if(override.provider===undefined)return override;
+  const resolved=resolveDataSource(override);
+  return {...override,endpoint:resolved.endpoint,transport:resolved.transport};
 }
 export function canFallback(error){
   return ['TIMEOUT','NETWORK_ERROR'].includes(error.code)||error.code==='HTTP_ERROR'&&[502,503,504].includes(error.httpStatus);
