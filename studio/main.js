@@ -4,16 +4,16 @@ import {createProjectSettings} from './project-settings.js';
 
 const $ = id => document.getElementById(id), api = createStudioApi();
 const settings=createProjectSettings($);
-const state = {project:null, config:null, viewer:null, loadedStyle:null, preparedStyle:null, manifest:null, job:null, polling:0, disconnected:false, searchEpoch:0, location:{lat:39.9095, lon:116.4605}, lastKind:'build'};
+const state = {project:null, config:null, viewer:null, loadedStyle:null, preparedStyle:null, manifest:null, job:null, polling:0, disconnected:false, actionBusy:false,projectEpoch:0,previewEpoch:0,searchEpoch:0, location:{lat:39.9095, lon:116.4605}, lastKind:'build'};
 const json = value => JSON.stringify(value, null, 2);
 const unwrap = (value, key) => value[key] ?? value.data?.[key] ?? value.data ?? value;
 function diagnostic(error) { $('diagnostics').textContent = error.diagnostics?.length ? json(error.diagnostics) : String(error.message || error); $('diagnostics').classList.add('error'); }
-function action(handler) { return async event => {event?.preventDefault(); try {await handler(event);} catch(error) {diagnostic(error);} }; }
+function action(handler) { return async event => {event?.preventDefault();if(state.actionBusy)return;state.actionBusy=true;enabled();try {await handler(event);} catch(error) {diagnostic(error);}finally{state.actionBusy=false;enabled();} }; }
 function setArea(area) {for (const key of ['south','west','north','east']) $(key).value = area[key];}
 function getArea() {return validateArea(Object.fromEntries(['south','west','north','east'].map(key => [key,$(key).value])));}
 function remember() {localStorage.setItem('city-ink-studio', json({projectId:state.project?.id,jobId:state.job?.id,lastKind:state.lastKind}));}
 function enabled() {
-  const busy = state.job && !isTerminal(state.job);
+  const busy = state.actionBusy || state.job && !isTerminal(state.job);
   for(const id of ['fetch','build','save','web']) $(id).disabled = !state.project || busy;
   $('cancel').disabled = !busy; $('retry').disabled = !state.project || (busy && !state.disconnected);
   for(const id of ['png','glb']) $(id).disabled = !state.viewer || busy;
@@ -21,6 +21,8 @@ function enabled() {
   for(const id of ['seed','tile-size','infer-roofs','landscape','landmarks']) $(id).disabled=!state.project||!!busy;
   for(const id of ['style','quality','style-id','style-entry','style-dependencies','style-assets','style-parameters','apply-style'])$(id).disabled=!state.project||!!busy;
   for(const id of ['source-provider','source-endpoint','source-transport','source-fallback-policy','source-fallbacks'])$(id).disabled=!!busy;
+  for(const id of ['project-name','south','west','north','east','radius','apply-radius','query'])$(id).disabled=!!busy;
+  $('search-form').querySelector('button').disabled=!!busy;
   $('open-form').querySelector('button').disabled=!!busy;
 }
 async function listProjects() {
@@ -30,10 +32,13 @@ async function listProjects() {
   $('connection').textContent='本地服务已连接';
 }
 async function openProject(project,{pendingJob}={}) {
+  const epoch=++state.projectEpoch;++state.previewEpoch;
   project = unwrap(project, 'project');
   if (!project.id) throw new Error('本地服务未返回项目 ID。');
   const detail = unwrap(await api.get(project.id), 'project');
+  if(epoch!==state.projectEpoch)return;
   if(state.project?.id!==project.id) {clearTimeout(state.polling);state.job=pendingJob||null;await disposePreview();state.preparedStyle=null;$('empty').hidden=false;}
+  if(epoch!==state.projectEpoch)return;
   state.project = {...project,...detail}; state.config = detail.config || detail;
   const config=state.config;
   $('project-name').value=config.name; setArea(config.area);
@@ -43,58 +48,76 @@ async function openProject(project,{pendingJob}={}) {
   $('seed').value=config.seed ?? 1;$('tile-size').value=config.tiling?.sizeMeters || 500;$('infer-roofs').checked=config.generation?.inferRoofs || false;$('landscape').checked=config.generation?.landscapeEnabled || false;$('landmarks').checked=config.landmarks?.enabled!==false;
   $('project-info').textContent=`${config.name} · ${state.project.relativePath || state.project.path || state.project.id} · 保存时固化范围、风格和相机`;
   remember(); enabled(); await listProjects();
+  if(epoch!==state.projectEpoch)return;
   const existing=await fetch(`/projects/${encodeURIComponent(state.project.id)}/dist/manifest.json`);
-  if(existing.ok&&!pendingJob) await preview();
+  if(epoch===state.projectEpoch&&existing.ok&&!pendingJob) await preview();
 }
 async function save() {
   if(!state.project) throw new Error('请先打开项目。');
+  const projectId=state.project.id,epoch=state.projectEpoch;
   const patch={name:$('project-name').value,area:getArea(),source:settings.source(state.config.source),style:settings.style(),quality:$('quality').value};
-  await prepareStyle(patch.style);
   patch.seed=$('seed').valueAsNumber;patch.tiling={...state.config.tiling,sizeMeters:$('tile-size').valueAsNumber};
   patch.generation={...state.config.generation,inferRoofs:$('infer-roofs').checked,landscapeEnabled:$('landscape').checked};patch.landmarks={...state.config.landmarks,enabled:$('landmarks').checked};
   if(state.viewer) patch.camera=state.viewer.getView();
-  const result=unwrap(await api.save(state.project.id,patch),'project');
+  await prepareStyle(patch.style,{projectId});
+  if(epoch!==state.projectEpoch)throw new Error('项目已切换，本次保存已停止。');
+  const result=unwrap(await api.save(projectId,patch),'project');
+  if(epoch!==state.projectEpoch)throw new Error('原项目已保存，当前项目已切换。');
   state.config={...state.config,...patch,...result.config};
   $('project-info').textContent=`${state.config.name} · 配置已保存（包括当前相机）`;
 }
-async function prepareStyle(style,{force=false}={}) {
-  const key=JSON.stringify(style),projectId=state.project.id;
+async function prepareStyle(style,{force=false,projectId=state.project.id}={}) {
+  const key=JSON.stringify(style);
   if(!force&&state.preparedStyle?.key===key&&state.preparedStyle.projectId===projectId)return state.preparedStyle.data;
   const data=unwrap(await api.stylePreview(projectId,style),'preview');
-  state.preparedStyle={key,projectId,data};return data;
+  if(state.project?.id===projectId)state.preparedStyle={key,projectId,data};return data;
 }
 async function disposePreview() {
-  try{await state.viewer?.dispose();}finally{state.viewer=null;state.loadedStyle?.dispose();state.loadedStyle=null;}
+  const viewer=state.viewer,loaded=state.loadedStyle;state.viewer=null;state.loadedStyle=null;
+  try{await viewer?.dispose();}finally{loaded?.dispose();}
+}
+async function previewIfBuilt() {
+  const projectId=state.project.id,epoch=state.projectEpoch;
+  const existing=await fetch(`/projects/${encodeURIComponent(projectId)}/dist/manifest.json`);
+  if(existing.ok&&epoch===state.projectEpoch)await preview();
 }
 async function preview() {
-  const prepared=await prepareStyle(settings.style());
-  await disposePreview();$('empty').hidden=false;enabled();
-  const manifestUrl=state.project.manifestUrl || `/projects/${encodeURIComponent(state.project.id)}/dist/manifest.json`;
-  state.manifest=await fetch(manifestUrl).then(async response=>{if(!response.ok)throw new Error('场景清单不可用；请先构建项目。');return response.json();});
+  const epoch=++state.previewEpoch,project=state.project,config=state.config,style=settings.style(),quality=$('quality').value;
+  const current=()=>epoch===state.previewEpoch&&project.id===state.project?.id;
+  const prepared=await prepareStyle(style,{projectId:project.id});if(!current())return;
+  await disposePreview();if(!current())return;$('empty').hidden=false;enabled();
+  const manifestUrl=project.manifestUrl || `/projects/${encodeURIComponent(project.id)}/dist/manifest.json`;
+  const manifest=await fetch(manifestUrl).then(async response=>{if(!response.ok)throw new Error('场景清单不可用；请先构建项目。');return response.json();});if(!current())return;
   const engine=await import(/* @vite-ignore */ new URL(prepared.sdkUrl,location.href).href);
+  if(!current())return;
   const loaded=await engine.loadProjectStyle(prepared.style,{module:prepared.styleModule,baseUrl:new URL(prepared.baseUrl,location.href).href});
+  if(!current()){loaded.dispose();return;}
   let viewer;
-  try{viewer=await engine.createCityViewer({container:$('viewport'),manifestUrl,style:loaded,quality:$('quality').value,onProgress:progress=>{if(state.job&&!isTerminal(state.job))return;$('job-status').textContent=progress.complete?'场景已加载；拖动旋转，滚轮缩放，右键平移。':`加载场景：${progress.stage || json(progress)}`;},onDiagnostic:diagnostic,onSelect:value=>{$('selection').textContent=json(value);}});}catch(error){loaded.dispose();throw error;}
+  try{viewer=await engine.createCityViewer({container:$('viewport'),manifestUrl,style:loaded,quality,onProgress:progress=>{if(!current()||state.job&&!isTerminal(state.job))return;$('job-status').textContent=progress.complete?'场景已加载；拖动旋转，滚轮缩放，右键平移。':`加载场景：${progress.stage || json(progress)}`;},onDiagnostic:error=>{if(current())diagnostic(error);},onSelect:value=>{if(current())$('selection').textContent=json(value);}});}catch(error){loaded.dispose();if(current())throw error;return;}
+  if(!current()){try{await viewer.dispose();}finally{loaded.dispose();}return;}
   state.loadedStyle=loaded;
   try {
-  state.viewer=viewer; $('empty').hidden=true;
-  viewer.setView(state.config.camera || viewsForBounds(state.manifest.bounds).overview);
+  state.viewer=viewer;state.manifest=manifest;$('empty').hidden=true;
+  viewer.setView(config.camera || viewsForBounds(manifest.bounds).overview);
   $('fov').value=viewer.getView().fov;
   $('camera').value=cameraPresetForView(viewer.getView(),state.manifest.bounds);
   enabled();
-  const report=await fetch(`/projects/${encodeURIComponent(state.project.id)}/dist/city.build-lock.json`);
+  const report=await fetch(`/projects/${encodeURIComponent(project.id)}/dist/city.build-lock.json`);
   const lock=report.ok?await report.json():null;
+  if(!current())return;
   $('report').textContent=json({summary:summarizeFeatures(state.manifest.featureIndex),report:lock?.build?.report,sources:state.manifest.sources,attribution:state.manifest.attribution,limitations:'平地近似；未标注高度与部分道路高程为规则推断；地标为参数化近似。'});
   await viewer.whenIdle();
-  $('job-status').textContent='场景已加载；拖动旋转，滚轮缩放，右键平移。';
-  }catch(error){await disposePreview();$('empty').hidden=false;enabled();throw error;}
+  if(current())$('job-status').textContent='场景已加载；拖动旋转，滚轮缩放，右键平移。';
+  }catch(error){if(current()){await disposePreview();$('empty').hidden=false;enabled();throw error;}else{try{await viewer.dispose();}finally{loaded.dispose();}}}
 }
 async function pollJob() {
   clearTimeout(state.polling);
   if(!state.job) return;
+  const jobId=state.job.id,epoch=state.projectEpoch;
   try {
-    state.job=unwrap(await api.job(state.job.id),'job'); state.disconnected=false;
-  }catch(error){state.disconnected=true;diagnostic(error);$('job-status').textContent='服务连接中断；恢复后点击“恢复 / 重试任务”。';enabled();return;}
+    const job=unwrap(await api.job(jobId),'job');if(epoch!==state.projectEpoch||state.job?.id!==jobId)return;
+    state.job=job; state.disconnected=false;
+  }catch(error){if(epoch!==state.projectEpoch||state.job?.id!==jobId)return;state.disconnected=true;diagnostic(error);$('job-status').textContent='服务连接中断；恢复后点击“恢复 / 重试任务”。';enabled();return;}
     const job=state.job;
     const progress=typeof job.progress==='number' ? job.progress : job.progress?.fraction || 0;
     $('progress').value=Math.min(1,progress>1 ? progress/100 : progress);
@@ -152,11 +175,11 @@ $('retry').addEventListener('click',action(async()=>{
   if(state.job && !isTerminal(state.job)) return pollJob();
   await start(state.lastKind,{},state.job?.id);
 }));
-$('style').addEventListener('change',action(async()=>{settings.changeStyle();if(state.project&&$('style').value!=='external'){await save();if(state.viewer)await preview();}}));
-$('apply-style').addEventListener('click',action(async()=>{await prepareStyle(settings.style(),{force:true});await save();const existing=await fetch(`/projects/${encodeURIComponent(state.project.id)}/dist/manifest.json`);if(existing.ok)await preview();$('diagnostics').textContent=json({style:state.config.style,styleBuild:state.preparedStyle.data.report});$('diagnostics').classList.remove('error');}));
+$('style').addEventListener('change',action(async()=>{settings.changeStyle();if(state.project&&$('style').value!=='external'){await save();await previewIfBuilt();}}));
+$('apply-style').addEventListener('click',action(async()=>{await prepareStyle(settings.style(),{force:true});await save();await previewIfBuilt();$('diagnostics').textContent=json({style:state.config.style,styleBuild:state.preparedStyle.data.report});$('diagnostics').classList.remove('error');}));
 $('source-provider').addEventListener('change',()=>settings.chooseProvider());
 $('source-endpoint').addEventListener('input',()=>settings.matchProvider());
-$('quality').addEventListener('change',action(async()=>{if(state.project) {await save();if(state.viewer) await preview();}}));
+$('quality').addEventListener('change',action(async()=>{if(state.project) {await save();await previewIfBuilt();}}));
 $('fov').addEventListener('input',()=>{if(state.viewer) state.viewer.setView({...state.viewer.getView(),fov:Number($('fov').value)});});
 $('camera').addEventListener('change',()=>{
   if(!state.viewer) return;
