@@ -1,0 +1,1190 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "/root/styles_repair_review",
+  "date": "2026-11-03T13:25:32.148Z",
+  "independent": true,
+  "readOnlyTrackedFiles": true,
+  "workspace": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink",
+  "branch": "codex/phase1-styles-repair",
+  "base": "278811f",
+  "initialReviewedCommit": "3f605cb509d18eed2af5386c416f0d121b7b79a8",
+  "reviewedProductCommit": "9ef9b0342f8b8d291dc40b7f26ec737907926589",
+  "conclusion": "pass for the remediation C primitive style-parameter contract after fixing the independently found sparse-enum issue; no whole-phase acceptance claim",
+  "openComponentFindings": [],
+  "findings": [
+    {
+      "id": "C-PARAM-01",
+      "priority": "P2",
+      "title": "Sparse parameter enum slots were skipped and illegal schemas registered successfully",
+      "location": {
+        "file": "src/styles/parameters.js",
+        "initialLine": 31
+      },
+      "reproduction": "Create a normal primitive rule with enum:Array(1) or enum:[1,,]. In the original committed validator Set.size equalled array.length and Array.some skipped the sparse slot, so registerStyle and resolveStyleSelection accepted the illegal enum.",
+      "initialObserved": {
+        "registerStyle": "accepted for both sparse arrays",
+        "resolveStyleSelection": {
+          "parameters": {}
+        }
+      },
+      "sourceIsolatedComparison": [
+        {
+          "name": "sparse-only",
+          "length": 1,
+          "keys": [],
+          "initialCommit": "3f605cb509d18eed2af5386c416f0d121b7b79a8",
+          "initial": {
+            "accepted": true,
+            "resolved": {}
+          },
+          "fixed": {
+            "accepted": false,
+            "error": "Invalid style parameter schema count.enum: Every value must match the type and bounds."
+          }
+        },
+        {
+          "name": "sparse-tail",
+          "length": 2,
+          "keys": [
+            "0"
+          ],
+          "initialCommit": "3f605cb509d18eed2af5386c416f0d121b7b79a8",
+          "initial": {
+            "accepted": true,
+            "resolved": {}
+          },
+          "fixed": {
+            "accepted": false,
+            "error": "Invalid style parameter schema count.enum: Every value must match the type and bounds."
+          }
+        }
+      ],
+      "fixCommit": "9ef9b0342f8b8d291dc40b7f26ec737907926589",
+      "fix": "Replace enum Array.some with for-of so every sparse slot is visited as undefined and fails primitive type validation. Add direct and actual ESM bundle/export regressions.",
+      "retest": {
+        "registerAndResolve": "both sparse arrays rejected",
+        "realESMBundleAndCLI": "both sparse expressions rejected with STYLE_MODULE_INVALID and the complete old site directory hash retained",
+        "loader": "malformed sparse enum module rejected before replacing existing style registration"
+      },
+      "status": "fixed-and-independently-retested"
+    }
+  ],
+  "checks": {
+    "initial": {
+      "commit": "3f605cb509d18eed2af5386c416f0d121b7b79a8",
+      "npmTest": {
+        "exitCode": 0,
+        "tests": 274,
+        "pass": 274,
+        "fail": 0,
+        "skipped": 0
+      },
+      "build": {
+        "exitCode": 0
+      },
+      "testTypes": {
+        "exitCode": 0
+      },
+      "parameterTypecheck": {
+        "exitCode": 0
+      }
+    },
+    "final": {
+      "commit": "9ef9b0342f8b8d291dc40b7f26ec737907926589",
+      "npmTest": {
+        "command": "npm test",
+        "exitCode": 0,
+        "tests": 274,
+        "pass": 274,
+        "fail": 0,
+        "skipped": 0
+      },
+      "build": {
+        "command": "npm run build",
+        "exitCode": 0,
+        "note": "All three build targets passed; existing >500kB chunk-size warning remains."
+      },
+      "testTypes": {
+        "command": "npm run test:types",
+        "exitCode": 0
+      },
+      "parameterTypecheck": {
+        "command": "npx tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 docs/phase1-evidence/remediation/styles/parameter-typecheck.ts",
+        "exitCode": 0
+      },
+      "independentProbe": {
+        "command": "node work/style-parameter-independent-review/probe.mjs",
+        "exitCode": 0,
+        "pureChecks": 62,
+        "registeredMutationChecks": 10,
+        "loaderChecks": 7,
+        "realCLICases": 12,
+        "failedExportCases": 10
+      },
+      "additionalProbe": {
+        "command": "node work/style-parameter-independent-review/additional-probe.mjs",
+        "exitCode": 0,
+        "originalVsFixedSparseComparisons": 2,
+        "realBundledModuleLoaderChecks": 5
+      }
+    }
+  },
+  "coverage": {
+    "numeric": "Finite number, safe-integer endpoints, unsafe integers, fractional bounds, empty integer intervals, NaN/Infinity, numeric-string/boxed/bigint rejection, range endpoints and signed zero.",
+    "defaults": "Only omitted keys use defaults; undefined container is empty, explicit undefined/null property values are rejected, null/array/primitive/date containers rejected, 0/false/empty string retained, optional no-default keys omitted.",
+    "schema": "Unsupported types/keywords, inverted/nonfinite bounds, illegal defaults, default/enum mismatch, mixed/unsafe/fractional/null/undefined/duplicate/empty/sparse enums and metadata type rejection.",
+    "mutation": "Registered schema invalid default/type/range/enum/keyword mutations rejected on both getStyle and resolveStyleSelection; restored valid schema works.",
+    "sharedContract": "Public resolve and injected loader checks plus actual emitted ESM/chunk module loading with public loadProjectStyle; fractional positive/negative, out-of-range and null values rejected; boundary 5 accepted.",
+    "atomicExport": "Actual CLI build and standard web export followed by ten malformed saved-value or ESM schema cases. bundleProjectStyle and CLI export failed. Full sorted site file-content tree hash and file count stayed identical; validation/staging directories cleaned.",
+    "schemaAndTypes": "Primitive union, closed object/rule shapes, primitive enum/default types and safe-integer bounds inspected in the actual Schema. TypeScript strict consumer with expected invalid-assignment diagnostics passed. Documented cross-field min/max/default/enum checks are intentionally runtime additions, without adding a general JSON Schema engine.",
+    "prototypeKeys": "Null-prototype parameter/schema dictionaries and an own __proto__ parameter retain correct values without changing result prototype."
+  },
+  "ownership": {
+    "changedFiles": [
+      "docs/extensions.md",
+      "docs/phase1-evidence/remediation/styles/handoff.md",
+      "docs/phase1-evidence/remediation/styles/parameter-typecheck.ts",
+      "packages/styles/README.md",
+      "packages/styles/index.d.ts",
+      "schemas/style.schema.json",
+      "src/styles/index.d.ts",
+      "src/styles/index.js",
+      "src/styles/parameters.js",
+      "test/phase1-style-parameters.test.js"
+    ],
+    "forbiddenScopeChanges": [],
+    "trackedDiffAtReview": [],
+    "reviewerProductEdits": false,
+    "reviewerCommits": false
+  },
+  "acceptanceScope": {
+    "AC24": "pass for this primitive parameter contract slice, including public types, Schema shape, documented runtime cross-field behavior, saved-value normalization and validation through register/get/resolve/load/bundle/export.",
+    "AC27": "pass for this independent component review and sparse-enum defect-fix retest; not final integrated phase acceptance."
+  },
+  "excludedScope": [
+    "SDK AO quality override and original R4 SDK behavior remain owned by D; this change does not modify SDK/runtime.",
+    "Whole-phase AC01-AC27, rendering/GPU performance, integrated production package installation and E Studio/service/save wiring are not tested or declared passed by this review.",
+    "No GPU session, screenshot, remote network request, external deployment, other worktree write or main-branch change was performed."
+  ],
+  "evidence": {
+    "independentProbe": {
+      "date": "2026-11-03T13:22:25.155Z",
+      "commit": "9ef9b0342f8b8d291dc40b7f26ec737907926589",
+      "checks": [
+        {
+          "name": "defaults preserve zero false and empty string",
+          "expect": "accept",
+          "actual": "accept"
+        },
+        {
+          "name": "omitted/undefined container applies only defaults",
+          "expect": "accept",
+          "actual": "accept"
+        },
+        {
+          "name": "integer rejects fraction",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "integer rejects negative-fraction",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "integer rejects below",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "integer rejects above",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "integer rejects unsafe",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "integer rejects nan",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "integer rejects infinity",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "integer rejects minus-infinity",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "integer rejects null",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "integer rejects undefined",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "integer rejects numeric-string",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "integer rejects bigint",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "integer rejects boxed",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "integer rejects boolean",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "name": "parameters container rejects null",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Style parameters must be an object; null is not an omitted value."
+        },
+        {
+          "name": "parameters container rejects array",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Style parameters must be an object; null is not an omitted value."
+        },
+        {
+          "name": "parameters container rejects number",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Style parameters must be an object; null is not an omitted value."
+        },
+        {
+          "name": "parameters container rejects boolean",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Style parameters must be an object; null is not an omitted value."
+        },
+        {
+          "name": "parameters container rejects string",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Style parameters must be an object; null is not an omitted value."
+        },
+        {
+          "name": "parameters container rejects date",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Style parameters must be an object; null is not an omitted value."
+        },
+        {
+          "name": "unknown",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Unknown style parameter: missing"
+        },
+        {
+          "name": "fraction null",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter fraction: expected number within its bounds/enum."
+        },
+        {
+          "name": "fraction undefined",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter fraction: expected number within its bounds/enum."
+        },
+        {
+          "name": "boolean numeric",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter flag: expected boolean within its bounds/enum."
+        },
+        {
+          "name": "string null",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter label: expected string within its bounds/enum."
+        },
+        {
+          "name": "optional undefined",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter optional: expected string within its bounds/enum."
+        },
+        {
+          "name": "number string",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter fraction: expected number within its bounds/enum."
+        },
+        {
+          "name": "valid max-safe",
+          "expect": "accept",
+          "actual": "accept"
+        },
+        {
+          "name": "valid min-safe",
+          "expect": "accept",
+          "actual": "accept"
+        },
+        {
+          "name": "valid fractional-integer-bounds",
+          "expect": "accept",
+          "actual": "accept"
+        },
+        {
+          "name": "valid tiny-positive-number",
+          "expect": "accept",
+          "actual": "accept"
+        },
+        {
+          "name": "valid negative-zero",
+          "expect": "accept",
+          "actual": "accept"
+        },
+        {
+          "name": "schema empty-integer-interval",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value: Bounds contain no safe integer."
+        },
+        {
+          "name": "schema integer-only-unsafe-interval",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value: Bounds contain no safe integer."
+        },
+        {
+          "name": "schema reverse",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value: minimum exceeds maximum."
+        },
+        {
+          "name": "schema nonfinite-bound",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.maximum: Bounds require a numeric rule and a finite number."
+        },
+        {
+          "name": "schema nan-bound",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.minimum: Bounds require a numeric rule and a finite number."
+        },
+        {
+          "name": "schema string-bound",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.minimum: Bounds require a numeric rule and a finite number."
+        },
+        {
+          "name": "schema numeric-default-null",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.default: Default must match the type, bounds and enum."
+        },
+        {
+          "name": "schema default-undefined",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.default: Default must match the type, bounds and enum."
+        },
+        {
+          "name": "schema fractional-integer-default",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.default: Default must match the type, bounds and enum."
+        },
+        {
+          "name": "schema unsafe-default",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.default: Default must match the type, bounds and enum."
+        },
+        {
+          "name": "schema default-out-of-range",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.default: Default must match the type, bounds and enum."
+        },
+        {
+          "name": "schema default-out-of-enum",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.default: Default must match the type, bounds and enum."
+        },
+        {
+          "name": "schema enum-mixed",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.enum: Every value must match the type and bounds."
+        },
+        {
+          "name": "schema enum-unsafe",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.enum: Every value must match the type and bounds."
+        },
+        {
+          "name": "schema enum-fractional",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.enum: Every value must match the type and bounds."
+        },
+        {
+          "name": "schema enum-null",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.enum: Every value must match the type and bounds."
+        },
+        {
+          "name": "schema enum-nan",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.enum: Every value must match the type and bounds."
+        },
+        {
+          "name": "schema enum-undefined",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.enum: Every value must match the type and bounds."
+        },
+        {
+          "name": "schema enum-duplicate-zero",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.enum: Expected a nonempty unique primitive array."
+        },
+        {
+          "name": "schema enum-empty",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.enum: Expected a nonempty unique primitive array."
+        },
+        {
+          "name": "schema enum-sparse-only",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.enum: Every value must match the type and bounds."
+        },
+        {
+          "name": "schema enum-sparse-after-value",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.enum: Every value must match the type and bounds."
+        },
+        {
+          "name": "schema unknown-type",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.type: Supported types: number, integer, boolean, string."
+        },
+        {
+          "name": "schema unknown-rule-keyword",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.multipleOf: Unsupported rule keyword."
+        },
+        {
+          "name": "schema unknown-rule-metadata",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.title: Expected a string."
+        },
+        {
+          "name": "schema type-array",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema value.type: Supported types: number, integer, boolean, string."
+        },
+        {
+          "name": "unknown object keyword rejected",
+          "expect": "reject",
+          "actual": "reject",
+          "message": "Invalid style parameter schema required: Unsupported schema keyword."
+        },
+        {
+          "name": "null-prototype dictionary and __proto__ key preserve output safely",
+          "expect": "accept",
+          "actual": "accept"
+        }
+      ],
+      "mutations": [
+        {
+          "name": "invalid-default",
+          "operation": "getStyle",
+          "rejected": true,
+          "error": "Invalid style parameter schema count.default: Default must match the type, bounds and enum."
+        },
+        {
+          "name": "invalid-default",
+          "operation": "resolveStyleSelection",
+          "rejected": true,
+          "error": "Invalid style parameter schema count.default: Default must match the type, bounds and enum."
+        },
+        {
+          "name": "unsupported-type",
+          "operation": "getStyle",
+          "rejected": true,
+          "error": "Invalid style parameter schema count.type: Supported types: number, integer, boolean, string."
+        },
+        {
+          "name": "unsupported-type",
+          "operation": "resolveStyleSelection",
+          "rejected": true,
+          "error": "Invalid style parameter schema count.type: Supported types: number, integer, boolean, string."
+        },
+        {
+          "name": "inverted-range",
+          "operation": "getStyle",
+          "rejected": true,
+          "error": "Invalid style parameter schema count: minimum exceeds maximum."
+        },
+        {
+          "name": "inverted-range",
+          "operation": "resolveStyleSelection",
+          "rejected": true,
+          "error": "Invalid style parameter schema count: minimum exceeds maximum."
+        },
+        {
+          "name": "sparse-enum",
+          "operation": "getStyle",
+          "rejected": true,
+          "error": "Invalid style parameter schema count.enum: Every value must match the type and bounds."
+        },
+        {
+          "name": "sparse-enum",
+          "operation": "resolveStyleSelection",
+          "rejected": true,
+          "error": "Invalid style parameter schema count.enum: Every value must match the type and bounds."
+        },
+        {
+          "name": "unknown-keyword",
+          "operation": "getStyle",
+          "rejected": true,
+          "error": "Invalid style parameter schema count.pattern: Unsupported rule keyword."
+        },
+        {
+          "name": "unknown-keyword",
+          "operation": "resolveStyleSelection",
+          "rejected": true,
+          "error": "Invalid style parameter schema count.pattern: Unsupported rule keyword."
+        }
+      ],
+      "loader": [
+        {
+          "value": "1.25",
+          "rejected": true,
+          "registryRetained": true,
+          "error": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "value": "-2.75",
+          "rejected": true,
+          "registryRetained": true,
+          "error": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "value": "9007199254740992",
+          "rejected": true,
+          "registryRetained": true,
+          "error": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "value": "null",
+          "rejected": true,
+          "registryRetained": true,
+          "error": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "value": "undefined",
+          "rejected": true,
+          "registryRetained": true,
+          "error": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "schema": "sparse-enum",
+          "rejected": true,
+          "registryRetained": true,
+          "error": "Invalid style parameter schema count.enum: Every value must match the type and bounds."
+        },
+        {
+          "validDefault": 1,
+          "nonEnumerableDispose": true
+        }
+      ],
+      "cli": [
+        {
+          "args": [
+            "build",
+            "--project",
+            "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\style-parameter-independent-review\\project-1793712145193",
+            "--offline",
+            "--json"
+          ],
+          "exitCode": 0,
+          "response": {
+            "schemaVersion": 1,
+            "status": "succeeded",
+            "artifacts": [
+              "dist/manifest.json",
+              "city.lock.json"
+            ],
+            "diagnostics": [],
+            "job": {
+              "schemaVersion": 1,
+              "id": "30f0da41-5076-4d1d-ad99-16471b45cbaf",
+              "kind": "build",
+              "project": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\style-parameter-independent-review\\project-1793712145193",
+              "parameters": {},
+              "status": "succeeded",
+              "stage": "complete",
+              "progress": 1,
+              "artifacts": [
+                "dist/manifest.json",
+                "city.lock.json"
+              ],
+              "diagnostics": [],
+              "attempt": 1,
+              "createdAt": "2026-11-03T13:22:25.283Z",
+              "startedAt": "2026-11-03T13:22:25.286Z",
+              "result": {
+                "schemaVersion": 1,
+                "status": "succeeded",
+                "artifacts": [
+                  "dist/manifest.json",
+                  "city.lock.json"
+                ],
+                "diagnostics": [],
+                "contentHash": "b4ba0107b64e8fb13753135a29119a6b1de1f12ed9178d21cab4d971546975ec",
+                "report": {
+                  "schemaVersion": 1,
+                  "status": "succeeded",
+                  "diagnostics": [],
+                  "hashes": {
+                    "config": "020ad4275f735db8e973ccfed22f11364ced4dbf7ea1f7bbf62860b9c868f384",
+                    "source": "fe4bbb0c58fb40565c41aba5db7e6c0aaf580c43d754b793d3b9a6f842603827",
+                    "world": "38589d5dc0176739df4a0820326d74554b392c4748dc7f5a469e2a487289df83"
+                  },
+                  "counts": {
+                    "inputElements": 3,
+                    "features": 7,
+                    "buildings": 1,
+                    "trees": 1,
+                    "chunks": 1
+                  },
+                  "road": {
+                    "sourceRoads": 1,
+                    "segments": 1,
+                    "driveSegments": 1,
+                    "walkSegments": 0,
+                    "miterJoins": 0,
+                    "bevelJoins": 0,
+                    "duplicateSegments": 0,
+                    "clippedOverlaps": 0,
+                    "junctions": 0,
+                    "crossingExclusions": 0,
+                    "dashes": 0,
+                    "stopLines": 0,
+                    "drivePolygons": 1,
+                    "walkPolygons": 0,
+                    "pavingPolygons": 2,
+                    "surfaceTriangles": 6,
+                    "roadArea": 1332.4074902206153,
+                    "pavementArea": 777.2377026286922,
+                    "observedSidewalkWays": 0,
+                    "observedCrossingWays": 0,
+                    "inferredMarginWays": 1,
+                    "pavementBuildingBlockers": 2,
+                    "gradeSource": "OSM connectivity + inferred layer heights",
+                    "gradeOriginalDiscontinuities": 0,
+                    "gradeResolvedConnections": 0,
+                    "gradeChangedWays": 0,
+                    "gradeMaxVehicleSlope": 0,
+                    "gradeSteepVehicleRuns": 0,
+                    "gradeCrossingConstraints": 0,
+                    "gradeRemainingDiscontinuities": 0,
+                    "gradeConstraintIterations": 0,
+                    "gradeConstraintConflicts": 0,
+                    "gradeAmbiguousCrossings": 0,
+                    "stairFlights": 0,
+                    "gradeSteepWalkingWays": 0,
+                    "gradeMaxWalkingSlope": 0,
+                    "renderedTriangles": 6,
+                    "bridgeWays": 0,
+                    "bridgeSegments": 0,
+                    "bridgeDecks": 0,
+                    "bridgePiers": 0,
+                    "bridgeSupportCandidates": 0,
+                    "bridgeGuardrailSegments": 0,
+                    "bridgeRailInteriorSkipped": 0,
+                    "bridgeRejectedSupports": {},
+                    "unsupportedBridgeWays": 0,
+                    "bridgeHeightSource": "inferred-layer-times-7m",
+                    "bridgeGradeConnectionsUnresolved": 0,
+                    "bridgeStructureTriangles": 0,
+                    "stairTreads": 0,
+                    "stairPosts": 0,
+                    "stairTriangles": 0,
+                    "stairSkippedFlights": 0,
+                    "stairSteepFlights": 0,
+                    "stairHeightSource": "shared-road-grade-inference"
+                  },
+                  "landscape": {
+                    "observedFeatures": 0,
+                    "observedSurfaceArea": 0,
+                    "inferredSites": 0,
+                    "inferredPavedArea": 0,
+                    "inferredPlantedArea": 0,
+                    "rejectedCandidates": 0,
+                    "rejectedGeometry": 0,
+                    "templates": {},
+                    "layouts": {},
+                    "kindAreas": {},
+                    "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+                    "availableTreeCandidates": 0,
+                    "availablePropCandidates": 0,
+                    "treesByTemplate": {},
+                    "commonCandidates": 0,
+                    "treeCandidates": 0,
+                    "props": 0,
+                    "surfaces": 0,
+                    "inferredArea": 0,
+                    "inferredFraction": 0,
+                    "knownGroundFraction": 0,
+                    "unfilledBeforeFraction": 0.9223057644110275,
+                    "unfilledAfterFraction": 0.9223057644110275,
+                    "coverageSampleSpacing": 12,
+                    "coverageSamples": 399,
+                    "markingStrips": 0,
+                    "markingPrecisionRetries": 0,
+                    "omittedMarkingStrips": 0,
+                    "renderedTriangles": 0,
+                    "drawMeshes": 0
+                  },
+                  "roof": {
+                    "tagged": 0,
+                    "inferred": 0,
+                    "unsupported": 0
+                  },
+                  "determinism": {
+                    "timestampsExcluded": true,
+                    "uuidExcluded": true,
+                    "worldHashExcludesTiling": true
+                  }
+                }
+              },
+              "finishedAt": "2026-11-03T13:22:25.546Z"
+            }
+          }
+        },
+        {
+          "args": [
+            "export",
+            "web",
+            "--project",
+            "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\style-parameter-independent-review\\project-1793712145193",
+            "--offline",
+            "--json"
+          ],
+          "exitCode": 0,
+          "response": {
+            "schemaVersion": 1,
+            "status": "succeeded",
+            "artifacts": [
+              "site/index.html"
+            ],
+            "diagnostics": [],
+            "job": {
+              "schemaVersion": 1,
+              "id": "964e4af8-c358-4291-8a29-32d859bf550a",
+              "kind": "export-web",
+              "project": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\style-parameter-independent-review\\project-1793712145193",
+              "parameters": {},
+              "status": "succeeded",
+              "stage": "complete",
+              "progress": 1,
+              "artifacts": [
+                "site/index.html"
+              ],
+              "diagnostics": [],
+              "attempt": 1,
+              "createdAt": "2026-11-03T13:22:25.752Z",
+              "startedAt": "2026-11-03T13:22:25.755Z",
+              "result": {
+                "schemaVersion": 1,
+                "status": "succeeded",
+                "artifacts": [
+                  "site/index.html"
+                ],
+                "diagnostics": [],
+                "scope": "complete-area",
+                "attribution": "© OpenStreetMap contributors; ODbL"
+              },
+              "finishedAt": "2026-11-03T13:22:26.024Z"
+            }
+          }
+        },
+        {
+          "name": "fractional-positive",
+          "bundleError": {
+            "code": "STYLE_MODULE_INVALID",
+            "message": "Invalid style parameter count: expected integer within its bounds/enum."
+          },
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_MODULE_INVALID",
+            "stage": "style",
+            "message": "Invalid style parameter count: expected integer within its bounds/enum.",
+            "hint": "The entry must export a Node/browser-compatible StylePack with matching id and valid saved parameters; put DOM work inside factories."
+          },
+          "oldSiteRetained": true,
+          "site": {
+            "hash": "f1f85869af0febfeb10435ff7a4e1266e9d8ad5f214247f11709c96d77ad200a",
+            "files": 13
+          }
+        },
+        {
+          "name": "fractional-negative",
+          "bundleError": {
+            "code": "STYLE_MODULE_INVALID",
+            "message": "Invalid style parameter count: expected integer within its bounds/enum."
+          },
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_MODULE_INVALID",
+            "stage": "style",
+            "message": "Invalid style parameter count: expected integer within its bounds/enum.",
+            "hint": "The entry must export a Node/browser-compatible StylePack with matching id and valid saved parameters; put DOM work inside factories."
+          },
+          "oldSiteRetained": true,
+          "site": {
+            "hash": "f1f85869af0febfeb10435ff7a4e1266e9d8ad5f214247f11709c96d77ad200a",
+            "files": 13
+          }
+        },
+        {
+          "name": "above-range",
+          "bundleError": {
+            "code": "STYLE_MODULE_INVALID",
+            "message": "Invalid style parameter count: expected integer within its bounds/enum."
+          },
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_MODULE_INVALID",
+            "stage": "style",
+            "message": "Invalid style parameter count: expected integer within its bounds/enum.",
+            "hint": "The entry must export a Node/browser-compatible StylePack with matching id and valid saved parameters; put DOM work inside factories."
+          },
+          "oldSiteRetained": true,
+          "site": {
+            "hash": "f1f85869af0febfeb10435ff7a4e1266e9d8ad5f214247f11709c96d77ad200a",
+            "files": 13
+          }
+        },
+        {
+          "name": "unsafe-saved",
+          "bundleError": {
+            "code": "STYLE_MODULE_INVALID",
+            "message": "Invalid style parameter count: expected integer within its bounds/enum."
+          },
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_MODULE_INVALID",
+            "stage": "style",
+            "message": "Invalid style parameter count: expected integer within its bounds/enum.",
+            "hint": "The entry must export a Node/browser-compatible StylePack with matching id and valid saved parameters; put DOM work inside factories."
+          },
+          "oldSiteRetained": true,
+          "site": {
+            "hash": "f1f85869af0febfeb10435ff7a4e1266e9d8ad5f214247f11709c96d77ad200a",
+            "files": 13
+          }
+        },
+        {
+          "name": "null-saved",
+          "bundleError": {
+            "code": "STYLE_MODULE_INVALID",
+            "message": "Invalid style parameter count: expected integer within its bounds/enum."
+          },
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_MODULE_INVALID",
+            "stage": "style",
+            "message": "Invalid style parameter count: expected integer within its bounds/enum.",
+            "hint": "The entry must export a Node/browser-compatible StylePack with matching id and valid saved parameters; put DOM work inside factories."
+          },
+          "oldSiteRetained": true,
+          "site": {
+            "hash": "f1f85869af0febfeb10435ff7a4e1266e9d8ad5f214247f11709c96d77ad200a",
+            "files": 13
+          }
+        },
+        {
+          "name": "invalid-default",
+          "bundleError": {
+            "code": "STYLE_MODULE_INVALID",
+            "message": "Invalid style parameter schema count.default: Default must match the type, bounds and enum."
+          },
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_MODULE_INVALID",
+            "stage": "style",
+            "message": "Invalid style parameter schema count.default: Default must match the type, bounds and enum.",
+            "hint": "The entry must export a Node/browser-compatible StylePack with matching id and valid saved parameters; put DOM work inside factories."
+          },
+          "oldSiteRetained": true,
+          "site": {
+            "hash": "f1f85869af0febfeb10435ff7a4e1266e9d8ad5f214247f11709c96d77ad200a",
+            "files": 13
+          }
+        },
+        {
+          "name": "invalid-enum-type",
+          "bundleError": {
+            "code": "STYLE_MODULE_INVALID",
+            "message": "Invalid style parameter schema count.enum: Every value must match the type and bounds."
+          },
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_MODULE_INVALID",
+            "stage": "style",
+            "message": "Invalid style parameter schema count.enum: Every value must match the type and bounds.",
+            "hint": "The entry must export a Node/browser-compatible StylePack with matching id and valid saved parameters; put DOM work inside factories."
+          },
+          "oldSiteRetained": true,
+          "site": {
+            "hash": "f1f85869af0febfeb10435ff7a4e1266e9d8ad5f214247f11709c96d77ad200a",
+            "files": 13
+          }
+        },
+        {
+          "name": "sparse-only-enum",
+          "bundleError": {
+            "code": "STYLE_MODULE_INVALID",
+            "message": "Invalid style parameter schema count.enum: Every value must match the type and bounds."
+          },
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_MODULE_INVALID",
+            "stage": "style",
+            "message": "Invalid style parameter schema count.enum: Every value must match the type and bounds.",
+            "hint": "The entry must export a Node/browser-compatible StylePack with matching id and valid saved parameters; put DOM work inside factories."
+          },
+          "oldSiteRetained": true,
+          "site": {
+            "hash": "f1f85869af0febfeb10435ff7a4e1266e9d8ad5f214247f11709c96d77ad200a",
+            "files": 13
+          }
+        },
+        {
+          "name": "sparse-tail-enum",
+          "bundleError": {
+            "code": "STYLE_MODULE_INVALID",
+            "message": "Invalid style parameter schema count.enum: Every value must match the type and bounds."
+          },
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_MODULE_INVALID",
+            "stage": "style",
+            "message": "Invalid style parameter schema count.enum: Every value must match the type and bounds.",
+            "hint": "The entry must export a Node/browser-compatible StylePack with matching id and valid saved parameters; put DOM work inside factories."
+          },
+          "oldSiteRetained": true,
+          "site": {
+            "hash": "f1f85869af0febfeb10435ff7a4e1266e9d8ad5f214247f11709c96d77ad200a",
+            "files": 13
+          }
+        },
+        {
+          "name": "unknown-keyword",
+          "bundleError": {
+            "code": "STYLE_MODULE_INVALID",
+            "message": "Invalid style parameter schema count.exclusiveMinimum: Unsupported rule keyword."
+          },
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_MODULE_INVALID",
+            "stage": "style",
+            "message": "Invalid style parameter schema count.exclusiveMinimum: Unsupported rule keyword.",
+            "hint": "The entry must export a Node/browser-compatible StylePack with matching id and valid saved parameters; put DOM work inside factories."
+          },
+          "oldSiteRetained": true,
+          "site": {
+            "hash": "f1f85869af0febfeb10435ff7a4e1266e9d8ad5f214247f11709c96d77ad200a",
+            "files": 13
+          }
+        }
+      ],
+      "schema": [
+        {
+          "type": "number",
+          "closed": true,
+          "enumPrimitiveType": "number",
+          "defaultPrimitiveType": "number"
+        },
+        {
+          "type": "integer",
+          "closed": true,
+          "enumPrimitiveType": "integer",
+          "defaultPrimitiveType": "integer"
+        },
+        {
+          "type": "boolean",
+          "closed": true,
+          "enumPrimitiveType": "boolean",
+          "defaultPrimitiveType": "boolean"
+        },
+        {
+          "type": "string",
+          "closed": true,
+          "enumPrimitiveType": "string",
+          "defaultPrimitiveType": "string"
+        }
+      ],
+      "failures": [],
+      "realBundleDefault": {
+        "count": 1
+      },
+      "cacheCleanup": [],
+      "schemaRuntimeCrossFieldsDocumented": true,
+      "projectRoot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\style-parameter-independent-review\\project-1793712145193",
+      "status": "pass",
+      "realBundledModuleLoader": [
+        {
+          "count": 1.25,
+          "rejected": true,
+          "error": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "count": -2.75,
+          "rejected": true,
+          "error": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "count": 6,
+          "rejected": true,
+          "error": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "count": null,
+          "rejected": true,
+          "error": "Invalid style parameter count: expected integer within its bounds/enum."
+        },
+        {
+          "count": 5,
+          "accepted": true,
+          "resolved": {
+            "count": 5
+          }
+        }
+      ]
+    },
+    "sparseOriginalAndFixed": [
+      {
+        "name": "sparse-only",
+        "length": 1,
+        "keys": [],
+        "initialCommit": "3f605cb509d18eed2af5386c416f0d121b7b79a8",
+        "initial": {
+          "accepted": true,
+          "resolved": {}
+        },
+        "fixed": {
+          "accepted": false,
+          "error": "Invalid style parameter schema count.enum: Every value must match the type and bounds."
+        }
+      },
+      {
+        "name": "sparse-tail",
+        "length": 2,
+        "keys": [
+          "0"
+        ],
+        "initialCommit": "3f605cb509d18eed2af5386c416f0d121b7b79a8",
+        "initial": {
+          "accepted": true,
+          "resolved": {}
+        },
+        "fixed": {
+          "accepted": false,
+          "error": "Invalid style parameter schema count.enum: Every value must match the type and bounds."
+        }
+      }
+    ],
+    "logs": {
+      "tests.tap": {
+        "bytes": 72275,
+        "sha256": "a1cd5c6f0981a6edd918be3240a60297b428c3a3a6c9186dcb7e8e0d4b64b382"
+      },
+      "build.txt": {
+        "bytes": 2129,
+        "sha256": "cbb4f97f1ef38122f9b44d8b0c77171a0a67dc45be8339f32fe667bf9a56380f"
+      },
+      "types.txt": {
+        "bytes": 161,
+        "sha256": "0649436daedb89cf61d6e683dd31155d63f0ab5dbf5100d4f228e7c6fbf2b5f5"
+      },
+      "parameter-types.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "final-tests.tap": {
+        "bytes": 72276,
+        "sha256": "3f4235f528f0a588e1b918e056e453443e33d4467af6f7493f626bd9f0c3e888"
+      },
+      "final-build.txt": {
+        "bytes": 2129,
+        "sha256": "1cfebe1926dad041b19224a3000018deb8c30aa0aeaace05d4263f362bc64fc1"
+      },
+      "final-types.txt": {
+        "bytes": 161,
+        "sha256": "0649436daedb89cf61d6e683dd31155d63f0ab5dbf5100d4f228e7c6fbf2b5f5"
+      },
+      "final-parameter-types.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "probe-log.txt": {
+        "bytes": 474,
+        "sha256": "3c35ab74b702492ba9b5f956d63b528f81c5bafa8637e8073fc6969ecbca987b"
+      },
+      "additional-probe-log.txt": {
+        "bytes": 1598,
+        "sha256": "07fe7210724b39256d705b1424250041c1c5d95c624097ba822f697becc5bdd4"
+      }
+    }
+  },
+  "notes": [
+    "Read initial implementation, types, Schema, tutorials/package documentation and the root architecture integer findings; the original bad 1.25/-2.75 behavior is independently rejected by the final pure/loader/bundle/real CLI probes.",
+    "Reviewer only wrote ignored scripts, logs, generated fixtures/assets and JSON under work/style-parameter-independent-review/. Source/test/docs changes and commits were made by the implementation owner.",
+    "No new unresolved finding remains in this bounded C review. Primitive-schema code is trusted local JavaScript; this review is not a hostile arbitrary-JavaScript sandbox assessment."
+  ]
+}

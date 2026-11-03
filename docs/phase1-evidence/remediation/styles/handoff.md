@@ -75,4 +75,17 @@ E 在自己的集成分支按序 cherry-pick **599c448 → 1e4296f → 5c204b2 �
 - 类型提供 StyleParameterRule 判别联合及 StyleParametersSchema；style.schema.json 限制为同一 primitive 子集。Schema 的注释明确跨字段默认值/范围/enum 一致性由共享运行时追加检查。教程和官方样式包说明同步。
 - 新增直接注册/解析/加载边界和真实本地 bundle/export 回归：非法整数、null、未知规则、无效 default/enum 全部拒绝，旧 viewer-config/site 保持不变。新增严格类型消费包含预期编译失败断言。
 
-本分支追加功能修复前的验证：274/274 npm test、三套 build、test:types、parameter-typecheck.ts 全部通过。独立审查会在实际提交上复验并单独归档；此前270项和初次review保持为历史证据。E 应先合入此次新增提交再运行最终 types/build/package/GPU；没有修改 SDK/runtime/AO、local-server、根 package 或集成 worktree。
+本分支追加功能修复前的验证：274/274 npm test、三套 build、test:types、parameter-typecheck.ts 全部通过。独立审查已在最终功能提交9ef9b03上复验通过并单独归档；此前270项和初次review保持为历史证据。E 应先合入此次新增提交再运行最终 types/build/package/GPU；没有修改 SDK/runtime/AO、local-server、根 package 或集成 worktree。
+
+
+### 参数契约追加修复的最终交接
+
+**只需增量合入 `3f605cb509d18eed2af5386c416f0d121b7b79a8` → `9ef9b0342f8b8d291dc40b7f26ec737907926589` → 本次证据文档提交**。E 已合入的前次静态导出历史不用重复cherry-pick。修改范围仅style校验/helper/types/Schema/教程/测试，不要求改配置格式或SDK适配签名。
+
+新一轮独立审查（同一只读gpt-6.1-sol/xhigh审查者）发现稀疏enum：Array.some跳过hole，Array(1)/[1,,]被注册接受。9ef9b03改为for-of逐值检验，直接注册、实际ESM模块打包、CLI导出和公开loader均拒绝稀疏声明，旧站点整目录SHA不变。新增回归不通过JSON.stringify把hole转换成null来代替真实输入。
+
+最终独立结论：274/274全量测试、三套build、test:types与新严格参数类型消费通过；62个纯边界、10个注册后修改、7个loader/注册表检查通过，10类实际bundle/CLI失败保留旧站点完整目录SHA。公开loader真实import写出的bundle后，1.25/-2.75/6/null拒绝，5通过。无未解决本范围问题。
+
+原始主对话失败结果见 [parameter-baseline-findings.json](parameter-baseline-findings.json)；新增独立原样报告见 [parameter-independent-review.json](parameter-independent-review.json)，完整最终TAP见 [parameter-independent-tests.tap](parameter-independent-tests.tap)，命令/结果汇总见 [parameter-validation-results.json](parameter-validation-results.json)。此前静态导出独立报告维持历史原样。
+
+该增量关闭主对话提出的C公共参数契约P2和独立复验发现的稀疏enumP2。AC24/AC27只在本参数组件范围pass；最终E集成、包与整期矩阵仍由主对话复验，不修改其历史失败报告，也不宣告SDK AO/性能通过。请在最终types/build/package/GPU前合入上述增量。
