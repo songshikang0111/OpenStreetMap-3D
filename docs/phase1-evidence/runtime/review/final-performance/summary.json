@@ -1,0 +1,46 @@
+{
+  "environment": {
+    "date": "2026-11-03T09:41:03.889Z",
+    "commit": "024e12a656a6026ec87a554324ed74887213e595",
+    "platform": "win32",
+    "release": "10.0.26300",
+    "arch": "x64",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13600KF",
+    "cpuLogicalCount": 20,
+    "totalMemory": 34163961856,
+    "browserVersion": "153.0.8010.12",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "devicePixelRatio": 1,
+    "quality": "balanced",
+    "seconds": 60,
+    "acceptanceDuration": true,
+    "notes": [
+      "GPU memory is not measurable through WebGL. Resident byte values are estimates and CPU array counts.",
+      "Names prefixed core- use the real A CINK codec and C official styles. Others use the explicitly labelled fixture adapter.",
+      "Frames include every renderer pass, shadows, AO, composite and resolve. GPU timer queries not collected."
+    ]
+  },
+  "results": [
+    {
+      "name": "core-kyoto-gion-grow-9",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.5,
+      "longFrames50ms": 6,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 5260202,
+      "farTriangles": 2476636
+    }
+  ]
+}

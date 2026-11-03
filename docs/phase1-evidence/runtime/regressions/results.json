@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-03T09:04:18.020Z",
+  "date": "2026-11-03T09:33:54.112Z",
   "browser": "153.0.8010.12",
   "results": {
     "pngStyle": {
@@ -9,7 +9,7 @@
         "fulfilled"
       ],
       "afterPaused": false,
-      "frameAdvance": 38
+      "frameAdvance": 40
     },
     "loadEpoch": {
       "fastChunks": 4,
@@ -59,6 +59,15 @@
       "accepted": false,
       "code": "INVALID_SCENE_MANIFEST",
       "stage": "manifest"
+    },
+    "idleRecovery": {
+      "firstFailure": "ASSET_REQUEST_FAILED",
+      "healthyVisible": [
+        "0_1",
+        "1_0",
+        "1_1"
+      ],
+      "emptyVisible": 0
     }
   },
   "errors": []

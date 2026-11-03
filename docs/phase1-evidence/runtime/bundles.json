@@ -1,0 +1,32 @@
+[
+  {
+    "root": "work/runtime-benchmark-site",
+    "bundleFiles": [
+      {
+        "file": "index-Bj9MvUYx.js",
+        "bytes": 846071,
+        "sha256": "7fd08fc689890e117cba154b8fd477698282bcab739d0514ee8db3d471c00f44"
+      }
+    ],
+    "metadata": {
+      "commit": "d8cbb9e539180eb30ac069a8af6995eaa6ec5d80"
+    }
+  },
+  {
+    "root": "work/runtime-final-site",
+    "bundleFiles": [
+      {
+        "file": "index-VJBCMNA6.js",
+        "bytes": 846666,
+        "sha256": "424f66c45482a5dc958137c7c2c12a7577620d69c8e50a61cd4ad8e9af0be3fa"
+      }
+    ],
+    "metadata": {
+      "commit": "024e12a656a6026ec87a554324ed74887213e595",
+      "entry": "examples/embed/index.html",
+      "bundleFiles": [
+        "index-VJBCMNA6.js"
+      ]
+    }
+  }
+]

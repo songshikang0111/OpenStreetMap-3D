@@ -1,6 +1,6 @@
 # 一期 D：Web SDK、LOD 与扩区性能交接
 
-日期：2026-11-03。分支：`codex/phase1-runtime`。工作目录：`C:\Users\宋世康\.codex\worktrees\phase1-runtime\beijing-city-ink`。**当前实现和独立缺陷复验已完成，完整性能矩阵仍在运行；本文件会在矩阵完成后更新，当前不是最终 AC20 通过声明。**
+日期：2026-11-03。分支：`codex/phase1-runtime`。工作目录：`C:\Users\宋世康\.codex\worktrees\phase1-runtime\beijing-city-ink`。实现、独立审查修复复验、15组60秒性能矩阵、最终代码的真实京都60秒独立复现均已完成并保留证据。**帧性能目标通过；900000三角形配置不适用于全部覆盖范围，不能将帧率通过写成所有预算通过。**
 
 ## 提交与依赖
 
@@ -12,6 +12,14 @@
 | `f55c12e` | 真实 CINK/官方风格、近景附件恢复、资源逐 mesh 视锥成本、默认生产绑定 |
 | `2776a4f` | prepared geometry 驻留反馈、浏览器实际 transfer/body 计数 |
 | `d8cbb9e` | 独立审查发现的五项异步/共享纹理/近景预算/协议验证缺陷修复 |
+| `cf35c2c` | 首次完整SDK/审查交接与证据、drawUnits类型 |
+| `42be74b`、`21ac78e` | 历史故障不污染新视野；相机/LOD/视口变更后whenIdle等待本轮调度 |
+| `024e12a` | 在整帧提交后记录首渲染；加载时间包含manifest请求 |
+| `6466c0c` | NaN/Infinity不能绕过PNG/GLB导出资源限制 |
+| `4364707` | 官方A/C适配器严格TypeScript消费无须casts |
+| `161c746` | PNG/GLB署名保留manifest中的版权链接 |
+
+后续最终证据提交包含完整原始帧、冷启动、独立复算、截图与本报告终版；其哈希以本文件最近的 Git commit 为准。根 package/lock/README 均未修改。
 
 本分支为实际验证 cherry-pick 了 C `09a08cb`（本地 `e44b9db`）、A `4b9eab7`（本地 `8771df6`）。合并 `city.js` 时保留 C registry/style 行为，同时保留 A `landmarksEnabled`、`roadPlan`、`streetlifePlan`。上游后续审查/文档提交没有在这里重复混入。
 
@@ -40,29 +48,34 @@ PNG：当前视野/已加载细节，署名、16M 像素限制与尺寸恢复。
 
 ## 验证与证据
 
-- `npm test`：174/174（含旧138项）；`npm run build`：通过，保留既有 >500KB Three.js 提示。
-- `node --test test/phase1-runtime*.test.js test/phase1-core.test.js`：26/26。
+- `npm test`：176/176（含旧138项）；`npm run build`：通过，保留既有 >500KB Three.js 提示。
+- `node --test test/phase1-runtime*.test.js test/phase1-core.test.js`：28/28。
 - `node scripts/benchmark-runtime/build-embed.mjs`：独立生产 bundle 构建成功。
 - `check-browser.mjs`：非根路径、阻断外网、LOD 选择、4官方+外部风格、PNG/complete GLB、5往返/重载、重复 dispose 全通过，见 `embed/results.json`。
 - `check-races.mjs`：独立审查的5个原始问题全部复验通过，见 `regressions/results.json` 与 `review/`。
 - 独立审查模型/命令/发现/修复与额外边界复验见 [review.md](./review.md)。审查者只读测试，未代写实现。
-- 原始完整性能矩阵写入 `browser/*.json`；冻结 bundle commit 为 `d8cbb9e`，运行在 127.0.0.1:5186，不受 Vite HMR 修改影响。最终表待矩阵完成后补充。
+- 15组各60秒的原始完整性能矩阵在 `browser/*.json`，全通过p95≤33.3ms目标，实测最大p95为8.5ms。基线冻结bundle `d8cbb9e`，16块样本以 `21ac78e` 完整复跑以扩大Resource Timing缓冲，最终 `024e12a` 京都9块由独立审查者再次60秒复现。SDK渲染/LOD算法相同，后续改动为错误恢复、首渲染计时、导出参数/署名与类型。
+- 独立京都9块：7118帧/60.0275秒，p50/p95/p99=8.3/8.4/8.5ms，6帧>50ms，最大108.4ms；并发峰3，稳态/峰值驻留81,798,084字节，5次离开归零且返回基线相同。full/far实际triangles 5,260,202/2,476,636，calls 20,623/702，CPU arrays 176,772,060/81,798,084字节。
+- 冷启动15例新browser context，`firstRenderedMs`在首个含几何整帧提交后计时，`firstRenderedAtMs`基于navigation-origin；两者与旧mount-only `runtime.firstUsableMs`分开。数据在 `cold-start.json`，摘要见 [performance.md](./performance.md)。GPU/display completion未测。
+- 严格TypeScript（不使用skipLibCheck/casts）消费 `examples/embed/typecheck.ts` 成功，见 `validation.json`；依赖版本与命令有记录。
 
 重现：先 `node --expose-gc scripts/benchmark-runtime/build-scenes.mjs`，再 `build-embed.mjs work/runtime-benchmark-site`、`serve.mjs`，最后 `run.mjs --seconds=60 --url=http://127.0.0.1:5186`。浏览器位置可用 CITY_BENCHMARK_BROWSER 或 `--browser=...`；Playwright 是测试依赖，E 可加根 devDependency/脚本，此任务没有修改根 package/lock/README/发布配置。
+
+补充：`cold-start.mjs` 和 `report.mjs` 生成冷启动与汇总；前者以 CITY_BENCHMARK_URL 选择冻结服务。浏览器资源时间线初始化10000条，避免16块往返截断。机器/输入/种子/构建RSS/包体/实传/帧分位数/长帧/整帧calls/triangles/加载卸载取消/5次往返均在原始JSON；支持边界按报告，不外推移动GPU。
 
 ## 当前验收状态（组件范围）
 
 | AC | 当前结果 | 依据/边界 |
 | --- | --- | --- |
-| AC01 | pass（测试/构建） | 174测试与生产构建；主站关键机位总验收仍由E负责 |
+| AC01 | pass（测试/构建） | 176测试与生产构建；主站关键机位总验收仍由E负责 |
 | AC08 | pass | 完整独立生产 SDK 非根路径、断外网运行 |
 | AC09 | pass | 实际CINK、roles/attrs/IDs/instances，损坏/版本/错误阶段测试与默认validator |
 | AC13 | pass（SDK） | 官方4风格及外部StylePack；完整场景角色来自C契约 |
 | AC16 | pass | 真实三档资产，实际全帧远/全对照；近景规则恢复 |
 | AC17 | pass（组件） | 迟滞/驻留/FOV/移动，原子替换；紧预算静止抖动修复并独立复验 |
-| AC18 | pass | 并发/取消/驻留/附件/超限诊断；明确原子替换临时headroom |
+| AC18 | pass（可达预算范围） | 并发/取消/驻留/附件/降级/超限诊断实效；9块最低LOD不能满足900k triangle cap，明确拒绝该范围预算承诺；原子替换短暂headroom有诊断 |
 | AC19 | pass | Node5次往返、生产浏览器5次往返/重载、独立复验与共享纹理回归 |
-| AC20 | not-run（完整矩阵未结束） | 禁止把此前5秒短测当60秒性能通过 |
+| AC20 | pass（帧性能/完整证据） | 15×60秒与密集京都独立60秒均达到p95目标；9块/全范围最低LOD的900k三角预算不满足，支持边界明确记录 |
 | AC21 | pass（SDK静态嵌入） | 生产站非根路径/阻断外网；CLI export-web 完整工作流由B/E验收 |
 | AC22 | pass（SDK） | 署名PNG、全区域GLB、强制范围与导出限制；CLI封装由E验收 |
 | AC24 | pass（SDK资料/接口） | SDK类型、embed教程、可复现实验脚本；根包入口/CI由E负责 |

@@ -25,4 +25,22 @@
 
 原始发现与复验证据已复制到 [review/](./review/)，作者永久回归脚本为 `scripts/benchmark-runtime/check-races.mjs`。审查者原话结论：“五项修复均已独立复验通过，本轮未发现新的需修复缺陷。”
 
-审查者另外独立运行北京真实 CINK 5秒短测，p95 8.4ms，实际 full/far 三角形591244/156608，并发与五次生命周期通过；它明确指出短测不是 AC20 完整60秒矩阵验收。完整矩阵的来源、时长和原始帧数据另见性能报告，不能将这次短测改写成全量独立性能验收。
+审查者另外独立运行北京真实 CINK 5秒短测，p95 8.4ms，实际 full/far 三角形591244/156608，并发与五次生命周期通过；短测没有充当60秒验收。
+
+后续错误恢复复核发现同一JS任务 `setView→whenIdle` 仍会读取旧调度。`42be74b` / `21ac78e` 增加当前目标故障筛选与调度revision；独立复验确认健康3块、full/far切换均正确等待，空天空约30.5ms正常idle，旧故障保持明确报错，无pageerror，27/27测试。原始证据在 `review/idle-revision-retest.json`。
+
+`6466c0c` 补充导出NaN/Infinity限制，审查者只读检查并独立运行28/28测试，通过。有效参数/逐帧渲染未改变。
+
+## 最终真实京都60秒独立复现
+
+审查者针对 `024e12a` 冻结生产bundle，运行：
+
+```powershell
+node scripts/benchmark-runtime/run.mjs --seconds=60 --url=http://127.0.0.1:5187 --fixtures=core-kyoto-gion-grow-9 --output=work/review-final-performance --browser=C:/Users/宋世康/AppData/Local/ms-playwright/chromium-1243/chrome-win64/chrome.exe
+```
+
+它读取原始逐帧JSON自行复算，并核对服务端manifest与快照哈希：真实OSM 7014元素、3912建筑、9块，7118帧、60.0275秒。p50/p95/p99=8.3/8.4/8.5ms，6帧>50ms，最大108.4ms。并发峰3，自动路径驻留峰81,798,084 < 96MiB，五次离开几何归零、返回均157几何/81,798,084字节，无线性增长。
+
+full→far：实际triangles 5,260,202→2,476,636；calls 20,623→702；CPU geometry arrays 176,772,060→81,798,084。首挂载49.4ms、首个整帧渲染842.3ms、完整目标加载1267.3ms，口径已分开。无页面错误，唯一失败请求是过期medium请求的正常Abort，与cancelled计数一致。
+
+**独立审查明确指出未满足项：最低LOD全帧2,476,636 triangles仍超过配置900000，已发COVERAGE_EXCEEDS_BUDGET/MEASURED_DRAW_BUDGET。性能目标通过，不可声称该配置全部预算通过。** 原始结果与独立复算已归档在 `review/final-performance/`，并未用更短路径或删除压力样本掩盖边界。

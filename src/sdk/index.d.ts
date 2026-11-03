@@ -1,4 +1,4 @@
-import type { Group, Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import type { Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import type { StyleSelection, SharedUniforms } from '../styles/index.js';
 export interface Diagnostic { code: string; stage: string; message: string; tileId?: string; url?: string; [key: string]: unknown }
 export interface View { position?: [number,number,number]; target?: [number,number,number]; fov?: number; near?: number }

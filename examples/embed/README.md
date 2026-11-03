@@ -46,3 +46,13 @@ node scripts/benchmark-runtime/run.mjs --seconds=60
 ```
 
 Playwright is a test-only dependency (install locally with `npm install --no-save --package-lock=false playwright` until E adds the root test tooling). Raw per-frame results, fixed camera keys, cold/warm statistics, same-view full/far controls, five resource round trips and machine/WebGL identity are written to `docs/phase1-evidence/runtime`. The separately labelled `build-fixtures.mjs` / `fixture-codec.js` are synthetic/legacy adapter fixtures, not production CINK or proof of core integration.
+
+`cold-start.mjs` collects fresh-context startup markers after rendering; `report.mjs` generates the complete performance table. `runtime.firstUsableMs` is the earlier first-attachment marker; use top-level `firstRenderedMs`/`firstRenderedAtMs` for the first geometry-containing frame submitted by all passes. They are browser/CPU markers, not GPU/display-completion timings.
+
+The measured 900000-triangle preset has an explicit coverage limit: Beijing/Kyoto 9-block lowest LOD still exceeds that draw budget, even though this RTX4090 run meets the frame-latency target. Handle `COVERAGE_EXCEEDS_BUDGET` in the host UI and reduce area or select a deliberate higher budget. Full-frame measurements, all long frames and this limitation remain in the report.
+
+Strict type consumption, including the official A/C adapters, is checked by `examples/embed/typecheck.ts` using TypeScript and matching Three.js typings:
+
+```powershell
+node node_modules/typescript/bin/tsc --noEmit --strict --moduleResolution NodeNext --module NodeNext --target ES2022 --lib ES2022,DOM examples/embed/typecheck.ts
+```
