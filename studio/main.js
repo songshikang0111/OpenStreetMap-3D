@@ -1,5 +1,5 @@
 import './style.css';
-import {createStudioApi, areaAround, validateArea, isTerminal, viewsForBounds, summarizeFeatures} from './api.js';
+import {createStudioApi, areaAround, validateArea, isTerminal, viewsForBounds, cameraPresetForView, summarizeFeatures} from './api.js';
 import {createCityViewer} from '../src/sdk/index.js';
 
 const $ = id => document.getElementById(id), api = createStudioApi();
@@ -58,8 +58,9 @@ async function preview() {
   state.manifest=await fetch(manifestUrl).then(async response=>{if(!response.ok)throw new Error('场景清单不可用；请先构建项目。');return response.json();});
   const viewer=await createCityViewer({container:$('viewport'),manifestUrl,style:{id:$('style').value,parameters:state.config.style?.parameters || {}},quality:$('quality').value,onProgress:progress=>{if(state.job&&!isTerminal(state.job))return;$('job-status').textContent=progress.complete?'场景已加载；拖动旋转，滚轮缩放，右键平移。':`加载场景：${progress.stage || json(progress)}`;},onDiagnostic:diagnostic,onSelect:value=>{$('selection').textContent=json(value);}});
   state.viewer=viewer; $('empty').hidden=true;
-  if(state.config.camera) viewer.setView(state.config.camera);
+  viewer.setView(state.config.camera || viewsForBounds(state.manifest.bounds).overview);
   $('fov').value=viewer.getView().fov;
+  $('camera').value=cameraPresetForView(viewer.getView(),state.manifest.bounds);
   enabled();
   const report=await fetch(`/projects/${encodeURIComponent(state.project.id)}/dist/city.build-lock.json`);
   const lock=report.ok?await report.json():null;
@@ -136,12 +137,12 @@ $('fov').addEventListener('input',()=>{if(state.viewer) state.viewer.setView({..
 $('camera').addEventListener('change',()=>{
   if(!state.viewer) return;
   const views=viewsForBounds(state.manifest.bounds);
-  state.viewer.setView({...views[$('camera').value],fov:Number($('fov').value)});
+  if(views[$('camera').value]) state.viewer.setView({...views[$('camera').value],fov:Number($('fov').value)});
 });
 function download(data,name,type) {const url=URL.createObjectURL(data instanceof Blob?data:new Blob([data],{type})); const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 $('png').addEventListener('click',action(async()=>{const data=await state.viewer.exportPNG({width:2400,height:Math.round(2400*$('viewport').clientHeight/$('viewport').clientWidth)});download(data.blob,'city-ink.png','image/png');$('diagnostics').textContent=json({scope:data.scope,loadedChunkIds:data.loadedChunkIds,attribution:data.attribution});}));
 $('glb').addEventListener('click',action(async()=>{const data=await state.viewer.exportGLB({scope:'complete'});download(data.blob,'city-ink.glb','model/gltf-binary');$('diagnostics').textContent=json({scope:data.scope,chunkIds:data.chunkIds,limitations:data.limitations});}));
-setInterval(()=>{if(state.viewer) $('stats').textContent=json(state.viewer.getStats());},1000);
+setInterval(()=>{if(state.viewer) {$('stats').textContent=json(state.viewer.getStats());$('camera').value=cameraPresetForView(state.viewer.getView(),state.manifest.bounds);}},1000);
 window.addEventListener('beforeunload',()=>state.viewer?.dispose());
 action(async()=>{
   await listProjects();const saved=JSON.parse(localStorage.getItem('city-ink-studio')||'{}');

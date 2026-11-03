@@ -63,6 +63,16 @@ export function viewsForBounds(bounds) {
   };
 }
 
+/** Preset labels describe the actual camera, including after save/reopen/pan. */
+export function cameraPresetForView(view, bounds) {
+  if (!view?.position || !view?.target) return 'custom';
+  const close = (actual, expected) => Array.isArray(actual) && actual.length === 3 && actual.every((value, index) => Number.isFinite(value) && Math.abs(value - expected[index]) <= .001);
+  for (const [id, preset] of Object.entries(viewsForBounds(bounds))) {
+    if (close(view.position, preset.position) && close(view.target, preset.target)) return id;
+  }
+  return 'custom';
+}
+
 export function summarizeFeatures(featureIndex={}) {
   const features=Array.isArray(featureIndex)?featureIndex:Object.values(featureIndex),buildings=features.filter(feature=>feature.kind==='building'),heightSources={},recipes=new Set();
   for(const feature of buildings){const source=feature.provenance?.height || feature.heightSource || 'unknown';heightSources[source]=(heightSources[source]||0)+1;if(feature.provenance?.recipeId)recipes.add(feature.atomicGroupId || feature.provenance.recipeId);}

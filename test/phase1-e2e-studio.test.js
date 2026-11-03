@@ -38,3 +38,13 @@ test('quality report separates height inference from tagged values and grouped l
   const summary=summarizeFeatures({a:{kind:'building',provenance:{height:'estimated'}},b:{kind:'building',atomicGroupId:'cctv',provenance:{height:'height',recipeId:'cctv'}},c:{kind:'building',atomicGroupId:'cctv',provenance:{height:'levels',recipeId:'cctv'}},d:{kind:'tree'}});
   assert.equal(summary.estimatedHeightFraction,1/3);assert.equal(summary.landmarkGroups,1);assert.equal(summary.heightSources.height,1);assert.equal(summary.features,4);
 });
+
+test('studio preset label follows the saved actual street camera and user movement',async()=>{
+  const {cameraPresetForView,viewsForBounds}=await import('../studio/api.js');
+  const bounds=[800,0,-900,1400,528,-300],views=viewsForBounds(bounds);
+  for(const [name,view] of Object.entries(views))assert.equal(cameraPresetForView({...view,fov:55},bounds),name);
+  const street=structuredClone(views.street);street.position[1]+=1e-8;assert.equal(cameraPresetForView(street,bounds),'street');
+  street.position[0]+=.1;assert.equal(cameraPresetForView(street,bounds),'custom');
+  assert.equal(cameraPresetForView({position:[NaN,12,0],target:[0,18,0]},bounds),'custom');
+  assert.equal(cameraPresetForView({},bounds),'custom');
+});
