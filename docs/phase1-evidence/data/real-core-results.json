@@ -1,0 +1,316 @@
+{
+  "date": "2026-11-03T08:45:06.466Z",
+  "environment": {
+    "platform": "win32",
+    "node": "v22.11.0"
+  },
+  "repository": "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-b-integration-8906f4c9927a43b1b0997f8b339b3915",
+  "temporaryProjects": "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3",
+  "realCompiler": true,
+  "injectedCompiler": false,
+  "syntheticSample": true,
+  "sampleContentHash": "6b2ffaec5bb8abfc2bb1b6f6aaa52a6122de99e1857a86434b181382e810ca75",
+  "source": {
+    "file": "public/data/beijing-cbd.json",
+    "sourceFeature": "way/599547918",
+    "sourceHash": "73a643cf15ecf8a006c183a3fd19bdb23bb35b452458fcc4c9af3310355c549b"
+  },
+  "glbBytes": 87944,
+  "versions": [
+    {
+      "version": "1.0.0",
+      "contentHash": "019ef032ca3e35782670066b5a9a1e392bae7a8b41d700cf82c8a36485447487",
+      "assetHashes": {
+        "attribution.json": "0c365e083d3c8b20aeb9c894c2963ed508852b629bb730707c2d079af816c87d",
+        "chunks/0_0.high.40606fa402716c41.cink": "40606fa402716c414a2a739e950348c3f30de6e46857ab99ba6db53cd9004450",
+        "chunks/0_0.low.6e58be5f78dc6d8c.cink": "6e58be5f78dc6d8cbff948f84621c44b9dcb13f8af35e94e85a5bda751b9473a",
+        "chunks/0_0.medium.7ea60619ecaafc34.cink": "7ea60619ecaafc34fe29a6ec42a5986af9beb208fb27e72e34def74b589711ed"
+      }
+    },
+    {
+      "version": "1.1.0",
+      "contentHash": "dd68dbf4f72ccc0c6e0c18142f6615d05a1051f248deaeb870b223e30262a63c",
+      "assetHashes": {
+        "attribution.json": "0c365e083d3c8b20aeb9c894c2963ed508852b629bb730707c2d079af816c87d",
+        "chunks/0_0.high.6c0c3ad77169bfa3.cink": "6c0c3ad77169bfa3a7ca888c51cb38ebc53a41fc291ebcef3ef106006436a08e",
+        "chunks/0_0.low.8c5d0fa3088e2c4c.cink": "8c5d0fa3088e2c4c0c6252366441dcdca4a39d45250a86793d57277f7e9f66ed",
+        "chunks/0_0.medium.a667214ec4c21485.cink": "a667214ec4c21485e7649acd3b4a31701a19098b89ea5804c6b0d51f0cd2fd5d"
+      }
+    }
+  ],
+  "rollbackContentHash": "019ef032ca3e35782670066b5a9a1e392bae7a8b41d700cf82c8a36485447487",
+  "cancellation": {
+    "requested": true,
+    "status": "cancelled",
+    "priorScenePreserved": true,
+    "resumedStatus": "succeeded",
+    "attempt": 2
+  },
+  "batch": {
+    "statuses": [
+      "succeeded",
+      "succeeded",
+      "failed"
+    ],
+    "resumedStatuses": [
+      "succeeded",
+      "succeeded",
+      "succeeded"
+    ],
+    "attempts": [
+      1,
+      1,
+      2
+    ]
+  },
+  "calls": [
+    {
+      "args": [
+        "init",
+        "sample",
+        "--sample"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "city.config.json",
+        "city.lock.json",
+        "data/source.json"
+      ]
+    },
+    {
+      "args": [
+        "build",
+        "--project",
+        "sample",
+        "--offline"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "dist/manifest.json",
+        "city.lock.json"
+      ]
+    },
+    {
+      "args": [
+        "build",
+        "--project",
+        "sample",
+        "--offline"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "dist/manifest.json",
+        "city.lock.json"
+      ]
+    },
+    {
+      "args": [
+        "validate",
+        "--project",
+        "sample",
+        "--offline"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "dist/manifest.json"
+      ]
+    },
+    {
+      "args": [
+        "export",
+        "web",
+        "--project",
+        "sample"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "site/index.html"
+      ]
+    },
+    {
+      "args": [
+        "export",
+        "glb",
+        "--project",
+        "sample"
+      ],
+      "status": "succeeded",
+      "diagnostics": [
+        {
+          "code": "GLB_MATERIAL_LIMITS",
+          "stage": "export",
+          "message": "Full region at highest available geometry detail; standard materials only. Procedural windows and postprocessing are not portable GLB effects.",
+          "hint": "Use export web for the complete style pipeline."
+        }
+      ],
+      "artifacts": [
+        "exports/city.glb"
+      ]
+    },
+    {
+      "args": [
+        "init",
+        "landmark",
+        "--area",
+        "39.9109543,116.4595631,39.912047799999996,116.4609082"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "city.config.json",
+        "city.lock.json"
+      ]
+    },
+    {
+      "args": [
+        "data",
+        "import",
+        "standard.json",
+        "--project",
+        "landmark"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "data/source.json"
+      ]
+    },
+    {
+      "args": [
+        "landmarks",
+        "update",
+        "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3\\pack-1.0.0",
+        "--project",
+        "landmark",
+        "--offline"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "dist/manifest.json",
+        "city.lock.json"
+      ]
+    },
+    {
+      "args": [
+        "landmarks",
+        "update",
+        "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3\\pack-1.1.0",
+        "--project",
+        "landmark",
+        "--offline"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "dist/manifest.json",
+        "city.lock.json"
+      ]
+    },
+    {
+      "args": [
+        "landmarks",
+        "update",
+        "--rollback",
+        "--project",
+        "landmark",
+        "--offline"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "dist/manifest.json",
+        "city.lock.json"
+      ]
+    },
+    {
+      "args": [
+        "init",
+        "kyoto",
+        "--area",
+        "35.0038193,135.77963689999999,35.0043649,135.7803074"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "city.config.json",
+        "city.lock.json"
+      ]
+    },
+    {
+      "args": [
+        "data",
+        "import",
+        "kyoto.json",
+        "--project",
+        "kyoto"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "data/source.json"
+      ]
+    },
+    {
+      "args": [
+        "batch",
+        "batch.json",
+        "--offline",
+        "--concurrency",
+        "2"
+      ],
+      "status": "partial",
+      "diagnostics": [
+        {
+          "code": "ENOENT",
+          "stage": "task",
+          "message": "ENOENT: no such file or directory, realpath 'C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3\\broken'",
+          "hint": "Check the input and retry."
+        }
+      ],
+      "artifacts": [
+        "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3\\landmark\\dist\\manifest.json",
+        "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3\\landmark\\city.lock.json",
+        "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3\\kyoto\\dist\\manifest.json",
+        "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3\\kyoto\\city.lock.json"
+      ]
+    },
+    {
+      "args": [
+        "init",
+        "broken",
+        "--sample"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "city.config.json",
+        "city.lock.json",
+        "data/source.json"
+      ]
+    },
+    {
+      "args": [
+        "batch",
+        "batch.json",
+        "--offline",
+        "--resume"
+      ],
+      "status": "succeeded",
+      "diagnostics": [],
+      "artifacts": [
+        "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3\\landmark\\dist\\manifest.json",
+        "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3\\landmark\\city.lock.json",
+        "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3\\kyoto\\dist\\manifest.json",
+        "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3\\kyoto\\city.lock.json",
+        "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3\\broken\\dist\\manifest.json",
+        "C:\\Users\\宋世康\\AppData\\Local\\Temp\\city-toolchain-live-core-sTtDe3\\broken\\city.lock.json"
+      ]
+    }
+  ]
+}
