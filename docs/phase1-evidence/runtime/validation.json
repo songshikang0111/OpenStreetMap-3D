@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-03T10:06:30.981Z",
+  "node": "v22.11.0",
+  "runtimeDependencies": {
+    "polygon-clipping": "0.15.7",
+    "three": "0.186.1"
+  },
+  "devTools": {
+    "playwright": "1.64.1",
+    "typescript": "7.0.2",
+    "@types/three": "0.187.0"
+  },
+  "checks": [
+    {
+      "command": "npm test",
+      "result": "176/176 passed",
+      "evidence": "test-results.txt"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed; existing Three.js >500kB warning"
+    },
+    {
+      "command": "node --test test/phase1-runtime*.test.js test/phase1-core.test.js",
+      "result": "28/28 passed"
+    },
+    {
+      "command": "node node_modules/typescript/bin/tsc --noEmit --strict --moduleResolution NodeNext --module NodeNext --target ES2022 --lib ES2022,DOM examples/embed/typecheck.ts",
+      "result": "passed without casts or skipLibCheck"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "date": "2026-11-03T13:56:56.203Z",
+  "commit": "e5a7de48b92c10707ec3de3fb63e881a94b5def7",
+  "scope": "Actual sample compiler / local API / export worker / validators; no browser or GPU. Source policies are saved but no remote download is performed.",
+  "project": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\remediation-review-studio\\policy-1793714216000",
+  "operationalFields": [
+    "provider",
+    "endpoint",
+    "transport",
+    "fallbackEndpoints",
+    "fallbackPolicy"
+  ],
+  "results": [
+    {
+      "name": "policy provider",
+      "status": "pass",
+      "saved": {
+        "file": "data/source.json",
+        "kind": "sample",
+        "provider": "dresel-europe",
+        "endpoint": "https://ovp.dresel.systems/api/interpreter",
+        "transport": "get"
+      }
+    },
+    {
+      "name": "policy endpoint",
+      "status": "pass",
+      "saved": {
+        "endpoint": "http://127.0.0.1:8123/interpreter",
+        "file": "data/source.json",
+        "kind": "sample",
+        "provider": "dresel-europe",
+        "transport": "get"
+      }
+    },
+    {
+      "name": "policy transport",
+      "status": "pass",
+      "saved": {
+        "endpoint": "http://127.0.0.1:8123/interpreter",
+        "file": "data/source.json",
+        "kind": "sample",
+        "provider": "dresel-europe",
+        "transport": "post"
+      }
+    },
+    {
+      "name": "policy fallbackEndpoints",
+      "status": "pass",
+      "saved": {
+        "endpoint": "http://127.0.0.1:8123/interpreter",
+        "file": "data/source.json",
+        "kind": "sample",
+        "provider": "dresel-europe",
+        "transport": "post",
+        "fallbackEndpoints": [
+          "http://127.0.0.1:8124/interpreter"
+        ]
+      }
+    },
+    {
+      "name": "policy fallbackPolicy",
+      "status": "pass",
+      "saved": {
+        "endpoint": "http://127.0.0.1:8123/interpreter",
+        "fallbackEndpoints": [
+          "http://127.0.0.1:8124/interpreter"
+        ],
+        "file": "data/source.json",
+        "kind": "sample",
+        "provider": "dresel-europe",
+        "transport": "post",
+        "fallbackPolicy": "unavailable"
+      }
+    },
+    {
+      "name": "actual external-style export worker after policy save",
+      "status": "pass",
+      "jobId": "c290ea20-d402-4a25-a19d-3028df1a6ebf",
+      "style": {
+        "id": "project-sepia",
+        "parameters": {
+          "warmth": 0.23
+        }
+      }
+    },
+    {
+      "name": "source kind/file identity still invalidate",
+      "status": "pass"
+    },
+    {
+      "name": "format-only actual byte change invalidates",
+      "status": "pass"
+    },
+    {
+      "name": "semantic input data change invalidates",
+      "status": "pass"
+    }
+  ],
+  "status": "pass"
+}

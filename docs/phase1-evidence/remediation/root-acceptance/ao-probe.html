@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Independent AO contract check</title>
+<style>body{margin:0;background:#eee;font:14px monospace}#view{width:960px;height:640px}pre{white-space:pre-wrap;padding:12px}</style>
+<div id="view"></div><pre id="result">Starting independent public SDK test…</pre>
+<script type="module">
+import {createCityViewer} from '/dist-sdk/city-ink.js';
+const container=document.getElementById('view'),display=document.getElementById('result');
+const manifestUrl=new URL('./project/dist/manifest.json',location.href).href;
+let viewer,pipeline;
+const roles=['wall','glass','roof','structure','road','water','foliage','ground','facility','landmark'];
+function style(strength){return {
+  schemaVersion:1,styleContractVersion:1,id:'independent-ao-probe',version:'1.0.0',engineCompatibility:'>=1.0.0 <2.0.0',
+  materialRoles:roles,fallbackRole:'facility',rebuildParameters:[],qualityHints:{ao:'balanced'},
+  parametersSchema:{type:'object',additionalProperties:false,properties:{aoStrength:{type:'number',minimum:0,maximum:1,default:.65}}},
+  parameters:{aoStrength:strength},
+  createMaterial:({sourceMaterial})=>sourceMaterial.clone(),
+  createPipeline(context){pipeline=context.services.createInkPipeline({...context,mode:0});return pipeline;},dispose(){},
+};}
+const frames=async count=>{for(let i=0;i<count;i++)await new Promise(requestAnimationFrame);};
+globalThis.probe={
+  async create(quality,strength){await viewer?.dispose();viewer=await createCityViewer({container,manifestUrl,style:style(strength),quality});await viewer.whenIdle();await frames(8);return this.inspect();},
+  async setStrength(strength){await viewer.setStyle(style(strength));await viewer.whenIdle();await frames(8);return this.inspect();},
+  inspect(){const value={effectiveStrength:pipeline.ink.material.uniforms.aoStrength.value,aoEnabled:pipeline.ink.aoEnabled,view:viewer.getView(),rendering:viewer.getStats().rendering.last};display.textContent=JSON.stringify(value,null,2);return value;},
+  async png(){const exported=await viewer.exportPNG({width:960,height:640});return [...new Uint8Array(await exported.blob.arrayBuffer())];},
+  async dispose(){await viewer?.dispose();viewer=null;}
+};
+globalThis.probeReady=true;
+</script></html>

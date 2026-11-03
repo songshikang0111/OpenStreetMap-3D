@@ -1,0 +1,5 @@
+{
+  "name": "diagnose-guardrail-domain.mjs",
+  "status": "pass",
+  "stdout": "{\n  \"maximumSourceCentroidDistanceMeters\": 1.1370681997996045e-12,\n  \"missingSourceFaces\": [],\n  \"missingArea\": 0,\n  \"sourceArea\": 3480.494275995952,\n  \"targetArea\": 3480.494275995952,\n  \"grid\": [\n    {\n      \"id\": \"0_0\",\n      \"bounds\": [\n        -300.00000000004536,\n        -300.00000000010596,\n        0,\n        0\n      ]\n    },\n    {\n      \"id\": \"1_0\",\n      \"bounds\": [\n        0,\n        -300.00000000010596,\n        300.00000000004536,\n        0\n      ]\n    },\n    {\n      \"id\": \"0_1\",\n      \"bounds\": [\n        -300.00000000004536,\n        0,\n        0,\n        300.00000000010596\n      ]\n    },\n    {\n      \"id\": \"1_1\",\n      \"bounds\": [\n        0,\n        0,\n        300.00000000004536,\n        300.00000000010596\n      ]\n    }\n  ],\n  \"atWorldOrigin\": \"1_1\",\n  \"verticalZ0\": {\n    \"expectedArea\": 32,\n    \"emittedArea\": 32,\n    \"pieces\": [\n      {\n        \"id\": \"0_1\",\n        \"area\": 16\n      },\n      {\n        \"id\": \"1_1\",\n        \"area\": 16\n      }\n    ]\n  }\n}\n"
+}

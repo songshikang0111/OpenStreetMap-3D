@@ -1,0 +1,185 @@
+{
+  "date": "2026-11-03T11:03:37.130Z",
+  "reviewedHead": "4dd35b3985c45ad8f7416612050e6033700199e8",
+  "measuredCommit": "9407af9c752b6b7cfc32eb4fb17622824e453cfd",
+  "bundleSha256": "d22408bc6be5535a5ddd2645bdb22ddcde79c25103cd6721407a2abe5a2a0900",
+  "scope": "Read-only independent recalculation of archived JSON; no product tests, browser or GPU rerun.",
+  "allMatch": true,
+  "totals": {
+    "cases": 12,
+    "frames": 86109,
+    "gpuSamples": 86109,
+    "longFrames50ms": 13,
+    "cycles": 60
+  },
+  "cases": [
+    {
+      "name": "beijing-cbd-fixed-1",
+      "matchesAssessment": true,
+      "actual": {
+        "frames": 7199,
+        "gpuSamples": 7199,
+        "rafP95": 8.400000000001455,
+        "gpuP95": 5.661696,
+        "trianglesP95": 2638236,
+        "drawCallsP95": 118,
+        "longFrames50ms": 0,
+        "cycles": 5
+      }
+    },
+    {
+      "name": "beijing-cbd-fixed-4",
+      "matchesAssessment": true,
+      "actual": {
+        "frames": 7199,
+        "gpuSamples": 7199,
+        "rafP95": 8.400000000001455,
+        "gpuP95": 5.075968,
+        "trianglesP95": 2638230,
+        "drawCallsP95": 430,
+        "longFrames50ms": 0,
+        "cycles": 5
+      }
+    },
+    {
+      "name": "beijing-cbd-fixed-16",
+      "matchesAssessment": true,
+      "actual": {
+        "frames": 7187,
+        "gpuSamples": 7187,
+        "rafP95": 8.400000000001455,
+        "gpuP95": 6.808576,
+        "trianglesP95": 2531375,
+        "drawCallsP95": 1298,
+        "longFrames50ms": 0,
+        "cycles": 5
+      }
+    },
+    {
+      "name": "beijing-cbd-grow-1",
+      "matchesAssessment": true,
+      "actual": {
+        "frames": 7061,
+        "gpuSamples": 7061,
+        "rafP95": 8.400000000001455,
+        "gpuP95": 5.920768,
+        "trianglesP95": 592086,
+        "drawCallsP95": 350,
+        "longFrames50ms": 7,
+        "cycles": 5
+      }
+    },
+    {
+      "name": "beijing-cbd-grow-4",
+      "matchesAssessment": true,
+      "actual": {
+        "frames": 7200,
+        "gpuSamples": 7200,
+        "rafP95": 8.400000000001455,
+        "gpuP95": 4.77184,
+        "trianglesP95": 810569,
+        "drawCallsP95": 368,
+        "longFrames50ms": 0,
+        "cycles": 5
+      }
+    },
+    {
+      "name": "beijing-cbd-grow-9",
+      "matchesAssessment": true,
+      "actual": {
+        "frames": 7189,
+        "gpuSamples": 7189,
+        "rafP95": 8.400000000001455,
+        "gpuP95": 5.90848,
+        "trianglesP95": 1632516,
+        "drawCallsP95": 731,
+        "longFrames50ms": 0,
+        "cycles": 5
+      }
+    },
+    {
+      "name": "kyoto-gion-fixed-1",
+      "matchesAssessment": true,
+      "actual": {
+        "frames": 7199,
+        "gpuSamples": 7199,
+        "rafP95": 8.400000000001455,
+        "gpuP95": 5.8112,
+        "trianglesP95": 3090196,
+        "drawCallsP95": 126,
+        "longFrames50ms": 0,
+        "cycles": 5
+      }
+    },
+    {
+      "name": "kyoto-gion-fixed-4",
+      "matchesAssessment": true,
+      "actual": {
+        "frames": 7199,
+        "gpuSamples": 7199,
+        "rafP95": 8.400000000001455,
+        "gpuP95": 5.20192,
+        "trianglesP95": 3090196,
+        "drawCallsP95": 475,
+        "longFrames50ms": 0,
+        "cycles": 5
+      }
+    },
+    {
+      "name": "kyoto-gion-fixed-16",
+      "matchesAssessment": true,
+      "actual": {
+        "frames": 7185,
+        "gpuSamples": 7185,
+        "rafP95": 8.400000000001455,
+        "gpuP95": 7.036928,
+        "trianglesP95": 3090196,
+        "drawCallsP95": 1404,
+        "longFrames50ms": 1,
+        "cycles": 5
+      }
+    },
+    {
+      "name": "kyoto-gion-grow-1",
+      "matchesAssessment": true,
+      "actual": {
+        "frames": 7125,
+        "gpuSamples": 7125,
+        "rafP95": 8.400000000001455,
+        "gpuP95": 6.350848,
+        "trianglesP95": 83980,
+        "drawCallsP95": 81,
+        "longFrames50ms": 3,
+        "cycles": 5
+      }
+    },
+    {
+      "name": "kyoto-gion-grow-4",
+      "matchesAssessment": true,
+      "actual": {
+        "frames": 7200,
+        "gpuSamples": 7200,
+        "rafP95": 8.400000000001455,
+        "gpuP95": 4.852736,
+        "trianglesP95": 785420,
+        "drawCallsP95": 342,
+        "longFrames50ms": 0,
+        "cycles": 5
+      }
+    },
+    {
+      "name": "kyoto-gion-grow-9",
+      "matchesAssessment": true,
+      "actual": {
+        "frames": 7166,
+        "gpuSamples": 7166,
+        "rafP95": 8.400000000001455,
+        "gpuP95": 5.896192,
+        "trianglesP95": 2499436,
+        "drawCallsP95": 806,
+        "longFrames50ms": 2,
+        "cycles": 5
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-03T15:44:48.640Z",
+  "status": "pass",
+  "reviewedHead": "dc2b53b140a1cf70c6f6bd06c6dc44c68fe9a12c",
+  "measuredCommit": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "publicProductUnchangedSinceChecks": true,
+  "bundleSha256": "d867e0608eb7e7e3cc16f75f1d90e219f47cfbdcf94ea9b19d3d07c20b48e66b",
+  "archivedCommands": {
+    "parameters": 26,
+    "sourceLock": 9,
+    "formalCliAudit": "pass",
+    "gpuIntegrity": 17,
+    "rawCases": 12,
+    "geometryScripts": 12
+  },
+  "uiServicesAndTabsClosed": true,
+  "scope": "Root acceptance plus path-only archive replay; no additional hardware measurement",
+  "finalArchiveCheck": "2026-11-03T15:53:57.358Z",
+  "finalPackageBoundary": {
+    "status": "pass",
+    "files": 140,
+    "size": 560808,
+    "unpackedSize": 2058603,
+    "report": "package-boundary-final.json"
+  },
+  "productDiffSinceFinalChecks": [],
+  "allFiveComponentChatsCompleted": true
+}

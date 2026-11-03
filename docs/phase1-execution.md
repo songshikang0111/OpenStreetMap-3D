@@ -1,6 +1,28 @@
 # 一期开发执行清单
 
-日期：2026-11-03。本文件记录已派发的任务和恢复入口，不代表一期已经开发完成。
+日期：2026-11-03。本文件记录任务交付、验收和历史恢复入口。
+
+## 修复后最终验收（2026-11-03）
+
+原 A/B/C/D/E 子对话使用 `gpt-6.1-sol / xhigh` 完成五类缺口修复及独立复验。最新产品修复 `e11990c`，统一测量冻结 `55862f0`，E证据提交 `dc2b53b`；主对话新增的架构、几何、性能独立审查均已闭环，**AC01–AC27 全部通过**。最终结论和复跑入口以 [修复后主对话总验收](phase1-evidence/remediation/root-acceptance/acceptance.md) 为准。
+
+主对话实际验证344项测试、严格类型、三套构建、140文件隔离生产安装包、真实源锁定快照的五个正式离线CLI命令、SDK AO和工作台/静态站点。最终12组GPU路径的86146个物理帧及60轮资源往返已独立重算通过；两原固定机位各至少15秒，无换档、取消或重复请求。默认预算未提高，混合LOD/浮点边界失败反例与修复后证据均保留。测量只覆盖报告中的参考桌面设备；公开下载源的可用性限制仍明确记录。
+
+代码和证据留在 `codex/phase1-integration`，未合入main或执行公开发布。下文为修复前历史记录，不作为当前状态。
+
+## 首次主对话总验收（2026-11-03，历史失败）
+
+已逐个用 `wait_threads` 确认 A/B/C/D/E 的最新 turn 均已结束；集成产品 HEAD 为 `7c83755`。主对话重跑264项测试、严格类型、三套构建、121文件隔离离线安装包，并完成独立工作台浏览器实操；另两个 `gpt-6.1-sol / xhigh` 角色复核架构和性能。
+
+**一期整体验收不通过。** 独立 UI 工具缺口已补齐，但仍有真实下载、默认预算、静止相机 LOD 抖动、自定义风格导出和合法 AO 参数被覆盖五类问题；AC27 缺陷修复后复验也未闭环。最新 AC01–AC27 矩阵、复现证据及后续任务以 [主对话验收报告](phase1-evidence/root-acceptance/acceptance.md) 为准，以下 E 记录作为历史进展保留。未公开发布或合入 main。
+
+## 集成分支实际进度（E 更新）
+
+- C 已完成独立审查与交接，`8300ee7` 及其功能/修复提交已合入 E；C + E 的针对性测试 25/25 通过。组件报告：`docs/phase1-evidence/landmarks/handoff.md`。
+- E 工作台、包/构建入口、静态/浏览器导出、文档与验收脚本已提交；独立初阶段审查的四项 P2 已修复复验，记录于 `docs/phase1-evidence/integration/review-studio-initial.md`。
+- A `198a8e0`、B `e626097` 已完成组件独立审查与交接并合入 E。A/C 统一规划与 B 服务契约的实际联合缺陷已修复，证据见 `docs/phase1-evidence/integration/review-architecture-initial.md`。
+- D最终176d798已交接并集成。E完成264/264测试、严格类型、生产构建、真实端到端七项、121文件隔离离线安装、两个独立角色审查及修复复验；最新生产包12组60秒矩阵p95均8.4ms，60次资源往返稳定。AC04真实获取仍超时、AC18默认绘制预算在10/12样本未达，独立工作台CUA子项因工具无法确认窗口URL而not-run；不得宣称一期全部通过。
+- 已完成实际联合修复：实时配置与几何build key分离；low/import/锁对象统一；正式CINK/风格/地标接线与ownership/角色保真；全帧GPU计时；GLB实例色/身份/取消；预算协议防御；FOV范围和向上看的街道相机。最终以原始验收证据为准。
 
 ## 已完成的规划准备
 
@@ -31,7 +53,7 @@ A、B、C、D 各自完成实现、针对性测试、独立 review subagent 审�
 - C：docs/phase1-evidence/landmarks/handoff.md。
 - D：docs/phase1-evidence/runtime/handoff.md。
 
-E 一边实现工作台和打包文档，一边使用 wait_threads 跟踪 A–D。组件完成后，E 在 codex/phase1-integration 上集成、解决冲突、执行实际端到端与扩区性能验证，另启两个独立验收角色复核。最终证据应位于 docs/phase1-evidence/integration/handoff.md 和 acceptance.md。上述证据在各自提交/集成后才存在，当前不声称已经生成。
+E 一边实现工作台和打包文档，一边使用 wait_threads 跟踪 A–D。组件完成后，E 在 codex/phase1-integration 上集成、解决冲突、执行实际端到端与扩区性能验证，另启两个独立验收角色复核。最终证据应位于 docs/phase1-evidence/integration/handoff.md 和 acceptance.md。上述证据均已生成并提交；逐项pass/fail/not-run以E acceptance.md为准，保留外部和预算未通过项。
 
 重点保留最新补充要求：区分视觉衰减与真正 LOD；验证固定范围不同切块以及实际扩大连续覆盖；记录真实浏览器帧统计、绘制/驻留成本和往返资源回收。不能只看截图或 Node 构建计时。
 

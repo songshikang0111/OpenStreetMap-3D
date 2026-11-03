@@ -1,0 +1,119 @@
+{
+  "date": "2026-11-03T15:38:04.435Z",
+  "status": "pass",
+  "scope": "Only read stored completed CLI evidence, job records, snapshot/cache/config/manifest/assets and final checks; no city CLI, network, browser or GPU executed.",
+  "executionFreeze": "e11990c5dc6175dbdae7c2789b2c3a4e4f7f0a9c",
+  "observedHead": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "productDelta": [],
+  "commands": [
+    {
+      "words": [
+        "data",
+        "fetch"
+      ],
+      "exitCode": 0,
+      "status": "succeeded"
+    },
+    {
+      "words": [
+        "build"
+      ],
+      "exitCode": 0,
+      "status": "succeeded"
+    },
+    {
+      "words": [
+        "validate"
+      ],
+      "exitCode": 0,
+      "status": "succeeded"
+    },
+    {
+      "words": [
+        "build"
+      ],
+      "exitCode": 0,
+      "status": "succeeded"
+    },
+    {
+      "words": [
+        "validate"
+      ],
+      "exitCode": 0,
+      "status": "succeeded"
+    }
+  ],
+  "source": {
+    "provider": "dresel-europe",
+    "endpoint": "https://ovp.dresel.systems/api/interpreter",
+    "transport": "get",
+    "retrievedAt": "2026-11-03T12:48:21.266Z",
+    "osmBaseTimestamp": "2026-11-02T21:21:26Z",
+    "sourceHash": "caa4e0dc9c7e4a493f5ba6fd688cdbf9e8c7f4759d04d4b0ed9690a58cc5d880",
+    "contentHash": "69427e177a82fc1671deee1230ff438bccf6482af014e350dce82859c1c11aab",
+    "sourceFileHash": "cc8d7da7f9059f9705091995c348c57cf9a656cc48de42a21fd2ab50a319e4a6",
+    "attribution": "© OpenStreetMap contributors",
+    "license": "ODbL-1.0",
+    "queryVersion": 1,
+    "actualFileHash": "cc8d7da7f9059f9705091995c348c57cf9a656cc48de42a21fd2ab50a319e4a6",
+    "actualElementHash": "69427e177a82fc1671deee1230ff438bccf6482af014e350dce82859c1c11aab"
+  },
+  "cacheHit": true,
+  "cacheAttempts": [],
+  "repeatedBuild": {
+    "contentHash": "5e0429bbcd3cbcb33bdbc167ca3c77961fddd4a8daf28659fd811d9a3723bd87",
+    "manifestHash": "e47832b109ba79796232b7698ff855c184f74d6208cf6489c7782a7cd2109902",
+    "assetCount": 4,
+    "inputsAndAssetHashesIdentical": true,
+    "actualFileHashesMatch": true,
+    "builtAt": [
+      "2026-11-03T15:08:18.122Z",
+      "2026-11-03T15:08:19.213Z"
+    ]
+  },
+  "copiedJobStore": {
+    "firstAttempt": "JOB_PROJECT_ESCAPE, exit 1",
+    "movedDirectory": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-acceptance\\copied-original-machine-job-store",
+    "originalProject": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-data-cli\\beijing-city-ink\\work\\data-remediation\\live-Slwqd9",
+    "movedJobs": 3,
+    "newJobs": [
+      {
+        "id": "10e438a8-bd82-44f7-9c17-021d925c45bb",
+        "kind": "build"
+      },
+      {
+        "id": "64c2d5ac-ba46-44ea-99d5-9d1c0171139b",
+        "kind": "fetch"
+      },
+      {
+        "id": "6bb29af5-3d4b-42b9-bb00-8983c9d456c4",
+        "kind": "build"
+      }
+    ],
+    "originalSourceAndConfigStillMatch": true,
+    "note": "Absolute-project-bound local operation/recovery state was copied. Root moved only the copied jobs directory intact; this is distinct from project inputs and the source data cache. The original B project was not edited by this audit."
+  },
+  "checks": {
+    "commit": "e11990c5dc6175dbdae7c2789b2c3a4e4f7f0a9c",
+    "status": "pass (derived from four exact zero exit codes)",
+    "tests": 344,
+    "checks": [
+      {
+        "name": "tests",
+        "exitCode": 0
+      },
+      {
+        "name": "types",
+        "exitCode": 0
+      },
+      {
+        "name": "build",
+        "exitCode": 0
+      },
+      {
+        "name": "package",
+        "exitCode": 0
+      }
+    ]
+  }
+}

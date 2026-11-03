@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>城市线境 · 本地工作台</title></head>
+<body>
+  <header><div><span class="mark">城</span><strong>城市线境</strong><span class="sub">LOCAL STUDIO</span></div><span id="connection" role="status">连接本地服务…</span></header>
+  <main>
+    <aside aria-label="项目工具">
+      <section><h1>从一片街区开始</h1><p class="hint">真实地图 · 可复现项目 · 本地构建</p>
+        <form id="search-form"><label for="query">地点、坐标、地标 ID 或 OSM 链接</label><div class="row"><input id="query" placeholder="39.9095,116.4605" required><button>定位</button></div></form>
+        <div id="candidates" aria-live="polite"></div>
+        <button id="sample" class="secondary wide">打开内置离线样例</button>
+        <details id="source-settings"><summary>地图数据服务</summary>
+          <label for="source-provider">服务预设<select id="source-provider"><option value="custom">自定义端点</option></select></label>
+          <p id="source-coverage" class="hint">可配置自托管 Overpass 服务；请确认服务覆盖当前范围。</p>
+          <label for="source-endpoint">Overpass 端点<input id="source-endpoint" type="url" placeholder="https://…/api/interpreter"></label>
+          <label for="source-transport">请求方式<select id="source-transport"><option value="post">POST</option><option value="get">GET</option></select></label>
+          <label for="source-fallback-policy">故障回退<select id="source-fallback-policy"><option value="none">关闭</option><option value="unavailable">网络、超时或 502/503/504 时回退</option></select></label>
+          <label for="source-fallbacks">备用端点（每行一个，最多两个）<textarea id="source-fallbacks" rows="3" placeholder="与主端点使用相同请求方式"></textarea></label>
+          <p class="hint">保存后用于此项目的定位与下载。429 限流、406、无效请求和取消不会切换端点；备用服务同样需要覆盖该区域。</p>
+        </details>
+      </section>
+      <section><h2>范围与项目</h2><label for="project-name">项目名</label><input id="project-name" value="my-city" maxlength="80">
+        <div class="row"><label>半径 / 米<input id="radius" type="number" min="25" max="2000" value="250"></label><button id="apply-radius" class="secondary">按定位更新</button></div>
+        <div class="bbox"><label>南纬 / south<input id="south" type="number" step="any" value="39.907254222"></label><label>西经 / west<input id="west" type="number" step="any" value="116.457573934"></label><label>北纬 / north<input id="north" type="number" step="any" value="39.911745778"></label><label>东经 / east<input id="east" type="number" step="any" value="116.463426066"></label></div>
+        <button id="create" class="wide">创建这个范围的项目</button><p class="hint">默认小街区；地形为平地近似。创建后原点锁定，修改范围需重新下载与构建。</p>
+      </section>
+      <section><h2>保存与重开</h2><label for="projects">已注册项目</label><select id="projects"><option value="">选择项目</option></select>
+        <form id="open-form"><label for="relative-path">工作目录内项目路径</label><div class="row"><input id="relative-path" placeholder="my-city 或 ." required><button class="secondary">打开</button></div></form>
+        <p id="project-info" class="hint">尚未选择项目。</p><button id="save" class="secondary wide" disabled>保存配置与当前相机</button>
+      </section>
+    </aside>
+    <article>
+      <div class="toolbar"><div class="row"><button id="fetch" disabled>下载数据</button><button id="build" disabled>构建 / 预览</button><button id="retry" class="secondary" disabled>恢复 / 重试任务</button><button id="cancel" class="secondary" disabled>取消任务</button></div><label class="inline"><input id="refresh" type="checkbox">显式刷新数据</label></div>
+      <div class="progress"><progress id="progress" max="1" value="0"></progress><span id="job-status" role="status">选择内置样例，或定位并创建项目。</span></div>
+      <div id="viewport"><div id="empty"><span>城市线境</span><p>把一片真实街区，变成你的城市画布。</p><small>构建完成后，公共 Web SDK 在这里加载场景。</small></div></div>
+      <div class="view-controls"><label>画风<select id="style"><option value="comic">漫画</option><option value="line">线稿</option><option value="color">彩色</option><option value="white">白模</option><option value="external">项目外部画风</option></select></label><label>质量<select id="quality"><option value="balanced">均衡</option><option value="low">低</option><option value="high">高</option></select></label><label>视角<select id="camera"><option value="overview">俯瞰</option><option value="street">街道</option><option value="skyline">天际线</option><option value="custom">自定义</option></select></label><label>FOV<input id="fov" type="range" min="5" max="140" value="45"></label><button id="png" class="secondary" disabled>导出 PNG</button><button id="glb" class="secondary" disabled>导出 GLB</button><button id="web" class="secondary" disabled>导出静态网页</button></div>
+      <details id="style-settings"><summary>画风参数与项目入口</summary><div class="settings-grid">
+        <div id="external-style-fields" hidden><label for="style-id">外部画风 ID<input id="style-id" placeholder="project-sepia"></label><label for="style-entry">项目相对入口<input id="style-entry" placeholder="styles/sepia.js"></label><label for="style-dependencies">本地依赖映射 / JSON<textarea id="style-dependencies" rows="3">{}</textarea></label><label for="style-assets">声明资产 / JSON<textarea id="style-assets" rows="3">[]</textarea></label></div>
+        <label for="style-parameters">画风参数 / JSON<textarea id="style-parameters" rows="6">{}</textarea></label>
+      </div><p class="hint">外部画风入口使用项目内可信的 JavaScript / TypeScript 文件。依赖与资产须显式声明；修改文件后点击验证以重新加载。合法 AO 强度会随质量切换保留。</p><button id="apply-style" class="secondary" disabled>验证并应用画风</button></details>
+      <details><summary>生成选项（改变后需重新构建）</summary><div class="view-controls"><label>固定种子<input id="seed" type="number" step="1" value="1" disabled></label><label>块尺寸 / 米<input id="tile-size" type="number" min="50" max="5000" value="500" disabled></label><label class="inline"><input id="infer-roofs" type="checkbox" disabled>推断未标注低层坡顶</label><label class="inline"><input id="landscape" type="checkbox" disabled>推断空地补绿</label><label class="inline"><input id="landmarks" type="checkbox" checked disabled>启用地标配方</label></div><p class="hint">推断选项默认关闭。仅画风和相机变化可实时保存；生成规则、种子或分块变化会使旧构建过期。</p></details>
+      <div class="reports"><section><h2>质量与来源</h2><p class="hint">观测、标签换算与规则推断会在构建报告中区分。参数化地标是形体近似。</p><pre id="report">等待构建报告。</pre><details><summary>选中对象</summary><pre id="selection">点击场景中的对象查看身份与来源。</pre></details></section><section><h2>任务与诊断</h2><pre id="diagnostics" role="log">暂无诊断。</pre><details><summary>实时资源统计</summary><pre id="stats">等待 SDK。</pre></details></section></div>
+      <footer>地图数据 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> · ODbL。PNG 包含署名；GLB 仅支持基础材质与几何，漫画后处理和程序窗格不保证跨应用保留。导出范围见任务结果。</footer>
+    </article>
+  </main><script type="module" src="./main.js"></script>
+</body></html>

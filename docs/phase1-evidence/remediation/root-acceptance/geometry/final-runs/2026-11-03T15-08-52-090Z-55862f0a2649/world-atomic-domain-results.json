@@ -1,0 +1,858 @@
+{
+  "date": "2026-11-03T15:08:55.908Z",
+  "commit": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "command": "node work/root-remediation-geometry/verify-world-atomic-domain.mjs",
+  "input": "test/phase1-core-fixture.js (explicit synthetic continuity fixture)",
+  "seed": 71,
+  "environment": {
+    "node": "v22.11.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "results": [
+    {
+      "tiles": 1,
+      "worldHash": "13a303f86c6285ce32c28262f4e252c93ef175b15174a536b0c6634f60f8ff0a",
+      "levels": {
+        "low": {
+          "surfaceAreas": {
+            "generated:land-cover": 20300,
+            "generated:continuous-carriageways": 14960,
+            "generated:bridge-deck-thickness-and-soffits": 8135.5199999999995,
+            "generated:inferred-bridge-piers-outside-lower-routes": 819.9815344461151,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 896.7988200000009,
+            "generated:osm-wood": 11700,
+            "ground": 360000
+          },
+          "surfaceBounds": {
+            "generated:land-cover": [
+              -290,
+              0.22,
+              30,
+              290,
+              0.22,
+              65
+            ],
+            "generated:continuous-carriageways": [
+              -290,
+              0.32,
+              -300,
+              290,
+              7.000003,
+              300
+            ],
+            "generated:bridge-deck-thickness-and-soffits": [
+              104,
+              6.219996,
+              -300,
+              116,
+              7.000003,
+              300
+            ],
+            "generated:inferred-bridge-piers-outside-lower-routes": [
+              105.800003,
+              0.32,
+              -272.759003,
+              114.199997,
+              6.22,
+              268.759003
+            ],
+            "generated:bridge-parapets-and-pedestrian-guardrails": [
+              104.165001,
+              6.999997,
+              -293,
+              115.834999,
+              7.759996,
+              297
+            ],
+            "generated:osm-wood": [
+              -270,
+              0.16,
+              190,
+              -140,
+              0.16,
+              280
+            ],
+            "ground": [
+              -300,
+              0,
+              -300,
+              300,
+              0,
+              300
+            ]
+          },
+          "hash": "75c8d6706744b73f588444d9fde0e3533e7867f89a24e5e08d59873c6d9ee7b5",
+          "records": 1026,
+          "groundTriangles": 288,
+          "groundArea": 360000,
+          "buildingCount": 7,
+          "treeCount": 349,
+          "casters": {
+            "triangles": 0,
+            "drawCalls": 0
+          }
+        },
+        "medium": {
+          "surfaceAreas": {
+            "generated:land-cover": 20300,
+            "generated:continuous-carriageways": 14870.129418400023,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 2776.375,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 89.87058159999994,
+            "generated:bridge-deck-thickness-and-soffits": 8135.5199999999995,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 896.7988200000009,
+            "generated:inferred-bridge-piers-outside-lower-routes": 819.9815344461151,
+            "generated:osm-wood": 11700,
+            "ground": 360000
+          },
+          "surfaceBounds": {
+            "generated:land-cover": [
+              -290,
+              0.22,
+              30,
+              290,
+              0.22,
+              65
+            ],
+            "generated:continuous-carriageways": [
+              -290,
+              0.32,
+              -300,
+              290,
+              7,
+              300
+            ],
+            "generated:inferred-roadside-margins-clipped-at-buildings": [
+              -290,
+              0.47,
+              -300,
+              290,
+              7.149997,
+              300
+            ],
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": [
+              -286,
+              0.32,
+              -296,
+              290,
+              7,
+              298
+            ],
+            "generated:bridge-deck-thickness-and-soffits": [
+              104,
+              6.219996,
+              -300,
+              116,
+              7.000003,
+              300
+            ],
+            "generated:bridge-parapets-and-pedestrian-guardrails": [
+              104.165001,
+              6.999997,
+              -293,
+              115.834999,
+              7.759996,
+              297
+            ],
+            "generated:inferred-bridge-piers-outside-lower-routes": [
+              105.800003,
+              0.32,
+              -272.759003,
+              114.199997,
+              6.22,
+              268.759003
+            ],
+            "generated:osm-wood": [
+              -270,
+              0.16,
+              190,
+              -140,
+              0.16,
+              280
+            ],
+            "ground": [
+              -300,
+              0,
+              -300,
+              300,
+              0,
+              300
+            ]
+          },
+          "hash": "78ac2baeace22d7f39c89625ba9d0df5a456c8fd5ae9d66114a501ce445a9461",
+          "records": 12790,
+          "groundTriangles": 288,
+          "groundArea": 360000,
+          "buildingCount": 7,
+          "treeCount": 349,
+          "casters": {
+            "triangles": 47476,
+            "drawCalls": 11
+          }
+        },
+        "high": {
+          "surfaceAreas": {
+            "generated:land-cover": 20300,
+            "generated:continuous-carriageways": 14870.129418400023,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 2776.375,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 89.87058159999994,
+            "generated:bridge-deck-thickness-and-soffits": 8135.5199999999995,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 3480.4917951398684,
+            "generated:inferred-bridge-piers-outside-lower-routes": 819.9815344461151,
+            "generated:osm-wood": 11700,
+            "ground": 360000
+          },
+          "surfaceBounds": {
+            "generated:land-cover": [
+              -290,
+              0.22,
+              30,
+              290,
+              0.22,
+              65
+            ],
+            "generated:continuous-carriageways": [
+              -290,
+              0.32,
+              -300,
+              290,
+              7,
+              300
+            ],
+            "generated:inferred-roadside-margins-clipped-at-buildings": [
+              -290,
+              0.47,
+              -300,
+              290,
+              7.149997,
+              300
+            ],
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": [
+              -286,
+              0.32,
+              -296,
+              290,
+              7,
+              298
+            ],
+            "generated:bridge-deck-thickness-and-soffits": [
+              104,
+              6.219996,
+              -300,
+              116,
+              7.000003,
+              300
+            ],
+            "generated:bridge-parapets-and-pedestrian-guardrails": [
+              104,
+              6.999997,
+              -293,
+              116,
+              7.825,
+              297
+            ],
+            "generated:inferred-bridge-piers-outside-lower-routes": [
+              105.800003,
+              0.32,
+              -272.759003,
+              114.199997,
+              6.22,
+              268.759003
+            ],
+            "generated:osm-wood": [
+              -270,
+              0.16,
+              190,
+              -140,
+              0.16,
+              280
+            ],
+            "ground": [
+              -300,
+              0,
+              -300,
+              300,
+              0,
+              300
+            ]
+          },
+          "hash": "d53f407840e95ee417eee5a659b10288aa2491721bc6bdc1db710eb22cb3986e",
+          "records": 13105,
+          "groundTriangles": 288,
+          "groundArea": 360000,
+          "buildingCount": 7,
+          "treeCount": 349,
+          "casters": {
+            "triangles": 142584,
+            "drawCalls": 43
+          }
+        }
+      }
+    },
+    {
+      "tiles": 4,
+      "worldHash": "13a303f86c6285ce32c28262f4e252c93ef175b15174a536b0c6634f60f8ff0a",
+      "levels": {
+        "low": {
+          "surfaceAreas": {
+            "generated:continuous-carriageways": 14960,
+            "ground": 360000,
+            "generated:bridge-deck-thickness-and-soffits": 8135.520000000003,
+            "generated:inferred-bridge-piers-outside-lower-routes": 819.9815344461151,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 896.7988200000007,
+            "generated:land-cover": 20300,
+            "generated:osm-wood": 11700
+          },
+          "surfaceBounds": {
+            "generated:continuous-carriageways": [
+              -290,
+              0.32,
+              -300,
+              290,
+              7.000003,
+              300
+            ],
+            "ground": [
+              -300,
+              0,
+              -300,
+              300,
+              0,
+              300
+            ],
+            "generated:bridge-deck-thickness-and-soffits": [
+              104,
+              6.219996,
+              -300,
+              116,
+              7.000003,
+              300
+            ],
+            "generated:inferred-bridge-piers-outside-lower-routes": [
+              105.800003,
+              0.32,
+              -272.759003,
+              114.199997,
+              6.22,
+              268.759003
+            ],
+            "generated:bridge-parapets-and-pedestrian-guardrails": [
+              104.165001,
+              6.999997,
+              -293,
+              115.834999,
+              7.759996,
+              297
+            ],
+            "generated:land-cover": [
+              -290,
+              0.22,
+              30,
+              290,
+              0.22,
+              65
+            ],
+            "generated:osm-wood": [
+              -270,
+              0.16,
+              190,
+              -140,
+              0.16,
+              280
+            ]
+          },
+          "hash": "75c8d6706744b73f588444d9fde0e3533e7867f89a24e5e08d59873c6d9ee7b5",
+          "records": 1026,
+          "groundTriangles": 360,
+          "groundArea": 360000,
+          "buildingCount": 7,
+          "treeCount": 349,
+          "casters": {
+            "triangles": 0,
+            "drawCalls": 0
+          }
+        },
+        "medium": {
+          "surfaceAreas": {
+            "generated:continuous-carriageways": 14870.129418400045,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 2776.375,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 89.87058159999964,
+            "ground": 360000,
+            "generated:bridge-deck-thickness-and-soffits": 8135.520000000003,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 896.7988200000007,
+            "generated:inferred-bridge-piers-outside-lower-routes": 819.9815344461151,
+            "generated:land-cover": 20300,
+            "generated:osm-wood": 11700
+          },
+          "surfaceBounds": {
+            "generated:continuous-carriageways": [
+              -290,
+              0.32,
+              -300,
+              290,
+              7,
+              300
+            ],
+            "generated:inferred-roadside-margins-clipped-at-buildings": [
+              -290,
+              0.47,
+              -300,
+              290,
+              7.149997,
+              300
+            ],
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": [
+              -286,
+              0.32,
+              -296,
+              290,
+              7,
+              298
+            ],
+            "ground": [
+              -300,
+              0,
+              -300,
+              300,
+              0,
+              300
+            ],
+            "generated:bridge-deck-thickness-and-soffits": [
+              104,
+              6.219996,
+              -300,
+              116,
+              7.000003,
+              300
+            ],
+            "generated:bridge-parapets-and-pedestrian-guardrails": [
+              104.165001,
+              6.999997,
+              -293,
+              115.834999,
+              7.759996,
+              297
+            ],
+            "generated:inferred-bridge-piers-outside-lower-routes": [
+              105.800003,
+              0.32,
+              -272.759003,
+              114.199997,
+              6.22,
+              268.759003
+            ],
+            "generated:land-cover": [
+              -290,
+              0.22,
+              30,
+              290,
+              0.22,
+              65
+            ],
+            "generated:osm-wood": [
+              -270,
+              0.16,
+              190,
+              -140,
+              0.16,
+              280
+            ]
+          },
+          "hash": "78ac2baeace22d7f39c89625ba9d0df5a456c8fd5ae9d66114a501ce445a9461",
+          "records": 12790,
+          "groundTriangles": 360,
+          "groundArea": 360000,
+          "buildingCount": 7,
+          "treeCount": 349,
+          "casters": {
+            "triangles": 47500,
+            "drawCalls": 29
+          }
+        },
+        "high": {
+          "surfaceAreas": {
+            "generated:continuous-carriageways": 14870.129418400045,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 2776.375,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 89.87058159999964,
+            "ground": 360000,
+            "generated:bridge-deck-thickness-and-soffits": 8135.520000000003,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 3480.49179513987,
+            "generated:inferred-bridge-piers-outside-lower-routes": 819.9815344461151,
+            "generated:land-cover": 20300,
+            "generated:osm-wood": 11700
+          },
+          "surfaceBounds": {
+            "generated:continuous-carriageways": [
+              -290,
+              0.32,
+              -300,
+              290,
+              7,
+              300
+            ],
+            "generated:inferred-roadside-margins-clipped-at-buildings": [
+              -290,
+              0.47,
+              -300,
+              290,
+              7.149997,
+              300
+            ],
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": [
+              -286,
+              0.32,
+              -296,
+              290,
+              7,
+              298
+            ],
+            "ground": [
+              -300,
+              0,
+              -300,
+              300,
+              0,
+              300
+            ],
+            "generated:bridge-deck-thickness-and-soffits": [
+              104,
+              6.219996,
+              -300,
+              116,
+              7.000003,
+              300
+            ],
+            "generated:bridge-parapets-and-pedestrian-guardrails": [
+              104,
+              6.999997,
+              -293,
+              116,
+              7.825,
+              297
+            ],
+            "generated:inferred-bridge-piers-outside-lower-routes": [
+              105.800003,
+              0.32,
+              -272.759003,
+              114.199997,
+              6.22,
+              268.759003
+            ],
+            "generated:land-cover": [
+              -290,
+              0.22,
+              30,
+              290,
+              0.22,
+              65
+            ],
+            "generated:osm-wood": [
+              -270,
+              0.16,
+              190,
+              -140,
+              0.16,
+              280
+            ]
+          },
+          "hash": "d53f407840e95ee417eee5a659b10288aa2491721bc6bdc1db710eb22cb3986e",
+          "records": 13105,
+          "groundTriangles": 360,
+          "groundArea": 360000,
+          "buildingCount": 7,
+          "treeCount": 349,
+          "casters": {
+            "triangles": 142644,
+            "drawCalls": 67
+          }
+        }
+      }
+    },
+    {
+      "tiles": 16,
+      "worldHash": "13a303f86c6285ce32c28262f4e252c93ef175b15174a536b0c6634f60f8ff0a",
+      "levels": {
+        "low": {
+          "surfaceAreas": {
+            "ground": 360000,
+            "generated:continuous-carriageways": 14960,
+            "generated:bridge-deck-thickness-and-soffits": 8135.520000000001,
+            "generated:inferred-bridge-piers-outside-lower-routes": 819.9815344461151,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 896.7988200000005,
+            "generated:land-cover": 20300.000000000004,
+            "generated:osm-wood": 11700
+          },
+          "surfaceBounds": {
+            "ground": [
+              -300,
+              0,
+              -300,
+              300,
+              0,
+              300
+            ],
+            "generated:continuous-carriageways": [
+              -290,
+              0.32,
+              -300,
+              290,
+              7.000003,
+              300
+            ],
+            "generated:bridge-deck-thickness-and-soffits": [
+              104,
+              6.219996,
+              -300,
+              116,
+              7.000003,
+              300
+            ],
+            "generated:inferred-bridge-piers-outside-lower-routes": [
+              105.800003,
+              0.32,
+              -272.759003,
+              114.199997,
+              6.22,
+              268.759003
+            ],
+            "generated:bridge-parapets-and-pedestrian-guardrails": [
+              104.165001,
+              6.999997,
+              -293,
+              115.834999,
+              7.759996,
+              297
+            ],
+            "generated:land-cover": [
+              -290,
+              0.22,
+              30,
+              290,
+              0.22,
+              65
+            ],
+            "generated:osm-wood": [
+              -270,
+              0.16,
+              190,
+              -140,
+              0.16,
+              280
+            ]
+          },
+          "hash": "75c8d6706744b73f588444d9fde0e3533e7867f89a24e5e08d59873c6d9ee7b5",
+          "records": 1026,
+          "groundTriangles": 502,
+          "groundArea": 360000,
+          "buildingCount": 7,
+          "treeCount": 349,
+          "casters": {
+            "triangles": 0,
+            "drawCalls": 0
+          }
+        },
+        "medium": {
+          "surfaceAreas": {
+            "ground": 360000,
+            "generated:continuous-carriageways": 14870.129418400014,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 2776.375,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 89.87058159999944,
+            "generated:bridge-deck-thickness-and-soffits": 8135.520000000001,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 896.7988200000005,
+            "generated:inferred-bridge-piers-outside-lower-routes": 819.9815344461151,
+            "generated:land-cover": 20300.000000000004,
+            "generated:osm-wood": 11700
+          },
+          "surfaceBounds": {
+            "ground": [
+              -300,
+              0,
+              -300,
+              300,
+              0,
+              300
+            ],
+            "generated:continuous-carriageways": [
+              -290,
+              0.32,
+              -300,
+              290,
+              7,
+              300
+            ],
+            "generated:inferred-roadside-margins-clipped-at-buildings": [
+              -290,
+              0.47,
+              -300,
+              290,
+              7.149997,
+              300
+            ],
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": [
+              -286,
+              0.32,
+              -296,
+              290,
+              7,
+              298
+            ],
+            "generated:bridge-deck-thickness-and-soffits": [
+              104,
+              6.219996,
+              -300,
+              116,
+              7.000003,
+              300
+            ],
+            "generated:bridge-parapets-and-pedestrian-guardrails": [
+              104.165001,
+              6.999997,
+              -293,
+              115.834999,
+              7.759996,
+              297
+            ],
+            "generated:inferred-bridge-piers-outside-lower-routes": [
+              105.800003,
+              0.32,
+              -272.759003,
+              114.199997,
+              6.22,
+              268.759003
+            ],
+            "generated:land-cover": [
+              -290,
+              0.22,
+              30,
+              290,
+              0.22,
+              65
+            ],
+            "generated:osm-wood": [
+              -270,
+              0.16,
+              190,
+              -140,
+              0.16,
+              280
+            ]
+          },
+          "hash": "78ac2baeace22d7f39c89625ba9d0df5a456c8fd5ae9d66114a501ce445a9461",
+          "records": 12790,
+          "groundTriangles": 502,
+          "groundArea": 360000,
+          "buildingCount": 7,
+          "treeCount": 349,
+          "casters": {
+            "triangles": 47548,
+            "drawCalls": 48
+          }
+        },
+        "high": {
+          "surfaceAreas": {
+            "ground": 360000,
+            "generated:continuous-carriageways": 14870.129418400014,
+            "generated:inferred-roadside-margins-clipped-at-buildings": 2776.375,
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": 89.87058159999944,
+            "generated:bridge-deck-thickness-and-soffits": 8135.520000000001,
+            "generated:bridge-parapets-and-pedestrian-guardrails": 3480.4917911398757,
+            "generated:inferred-bridge-piers-outside-lower-routes": 819.9815344461151,
+            "generated:land-cover": 20300.000000000004,
+            "generated:osm-wood": 11700
+          },
+          "surfaceBounds": {
+            "ground": [
+              -300,
+              0,
+              -300,
+              300,
+              0,
+              300
+            ],
+            "generated:continuous-carriageways": [
+              -290,
+              0.32,
+              -300,
+              290,
+              7,
+              300
+            ],
+            "generated:inferred-roadside-margins-clipped-at-buildings": [
+              -290,
+              0.47,
+              -300,
+              290,
+              7.149997,
+              300
+            ],
+            "generated:junction-aware-lane-paint-and-inferred-stop-lines": [
+              -286,
+              0.32,
+              -296,
+              290,
+              7,
+              298
+            ],
+            "generated:bridge-deck-thickness-and-soffits": [
+              104,
+              6.219996,
+              -300,
+              116,
+              7.000003,
+              300
+            ],
+            "generated:bridge-parapets-and-pedestrian-guardrails": [
+              104,
+              6.999997,
+              -293,
+              116,
+              7.825,
+              297
+            ],
+            "generated:inferred-bridge-piers-outside-lower-routes": [
+              105.800003,
+              0.32,
+              -272.759003,
+              114.199997,
+              6.22,
+              268.759003
+            ],
+            "generated:land-cover": [
+              -290,
+              0.22,
+              30,
+              290,
+              0.22,
+              65
+            ],
+            "generated:osm-wood": [
+              -270,
+              0.16,
+              190,
+              -140,
+              0.16,
+              280
+            ]
+          },
+          "hash": "d53f407840e95ee417eee5a659b10288aa2491721bc6bdc1db710eb22cb3986e",
+          "records": 13105,
+          "groundTriangles": 502,
+          "groundArea": 360000,
+          "buildingCount": 7,
+          "treeCount": 349,
+          "casters": {
+            "triangles": 142740,
+            "drawCalls": 117
+          }
+        }
+      }
+    }
+  ],
+  "endCommit": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "status": "pass",
+  "limits": [
+    "Small synthetic fixture only; CPU geometry/protocol review, no GPU or browser claim.",
+    "Atomic building/instance hash and shared-surface areas/extents are tested; changed surface tessellation is allowed. Local coverage and interpolation are independently tested by mixed-LOD and exact-grid cases.",
+    "Does not replace twelve formal real-snapshot performance cases or visual acceptance."
+  ]
+}

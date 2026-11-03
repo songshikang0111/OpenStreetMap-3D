@@ -1,0 +1,8 @@
+- navigation:
+  - text: 城市线境
+  - combobox "画风":
+    - option "漫画" [selected]
+    - option "线稿"
+    - option "彩色"
+    - option "白模"
+- generic: "Unknown style: project-sepia"

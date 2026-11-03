@@ -1,0 +1,90 @@
+{
+  "date": "2026-11-03T15:05:27.500Z",
+  "compilerCommit": "3b62b40281c116352dd8bd379cb22331d026f2df",
+  "scope": "CPU geometry regression; no GPU measurement",
+  "method": "Root read-only repro scripts copied unchanged into this worktree; permanent tests cover 54 signed tiny/exact boundary variants and high guardrails at 1/4/16 cells.",
+  "candidateSelection": "Upper-bound search over the actual cell clipping planes; no clipping tolerance changes.",
+  "roundedWall": {
+    "source": "Synthetic external vertical wall with IEEE-sized near-grid-plane tilt, matching observed high guardrail endcap signed z~1e-17",
+    "sourceArea": 32,
+    "emittedArea": 32,
+    "worldZRange": [
+      -9.99999983775159e-18,
+      9.99999983775159e-18
+    ],
+    "computedOwnersForRange": [
+      "0_1",
+      "1_1"
+    ],
+    "pieces": [
+      "0_0",
+      "1_1"
+    ],
+    "sourceInteriorPoint": [
+      -4,
+      2,
+      -5e-18
+    ],
+    "nearestEmittedSurfaceDistanceMeters": 8.112420523638183e-26,
+    "status": "pass"
+  },
+  "guardrails": {
+    "missingSourceFaces": [],
+    "missingArea": 0,
+    "sourceArea": 3480.494275995952,
+    "targetArea": 3480.494275995952,
+    "grid": [
+      {
+        "id": "0_0",
+        "bounds": [
+          -300.00000000004536,
+          -300.00000000010596,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "1_0",
+        "bounds": [
+          0,
+          -300.00000000010596,
+          300.00000000004536,
+          0
+        ]
+      },
+      {
+        "id": "0_1",
+        "bounds": [
+          -300.00000000004536,
+          0,
+          0,
+          300.00000000010596
+        ]
+      },
+      {
+        "id": "1_1",
+        "bounds": [
+          0,
+          0,
+          300.00000000004536,
+          300.00000000010596
+        ]
+      }
+    ],
+    "atWorldOrigin": "1_1",
+    "verticalZ0": {
+      "expectedArea": 32,
+      "emittedArea": 32,
+      "pieces": [
+        {
+          "id": "0_1",
+          "area": 16
+        },
+        {
+          "id": "1_1",
+          "area": 16
+        }
+      ]
+    }
+  }
+}

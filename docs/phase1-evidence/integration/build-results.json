@@ -1,0 +1,3994 @@
+{
+  "date": "2026-11-03T10:36:58.773Z",
+  "node": "v22.11.0",
+  "cases": [
+    {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "name": "beijing-cbd-fixed-1",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "beijing-cbd",
+        "origin": {
+          "lat": 39.909499999999994,
+          "lon": 116.4605
+        },
+        "area": {
+          "south": 39.9015,
+          "west": 116.449,
+          "north": 39.9175,
+          "east": 116.472
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "divisions": 1
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 1376,
+      "buildMs": 8280.600499999999,
+      "maxRssKiB": 983332,
+      "packageBytes": 281868152,
+      "manifestHash": "f4b6f5d91cd7ac2924b5a299950ce6ede48beccf29d919725ec49a205cfb3319",
+      "chunks": 1,
+      "features": 13293,
+      "lods": [
+        {
+          "id": "0_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 65685096,
+              "residentBytes": 65068034,
+              "triangles": 543886,
+              "drawCalls": 26
+            },
+            {
+              "id": "medium",
+              "bytes": 93128380,
+              "residentBytes": 91367159,
+              "triangles": 1335867,
+              "drawCalls": 1208
+            },
+            {
+              "id": "high",
+              "bytes": 106507536,
+              "residentBytes": 101353105,
+              "triangles": 1486735,
+              "drawCalls": 1222
+            }
+          ]
+        }
+      ],
+      "report": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "diagnostics": [],
+        "hashes": {
+          "config": "cb4c459f90d1fb89f5f0c30c62424b26a9bf252f0256f9613c6e024e6fb09c74",
+          "source": "5577378b1ff296f4d8efb5fb290f225d81d7c33947985eff8e4c914e7e08f3d3",
+          "world": "9402cab19881d7246db5d247da5aad8efc8178963c00c15bbc8c91d16b25311d"
+        },
+        "counts": {
+          "inputElements": 1376,
+          "features": 13293,
+          "buildings": 477,
+          "trees": 3680,
+          "chunks": 1
+        },
+        "road": {
+          "sourceRoads": 785,
+          "segments": 5383,
+          "driveSegments": 3301,
+          "walkSegments": 2082,
+          "miterJoins": 1622,
+          "bevelJoins": 6,
+          "duplicateSegments": 0,
+          "clippedOverlaps": 12135,
+          "junctions": 374,
+          "crossingExclusions": 0,
+          "dashes": 4346,
+          "stopLines": 0,
+          "drivePolygons": 7225,
+          "walkPolygons": 5140,
+          "pavingPolygons": 6015,
+          "surfaceTriangles": 36437,
+          "roadArea": 594869.1861108252,
+          "pavementArea": 169409.21152926932,
+          "observedSidewalkWays": 126,
+          "observedCrossingWays": 46,
+          "inferredMarginWays": 216,
+          "pavementBuildingBlockers": 1600,
+          "gradeSource": "OSM connectivity + inferred layer heights",
+          "gradeOriginalDiscontinuities": 78,
+          "gradeResolvedConnections": 78,
+          "gradeChangedWays": 291,
+          "gradeMaxVehicleSlope": 0.10000000000000012,
+          "gradeSteepVehicleRuns": 0,
+          "gradeCrossingConstraints": 184,
+          "gradeRemainingDiscontinuities": 0,
+          "gradeConstraintIterations": 16,
+          "gradeConstraintConflicts": 0,
+          "gradeAmbiguousCrossings": 0,
+          "stairFlights": 28,
+          "gradeSteepWalkingWays": 22,
+          "gradeMaxWalkingSlope": 0.3500000000000049,
+          "discardedMicroTriangles": 824,
+          "renderedTriangles": 64319,
+          "bridgeWays": 183,
+          "bridgeSegments": 2424,
+          "bridgeDecks": 3496,
+          "bridgePiers": 224,
+          "bridgeSupportCandidates": 314,
+          "bridgeGuardrailSegments": 6536,
+          "bridgeRailInteriorSkipped": 1509,
+          "bridgeRejectedSupports": {
+            "extract-boundary": 2,
+            "traffic-clearance": 51,
+            "pedestrian-clearance": 9,
+            "water": 16,
+            "outside-deck": 7,
+            "near-existing-support": 3,
+            "building-clearance": 2
+          },
+          "unsupportedBridgeWays": 100,
+          "bridgeHeightSource": "inferred-layer-times-7m",
+          "bridgeGradeConnectionsUnresolved": 0,
+          "bridgeStructureTriangles": 261326,
+          "stairTreads": 1054,
+          "stairPosts": 1598,
+          "stairTriangles": 68764,
+          "stairSkippedFlights": 0,
+          "stairSteepFlights": 0,
+          "stairHeightSource": "shared-road-grade-inference"
+        },
+        "landscape": {
+          "observedFeatures": 28,
+          "observedSurfaceArea": 84194.57186867851,
+          "inferredSites": 0,
+          "inferredPavedArea": 0,
+          "inferredPlantedArea": 0,
+          "rejectedCandidates": 0,
+          "rejectedGeometry": 0,
+          "templates": {},
+          "layouts": {},
+          "kindAreas": {
+            "plaza": 4928.813937360374,
+            "lawn": 6943.045764402043,
+            "park": 72322.7121669161
+          },
+          "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+          "availableTreeCandidates": 0,
+          "availablePropCandidates": 0,
+          "treesByTemplate": {},
+          "commonCandidates": 0,
+          "treeCandidates": 0,
+          "props": 0,
+          "surfaces": 62,
+          "inferredArea": 0,
+          "inferredFraction": 0,
+          "knownGroundFraction": 0.024097998050849622,
+          "unfilledBeforeFraction": 0.5096197988397813,
+          "unfilledAfterFraction": 0.5096197988397813,
+          "coverageSampleSpacing": 12.065517200932375,
+          "coverageSamples": 23961,
+          "markingStrips": 0,
+          "markingPrecisionRetries": 0,
+          "omittedMarkingStrips": 0,
+          "renderedTriangles": 681,
+          "drawMeshes": 3
+        },
+        "roof": {
+          "tagged": 0,
+          "inferred": 0,
+          "unsupported": 0
+        },
+        "determinism": {
+          "timestampsExcluded": true,
+          "uuidExcluded": true,
+          "worldHashExcludesTiling": true
+        }
+      }
+    },
+    {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "name": "beijing-cbd-fixed-4",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "beijing-cbd",
+        "origin": {
+          "lat": 39.909499999999994,
+          "lon": 116.4605
+        },
+        "area": {
+          "south": 39.9015,
+          "west": 116.449,
+          "north": 39.9175,
+          "east": 116.472
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "divisions": 2
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 1376,
+      "buildMs": 8196.1217,
+      "maxRssKiB": 956432,
+      "packageBytes": 283669086,
+      "manifestHash": "e3321f92fe943188056ae2d440dca9be16b3e3f034e3377983c86f7785f4383a",
+      "chunks": 4,
+      "features": 13293,
+      "lods": [
+        {
+          "id": "0_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 9625200,
+              "residentBytes": 9359173,
+              "triangles": 98147,
+              "drawCalls": 25
+            },
+            {
+              "id": "medium",
+              "bytes": 21234140,
+              "residentBytes": 20784577,
+              "triangles": 344441,
+              "drawCalls": 239
+            },
+            {
+              "id": "high",
+              "bytes": 24132468,
+              "residentBytes": 22869119,
+              "triangles": 382517,
+              "drawCalls": 253
+            }
+          ]
+        },
+        {
+          "id": "1_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 4835948,
+              "residentBytes": 4587870,
+              "triangles": 65526,
+              "drawCalls": 22
+            },
+            {
+              "id": "medium",
+              "bytes": 7794128,
+              "residentBytes": 7027431,
+              "triangles": 245547,
+              "drawCalls": 488
+            },
+            {
+              "id": "high",
+              "bytes": 12953544,
+              "residentBytes": 11025361,
+              "triangles": 285287,
+              "drawCalls": 502
+            }
+          ]
+        },
+        {
+          "id": "0_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 25142960,
+              "residentBytes": 24906932,
+              "triangles": 190300,
+              "drawCalls": 26
+            },
+            {
+              "id": "medium",
+              "bytes": 33946004,
+              "residentBytes": 33489059,
+              "triangles": 416711,
+              "drawCalls": 293
+            },
+            {
+              "id": "high",
+              "bytes": 36562016,
+              "residentBytes": 35302089,
+              "triangles": 455579,
+              "drawCalls": 307
+            }
+          ]
+        },
+        {
+          "id": "1_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 26435176,
+              "residentBytes": 26235875,
+              "triangles": 189913,
+              "drawCalls": 24
+            },
+            {
+              "id": "medium",
+              "bytes": 30804760,
+              "residentBytes": 30397610,
+              "triangles": 329168,
+              "drawCalls": 241
+            },
+            {
+              "id": "high",
+              "bytes": 33574468,
+              "residentBytes": 32502880,
+              "triangles": 363352,
+              "drawCalls": 252
+            }
+          ]
+        }
+      ],
+      "report": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "diagnostics": [],
+        "hashes": {
+          "config": "3eb633777177c6f3422526fc18fb175e502f6f7a9740d3237b9fe9a71d15dfac",
+          "source": "5577378b1ff296f4d8efb5fb290f225d81d7c33947985eff8e4c914e7e08f3d3",
+          "world": "9402cab19881d7246db5d247da5aad8efc8178963c00c15bbc8c91d16b25311d"
+        },
+        "counts": {
+          "inputElements": 1376,
+          "features": 13293,
+          "buildings": 477,
+          "trees": 3680,
+          "chunks": 4
+        },
+        "road": {
+          "sourceRoads": 785,
+          "segments": 5383,
+          "driveSegments": 3301,
+          "walkSegments": 2082,
+          "miterJoins": 1622,
+          "bevelJoins": 6,
+          "duplicateSegments": 0,
+          "clippedOverlaps": 12135,
+          "junctions": 374,
+          "crossingExclusions": 0,
+          "dashes": 4346,
+          "stopLines": 0,
+          "drivePolygons": 7225,
+          "walkPolygons": 5140,
+          "pavingPolygons": 6015,
+          "surfaceTriangles": 36437,
+          "roadArea": 594869.1861108252,
+          "pavementArea": 169409.21152926932,
+          "observedSidewalkWays": 126,
+          "observedCrossingWays": 46,
+          "inferredMarginWays": 216,
+          "pavementBuildingBlockers": 1600,
+          "gradeSource": "OSM connectivity + inferred layer heights",
+          "gradeOriginalDiscontinuities": 78,
+          "gradeResolvedConnections": 78,
+          "gradeChangedWays": 291,
+          "gradeMaxVehicleSlope": 0.10000000000000012,
+          "gradeSteepVehicleRuns": 0,
+          "gradeCrossingConstraints": 184,
+          "gradeRemainingDiscontinuities": 0,
+          "gradeConstraintIterations": 16,
+          "gradeConstraintConflicts": 0,
+          "gradeAmbiguousCrossings": 0,
+          "stairFlights": 28,
+          "gradeSteepWalkingWays": 22,
+          "gradeMaxWalkingSlope": 0.3500000000000049,
+          "discardedMicroTriangles": 824,
+          "renderedTriangles": 64319,
+          "bridgeWays": 183,
+          "bridgeSegments": 2424,
+          "bridgeDecks": 3496,
+          "bridgePiers": 224,
+          "bridgeSupportCandidates": 314,
+          "bridgeGuardrailSegments": 6536,
+          "bridgeRailInteriorSkipped": 1509,
+          "bridgeRejectedSupports": {
+            "extract-boundary": 2,
+            "traffic-clearance": 51,
+            "pedestrian-clearance": 9,
+            "water": 16,
+            "outside-deck": 7,
+            "near-existing-support": 3,
+            "building-clearance": 2
+          },
+          "unsupportedBridgeWays": 100,
+          "bridgeHeightSource": "inferred-layer-times-7m",
+          "bridgeGradeConnectionsUnresolved": 0,
+          "bridgeStructureTriangles": 261326,
+          "stairTreads": 1054,
+          "stairPosts": 1598,
+          "stairTriangles": 68764,
+          "stairSkippedFlights": 0,
+          "stairSteepFlights": 0,
+          "stairHeightSource": "shared-road-grade-inference"
+        },
+        "landscape": {
+          "observedFeatures": 28,
+          "observedSurfaceArea": 84194.57186867851,
+          "inferredSites": 0,
+          "inferredPavedArea": 0,
+          "inferredPlantedArea": 0,
+          "rejectedCandidates": 0,
+          "rejectedGeometry": 0,
+          "templates": {},
+          "layouts": {},
+          "kindAreas": {
+            "plaza": 4928.813937360374,
+            "lawn": 6943.045764402043,
+            "park": 72322.7121669161
+          },
+          "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+          "availableTreeCandidates": 0,
+          "availablePropCandidates": 0,
+          "treesByTemplate": {},
+          "commonCandidates": 0,
+          "treeCandidates": 0,
+          "props": 0,
+          "surfaces": 62,
+          "inferredArea": 0,
+          "inferredFraction": 0,
+          "knownGroundFraction": 0.024097998050849622,
+          "unfilledBeforeFraction": 0.5096197988397813,
+          "unfilledAfterFraction": 0.5096197988397813,
+          "coverageSampleSpacing": 12.065517200932375,
+          "coverageSamples": 23961,
+          "markingStrips": 0,
+          "markingPrecisionRetries": 0,
+          "omittedMarkingStrips": 0,
+          "renderedTriangles": 681,
+          "drawMeshes": 3
+        },
+        "roof": {
+          "tagged": 0,
+          "inferred": 0,
+          "unsupported": 0
+        },
+        "determinism": {
+          "timestampsExcluded": true,
+          "uuidExcluded": true,
+          "worldHashExcludesTiling": true
+        }
+      }
+    },
+    {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "name": "beijing-cbd-fixed-16",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "beijing-cbd",
+        "origin": {
+          "lat": 39.909499999999994,
+          "lon": 116.4605
+        },
+        "area": {
+          "south": 39.9015,
+          "west": 116.449,
+          "north": 39.9175,
+          "east": 116.472
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "divisions": 4
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 1376,
+      "buildMs": 8704.5674,
+      "maxRssKiB": 979512,
+      "packageBytes": 288929383,
+      "manifestHash": "d38b56eda7996d6e6e3a8ada2caef3b9b27862fe7a8822cf2891b3fbb239de07",
+      "chunks": 16,
+      "features": 13293,
+      "lods": [
+        {
+          "id": "0_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2339324,
+              "residentBytes": 2201240,
+              "triangles": 21672,
+              "drawCalls": 23
+            },
+            {
+              "id": "medium",
+              "bytes": 7117572,
+              "residentBytes": 6939173,
+              "triangles": 90177,
+              "drawCalls": 71
+            },
+            {
+              "id": "high",
+              "bytes": 7845264,
+              "residentBytes": 7466787,
+              "triangles": 95001,
+              "drawCalls": 79
+            }
+          ]
+        },
+        {
+          "id": "1_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2988344,
+              "residentBytes": 2875406,
+              "triangles": 25258,
+              "drawCalls": 19
+            },
+            {
+              "id": "medium",
+              "bytes": 3385708,
+              "residentBytes": 3226271,
+              "triangles": 61127,
+              "drawCalls": 66
+            },
+            {
+              "id": "high",
+              "bytes": 3915224,
+              "residentBytes": 3587501,
+              "triangles": 68751,
+              "drawCalls": 77
+            }
+          ]
+        },
+        {
+          "id": "2_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2984196,
+              "residentBytes": 2862012,
+              "triangles": 24108,
+              "drawCalls": 16
+            },
+            {
+              "id": "medium",
+              "bytes": 3427964,
+              "residentBytes": 3116925,
+              "triangles": 53761,
+              "drawCalls": 177
+            },
+            {
+              "id": "high",
+              "bytes": 5136080,
+              "residentBytes": 4472835,
+              "triangles": 63557,
+              "drawCalls": 188
+            }
+          ]
+        },
+        {
+          "id": "3_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 809700,
+              "residentBytes": 698095,
+              "triangles": 10473,
+              "drawCalls": 15
+            },
+            {
+              "id": "medium",
+              "bytes": 1542136,
+              "residentBytes": 1257703,
+              "triangles": 41027,
+              "drawCalls": 166
+            },
+            {
+              "id": "high",
+              "bytes": 3251224,
+              "residentBytes": 2632765,
+              "triangles": 50939,
+              "drawCalls": 177
+            }
+          ]
+        },
+        {
+          "id": "0_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 684920,
+              "residentBytes": 537105,
+              "triangles": 15655,
+              "drawCalls": 18
+            },
+            {
+              "id": "medium",
+              "bytes": 3356152,
+              "residentBytes": 3136731,
+              "triangles": 80255,
+              "drawCalls": 105
+            },
+            {
+              "id": "high",
+              "bytes": 4470532,
+              "residentBytes": 3964929,
+              "triangles": 92455,
+              "drawCalls": 119
+            }
+          ]
+        },
+        {
+          "id": "1_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 3914016,
+              "residentBytes": 3766278,
+              "triangles": 35562,
+              "drawCalls": 21
+            },
+            {
+              "id": "medium",
+              "bytes": 7974464,
+              "residentBytes": 7812960,
+              "triangles": 112882,
+              "drawCalls": 35
+            },
+            {
+              "id": "high",
+              "bytes": 8556432,
+              "residentBytes": 8193174,
+              "triangles": 126310,
+              "drawCalls": 49
+            }
+          ]
+        },
+        {
+          "id": "2_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 590912,
+              "residentBytes": 453180,
+              "triangles": 14904,
+              "drawCalls": 16
+            },
+            {
+              "id": "medium",
+              "bytes": 1566412,
+              "residentBytes": 1368132,
+              "triangles": 75074,
+              "drawCalls": 73
+            },
+            {
+              "id": "high",
+              "bytes": 2325332,
+              "residentBytes": 1896446,
+              "triangles": 84014,
+              "drawCalls": 84
+            }
+          ]
+        },
+        {
+          "id": "3_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 722808,
+              "residentBytes": 587519,
+              "triangles": 16041,
+              "drawCalls": 15
+            },
+            {
+              "id": "medium",
+              "bytes": 1574996,
+              "residentBytes": 1353101,
+              "triangles": 75685,
+              "drawCalls": 97
+            },
+            {
+              "id": "high",
+              "bytes": 2616480,
+              "residentBytes": 2106571,
+              "triangles": 86777,
+              "drawCalls": 111
+            }
+          ]
+        },
+        {
+          "id": "0_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2232940,
+              "residentBytes": 2122066,
+              "triangles": 21710,
+              "drawCalls": 17
+            },
+            {
+              "id": "medium",
+              "bytes": 4485144,
+              "residentBytes": 4319329,
+              "triangles": 69477,
+              "drawCalls": 83
+            },
+            {
+              "id": "high",
+              "bytes": 5233164,
+              "residentBytes": 4863439,
+              "triangles": 78169,
+              "drawCalls": 94
+            }
+          ]
+        },
+        {
+          "id": "1_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 9190888,
+              "residentBytes": 9032889,
+              "triangles": 68615,
+              "drawCalls": 25
+            },
+            {
+              "id": "medium",
+              "bytes": 11320184,
+              "residentBytes": 11112306,
+              "triangles": 136060,
+              "drawCalls": 85
+            },
+            {
+              "id": "high",
+              "bytes": 11994428,
+              "residentBytes": 11513232,
+              "triangles": 150064,
+              "drawCalls": 99
+            }
+          ]
+        },
+        {
+          "id": "2_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 4349972,
+              "residentBytes": 4220885,
+              "triangles": 36767,
+              "drawCalls": 22
+            },
+            {
+              "id": "medium",
+              "bytes": 5351764,
+              "residentBytes": 5199776,
+              "triangles": 96446,
+              "drawCalls": 45
+            },
+            {
+              "id": "high",
+              "bytes": 5935824,
+              "residentBytes": 5603438,
+              "triangles": 105326,
+              "drawCalls": 56
+            }
+          ]
+        },
+        {
+          "id": "3_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2029244,
+              "residentBytes": 1918760,
+              "triangles": 20920,
+              "drawCalls": 16
+            },
+            {
+              "id": "medium",
+              "bytes": 3498420,
+              "residentBytes": 3314474,
+              "triangles": 68364,
+              "drawCalls": 95
+            },
+            {
+              "id": "high",
+              "bytes": 4538348,
+              "residentBytes": 4093248,
+              "triangles": 81592,
+              "drawCalls": 106
+            }
+          ]
+        },
+        {
+          "id": "0_3",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 4159084,
+              "residentBytes": 4033811,
+              "triangles": 33669,
+              "drawCalls": 23
+            },
+            {
+              "id": "medium",
+              "bytes": 7571776,
+              "residentBytes": 7389008,
+              "triangles": 108242,
+              "drawCalls": 92
+            },
+            {
+              "id": "high",
+              "bytes": 8219460,
+              "residentBytes": 7851538,
+              "triangles": 114618,
+              "drawCalls": 103
+            }
+          ]
+        },
+        {
+          "id": "1_3",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 9854196,
+              "residentBytes": 9737102,
+              "triangles": 66306,
+              "drawCalls": 22
+            },
+            {
+              "id": "medium",
+              "bytes": 11163108,
+              "residentBytes": 10997054,
+              "triangles": 102932,
+              "drawCalls": 79
+            },
+            {
+              "id": "high",
+              "bytes": 11767524,
+              "residentBytes": 11417344,
+              "triangles": 112728,
+              "drawCalls": 90
+            }
+          ]
+        },
+        {
+          "id": "2_3",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 7851736,
+              "residentBytes": 7754926,
+              "triangles": 50922,
+              "drawCalls": 17
+            },
+            {
+              "id": "medium",
+              "bytes": 8186704,
+              "residentBytes": 8037151,
+              "triangles": 61963,
+              "drawCalls": 65
+            },
+            {
+              "id": "high",
+              "bytes": 8802148,
+              "residentBytes": 8541269,
+              "triangles": 65443,
+              "drawCalls": 76
+            }
+          ]
+        },
+        {
+          "id": "3_3",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 12470280,
+              "residentBytes": 12351360,
+              "triangles": 81304,
+              "drawCalls": 18
+            },
+            {
+              "id": "medium",
+              "bytes": 14082020,
+              "residentBytes": 13911759,
+              "triangles": 102395,
+              "drawCalls": 73
+            },
+            {
+              "id": "high",
+              "bytes": 14670596,
+              "residentBytes": 14345301,
+              "triangles": 110991,
+              "drawCalls": 84
+            }
+          ]
+        }
+      ],
+      "report": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "diagnostics": [],
+        "hashes": {
+          "config": "abf40bce10faab337a65f233ea0c4af32ed0ff09ab0b700909c825279ef2835b",
+          "source": "5577378b1ff296f4d8efb5fb290f225d81d7c33947985eff8e4c914e7e08f3d3",
+          "world": "9402cab19881d7246db5d247da5aad8efc8178963c00c15bbc8c91d16b25311d"
+        },
+        "counts": {
+          "inputElements": 1376,
+          "features": 13293,
+          "buildings": 477,
+          "trees": 3680,
+          "chunks": 16
+        },
+        "road": {
+          "sourceRoads": 785,
+          "segments": 5383,
+          "driveSegments": 3301,
+          "walkSegments": 2082,
+          "miterJoins": 1622,
+          "bevelJoins": 6,
+          "duplicateSegments": 0,
+          "clippedOverlaps": 12135,
+          "junctions": 374,
+          "crossingExclusions": 0,
+          "dashes": 4346,
+          "stopLines": 0,
+          "drivePolygons": 7225,
+          "walkPolygons": 5140,
+          "pavingPolygons": 6015,
+          "surfaceTriangles": 36437,
+          "roadArea": 594869.1861108252,
+          "pavementArea": 169409.21152926932,
+          "observedSidewalkWays": 126,
+          "observedCrossingWays": 46,
+          "inferredMarginWays": 216,
+          "pavementBuildingBlockers": 1600,
+          "gradeSource": "OSM connectivity + inferred layer heights",
+          "gradeOriginalDiscontinuities": 78,
+          "gradeResolvedConnections": 78,
+          "gradeChangedWays": 291,
+          "gradeMaxVehicleSlope": 0.10000000000000012,
+          "gradeSteepVehicleRuns": 0,
+          "gradeCrossingConstraints": 184,
+          "gradeRemainingDiscontinuities": 0,
+          "gradeConstraintIterations": 16,
+          "gradeConstraintConflicts": 0,
+          "gradeAmbiguousCrossings": 0,
+          "stairFlights": 28,
+          "gradeSteepWalkingWays": 22,
+          "gradeMaxWalkingSlope": 0.3500000000000049,
+          "discardedMicroTriangles": 824,
+          "renderedTriangles": 64319,
+          "bridgeWays": 183,
+          "bridgeSegments": 2424,
+          "bridgeDecks": 3496,
+          "bridgePiers": 224,
+          "bridgeSupportCandidates": 314,
+          "bridgeGuardrailSegments": 6536,
+          "bridgeRailInteriorSkipped": 1509,
+          "bridgeRejectedSupports": {
+            "extract-boundary": 2,
+            "traffic-clearance": 51,
+            "pedestrian-clearance": 9,
+            "water": 16,
+            "outside-deck": 7,
+            "near-existing-support": 3,
+            "building-clearance": 2
+          },
+          "unsupportedBridgeWays": 100,
+          "bridgeHeightSource": "inferred-layer-times-7m",
+          "bridgeGradeConnectionsUnresolved": 0,
+          "bridgeStructureTriangles": 261326,
+          "stairTreads": 1054,
+          "stairPosts": 1598,
+          "stairTriangles": 68764,
+          "stairSkippedFlights": 0,
+          "stairSteepFlights": 0,
+          "stairHeightSource": "shared-road-grade-inference"
+        },
+        "landscape": {
+          "observedFeatures": 28,
+          "observedSurfaceArea": 84194.57186867851,
+          "inferredSites": 0,
+          "inferredPavedArea": 0,
+          "inferredPlantedArea": 0,
+          "rejectedCandidates": 0,
+          "rejectedGeometry": 0,
+          "templates": {},
+          "layouts": {},
+          "kindAreas": {
+            "plaza": 4928.813937360374,
+            "lawn": 6943.045764402043,
+            "park": 72322.7121669161
+          },
+          "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+          "availableTreeCandidates": 0,
+          "availablePropCandidates": 0,
+          "treesByTemplate": {},
+          "commonCandidates": 0,
+          "treeCandidates": 0,
+          "props": 0,
+          "surfaces": 62,
+          "inferredArea": 0,
+          "inferredFraction": 0,
+          "knownGroundFraction": 0.024097998050849622,
+          "unfilledBeforeFraction": 0.5096197988397813,
+          "unfilledAfterFraction": 0.5096197988397813,
+          "coverageSampleSpacing": 12.065517200932375,
+          "coverageSamples": 23961,
+          "markingStrips": 0,
+          "markingPrecisionRetries": 0,
+          "omittedMarkingStrips": 0,
+          "renderedTriangles": 681,
+          "drawMeshes": 3
+        },
+        "roof": {
+          "tagged": 0,
+          "inferred": 0,
+          "unsupported": 0
+        },
+        "determinism": {
+          "timestampsExcluded": true,
+          "uuidExcluded": true,
+          "worldHashExcludesTiling": true
+        }
+      }
+    },
+    {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "name": "beijing-cbd-grow-1",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "beijing-cbd",
+        "origin": {
+          "lat": 39.909499999999994,
+          "lon": 116.4605
+        },
+        "area": {
+          "south": 39.90724843674913,
+          "west": 116.45757624783512,
+          "north": 39.91175156325086,
+          "east": 116.46342375216487
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 500
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 1376,
+      "buildMs": 653.4873,
+      "maxRssKiB": 189076,
+      "packageBytes": 22119165,
+      "manifestHash": "47afbd8d545f60db3121006cdc84fcd0d2416cfb01d73871b019f23bcb63a043",
+      "chunks": 1,
+      "features": 778,
+      "lods": [
+        {
+          "id": "0_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 3650032,
+              "residentBytes": 3580559,
+              "triangles": 32225,
+              "drawCalls": 21
+            },
+            {
+              "id": "medium",
+              "bytes": 8586796,
+              "residentBytes": 8486411,
+              "triangles": 110595,
+              "drawCalls": 57
+            },
+            {
+              "id": "high",
+              "bytes": 9314120,
+              "residentBytes": 9044797,
+              "triangles": 118683,
+              "drawCalls": 71
+            }
+          ]
+        }
+      ],
+      "report": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "diagnostics": [],
+        "hashes": {
+          "config": "26d315bdd958adcbb6feef38736909a16f2fe361ac5f8092bcfeab340b0b3b51",
+          "source": "5db3f67a55535f83a3cfc6a926bad2d51bb3f81194c044b30bc46b083853dda4",
+          "world": "b72777b68399055bf471cdda8025322859a2624f7464fd9923d5c6c54aa1da39"
+        },
+        "counts": {
+          "inputElements": 1376,
+          "features": 778,
+          "buildings": 14,
+          "trees": 265,
+          "chunks": 1
+        },
+        "road": {
+          "sourceRoads": 47,
+          "segments": 230,
+          "driveSegments": 27,
+          "walkSegments": 203,
+          "miterJoins": 56,
+          "bevelJoins": 4,
+          "duplicateSegments": 0,
+          "clippedOverlaps": 255,
+          "junctions": 9,
+          "crossingExclusions": 0,
+          "dashes": 104,
+          "stopLines": 0,
+          "drivePolygons": 48,
+          "walkPolygons": 433,
+          "pavingPolygons": 48,
+          "surfaceTriangles": 1048,
+          "roadArea": 12407.072915630713,
+          "pavementArea": 8094.9303049699565,
+          "observedSidewalkWays": 1,
+          "observedCrossingWays": 0,
+          "inferredMarginWays": 12,
+          "pavementBuildingBlockers": 34,
+          "gradeSource": "OSM connectivity + inferred layer heights",
+          "gradeOriginalDiscontinuities": 3,
+          "gradeResolvedConnections": 3,
+          "gradeChangedWays": 13,
+          "gradeMaxVehicleSlope": 0,
+          "gradeSteepVehicleRuns": 0,
+          "gradeCrossingConstraints": 0,
+          "gradeRemainingDiscontinuities": 0,
+          "gradeConstraintIterations": 0,
+          "gradeConstraintConflicts": 0,
+          "gradeAmbiguousCrossings": 0,
+          "stairFlights": 0,
+          "gradeSteepWalkingWays": 5,
+          "gradeMaxWalkingSlope": 0.1603193494427613,
+          "discardedMicroTriangles": 35,
+          "renderedTriangles": 1717,
+          "bridgeWays": 12,
+          "bridgeSegments": 108,
+          "bridgeDecks": 148,
+          "bridgePiers": 9,
+          "bridgeSupportCandidates": 9,
+          "bridgeGuardrailSegments": 375,
+          "bridgeRailInteriorSkipped": 55,
+          "bridgeRejectedSupports": {},
+          "unsupportedBridgeWays": 5,
+          "bridgeHeightSource": "inferred-layer-times-7m",
+          "bridgeGradeConnectionsUnresolved": 0,
+          "bridgeStructureTriangles": 19698,
+          "stairTreads": 0,
+          "stairPosts": 0,
+          "stairTriangles": 0,
+          "stairSkippedFlights": 0,
+          "stairSteepFlights": 0,
+          "stairHeightSource": "shared-road-grade-inference"
+        },
+        "landscape": {
+          "observedFeatures": 3,
+          "observedSurfaceArea": 22190.014602124647,
+          "inferredSites": 0,
+          "inferredPavedArea": 0,
+          "inferredPlantedArea": 0,
+          "rejectedCandidates": 0,
+          "rejectedGeometry": 0,
+          "templates": {},
+          "layouts": {},
+          "kindAreas": {
+            "plaza": 3458.8157837291483,
+            "park": 18731.1988183955
+          },
+          "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+          "availableTreeCandidates": 0,
+          "availablePropCandidates": 0,
+          "treesByTemplate": {},
+          "commonCandidates": 0,
+          "treeCandidates": 0,
+          "props": 0,
+          "surfaces": 25,
+          "inferredArea": 0,
+          "inferredFraction": 0,
+          "knownGroundFraction": 0.0887600584085257,
+          "unfilledBeforeFraction": 0.5589569160997733,
+          "unfilledAfterFraction": 0.5589569160997733,
+          "coverageSampleSpacing": 12,
+          "coverageSamples": 1764,
+          "markingStrips": 0,
+          "markingPrecisionRetries": 0,
+          "omittedMarkingStrips": 0,
+          "renderedTriangles": 226,
+          "drawMeshes": 2
+        },
+        "roof": {
+          "tagged": 0,
+          "inferred": 0,
+          "unsupported": 0
+        },
+        "determinism": {
+          "timestampsExcluded": true,
+          "uuidExcluded": true,
+          "worldHashExcludesTiling": true
+        }
+      }
+    },
+    {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "name": "beijing-cbd-grow-4",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "beijing-cbd",
+        "origin": {
+          "lat": 39.909499999999994,
+          "lon": 116.4605
+        },
+        "area": {
+          "south": 39.90499687349826,
+          "west": 116.45465249567025,
+          "north": 39.914003126501726,
+          "east": 116.46634750432975
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 500
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 1376,
+      "buildMs": 1852.0134,
+      "maxRssKiB": 364032,
+      "packageBytes": 83710248,
+      "manifestHash": "b2aa4ff1e7420862b8d07678938c23678d22fb92144d483db2096c48b2588e91",
+      "chunks": 4,
+      "features": 5476,
+      "lods": [
+        {
+          "id": "0_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 4203256,
+              "residentBytes": 4095175,
+              "triangles": 38889,
+              "drawCalls": 21
+            },
+            {
+              "id": "medium",
+              "bytes": 8640016,
+              "residentBytes": 8515717,
+              "triangles": 120689,
+              "drawCalls": 38
+            },
+            {
+              "id": "high",
+              "bytes": 9371536,
+              "residentBytes": 9015855,
+              "triangles": 137269,
+              "drawCalls": 52
+            }
+          ]
+        },
+        {
+          "id": "1_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 604308,
+              "residentBytes": 510740,
+              "triangles": 15728,
+              "drawCalls": 16
+            },
+            {
+              "id": "medium",
+              "bytes": 1607004,
+              "residentBytes": 1434092,
+              "triangles": 78118,
+              "drawCalls": 89
+            },
+            {
+              "id": "high",
+              "bytes": 2560736,
+              "residentBytes": 2103474,
+              "triangles": 91650,
+              "drawCalls": 103
+            }
+          ]
+        },
+        {
+          "id": "0_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 9835672,
+              "residentBytes": 9712156,
+              "triangles": 75020,
+              "drawCalls": 25
+            },
+            {
+              "id": "medium",
+              "bytes": 12069868,
+              "residentBytes": 11886673,
+              "triangles": 148553,
+              "drawCalls": 97
+            },
+            {
+              "id": "high",
+              "bytes": 12868584,
+              "residentBytes": 12360675,
+              "triangles": 168325,
+              "drawCalls": 111
+            }
+          ]
+        },
+        {
+          "id": "1_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 4369296,
+              "residentBytes": 4280779,
+              "triangles": 37513,
+              "drawCalls": 22
+            },
+            {
+              "id": "medium",
+              "bytes": 5576188,
+              "residentBytes": 5441062,
+              "triangles": 99456,
+              "drawCalls": 68
+            },
+            {
+              "id": "high",
+              "bytes": 6407956,
+              "residentBytes": 6040476,
+              "triangles": 113292,
+              "drawCalls": 79
+            }
+          ]
+        }
+      ],
+      "report": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "diagnostics": [
+          {
+            "code": "LANDMARK_MISSING_PARTS",
+            "stage": "landmarks",
+            "recipeId": "cctv-headquarters",
+            "featureIds": [
+              "w547523487",
+              "w548126517"
+            ],
+            "message": "Required OSM landmark parts are missing; use generic buildings",
+            "hint": "Check recipe identity, required parts, generator and engine compatibility; degraded mode preserves generic source geometry."
+          }
+        ],
+        "hashes": {
+          "config": "bed515b081c4ce216c5f220a0c82b0b51b47bf69db70e678bf112e8436f406c6",
+          "source": "c1d090266d5c4bfc7e6ad11f4215c88ae854ccca198668d663a7c9ca122583a6",
+          "world": "6d564de3577495171e4ebc90af321abba3807fa6a3c3510f22f65dc00db30220"
+        },
+        "counts": {
+          "inputElements": 1376,
+          "features": 5476,
+          "buildings": 92,
+          "trees": 1322,
+          "chunks": 4
+        },
+        "road": {
+          "sourceRoads": 261,
+          "segments": 1660,
+          "driveSegments": 1172,
+          "walkSegments": 488,
+          "miterJoins": 460,
+          "bevelJoins": 4,
+          "duplicateSegments": 0,
+          "clippedOverlaps": 3099,
+          "junctions": 137,
+          "crossingExclusions": 0,
+          "dashes": 1322,
+          "stopLines": 0,
+          "drivePolygons": 2358,
+          "walkPolygons": 1263,
+          "pavingPolygons": 1548,
+          "surfaceTriangles": 10209,
+          "roadArea": 178492.3136414996,
+          "pavementArea": 46900.692428905284,
+          "observedSidewalkWays": 22,
+          "observedCrossingWays": 20,
+          "inferredMarginWays": 79,
+          "pavementBuildingBlockers": 278,
+          "gradeSource": "OSM connectivity + inferred layer heights",
+          "gradeOriginalDiscontinuities": 22,
+          "gradeResolvedConnections": 22,
+          "gradeChangedWays": 95,
+          "gradeMaxVehicleSlope": 0.07050671441736456,
+          "gradeSteepVehicleRuns": 0,
+          "gradeCrossingConstraints": 86,
+          "gradeRemainingDiscontinuities": 0,
+          "gradeConstraintIterations": 0,
+          "gradeConstraintConflicts": 0,
+          "gradeAmbiguousCrossings": 0,
+          "stairFlights": 9,
+          "gradeSteepWalkingWays": 5,
+          "gradeMaxWalkingSlope": 0.16031932243173933,
+          "discardedMicroTriangles": 258,
+          "renderedTriangles": 18630,
+          "bridgeWays": 50,
+          "bridgeSegments": 837,
+          "bridgeDecks": 1123,
+          "bridgePiers": 91,
+          "bridgeSupportCandidates": 117,
+          "bridgeGuardrailSegments": 2131,
+          "bridgeRailInteriorSkipped": 351,
+          "bridgeRejectedSupports": {
+            "pedestrian-clearance": 4,
+            "traffic-clearance": 18,
+            "building-clearance": 1,
+            "outside-deck": 2,
+            "near-existing-support": 1
+          },
+          "unsupportedBridgeWays": 15,
+          "bridgeHeightSource": "inferred-layer-times-7m",
+          "bridgeGradeConnectionsUnresolved": 0,
+          "bridgeStructureTriangles": 75329,
+          "stairTreads": 351,
+          "stairPosts": 428,
+          "stairTriangles": 19042,
+          "stairSkippedFlights": 0,
+          "stairSteepFlights": 0,
+          "stairHeightSource": "shared-road-grade-inference"
+        },
+        "landscape": {
+          "observedFeatures": 12,
+          "observedSurfaceArea": 30915.79273498123,
+          "inferredSites": 0,
+          "inferredPavedArea": 0,
+          "inferredPlantedArea": 0,
+          "rejectedCandidates": 0,
+          "rejectedGeometry": 0,
+          "templates": {},
+          "layouts": {},
+          "kindAreas": {
+            "plaza": 3458.8157837291483,
+            "lawn": 3776.6621429190054,
+            "park": 23680.314808333078
+          },
+          "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+          "availableTreeCandidates": 0,
+          "availablePropCandidates": 0,
+          "treesByTemplate": {},
+          "commonCandidates": 0,
+          "treeCandidates": 0,
+          "props": 0,
+          "surfaces": 34,
+          "inferredArea": 0,
+          "inferredFraction": 0,
+          "knownGroundFraction": 0.030915792734990673,
+          "unfilledBeforeFraction": 0.5366526346349253,
+          "unfilledAfterFraction": 0.5366526346349253,
+          "coverageSampleSpacing": 12,
+          "coverageSamples": 6889,
+          "markingStrips": 0,
+          "markingPrecisionRetries": 0,
+          "omittedMarkingStrips": 0,
+          "renderedTriangles": 265,
+          "drawMeshes": 3
+        },
+        "roof": {
+          "tagged": 0,
+          "inferred": 0,
+          "unsupported": 0
+        },
+        "determinism": {
+          "timestampsExcluded": true,
+          "uuidExcluded": true,
+          "worldHashExcludesTiling": true
+        }
+      }
+    },
+    {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "name": "beijing-cbd-grow-9",
+      "source": "public/data/beijing-cbd.json",
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "beijing-cbd",
+        "origin": {
+          "lat": 39.909499999999994,
+          "lon": 116.4605
+        },
+        "area": {
+          "south": 39.9027453102474,
+          "west": 116.45172874350537,
+          "north": 39.91625468975259,
+          "east": 116.46927125649462
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 500
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 1376,
+      "buildMs": 4304.2134,
+      "maxRssKiB": 625604,
+      "packageBytes": 179763956,
+      "manifestHash": "78cb0f99c6f4d5fb888813f5153dfe460b5b1066ea0bc14bd00b45934a1336c9",
+      "chunks": 9,
+      "features": 9417,
+      "lods": [
+        {
+          "id": "0_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2758488,
+              "residentBytes": 2652755,
+              "triangles": 28117,
+              "drawCalls": 14
+            },
+            {
+              "id": "medium",
+              "bytes": 5659468,
+              "residentBytes": 5513990,
+              "triangles": 91464,
+              "drawCalls": 62
+            },
+            {
+              "id": "high",
+              "bytes": 6501964,
+              "residentBytes": 6097288,
+              "triangles": 106036,
+              "drawCalls": 76
+            }
+          ]
+        },
+        {
+          "id": "1_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 593864,
+              "residentBytes": 505071,
+              "triangles": 10929,
+              "drawCalls": 14
+            },
+            {
+              "id": "medium",
+              "bytes": 927264,
+              "residentBytes": 743454,
+              "triangles": 47000,
+              "drawCalls": 97
+            },
+            {
+              "id": "high",
+              "bytes": 1800488,
+              "residentBytes": 1382860,
+              "triangles": 57024,
+              "drawCalls": 111
+            }
+          ]
+        },
+        {
+          "id": "2_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 3124584,
+              "residentBytes": 3004189,
+              "triangles": 29411,
+              "drawCalls": 20
+            },
+            {
+              "id": "medium",
+              "bytes": 3644452,
+              "residentBytes": 3392848,
+              "triangles": 75102,
+              "drawCalls": 135
+            },
+            {
+              "id": "high",
+              "bytes": 5065504,
+              "residentBytes": 4471826,
+              "triangles": 87614,
+              "drawCalls": 149
+            }
+          ]
+        },
+        {
+          "id": "0_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 4741452,
+              "residentBytes": 4608370,
+              "triangles": 43410,
+              "drawCalls": 21
+            },
+            {
+              "id": "medium",
+              "bytes": 8076780,
+              "residentBytes": 7884247,
+              "triangles": 126979,
+              "drawCalls": 92
+            },
+            {
+              "id": "high",
+              "bytes": 9104896,
+              "residentBytes": 8600449,
+              "triangles": 144059,
+              "drawCalls": 106
+            }
+          ]
+        },
+        {
+          "id": "1_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 3992352,
+              "residentBytes": 3888602,
+              "triangles": 33718,
+              "drawCalls": 23
+            },
+            {
+              "id": "medium",
+              "bytes": 8929120,
+              "residentBytes": 8794454,
+              "triangles": 111744,
+              "drawCalls": 59
+            },
+            {
+              "id": "high",
+              "bytes": 9628404,
+              "residentBytes": 9343804,
+              "triangles": 117268,
+              "drawCalls": 70
+            }
+          ]
+        },
+        {
+          "id": "2_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 701832,
+              "residentBytes": 602998,
+              "triangles": 18594,
+              "drawCalls": 13
+            },
+            {
+              "id": "medium",
+              "bytes": 1782964,
+              "residentBytes": 1613401,
+              "triangles": 93889,
+              "drawCalls": 85
+            },
+            {
+              "id": "high",
+              "bytes": 2874800,
+              "residentBytes": 2407883,
+              "triangles": 107057,
+              "drawCalls": 93
+            }
+          ]
+        },
+        {
+          "id": "0_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 9022020,
+              "residentBytes": 8913606,
+              "triangles": 65390,
+              "drawCalls": 21
+            },
+            {
+              "id": "medium",
+              "bytes": 13424168,
+              "residentBytes": 13223889,
+              "triangles": 127577,
+              "drawCalls": 132
+            },
+            {
+              "id": "high",
+              "bytes": 14459056,
+              "residentBytes": 13946127,
+              "triangles": 145693,
+              "drawCalls": 146
+            }
+          ]
+        },
+        {
+          "id": "1_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 8503636,
+              "residentBytes": 8396494,
+              "triangles": 60586,
+              "drawCalls": 21
+            },
+            {
+              "id": "medium",
+              "bytes": 10634772,
+              "residentBytes": 10452001,
+              "triangles": 110145,
+              "drawCalls": 111
+            },
+            {
+              "id": "high",
+              "bytes": 11595640,
+              "residentBytes": 11160955,
+              "triangles": 120069,
+              "drawCalls": 125
+            }
+          ]
+        },
+        {
+          "id": "2_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 6341736,
+              "residentBytes": 6251770,
+              "triangles": 46334,
+              "drawCalls": 20
+            },
+            {
+              "id": "medium",
+              "bytes": 7643040,
+              "residentBytes": 7487299,
+              "triangles": 84239,
+              "drawCalls": 84
+            },
+            {
+              "id": "high",
+              "bytes": 8365032,
+              "residentBytes": 8003373,
+              "triangles": 94839,
+              "drawCalls": 95
+            }
+          ]
+        }
+      ],
+      "report": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "diagnostics": [],
+        "hashes": {
+          "config": "b99b41043dc76f6ada9d85cc922aa787d275b1a24e2d4dbbaef4d9bc37cc7ff3",
+          "source": "5cbbd0c5d12ee414ce8add05177ac6098718c39676130f4f7a066945267537c5",
+          "world": "882af445c6802d0aa5aefed76213f2b9c611d4f6a1ea72f7d7eac134be79cc9d"
+        },
+        "counts": {
+          "inputElements": 1376,
+          "features": 9417,
+          "buildings": 286,
+          "trees": 2518,
+          "chunks": 9
+        },
+        "road": {
+          "sourceRoads": 460,
+          "segments": 3057,
+          "driveSegments": 2128,
+          "walkSegments": 929,
+          "miterJoins": 872,
+          "bevelJoins": 4,
+          "duplicateSegments": 0,
+          "clippedOverlaps": 6044,
+          "junctions": 233,
+          "crossingExclusions": 0,
+          "dashes": 2891,
+          "stopLines": 0,
+          "drivePolygons": 4583,
+          "walkPolygons": 2210,
+          "pavingPolygons": 3362,
+          "surfaceTriangles": 20118,
+          "roadArea": 384818.5412975207,
+          "pavementArea": 98947.83225967742,
+          "observedSidewalkWays": 38,
+          "observedCrossingWays": 29,
+          "inferredMarginWays": 135,
+          "pavementBuildingBlockers": 990,
+          "gradeSource": "OSM connectivity + inferred layer heights",
+          "gradeOriginalDiscontinuities": 48,
+          "gradeResolvedConnections": 48,
+          "gradeChangedWays": 175,
+          "gradeMaxVehicleSlope": 0.10000000000000034,
+          "gradeSteepVehicleRuns": 0,
+          "gradeCrossingConstraints": 131,
+          "gradeRemainingDiscontinuities": 0,
+          "gradeConstraintIterations": 18,
+          "gradeConstraintConflicts": 0,
+          "gradeAmbiguousCrossings": 0,
+          "stairFlights": 20,
+          "gradeSteepWalkingWays": 14,
+          "gradeMaxWalkingSlope": 0.35000000000000203,
+          "discardedMicroTriangles": 476,
+          "renderedTriangles": 38707,
+          "bridgeWays": 107,
+          "bridgeSegments": 1432,
+          "bridgeDecks": 1941,
+          "bridgePiers": 165,
+          "bridgeSupportCandidates": 215,
+          "bridgeGuardrailSegments": 3980,
+          "bridgeRailInteriorSkipped": 687,
+          "bridgeRejectedSupports": {
+            "traffic-clearance": 39,
+            "extract-boundary": 2,
+            "pedestrian-clearance": 3,
+            "building-clearance": 1,
+            "outside-deck": 3,
+            "water": 2
+          },
+          "unsupportedBridgeWays": 56,
+          "bridgeHeightSource": "inferred-layer-times-7m",
+          "bridgeGradeConnectionsUnresolved": 0,
+          "bridgeStructureTriangles": 147306,
+          "stairTreads": 780,
+          "stairPosts": 1120,
+          "stairTriangles": 48584,
+          "stairSkippedFlights": 0,
+          "stairSteepFlights": 0,
+          "stairHeightSource": "shared-road-grade-inference"
+        },
+        "landscape": {
+          "observedFeatures": 19,
+          "observedSurfaceArea": 48341.255214474324,
+          "inferredSites": 0,
+          "inferredPavedArea": 0,
+          "inferredPlantedArea": 0,
+          "rejectedCandidates": 0,
+          "rejectedGeometry": 0,
+          "templates": {},
+          "layouts": {},
+          "kindAreas": {
+            "plaza": 3458.8157837291483,
+            "lawn": 5202.084082442008,
+            "park": 39680.35534830317
+          },
+          "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+          "availableTreeCandidates": 0,
+          "availablePropCandidates": 0,
+          "treesByTemplate": {},
+          "commonCandidates": 0,
+          "treeCandidates": 0,
+          "props": 0,
+          "surfaces": 41,
+          "inferredArea": 0,
+          "inferredFraction": 0,
+          "knownGroundFraction": 0.02148500231755071,
+          "unfilledBeforeFraction": 0.504256,
+          "unfilledAfterFraction": 0.504256,
+          "coverageSampleSpacing": 12,
+          "coverageSamples": 15625,
+          "markingStrips": 0,
+          "markingPrecisionRetries": 0,
+          "omittedMarkingStrips": 0,
+          "renderedTriangles": 284,
+          "drawMeshes": 3
+        },
+        "roof": {
+          "tagged": 0,
+          "inferred": 0,
+          "unsupported": 0
+        },
+        "determinism": {
+          "timestampsExcluded": true,
+          "uuidExcluded": true,
+          "worldHashExcludesTiling": true
+        }
+      }
+    },
+    {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "name": "kyoto-gion-fixed-1",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "kyoto-gion",
+        "origin": {
+          "lat": 35.00365,
+          "lon": 135.775
+        },
+        "area": {
+          "south": 34.9995,
+          "west": 135.7688,
+          "north": 35.0078,
+          "east": 135.7812
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "divisions": 1
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 7014,
+      "buildMs": 20347.96,
+      "maxRssKiB": 1846692,
+      "packageBytes": 549089046,
+      "manifestHash": "e50ab09b48f46bde221ec35928e29d5d3ed3f929df686ed1f201d7a546cc4a11",
+      "chunks": 1,
+      "features": 8281,
+      "lods": [
+        {
+          "id": "0_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 95711192,
+              "residentBytes": 95130135,
+              "triangles": 650245,
+              "drawCalls": 28
+            },
+            {
+              "id": "medium",
+              "bytes": 207518800,
+              "residentBytes": 196061931,
+              "triangles": 1330679,
+              "drawCalls": 13340
+            },
+            {
+              "id": "high",
+              "bytes": 222505500,
+              "residentBytes": 204294989,
+              "triangles": 1370375,
+              "drawCalls": 13354
+            }
+          ]
+        }
+      ],
+      "report": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "diagnostics": [],
+        "hashes": {
+          "config": "ce3a7296b56b47c0676a67ae5ba2824e81fdd71dce82a1da52e7bd0a7df2abbf",
+          "source": "65a4267a52030c8c9822599ad14c9176c9bd700dce95843596188a51c5ecb272",
+          "world": "e08a46b8fd257b3a52fbbfd68493d9fb6a62378e0cb85a9030a5981c25fc73fc"
+        },
+        "counts": {
+          "inputElements": 7014,
+          "features": 8281,
+          "buildings": 4460,
+          "trees": 1467,
+          "chunks": 1
+        },
+        "road": {
+          "sourceRoads": 1016,
+          "segments": 6344,
+          "driveSegments": 2409,
+          "walkSegments": 3935,
+          "miterJoins": 1979,
+          "bevelJoins": 19,
+          "duplicateSegments": 0,
+          "clippedOverlaps": 19319,
+          "junctions": 281,
+          "crossingExclusions": 103,
+          "dashes": 196,
+          "stopLines": 4,
+          "drivePolygons": 5367,
+          "walkPolygons": 9991,
+          "pavingPolygons": 18666,
+          "surfaceTriangles": 67227,
+          "roadArea": 146592.53818086378,
+          "pavementArea": 73883.45452055847,
+          "observedSidewalkWays": 114,
+          "observedCrossingWays": 64,
+          "inferredMarginWays": 133,
+          "pavementBuildingBlockers": 15784,
+          "gradeSource": "OSM connectivity + inferred layer heights",
+          "gradeOriginalDiscontinuities": 100,
+          "gradeResolvedConnections": 100,
+          "gradeChangedWays": 597,
+          "gradeMaxVehicleSlope": 0.10000000000000044,
+          "gradeSteepVehicleRuns": 1,
+          "gradeCrossingConstraints": 6,
+          "gradeRemainingDiscontinuities": 0,
+          "gradeConstraintIterations": 19,
+          "gradeConstraintConflicts": 0,
+          "gradeAmbiguousCrossings": 0,
+          "stairFlights": 7,
+          "gradeSteepWalkingWays": 147,
+          "gradeMaxWalkingSlope": 0.35000000000000464,
+          "discardedMicroTriangles": 987,
+          "renderedTriangles": 67569,
+          "bridgeWays": 398,
+          "bridgeSegments": 3126,
+          "bridgeDecks": 6065,
+          "bridgePiers": 122,
+          "bridgeSupportCandidates": 234,
+          "bridgeGuardrailSegments": 8899,
+          "bridgeRailInteriorSkipped": 1538,
+          "bridgeRejectedSupports": {
+            "water": 10,
+            "pedestrian-clearance": 29,
+            "near-existing-support": 7,
+            "building-clearance": 39,
+            "outside-deck": 22,
+            "traffic-clearance": 5
+          },
+          "unsupportedBridgeWays": 326,
+          "bridgeHeightSource": "inferred-layer-times-7m",
+          "bridgeGradeConnectionsUnresolved": 0,
+          "bridgeStructureTriangles": 430736,
+          "stairTreads": 88,
+          "stairPosts": 124,
+          "stairTriangles": 5212,
+          "stairSkippedFlights": 0,
+          "stairSteepFlights": 3,
+          "stairHeightSource": "shared-road-grade-inference"
+        },
+        "landscape": {
+          "observedFeatures": 330,
+          "observedSurfaceArea": 110052.57437849476,
+          "inferredSites": 0,
+          "inferredPavedArea": 0,
+          "inferredPlantedArea": 0,
+          "rejectedCandidates": 0,
+          "rejectedGeometry": 0,
+          "templates": {},
+          "layouts": {},
+          "kindAreas": {
+            "parking": 31180.456667620205,
+            "sport": 6909.311285896703,
+            "construction": 228.21921356081293,
+            "plaza": 1646.9347667454651,
+            "lawn": 3302.5351748886233,
+            "garden": 19449.854991596338,
+            "wood": 34404.35247883707,
+            "park": 12930.909799349522
+          },
+          "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+          "availableTreeCandidates": 0,
+          "availablePropCandidates": 0,
+          "treesByTemplate": {},
+          "commonCandidates": 0,
+          "treeCandidates": 0,
+          "props": 0,
+          "surfaces": 427,
+          "inferredArea": 0,
+          "inferredFraction": 0,
+          "knownGroundFraction": 0.10558706235703678,
+          "unfilledBeforeFraction": 0.20420005526388504,
+          "unfilledAfterFraction": 0.20420005526388504,
+          "coverageSampleSpacing": 12,
+          "coverageSamples": 7238,
+          "markingStrips": 0,
+          "markingPrecisionRetries": 0,
+          "omittedMarkingStrips": 0,
+          "renderedTriangles": 4804,
+          "drawMeshes": 8
+        },
+        "roof": {
+          "tagged": 5,
+          "inferred": 0,
+          "unsupported": 1
+        },
+        "determinism": {
+          "timestampsExcluded": true,
+          "uuidExcluded": true,
+          "worldHashExcludesTiling": true
+        }
+      }
+    },
+    {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "name": "kyoto-gion-fixed-4",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "kyoto-gion",
+        "origin": {
+          "lat": 35.00365,
+          "lon": 135.775
+        },
+        "area": {
+          "south": 34.9995,
+          "west": 135.7688,
+          "north": 35.0078,
+          "east": 135.7812
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "divisions": 2
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 7014,
+      "buildMs": 20430.952,
+      "maxRssKiB": 1713828,
+      "packageBytes": 551304663,
+      "manifestHash": "c26c65cf03fde2b07075346c3e78706484e84f7345bd805f102848217d3ad140",
+      "chunks": 4,
+      "features": 8281,
+      "lods": [
+        {
+          "id": "0_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 36001628,
+              "residentBytes": 35727388,
+              "triangles": 231920,
+              "drawCalls": 27
+            },
+            {
+              "id": "medium",
+              "bytes": 72738976,
+              "residentBytes": 69164221,
+              "triangles": 364321,
+              "drawCalls": 4083
+            },
+            {
+              "id": "high",
+              "bytes": 77026548,
+              "residentBytes": 71513003,
+              "triangles": 376317,
+              "drawCalls": 4097
+            }
+          ]
+        },
+        {
+          "id": "1_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 33749640,
+              "residentBytes": 33440992,
+              "triangles": 228756,
+              "drawCalls": 27
+            },
+            {
+              "id": "medium",
+              "bytes": 57935084,
+              "residentBytes": 55230838,
+              "triangles": 418104,
+              "drawCalls": 2969
+            },
+            {
+              "id": "high",
+              "bytes": 61593828,
+              "residentBytes": 57282792,
+              "triangles": 427876,
+              "drawCalls": 2980
+            }
+          ]
+        },
+        {
+          "id": "0_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 19009280,
+              "residentBytes": 18747657,
+              "triangles": 128347,
+              "drawCalls": 26
+            },
+            {
+              "id": "medium",
+              "bytes": 44034944,
+              "residentBytes": 41253513,
+              "triangles": 275025,
+              "drawCalls": 3120
+            },
+            {
+              "id": "high",
+              "bytes": 47390504,
+              "residentBytes": 43103247,
+              "triangles": 283377,
+              "drawCalls": 3131
+            }
+          ]
+        },
+        {
+          "id": "1_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 7054340,
+              "residentBytes": 6754594,
+              "triangles": 61222,
+              "drawCalls": 27
+            },
+            {
+              "id": "medium",
+              "bytes": 33786288,
+              "residentBytes": 30876421,
+              "triangles": 273229,
+              "drawCalls": 3238
+            },
+            {
+              "id": "high",
+              "bytes": 37532796,
+              "residentBytes": 32873835,
+              "triangles": 282805,
+              "drawCalls": 3252
+            }
+          ]
+        }
+      ],
+      "report": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "diagnostics": [],
+        "hashes": {
+          "config": "67099d331fc9c2c50a33d46277d1811bbacb0b05a86ff4ffef733e2db5ec02e2",
+          "source": "65a4267a52030c8c9822599ad14c9176c9bd700dce95843596188a51c5ecb272",
+          "world": "e08a46b8fd257b3a52fbbfd68493d9fb6a62378e0cb85a9030a5981c25fc73fc"
+        },
+        "counts": {
+          "inputElements": 7014,
+          "features": 8281,
+          "buildings": 4460,
+          "trees": 1467,
+          "chunks": 4
+        },
+        "road": {
+          "sourceRoads": 1016,
+          "segments": 6344,
+          "driveSegments": 2409,
+          "walkSegments": 3935,
+          "miterJoins": 1979,
+          "bevelJoins": 19,
+          "duplicateSegments": 0,
+          "clippedOverlaps": 19319,
+          "junctions": 281,
+          "crossingExclusions": 103,
+          "dashes": 196,
+          "stopLines": 4,
+          "drivePolygons": 5367,
+          "walkPolygons": 9991,
+          "pavingPolygons": 18666,
+          "surfaceTriangles": 67227,
+          "roadArea": 146592.53818086378,
+          "pavementArea": 73883.45452055847,
+          "observedSidewalkWays": 114,
+          "observedCrossingWays": 64,
+          "inferredMarginWays": 133,
+          "pavementBuildingBlockers": 15784,
+          "gradeSource": "OSM connectivity + inferred layer heights",
+          "gradeOriginalDiscontinuities": 100,
+          "gradeResolvedConnections": 100,
+          "gradeChangedWays": 597,
+          "gradeMaxVehicleSlope": 0.10000000000000044,
+          "gradeSteepVehicleRuns": 1,
+          "gradeCrossingConstraints": 6,
+          "gradeRemainingDiscontinuities": 0,
+          "gradeConstraintIterations": 19,
+          "gradeConstraintConflicts": 0,
+          "gradeAmbiguousCrossings": 0,
+          "stairFlights": 7,
+          "gradeSteepWalkingWays": 147,
+          "gradeMaxWalkingSlope": 0.35000000000000464,
+          "discardedMicroTriangles": 987,
+          "renderedTriangles": 67569,
+          "bridgeWays": 398,
+          "bridgeSegments": 3126,
+          "bridgeDecks": 6065,
+          "bridgePiers": 122,
+          "bridgeSupportCandidates": 234,
+          "bridgeGuardrailSegments": 8899,
+          "bridgeRailInteriorSkipped": 1538,
+          "bridgeRejectedSupports": {
+            "water": 10,
+            "pedestrian-clearance": 29,
+            "near-existing-support": 7,
+            "building-clearance": 39,
+            "outside-deck": 22,
+            "traffic-clearance": 5
+          },
+          "unsupportedBridgeWays": 326,
+          "bridgeHeightSource": "inferred-layer-times-7m",
+          "bridgeGradeConnectionsUnresolved": 0,
+          "bridgeStructureTriangles": 430736,
+          "stairTreads": 88,
+          "stairPosts": 124,
+          "stairTriangles": 5212,
+          "stairSkippedFlights": 0,
+          "stairSteepFlights": 3,
+          "stairHeightSource": "shared-road-grade-inference"
+        },
+        "landscape": {
+          "observedFeatures": 330,
+          "observedSurfaceArea": 110052.57437849476,
+          "inferredSites": 0,
+          "inferredPavedArea": 0,
+          "inferredPlantedArea": 0,
+          "rejectedCandidates": 0,
+          "rejectedGeometry": 0,
+          "templates": {},
+          "layouts": {},
+          "kindAreas": {
+            "parking": 31180.456667620205,
+            "sport": 6909.311285896703,
+            "construction": 228.21921356081293,
+            "plaza": 1646.9347667454651,
+            "lawn": 3302.5351748886233,
+            "garden": 19449.854991596338,
+            "wood": 34404.35247883707,
+            "park": 12930.909799349522
+          },
+          "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+          "availableTreeCandidates": 0,
+          "availablePropCandidates": 0,
+          "treesByTemplate": {},
+          "commonCandidates": 0,
+          "treeCandidates": 0,
+          "props": 0,
+          "surfaces": 427,
+          "inferredArea": 0,
+          "inferredFraction": 0,
+          "knownGroundFraction": 0.10558706235703678,
+          "unfilledBeforeFraction": 0.20420005526388504,
+          "unfilledAfterFraction": 0.20420005526388504,
+          "coverageSampleSpacing": 12,
+          "coverageSamples": 7238,
+          "markingStrips": 0,
+          "markingPrecisionRetries": 0,
+          "omittedMarkingStrips": 0,
+          "renderedTriangles": 4804,
+          "drawMeshes": 8
+        },
+        "roof": {
+          "tagged": 5,
+          "inferred": 0,
+          "unsupported": 1
+        },
+        "determinism": {
+          "timestampsExcluded": true,
+          "uuidExcluded": true,
+          "worldHashExcludesTiling": true
+        }
+      }
+    },
+    {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "name": "kyoto-gion-fixed-16",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "kyoto-gion",
+        "origin": {
+          "lat": 35.00365,
+          "lon": 135.775
+        },
+        "area": {
+          "south": 34.9995,
+          "west": 135.7688,
+          "north": 35.0078,
+          "east": 135.7812
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "divisions": 4
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 7014,
+      "buildMs": 21178.1156,
+      "maxRssKiB": 1716568,
+      "packageBytes": 559145037,
+      "manifestHash": "94cce5893c1603d4891dc4634a2b3e7e958defadec71b001d022bde7bec7e138",
+      "chunks": 16,
+      "features": 8281,
+      "lods": [
+        {
+          "id": "0_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 10300864,
+              "residentBytes": 10118051,
+              "triangles": 64505,
+              "drawCalls": 21
+            },
+            {
+              "id": "medium",
+              "bytes": 20365252,
+              "residentBytes": 19481675,
+              "triangles": 98171,
+              "drawCalls": 883
+            },
+            {
+              "id": "high",
+              "bytes": 21695836,
+              "residentBytes": 20328885,
+              "triangles": 102515,
+              "drawCalls": 897
+            }
+          ]
+        },
+        {
+          "id": "1_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 3683504,
+              "residentBytes": 3511083,
+              "triangles": 24585,
+              "drawCalls": 20
+            },
+            {
+              "id": "medium",
+              "bytes": 12215672,
+              "residentBytes": 11050167,
+              "triangles": 59435,
+              "drawCalls": 1250
+            },
+            {
+              "id": "high",
+              "bytes": 13137400,
+              "residentBytes": 11468307,
+              "triangles": 60815,
+              "drawCalls": 1251
+            }
+          ]
+        },
+        {
+          "id": "2_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 18840988,
+              "residentBytes": 18663619,
+              "triangles": 118865,
+              "drawCalls": 18
+            },
+            {
+              "id": "medium",
+              "bytes": 27774516,
+              "residentBytes": 26656186,
+              "triangles": 146072,
+              "drawCalls": 1177
+            },
+            {
+              "id": "high",
+              "bytes": 28927592,
+              "residentBytes": 27228036,
+              "triangles": 148932,
+              "drawCalls": 1185
+            }
+          ]
+        },
+        {
+          "id": "3_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 8040756,
+              "residentBytes": 7859872,
+              "triangles": 54328,
+              "drawCalls": 24
+            },
+            {
+              "id": "medium",
+              "bytes": 12804332,
+              "residentBytes": 12227824,
+              "triangles": 94850,
+              "drawCalls": 510
+            },
+            {
+              "id": "high",
+              "bytes": 13748668,
+              "residentBytes": 12882304,
+              "triangles": 97010,
+              "drawCalls": 511
+            }
+          ]
+        },
+        {
+          "id": "0_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 11013824,
+              "residentBytes": 10828728,
+              "triangles": 69536,
+              "drawCalls": 22
+            },
+            {
+              "id": "medium",
+              "bytes": 19962704,
+              "residentBytes": 19130487,
+              "triangles": 100035,
+              "drawCalls": 815
+            },
+            {
+              "id": "high",
+              "bytes": 20926900,
+              "residentBytes": 19649805,
+              "triangles": 103147,
+              "drawCalls": 826
+            }
+          ]
+        },
+        {
+          "id": "1_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 11461484,
+              "residentBytes": 11284682,
+              "triangles": 73294,
+              "drawCalls": 18
+            },
+            {
+              "id": "medium",
+              "bytes": 20762932,
+              "residentBytes": 19636094,
+              "triangles": 106680,
+              "drawCalls": 1180
+            },
+            {
+              "id": "high",
+              "bytes": 21875376,
+              "residentBytes": 20210092,
+              "triangles": 109840,
+              "drawCalls": 1191
+            }
+          ]
+        },
+        {
+          "id": "2_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2936580,
+              "residentBytes": 2747510,
+              "triangles": 20450,
+              "drawCalls": 18
+            },
+            {
+              "id": "medium",
+              "bytes": 11771596,
+              "residentBytes": 10725377,
+              "triangles": 57565,
+              "drawCalls": 1075
+            },
+            {
+              "id": "high",
+              "bytes": 12952584,
+              "residentBytes": 11337783,
+              "triangles": 61597,
+              "drawCalls": 1086
+            }
+          ]
+        },
+        {
+          "id": "3_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 4403292,
+              "residentBytes": 4189587,
+              "triangles": 35113,
+              "drawCalls": 26
+            },
+            {
+              "id": "medium",
+              "bytes": 6292120,
+              "residentBytes": 5887197,
+              "triangles": 119617,
+              "drawCalls": 257
+            },
+            {
+              "id": "high",
+              "bytes": 6693540,
+              "residentBytes": 6105357,
+              "triangles": 120337,
+              "drawCalls": 258
+            }
+          ]
+        },
+        {
+          "id": "0_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 9095540,
+              "residentBytes": 8925159,
+              "triangles": 58409,
+              "drawCalls": 18
+            },
+            {
+              "id": "medium",
+              "bytes": 13372456,
+              "residentBytes": 12808272,
+              "triangles": 78450,
+              "drawCalls": 502
+            },
+            {
+              "id": "high",
+              "bytes": 14040924,
+              "residentBytes": 13200406,
+              "triangles": 81086,
+              "drawCalls": 510
+            }
+          ]
+        },
+        {
+          "id": "1_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2481152,
+              "residentBytes": 2332796,
+              "triangles": 15716,
+              "drawCalls": 16
+            },
+            {
+              "id": "medium",
+              "bytes": 11568636,
+              "residentBytes": 10468466,
+              "triangles": 46172,
+              "drawCalls": 1195
+            },
+            {
+              "id": "high",
+              "bytes": 12706632,
+              "residentBytes": 11050226,
+              "triangles": 48092,
+              "drawCalls": 1196
+            }
+          ]
+        },
+        {
+          "id": "2_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2101288,
+              "residentBytes": 1916730,
+              "triangles": 14670,
+              "drawCalls": 20
+            },
+            {
+              "id": "medium",
+              "bytes": 10716568,
+              "residentBytes": 9716067,
+              "triangles": 55551,
+              "drawCalls": 1027
+            },
+            {
+              "id": "high",
+              "bytes": 11716144,
+              "residentBytes": 10162537,
+              "triangles": 58259,
+              "drawCalls": 1041
+            }
+          ]
+        },
+        {
+          "id": "3_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 1972480,
+              "residentBytes": 1790374,
+              "triangles": 17986,
+              "drawCalls": 21
+            },
+            {
+              "id": "medium",
+              "bytes": 6066332,
+              "residentBytes": 5535412,
+              "triangles": 77286,
+              "drawCalls": 449
+            },
+            {
+              "id": "high",
+              "bytes": 6810008,
+              "residentBytes": 6008092,
+              "triangles": 78846,
+              "drawCalls": 450
+            }
+          ]
+        },
+        {
+          "id": "0_3",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 4684920,
+              "residentBytes": 4504487,
+              "triangles": 30221,
+              "drawCalls": 21
+            },
+            {
+              "id": "medium",
+              "bytes": 10852700,
+              "residentBytes": 10081223,
+              "triangles": 62743,
+              "drawCalls": 752
+            },
+            {
+              "id": "high",
+              "bytes": 11554688,
+              "residentBytes": 10397145,
+              "triangles": 64311,
+              "drawCalls": 760
+            }
+          ]
+        },
+        {
+          "id": "1_3",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 3195788,
+              "residentBytes": 3004811,
+              "triangles": 24001,
+              "drawCalls": 23
+            },
+            {
+              "id": "medium",
+              "bytes": 8920644,
+              "residentBytes": 8161298,
+              "triangles": 87660,
+              "drawCalls": 714
+            },
+            {
+              "id": "high",
+              "bytes": 9794776,
+              "residentBytes": 8728988,
+              "triangles": 89888,
+              "drawCalls": 719
+            }
+          ]
+        },
+        {
+          "id": "2_3",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 1803044,
+              "residentBytes": 1633103,
+              "triangles": 12833,
+              "drawCalls": 16
+            },
+            {
+              "id": "medium",
+              "bytes": 9831144,
+              "residentBytes": 8857388,
+              "triangles": 50526,
+              "drawCalls": 1012
+            },
+            {
+              "id": "high",
+              "bytes": 10988772,
+              "residentBytes": 9486094,
+              "triangles": 54334,
+              "drawCalls": 1023
+            }
+          ]
+        },
+        {
+          "id": "3_3",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 1625464,
+              "residentBytes": 1440643,
+              "triangles": 15733,
+              "drawCalls": 19
+            },
+            {
+              "id": "medium",
+              "bytes": 8042136,
+              "residentBytes": 7230616,
+              "triangles": 89866,
+              "drawCalls": 790
+            },
+            {
+              "id": "high",
+              "bytes": 8911740,
+              "residentBytes": 7685116,
+              "triangles": 91366,
+              "drawCalls": 791
+            }
+          ]
+        }
+      ],
+      "report": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "diagnostics": [],
+        "hashes": {
+          "config": "650e9d3a9de5bb69827d2a15eb08ecd1177d43a931300fc31c4c3dca92d8f148",
+          "source": "65a4267a52030c8c9822599ad14c9176c9bd700dce95843596188a51c5ecb272",
+          "world": "e08a46b8fd257b3a52fbbfd68493d9fb6a62378e0cb85a9030a5981c25fc73fc"
+        },
+        "counts": {
+          "inputElements": 7014,
+          "features": 8281,
+          "buildings": 4460,
+          "trees": 1467,
+          "chunks": 16
+        },
+        "road": {
+          "sourceRoads": 1016,
+          "segments": 6344,
+          "driveSegments": 2409,
+          "walkSegments": 3935,
+          "miterJoins": 1979,
+          "bevelJoins": 19,
+          "duplicateSegments": 0,
+          "clippedOverlaps": 19319,
+          "junctions": 281,
+          "crossingExclusions": 103,
+          "dashes": 196,
+          "stopLines": 4,
+          "drivePolygons": 5367,
+          "walkPolygons": 9991,
+          "pavingPolygons": 18666,
+          "surfaceTriangles": 67227,
+          "roadArea": 146592.53818086378,
+          "pavementArea": 73883.45452055847,
+          "observedSidewalkWays": 114,
+          "observedCrossingWays": 64,
+          "inferredMarginWays": 133,
+          "pavementBuildingBlockers": 15784,
+          "gradeSource": "OSM connectivity + inferred layer heights",
+          "gradeOriginalDiscontinuities": 100,
+          "gradeResolvedConnections": 100,
+          "gradeChangedWays": 597,
+          "gradeMaxVehicleSlope": 0.10000000000000044,
+          "gradeSteepVehicleRuns": 1,
+          "gradeCrossingConstraints": 6,
+          "gradeRemainingDiscontinuities": 0,
+          "gradeConstraintIterations": 19,
+          "gradeConstraintConflicts": 0,
+          "gradeAmbiguousCrossings": 0,
+          "stairFlights": 7,
+          "gradeSteepWalkingWays": 147,
+          "gradeMaxWalkingSlope": 0.35000000000000464,
+          "discardedMicroTriangles": 987,
+          "renderedTriangles": 67569,
+          "bridgeWays": 398,
+          "bridgeSegments": 3126,
+          "bridgeDecks": 6065,
+          "bridgePiers": 122,
+          "bridgeSupportCandidates": 234,
+          "bridgeGuardrailSegments": 8899,
+          "bridgeRailInteriorSkipped": 1538,
+          "bridgeRejectedSupports": {
+            "water": 10,
+            "pedestrian-clearance": 29,
+            "near-existing-support": 7,
+            "building-clearance": 39,
+            "outside-deck": 22,
+            "traffic-clearance": 5
+          },
+          "unsupportedBridgeWays": 326,
+          "bridgeHeightSource": "inferred-layer-times-7m",
+          "bridgeGradeConnectionsUnresolved": 0,
+          "bridgeStructureTriangles": 430736,
+          "stairTreads": 88,
+          "stairPosts": 124,
+          "stairTriangles": 5212,
+          "stairSkippedFlights": 0,
+          "stairSteepFlights": 3,
+          "stairHeightSource": "shared-road-grade-inference"
+        },
+        "landscape": {
+          "observedFeatures": 330,
+          "observedSurfaceArea": 110052.57437849476,
+          "inferredSites": 0,
+          "inferredPavedArea": 0,
+          "inferredPlantedArea": 0,
+          "rejectedCandidates": 0,
+          "rejectedGeometry": 0,
+          "templates": {},
+          "layouts": {},
+          "kindAreas": {
+            "parking": 31180.456667620205,
+            "sport": 6909.311285896703,
+            "construction": 228.21921356081293,
+            "plaza": 1646.9347667454651,
+            "lawn": 3302.5351748886233,
+            "garden": 19449.854991596338,
+            "wood": 34404.35247883707,
+            "park": 12930.909799349522
+          },
+          "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+          "availableTreeCandidates": 0,
+          "availablePropCandidates": 0,
+          "treesByTemplate": {},
+          "commonCandidates": 0,
+          "treeCandidates": 0,
+          "props": 0,
+          "surfaces": 427,
+          "inferredArea": 0,
+          "inferredFraction": 0,
+          "knownGroundFraction": 0.10558706235703678,
+          "unfilledBeforeFraction": 0.20420005526388504,
+          "unfilledAfterFraction": 0.20420005526388504,
+          "coverageSampleSpacing": 12,
+          "coverageSamples": 7238,
+          "markingStrips": 0,
+          "markingPrecisionRetries": 0,
+          "omittedMarkingStrips": 0,
+          "renderedTriangles": 4804,
+          "drawMeshes": 8
+        },
+        "roof": {
+          "tagged": 5,
+          "inferred": 0,
+          "unsupported": 1
+        },
+        "determinism": {
+          "timestampsExcluded": true,
+          "uuidExcluded": true,
+          "worldHashExcludesTiling": true
+        }
+      }
+    },
+    {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "name": "kyoto-gion-grow-1",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "kyoto-gion",
+        "origin": {
+          "lat": 35.00365,
+          "lon": 135.775
+        },
+        "area": {
+          "south": 35.00229793628537,
+          "west": 135.77335678027748,
+          "north": 35.00500206371463,
+          "east": 135.77664321972253
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 300
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 7014,
+      "buildMs": 1079.8385,
+      "maxRssKiB": 282940,
+      "packageBytes": 39545209,
+      "manifestHash": "037da99ad24b406e51f6fbce06f21bd4810ab7d0ed81bbbb8efa9fe91773b7b3",
+      "chunks": 1,
+      "features": 883,
+      "lods": [
+        {
+          "id": "0_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2741524,
+              "residentBytes": 2676159,
+              "triangles": 19977,
+              "drawCalls": 18
+            },
+            {
+              "id": "medium",
+              "bytes": 16939048,
+              "residentBytes": 15419121,
+              "triangles": 72813,
+              "drawCalls": 1814
+            },
+            {
+              "id": "high",
+              "bytes": 18749872,
+              "residentBytes": 16320219,
+              "triangles": 77029,
+              "drawCalls": 1825
+            }
+          ]
+        }
+      ],
+      "report": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "diagnostics": [],
+        "hashes": {
+          "config": "3c3d944e438c0938818948854ae4922cbc75121d5b6dbb66a9fd6adf351d460f",
+          "source": "57581efdcab2ebe7ac1b1091921ec69d24f0b042248fa85136c38f6744185658",
+          "world": "ae5a5b1f688da1f62b885c8ef2723e06dc72f3838e0a9573a116c450b50665c1"
+        },
+        "counts": {
+          "inputElements": 7014,
+          "features": 883,
+          "buildings": 601,
+          "trees": 89,
+          "chunks": 1
+        },
+        "road": {
+          "sourceRoads": 61,
+          "segments": 204,
+          "driveSegments": 97,
+          "walkSegments": 107,
+          "miterJoins": 81,
+          "bevelJoins": 1,
+          "duplicateSegments": 0,
+          "clippedOverlaps": 1308,
+          "junctions": 23,
+          "crossingExclusions": 6,
+          "dashes": 26,
+          "stopLines": 0,
+          "drivePolygons": 271,
+          "walkPolygons": 318,
+          "pavingPolygons": 1720,
+          "surfaceTriangles": 4534,
+          "roadArea": 14792.858123391203,
+          "pavementArea": 6589.454693575882,
+          "observedSidewalkWays": 8,
+          "observedCrossingWays": 4,
+          "inferredMarginWays": 13,
+          "pavementBuildingBlockers": 2052,
+          "gradeSource": "OSM connectivity + inferred layer heights",
+          "gradeOriginalDiscontinuities": 0,
+          "gradeResolvedConnections": 0,
+          "gradeChangedWays": 28,
+          "gradeMaxVehicleSlope": 0,
+          "gradeSteepVehicleRuns": 0,
+          "gradeCrossingConstraints": 0,
+          "gradeRemainingDiscontinuities": 0,
+          "gradeConstraintIterations": 0,
+          "gradeConstraintConflicts": 0,
+          "gradeAmbiguousCrossings": 0,
+          "stairFlights": 1,
+          "gradeSteepWalkingWays": 0,
+          "gradeMaxWalkingSlope": 0,
+          "discardedMicroTriangles": 54,
+          "renderedTriangles": 4636,
+          "bridgeWays": 0,
+          "bridgeSegments": 0,
+          "bridgeDecks": 0,
+          "bridgePiers": 0,
+          "bridgeSupportCandidates": 0,
+          "bridgeGuardrailSegments": 0,
+          "bridgeRailInteriorSkipped": 0,
+          "bridgeRejectedSupports": {},
+          "unsupportedBridgeWays": 0,
+          "bridgeHeightSource": "inferred-layer-times-7m",
+          "bridgeGradeConnectionsUnresolved": 0,
+          "bridgeStructureTriangles": 0,
+          "stairTreads": 1,
+          "stairPosts": 24,
+          "stairTriangles": 862,
+          "stairSkippedFlights": 0,
+          "stairSteepFlights": 0,
+          "stairHeightSource": "shared-road-grade-inference"
+        },
+        "landscape": {
+          "observedFeatures": 13,
+          "observedSurfaceArea": 3219.8914937322093,
+          "inferredSites": 0,
+          "inferredPavedArea": 0,
+          "inferredPlantedArea": 0,
+          "rejectedCandidates": 0,
+          "rejectedGeometry": 0,
+          "templates": {},
+          "layouts": {},
+          "kindAreas": {
+            "parking": 991.7928355939546,
+            "lawn": 974.5105014168257,
+            "garden": 1253.588156721429
+          },
+          "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+          "availableTreeCandidates": 0,
+          "availablePropCandidates": 0,
+          "treesByTemplate": {},
+          "commonCandidates": 0,
+          "treeCandidates": 0,
+          "props": 0,
+          "surfaces": 17,
+          "inferredArea": 0,
+          "inferredFraction": 0,
+          "knownGroundFraction": 0.035776572152622615,
+          "unfilledBeforeFraction": 0.1456,
+          "unfilledAfterFraction": 0.1456,
+          "coverageSampleSpacing": 12,
+          "coverageSamples": 625,
+          "markingStrips": 0,
+          "markingPrecisionRetries": 0,
+          "omittedMarkingStrips": 0,
+          "renderedTriangles": 147,
+          "drawMeshes": 3
+        },
+        "roof": {
+          "tagged": 1,
+          "inferred": 0,
+          "unsupported": 0
+        },
+        "determinism": {
+          "timestampsExcluded": true,
+          "uuidExcluded": true,
+          "worldHashExcludesTiling": true
+        }
+      }
+    },
+    {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "name": "kyoto-gion-grow-4",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "kyoto-gion",
+        "origin": {
+          "lat": 35.00365,
+          "lon": 135.775
+        },
+        "area": {
+          "south": 35.000945872570746,
+          "west": 135.77171356055496,
+          "north": 35.006354127429255,
+          "east": 135.77828643944505
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 300
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 7014,
+      "buildMs": 3807.5636999999997,
+      "maxRssKiB": 689736,
+      "packageBytes": 183755277,
+      "manifestHash": "32e2f3a9c94cec2a6b8e7fb666050ed198aedc3ee1a8f048c8b2825a7b59bfe7",
+      "chunks": 4,
+      "features": 3329,
+      "lods": [
+        {
+          "id": "0_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 13516484,
+              "residentBytes": 13412754,
+              "triangles": 87846,
+              "drawCalls": 19
+            },
+            {
+              "id": "medium",
+              "bytes": 26066280,
+              "residentBytes": 24623742,
+              "triangles": 135612,
+              "drawCalls": 1661
+            },
+            {
+              "id": "high",
+              "bytes": 27483432,
+              "residentBytes": 25325000,
+              "triangles": 139192,
+              "drawCalls": 1672
+            }
+          ]
+        },
+        {
+          "id": "1_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 5412884,
+              "residentBytes": 5301467,
+              "triangles": 37373,
+              "drawCalls": 20
+            },
+            {
+              "id": "medium",
+              "bytes": 17934824,
+              "residentBytes": 16591091,
+              "triangles": 90227,
+              "drawCalls": 1539
+            },
+            {
+              "id": "high",
+              "bytes": 19649804,
+              "residentBytes": 17496053,
+              "triangles": 95595,
+              "drawCalls": 1550
+            }
+          ]
+        },
+        {
+          "id": "0_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 3750484,
+              "residentBytes": 3667258,
+              "triangles": 25626,
+              "drawCalls": 18
+            },
+            {
+              "id": "medium",
+              "bytes": 15670636,
+              "residentBytes": 14336623,
+              "triangles": 73915,
+              "drawCalls": 1560
+            },
+            {
+              "id": "high",
+              "bytes": 17174644,
+              "residentBytes": 15139565,
+              "triangles": 76623,
+              "drawCalls": 1564
+            }
+          ]
+        },
+        {
+          "id": "1_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2494652,
+              "residentBytes": 2390973,
+              "triangles": 19371,
+              "drawCalls": 21
+            },
+            {
+              "id": "medium",
+              "bytes": 13648728,
+              "residentBytes": 12483621,
+              "triangles": 78529,
+              "drawCalls": 1331
+            },
+            {
+              "id": "high",
+              "bytes": 15064656,
+              "residentBytes": 13168671,
+              "triangles": 82777,
+              "drawCalls": 1345
+            }
+          ]
+        }
+      ],
+      "report": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "diagnostics": [],
+        "hashes": {
+          "config": "be09c6558df21fb3e2be42e05aeabed378ab72f4ff8e50bc12fa3a08dbd19941",
+          "source": "7b0e8c29f3e68b82250d55b7c11d1eee0d66e3aabc53343af709bcb82f66627e",
+          "world": "9c59fea47f8d2873ab03b91b68cd944fd3e14ec186ff2462a5b5a9e3a3259986"
+        },
+        "counts": {
+          "inputElements": 7014,
+          "features": 3329,
+          "buildings": 2017,
+          "trees": 363,
+          "chunks": 4
+        },
+        "road": {
+          "sourceRoads": 312,
+          "segments": 1809,
+          "driveSegments": 738,
+          "walkSegments": 1071,
+          "miterJoins": 610,
+          "bevelJoins": 2,
+          "duplicateSegments": 0,
+          "clippedOverlaps": 6867,
+          "junctions": 104,
+          "crossingExclusions": 45,
+          "dashes": 82,
+          "stopLines": 2,
+          "drivePolygons": 1769,
+          "walkPolygons": 2974,
+          "pavingPolygons": 7822,
+          "surfaceTriangles": 24808,
+          "roadArea": 57677.14359331124,
+          "pavementArea": 24833.97668646132,
+          "observedSidewalkWays": 45,
+          "observedCrossingWays": 22,
+          "inferredMarginWays": 53,
+          "pavementBuildingBlockers": 6976,
+          "gradeSource": "OSM connectivity + inferred layer heights",
+          "gradeOriginalDiscontinuities": 16,
+          "gradeResolvedConnections": 16,
+          "gradeChangedWays": 163,
+          "gradeMaxVehicleSlope": 0.10000000000000037,
+          "gradeSteepVehicleRuns": 0,
+          "gradeCrossingConstraints": 3,
+          "gradeRemainingDiscontinuities": 0,
+          "gradeConstraintIterations": 17,
+          "gradeConstraintConflicts": 0,
+          "gradeAmbiguousCrossings": 0,
+          "stairFlights": 1,
+          "gradeSteepWalkingWays": 29,
+          "gradeMaxWalkingSlope": 0.35000000000000137,
+          "discardedMicroTriangles": 262,
+          "renderedTriangles": 25118,
+          "bridgeWays": 86,
+          "bridgeSegments": 665,
+          "bridgeDecks": 1301,
+          "bridgePiers": 24,
+          "bridgeSupportCandidates": 46,
+          "bridgeGuardrailSegments": 1869,
+          "bridgeRailInteriorSkipped": 395,
+          "bridgeRejectedSupports": {
+            "pedestrian-clearance": 11,
+            "building-clearance": 5,
+            "outside-deck": 3,
+            "near-existing-support": 2,
+            "traffic-clearance": 1
+          },
+          "unsupportedBridgeWays": 70,
+          "bridgeHeightSource": "inferred-layer-times-7m",
+          "bridgeGradeConnectionsUnresolved": 0,
+          "bridgeStructureTriangles": 90582,
+          "stairTreads": 1,
+          "stairPosts": 24,
+          "stairTriangles": 862,
+          "stairSkippedFlights": 0,
+          "stairSteepFlights": 0,
+          "stairHeightSource": "shared-road-grade-inference"
+        },
+        "landscape": {
+          "observedFeatures": 97,
+          "observedSurfaceArea": 23091.4540239258,
+          "inferredSites": 0,
+          "inferredPavedArea": 0,
+          "inferredPlantedArea": 0,
+          "rejectedCandidates": 0,
+          "rejectedGeometry": 0,
+          "templates": {},
+          "layouts": {},
+          "kindAreas": {
+            "parking": 11404.937959451116,
+            "plaza": 151.96452158858256,
+            "lawn": 1190.689187896131,
+            "garden": 3332.2358502104166,
+            "wood": 6437.078366702559,
+            "park": 574.548138076997
+          },
+          "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+          "availableTreeCandidates": 0,
+          "availablePropCandidates": 0,
+          "treesByTemplate": {},
+          "commonCandidates": 0,
+          "treeCandidates": 0,
+          "props": 0,
+          "surfaces": 119,
+          "inferredArea": 0,
+          "inferredFraction": 0,
+          "knownGroundFraction": 0.06414292784431455,
+          "unfilledBeforeFraction": 0.166,
+          "unfilledAfterFraction": 0.166,
+          "coverageSampleSpacing": 12,
+          "coverageSamples": 2500,
+          "markingStrips": 0,
+          "markingPrecisionRetries": 0,
+          "omittedMarkingStrips": 0,
+          "renderedTriangles": 1060,
+          "drawMeshes": 6
+        },
+        "roof": {
+          "tagged": 2,
+          "inferred": 0,
+          "unsupported": 0
+        },
+        "determinism": {
+          "timestampsExcluded": true,
+          "uuidExcluded": true,
+          "worldHashExcludesTiling": true
+        }
+      }
+    },
+    {
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "name": "kyoto-gion-grow-9",
+      "source": "public/data/kyoto-gion.json",
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "seed": 1,
+      "config": {
+        "schemaVersion": 1,
+        "name": "kyoto-gion",
+        "origin": {
+          "lat": 35.00365,
+          "lon": 135.775
+        },
+        "area": {
+          "south": 34.99959380885612,
+          "west": 135.77007034083243,
+          "north": 35.00770619114388,
+          "east": 135.77992965916758
+        },
+        "seed": 1,
+        "source": {
+          "kind": "overpass",
+          "file": "data/source.json"
+        },
+        "generation": {
+          "landscapeEnabled": false,
+          "inferRoofs": false
+        },
+        "tiling": {
+          "sizeMeters": 300
+        },
+        "quality": "balanced",
+        "style": {
+          "id": "comic",
+          "parameters": {}
+        },
+        "landmarks": {
+          "enabled": true,
+          "packages": []
+        }
+      },
+      "inputElements": 7014,
+      "buildMs": 14243.9402,
+      "maxRssKiB": 1439792,
+      "packageBytes": 457683073,
+      "manifestHash": "f68dee9e64b290a20b360fadeb62da17e8be82bfa24c400d98bacbb12d6796d0",
+      "chunks": 9,
+      "features": 6698,
+      "lods": [
+        {
+          "id": "0_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 15915256,
+              "residentBytes": 15770384,
+              "triangles": 101544,
+              "drawCalls": 20
+            },
+            {
+              "id": "medium",
+              "bytes": 27742280,
+              "residentBytes": 26578544,
+              "triangles": 146782,
+              "drawCalls": 1274
+            },
+            {
+              "id": "high",
+              "bytes": 28922348,
+              "residentBytes": 27181506,
+              "triangles": 148830,
+              "drawCalls": 1278
+            }
+          ]
+        },
+        {
+          "id": "1_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 16706672,
+              "residentBytes": 16557846,
+              "triangles": 106350,
+              "drawCalls": 19
+            },
+            {
+              "id": "medium",
+              "bytes": 31593564,
+              "residentBytes": 29792013,
+              "triangles": 155497,
+              "drawCalls": 2058
+            },
+            {
+              "id": "high",
+              "bytes": 33140068,
+              "residentBytes": 30431527,
+              "triangles": 157733,
+              "drawCalls": 2062
+            }
+          ]
+        },
+        {
+          "id": "2_0",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 15513428,
+              "residentBytes": 15333243,
+              "triangles": 101409,
+              "drawCalls": 25
+            },
+            {
+              "id": "medium",
+              "bytes": 23908680,
+              "residentBytes": 22887603,
+              "triangles": 152007,
+              "drawCalls": 1056
+            },
+            {
+              "id": "high",
+              "bytes": 25328940,
+              "residentBytes": 23751433,
+              "triangles": 155967,
+              "drawCalls": 1067
+            }
+          ]
+        },
+        {
+          "id": "0_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 15721496,
+              "residentBytes": 15566112,
+              "triangles": 100036,
+              "drawCalls": 21
+            },
+            {
+              "id": "medium",
+              "bytes": 24580556,
+              "residentBytes": 23608350,
+              "triangles": 130792,
+              "drawCalls": 1020
+            },
+            {
+              "id": "high",
+              "bytes": 25796208,
+              "residentBytes": 24322516,
+              "triangles": 133596,
+              "drawCalls": 1028
+            }
+          ]
+        },
+        {
+          "id": "1_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2878820,
+              "residentBytes": 2719089,
+              "triangles": 20247,
+              "drawCalls": 20
+            },
+            {
+              "id": "medium",
+              "bytes": 17056972,
+              "residentBytes": 15442659,
+              "triangles": 73019,
+              "drawCalls": 1816
+            },
+            {
+              "id": "high",
+              "bytes": 18867576,
+              "residentBytes": 16344409,
+              "triangles": 77447,
+              "drawCalls": 1827
+            }
+          ]
+        },
+        {
+          "id": "2_1",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2052116,
+              "residentBytes": 1856042,
+              "triangles": 21622,
+              "drawCalls": 22
+            },
+            {
+              "id": "medium",
+              "bytes": 7978432,
+              "residentBytes": 7249988,
+              "triangles": 126310,
+              "drawCalls": 674
+            },
+            {
+              "id": "high",
+              "bytes": 8858484,
+              "residentBytes": 7697430,
+              "triangles": 129426,
+              "drawCalls": 685
+            }
+          ]
+        },
+        {
+          "id": "0_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 4992416,
+              "residentBytes": 4842368,
+              "triangles": 32412,
+              "drawCalls": 19
+            },
+            {
+              "id": "medium",
+              "bytes": 14936136,
+              "residentBytes": 13769858,
+              "triangles": 71244,
+              "drawCalls": 1273
+            },
+            {
+              "id": "high",
+              "bytes": 16034440,
+              "residentBytes": 14304068,
+              "triangles": 73556,
+              "drawCalls": 1281
+            }
+          ]
+        },
+        {
+          "id": "1_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2827772,
+              "residentBytes": 2692890,
+              "triangles": 22798,
+              "drawCalls": 20
+            },
+            {
+              "id": "medium",
+              "bytes": 11225928,
+              "residentBytes": 10295028,
+              "triangles": 100086,
+              "drawCalls": 993
+            },
+            {
+              "id": "high",
+              "bytes": 12507096,
+              "residentBytes": 11080174,
+              "triangles": 102870,
+              "drawCalls": 997
+            }
+          ]
+        },
+        {
+          "id": "2_2",
+          "lods": [
+            {
+              "id": "low",
+              "bytes": 2703876,
+              "residentBytes": 2544919,
+              "triangles": 20689,
+              "drawCalls": 17
+            },
+            {
+              "id": "medium",
+              "bytes": 15469324,
+              "residentBytes": 13972594,
+              "triangles": 80720,
+              "drawCalls": 1670
+            },
+            {
+              "id": "high",
+              "bytes": 17123776,
+              "residentBytes": 14785544,
+              "triangles": 85756,
+              "drawCalls": 1684
+            }
+          ]
+        }
+      ],
+      "report": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "diagnostics": [],
+        "hashes": {
+          "config": "7559de83095f8d5a596e8dc6064e86abcd01b86bb36f6f7c69944a090499cc6b",
+          "source": "343a120c2f097a0d5bdd14916ef871245a7281672710438436a237ccb4569455",
+          "world": "83d5e149c3c4cdc4398dd6cdf80132679836a5dff7bc93459654dd2e1570079d"
+        },
+        "counts": {
+          "inputElements": 7014,
+          "features": 6698,
+          "buildings": 3912,
+          "trees": 993,
+          "chunks": 9
+        },
+        "road": {
+          "sourceRoads": 819,
+          "segments": 4970,
+          "driveSegments": 1822,
+          "walkSegments": 3148,
+          "miterJoins": 1547,
+          "bevelJoins": 16,
+          "duplicateSegments": 0,
+          "clippedOverlaps": 16277,
+          "junctions": 224,
+          "crossingExclusions": 86,
+          "dashes": 132,
+          "stopLines": 1,
+          "drivePolygons": 4207,
+          "walkPolygons": 7973,
+          "pavingPolygons": 16281,
+          "surfaceTriangles": 56255,
+          "roadArea": 116864.11033895316,
+          "pavementArea": 57044.11463108199,
+          "observedSidewalkWays": 101,
+          "observedCrossingWays": 48,
+          "inferredMarginWays": 110,
+          "pavementBuildingBlockers": 13718,
+          "gradeSource": "OSM connectivity + inferred layer heights",
+          "gradeOriginalDiscontinuities": 82,
+          "gradeResolvedConnections": 82,
+          "gradeChangedWays": 496,
+          "gradeMaxVehicleSlope": 0.10000000000000037,
+          "gradeSteepVehicleRuns": 1,
+          "gradeCrossingConstraints": 6,
+          "gradeRemainingDiscontinuities": 0,
+          "gradeConstraintIterations": 19,
+          "gradeConstraintConflicts": 0,
+          "gradeAmbiguousCrossings": 0,
+          "stairFlights": 7,
+          "gradeSteepWalkingWays": 119,
+          "gradeMaxWalkingSlope": 0.35000000000000464,
+          "discardedMicroTriangles": 781,
+          "renderedTriangles": 56325,
+          "bridgeWays": 329,
+          "bridgeSegments": 2472,
+          "bridgeDecks": 4920,
+          "bridgePiers": 92,
+          "bridgeSupportCandidates": 191,
+          "bridgeGuardrailSegments": 7123,
+          "bridgeRailInteriorSkipped": 1368,
+          "bridgeRejectedSupports": {
+            "water": 10,
+            "pedestrian-clearance": 23,
+            "outside-deck": 21,
+            "building-clearance": 36,
+            "traffic-clearance": 5,
+            "near-existing-support": 4
+          },
+          "unsupportedBridgeWays": 277,
+          "bridgeHeightSource": "inferred-layer-times-7m",
+          "bridgeGradeConnectionsUnresolved": 0,
+          "bridgeStructureTriangles": 349686,
+          "stairTreads": 88,
+          "stairPosts": 124,
+          "stairTriangles": 5212,
+          "stairSkippedFlights": 0,
+          "stairSteepFlights": 3,
+          "stairHeightSource": "shared-road-grade-inference"
+        },
+        "landscape": {
+          "observedFeatures": 229,
+          "observedSurfaceArea": 71490.26129341999,
+          "inferredSites": 0,
+          "inferredPavedArea": 0,
+          "inferredPlantedArea": 0,
+          "rejectedCandidates": 0,
+          "rejectedGeometry": 0,
+          "templates": {},
+          "layouts": {},
+          "kindAreas": {
+            "parking": 24072.036256370848,
+            "sport": 3063.16512099998,
+            "plaza": 1330.399945277307,
+            "lawn": 1605.9962309537282,
+            "garden": 13078.448812283848,
+            "wood": 22028.45756904945,
+            "park": 6311.757358484865
+          },
+          "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+          "availableTreeCandidates": 0,
+          "availablePropCandidates": 0,
+          "treesByTemplate": {},
+          "commonCandidates": 0,
+          "treeCandidates": 0,
+          "props": 0,
+          "surfaces": 294,
+          "inferredArea": 0,
+          "inferredFraction": 0,
+          "knownGroundFraction": 0.08825958184383324,
+          "unfilledBeforeFraction": 0.19413333333333332,
+          "unfilledAfterFraction": 0.19413333333333332,
+          "coverageSampleSpacing": 12,
+          "coverageSamples": 5625,
+          "markingStrips": 0,
+          "markingPrecisionRetries": 0,
+          "omittedMarkingStrips": 0,
+          "renderedTriangles": 3036,
+          "drawMeshes": 7
+        },
+        "roof": {
+          "tagged": 4,
+          "inferred": 0,
+          "unsupported": 1
+        },
+        "determinism": {
+          "timestampsExcluded": true,
+          "uuidExcluded": true,
+          "worldHashExcludesTiling": true
+        }
+      }
+    }
+  ]
+}

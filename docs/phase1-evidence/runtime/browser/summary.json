@@ -1,0 +1,331 @@
+{
+  "environment": {
+    "date": "2026-11-03T09:04:24.774Z",
+    "commit": "d8cbb9e539180eb30ac069a8af6995eaa6ec5d80",
+    "platform": "win32",
+    "release": "10.0.26300",
+    "arch": "x64",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13600KF",
+    "cpuLogicalCount": 20,
+    "totalMemory": 34163961856,
+    "browserVersion": "153.0.8010.12",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "devicePixelRatio": 1,
+    "quality": "balanced",
+    "seconds": 60,
+    "acceptanceDuration": true,
+    "notes": [
+      "GPU memory is not measurable through WebGL. Resident byte values are estimates and CPU array counts.",
+      "Names prefixed core- use the real A CINK codec and C official styles. Others use the explicitly labelled fixture adapter.",
+      "Frames include every renderer pass, shadows, AO, composite and resolve. GPU timer queries not collected."
+    ]
+  },
+  "results": [
+    {
+      "name": "core-synthetic-fixed-1",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.5,
+      "longFrames50ms": 5,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 719018,
+      "farTriangles": 91934
+    },
+    {
+      "name": "core-synthetic-fixed-4",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.5,
+      "longFrames50ms": 0,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 719018,
+      "farTriangles": 91934
+    },
+    {
+      "name": "core-synthetic-fixed-16",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.5,
+      "longFrames50ms": 0,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 719018,
+      "farTriangles": 91934
+    },
+    {
+      "name": "core-beijing-cbd-fixed-1",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.5,
+      "longFrames50ms": 1,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 7327694,
+      "farTriangles": 2619228
+    },
+    {
+      "name": "core-beijing-cbd-fixed-4",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.5,
+      "longFrames50ms": 4,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 7327688,
+      "farTriangles": 2619222
+    },
+    {
+      "name": "core-beijing-cbd-fixed-16",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.5,
+      "longFrames50ms": 9,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 7092185,
+      "farTriangles": 2512367
+    },
+    {
+      "name": "core-beijing-cbd-grow-1",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.5,
+      "longFrames50ms": 4,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 591244,
+      "farTriangles": 156608
+    },
+    {
+      "name": "core-beijing-cbd-grow-4",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.5,
+      "longFrames50ms": 15,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 2529577,
+      "farTriangles": 795593
+    },
+    {
+      "name": "core-beijing-cbd-grow-9",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.5,
+      "longFrames50ms": 10,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 4835113,
+      "farTriangles": 1617636
+    },
+    {
+      "name": "core-kyoto-gion-fixed-1",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.5,
+      "longFrames50ms": 1,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 6771748,
+      "farTriangles": 3062884
+    },
+    {
+      "name": "core-kyoto-gion-fixed-4",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.5,
+      "longFrames50ms": 4,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 6771748,
+      "farTriangles": 3062884
+    },
+    {
+      "name": "core-kyoto-gion-fixed-16",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.60000000000582,
+      "longFrames50ms": 8,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 6771748,
+      "farTriangles": 3062884
+    },
+    {
+      "name": "core-kyoto-gion-grow-1",
+      "p50": 8.30000000000291,
+      "p95": 8.5,
+      "p99": 16.69999999999709,
+      "longFrames50ms": 32,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 379260,
+      "farTriangles": 82204
+    },
+    {
+      "name": "core-kyoto-gion-grow-4",
+      "p50": 8.30000000000291,
+      "p95": 8.5,
+      "p99": 16.700000000000728,
+      "longFrames50ms": 27,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 1940191,
+      "farTriangles": 772508
+    },
+    {
+      "name": "core-kyoto-gion-grow-9",
+      "p50": 8.30000000000291,
+      "p95": 8.400000000001455,
+      "p99": 8.5,
+      "longFrames50ms": 6,
+      "checks": {
+        "duration": true,
+        "p95": true,
+        "concurrency": true,
+        "farDrawReduction": true,
+        "farResidentReduction": true,
+        "lifecycle": true,
+        "errors": true
+      },
+      "nearTriangles": 5260202,
+      "farTriangles": 2476636
+    }
+  ],
+  "reruns": [
+    {
+      "key": "21ac78e606f88027a47a5bc64793de168a1f73d6:2026-11-03T09:36:16.190Z",
+      "environment": {
+        "date": "2026-11-03T09:36:16.190Z",
+        "commit": "21ac78e606f88027a47a5bc64793de168a1f73d6",
+        "platform": "win32",
+        "release": "10.0.26300",
+        "arch": "x64",
+        "cpu": "13th Gen Intel(R) Core(TM) i5-13600KF",
+        "cpuLogicalCount": 20,
+        "totalMemory": 34163961856,
+        "browserVersion": "153.0.8010.12",
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "devicePixelRatio": 1,
+        "quality": "balanced",
+        "seconds": 60,
+        "acceptanceDuration": true,
+        "notes": [
+          "GPU memory is not measurable through WebGL. Resident byte values are estimates and CPU array counts.",
+          "Names prefixed core- use the real A CINK codec and C official styles. Others use the explicitly labelled fixture adapter.",
+          "Frames include every renderer pass, shadows, AO, composite and resolve. GPU timer queries not collected."
+        ]
+      },
+      "names": [
+        "core-synthetic-fixed-16"
+      ],
+      "reason": "Targeted final-code reproduction / expanded Resource Timing buffer to avoid missing network entries."
+    }
+  ]
+}

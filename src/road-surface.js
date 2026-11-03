@@ -426,7 +426,7 @@ export function buildRoadSurface(data, options = {}) {
   mesh(plan.surfaces.filter(p => p.kind === 'paving'), 'Inferred roadside margins clipped at buildings', '#ddd7c8', 60002);
   mesh(inlay.markings, 'Junction-aware lane paint and inferred stop lines', '#f9f6e9', 60004);
   plan.stats.renderedTriangles = group.children.reduce((n, mesh) => n + mesh.geometry.attributes.position.count / 3, 0);
-  const structures=buildRoadStructures(data,plan);group.add(structures.group);Object.assign(plan.stats,structures.stats);
+  const structures=buildRoadStructures(data,plan);plan.structures=structures.plan;group.add(structures.group);Object.assign(plan.stats,structures.stats);
   const stairs=buildRoadStairs(plan.grades.stairs);group.add(stairs.group);Object.assign(plan.stats,stairs.stats);
   return { group, plan, structures:structures.plan, stats: plan.stats, dispose() { for(const child of group.children)if(child.isMesh)child.geometry.dispose();structures.dispose();stairs.dispose();material.dispose(); } };
 }

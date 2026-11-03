@@ -1,0 +1,5 @@
+{
+  "name": "sweep-mixed-road.mjs",
+  "status": "pass",
+  "stdout": "{\n  \"commit\": \"55862f0a2649fb9289331c9ea19b2325f35f3037\",\n  \"type\": \"road\",\n  \"patterns\": 53,\n  \"failedPatterns\": 0,\n  \"baseline\": [\n    {\n      \"name\": \"all-low\",\n      \"holes\": 0,\n      \"overlaps\": 0\n    },\n    {\n      \"name\": \"all-medium\",\n      \"holes\": 0,\n      \"overlaps\": 0\n    },\n    {\n      \"name\": \"all-high\",\n      \"holes\": 0,\n      \"overlaps\": 0\n    }\n  ],\n  \"maxHoles\": 0,\n  \"maxOverlaps\": 0\n}\n"
+}

@@ -1,0 +1,2244 @@
+{
+  "date": "2026-11-03T09:50:34.364Z",
+  "commit": "024e12a656a6026ec87a554324ed74887213e595",
+  "browser": "153.0.8010.12",
+  "method": "Fresh browser context per sample. firstRenderedAtMs is navigation-origin time after the first geometry-containing whole frame has been submitted; firstRenderedMs/allLoadedMs include the manifest request. These are CPU/browser submission markers, not GPU/display-completion timestamps. Existing runtime.firstUsableMs is the earlier mount-only marker and is not reported as first visible content.",
+  "samples": [
+    {
+      "name": "core-synthetic-fixed-1",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-synthetic-fixed-1/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 2,
+          "unloads": 1,
+          "cancelled": 0,
+          "failures": 0,
+          "fetchedBytes": 5854464,
+          "swaps": 1,
+          "peakConcurrentLoads": 1,
+          "peakEstimatedResidentBytes": 5761040,
+          "geometries": 20,
+          "textures": 0,
+          "materials": 20,
+          "geometryArrayBytes": 4932852,
+          "estimatedResidentBytes": 4932852,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 1,
+          "pendingLoads": 0,
+          "visibleChunks": 1,
+          "missingChunks": [],
+          "visibleIds": [
+            "0_0"
+          ],
+          "levels": {
+            "1": 1
+          },
+          "visibleTriangles": 138842,
+          "sceneDrawCalls": 20,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 88.5
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 9,
+          "windowFrames": 8,
+          "intervalsMs": {
+            "count": 8,
+            "p50": 8.400000000000091,
+            "p95": 449.9,
+            "p99": 449.9,
+            "max": 449.9
+          },
+          "longFrames50ms": 2,
+          "longFrames33ms": 4,
+          "drawCalls": {
+            "count": 8,
+            "p50": 67,
+            "p95": 98,
+            "p99": 98,
+            "max": 98
+          },
+          "triangles": {
+            "count": 8,
+            "p50": 91934,
+            "p95": 693006,
+            "p99": 693006,
+            "max": 693006
+          },
+          "last": {
+            "time": 1208.7,
+            "intervalMs": 8.400000000000091,
+            "drawCalls": 98,
+            "triangles": 693006,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 21,
+            "rendererTextures": 10,
+            "cpuFrameMs": 1.100000023841858,
+            "estimatedResidentBytes": 4932852,
+            "chunks": 1
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 948.0999999046326,
+        "firstRenderedAtMs": 1000.7999999523163,
+        "allLoadedMs": 1152.5999999046326,
+        "loadRequestedAtMs": 52.700000047683716,
+        "diagnostics": [],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 1211.7999999523163,
+      "errors": []
+    },
+    {
+      "name": "core-synthetic-fixed-4",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-synthetic-fixed-4/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 8,
+          "unloads": 4,
+          "cancelled": 0,
+          "failures": 0,
+          "fetchedBytes": 6091608,
+          "swaps": 4,
+          "peakConcurrentLoads": 3,
+          "peakEstimatedResidentBytes": 5670272,
+          "geometries": 39,
+          "textures": 0,
+          "materials": 39,
+          "geometryArrayBytes": 5054652,
+          "estimatedResidentBytes": 5054652,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 4,
+          "pendingLoads": 0,
+          "visibleChunks": 4,
+          "missingChunks": [],
+          "visibleIds": [
+            "0_1",
+            "1_0",
+            "1_1",
+            "0_0"
+          ],
+          "levels": {
+            "1": 4
+          },
+          "visibleTriangles": 138838,
+          "sceneDrawCalls": 38,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 11.199999928474426
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 11,
+          "windowFrames": 10,
+          "intervalsMs": {
+            "count": 10,
+            "p50": 8.399999999999977,
+            "p95": 58.29999999999998,
+            "p99": 58.29999999999998,
+            "max": 58.29999999999998
+          },
+          "longFrames50ms": 1,
+          "longFrames33ms": 1,
+          "drawCalls": {
+            "count": 10,
+            "p50": 139,
+            "p95": 172,
+            "p99": 172,
+            "max": 172
+          },
+          "triangles": {
+            "count": 10,
+            "p50": 491612,
+            "p95": 689854,
+            "p99": 689854,
+            "max": 689854
+          },
+          "last": {
+            "time": 209.3,
+            "intervalMs": 8.400000000000006,
+            "drawCalls": 172,
+            "triangles": 689854,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 39,
+            "rendererTextures": 10,
+            "cpuFrameMs": 1.2000000476837158,
+            "estimatedResidentBytes": 5054652,
+            "chunks": 4
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 99.30000007152557,
+        "firstRenderedAtMs": 136,
+        "allLoadedMs": 167.30000007152557,
+        "loadRequestedAtMs": 36.699999928474426,
+        "diagnostics": [],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 213.60000002384186,
+      "errors": []
+    },
+    {
+      "name": "core-synthetic-fixed-16",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-synthetic-fixed-16/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 32,
+          "unloads": 16,
+          "cancelled": 0,
+          "failures": 0,
+          "fetchedBytes": 6511980,
+          "swaps": 16,
+          "peakConcurrentLoads": 3,
+          "peakEstimatedResidentBytes": 5245268,
+          "geometries": 82,
+          "textures": 0,
+          "materials": 82,
+          "geometryArrayBytes": 5245268,
+          "estimatedResidentBytes": 5245268,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 16,
+          "pendingLoads": 0,
+          "visibleChunks": 16,
+          "missingChunks": [],
+          "visibleIds": [
+            "1_2",
+            "2_2",
+            "3_0",
+            "2_1",
+            "3_1",
+            "2_0",
+            "0_1",
+            "1_1",
+            "2_3",
+            "3_3",
+            "1_3",
+            "3_2",
+            "0_3",
+            "1_0",
+            "0_2",
+            "0_0"
+          ],
+          "levels": {
+            "1": 16
+          },
+          "visibleTriangles": 138838,
+          "sceneDrawCalls": 81,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 12.099999904632568
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 37,
+          "windowFrames": 36,
+          "intervalsMs": {
+            "count": 36,
+            "p50": 8.300000000000011,
+            "p95": 25,
+            "p99": 41.69999999999999,
+            "max": 41.69999999999999
+          },
+          "longFrames50ms": 0,
+          "longFrames33ms": 1,
+          "drawCalls": {
+            "count": 36,
+            "p50": 265,
+            "p95": 361,
+            "p99": 361,
+            "max": 361
+          },
+          "triangles": {
+            "count": 36,
+            "p50": 194110,
+            "p95": 689854,
+            "p99": 689854,
+            "max": 689854
+          },
+          "last": {
+            "time": 412.3,
+            "intervalMs": 8.5,
+            "drawCalls": 361,
+            "triangles": 689854,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 82,
+            "rendererTextures": 10,
+            "cpuFrameMs": 1.899999976158142,
+            "estimatedResidentBytes": 5245268,
+            "chunks": 16
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 66.5,
+        "firstRenderedAtMs": 103.89999997615814,
+        "allLoadedMs": 360.89999997615814,
+        "loadRequestedAtMs": 37.39999997615814,
+        "diagnostics": [],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 416.6999999284744,
+      "errors": []
+    },
+    {
+      "name": "core-beijing-cbd-fixed-1",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-beijing-cbd-fixed-1/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 1,
+          "unloads": 0,
+          "cancelled": 0,
+          "failures": 0,
+          "fetchedBytes": 64340316,
+          "swaps": 0,
+          "peakConcurrentLoads": 1,
+          "peakEstimatedResidentBytes": 68650832,
+          "geometries": 21,
+          "textures": 0,
+          "materials": 21,
+          "geometryArrayBytes": 68650832,
+          "estimatedResidentBytes": 68650832,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 1,
+          "pendingLoads": 0,
+          "visibleChunks": 1,
+          "missingChunks": [],
+          "visibleIds": [
+            "0_0"
+          ],
+          "levels": {
+            "0": 1
+          },
+          "visibleTriangles": 539134,
+          "sceneDrawCalls": 21,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 343.2000000476837
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 22,
+          "windowFrames": 21,
+          "intervalsMs": {
+            "count": 21,
+            "p50": 8.300000000000011,
+            "p95": 16.700000000000003,
+            "p99": 266.70000000000005,
+            "max": 266.70000000000005
+          },
+          "longFrames50ms": 1,
+          "longFrames33ms": 1,
+          "drawCalls": {
+            "count": 21,
+            "p50": 3,
+            "p95": 98,
+            "p99": 98,
+            "max": 98
+          },
+          "triangles": {
+            "count": 21,
+            "p50": 6,
+            "p95": 2619228,
+            "p99": 2619228,
+            "max": 2619228
+          },
+          "last": {
+            "time": 533.1,
+            "intervalMs": 8.399999999999977,
+            "drawCalls": 98,
+            "triangles": 2619228,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 22,
+            "rendererTextures": 10,
+            "cpuFrameMs": 1.0999999046325684,
+            "estimatedResidentBytes": 68650832,
+            "chunks": 1
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 496,
+        "firstRenderedAtMs": 532,
+        "allLoadedMs": 496.10000002384186,
+        "loadRequestedAtMs": 36,
+        "diagnostics": [
+          {
+            "code": "LOD_BUDGET_DOWNGRADE",
+            "stage": "runtime",
+            "message": "Detail was reduced to preserve coverage within the configured resource budget."
+          },
+          {
+            "code": "MEASURED_DRAW_BUDGET",
+            "stage": "runtime",
+            "message": "Whole-frame renderer counters exceed budget; the next schedule reduces geometric detail.",
+            "drawCalls": 98,
+            "triangles": 2619228
+          },
+          {
+            "code": "COVERAGE_EXCEEDS_BUDGET",
+            "stage": "runtime",
+            "message": "Even the coarsest visible coverage exceeds budget. Increase budget or build a smaller supported area.",
+            "totals": {
+              "bytes": 68650832,
+              "triangles": 539134,
+              "calls": 102.02248049649994,
+              "details": 0
+            }
+          }
+        ],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 539,
+      "errors": []
+    },
+    {
+      "name": "core-beijing-cbd-fixed-4",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-beijing-cbd-fixed-4/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 4,
+          "unloads": 0,
+          "cancelled": 0,
+          "failures": 0,
+          "fetchedBytes": 64708912,
+          "swaps": 0,
+          "peakConcurrentLoads": 3,
+          "peakEstimatedResidentBytes": 68671280,
+          "geometries": 77,
+          "textures": 0,
+          "materials": 77,
+          "geometryArrayBytes": 68671280,
+          "estimatedResidentBytes": 68671280,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 4,
+          "pendingLoads": 0,
+          "visibleChunks": 4,
+          "missingChunks": [],
+          "visibleIds": [
+            "1_0",
+            "0_0",
+            "0_1",
+            "1_1"
+          ],
+          "levels": {
+            "0": 4
+          },
+          "visibleTriangles": 539134,
+          "sceneDrawCalls": 77,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 72.70000004768372
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 21,
+          "windowFrames": 20,
+          "intervalsMs": {
+            "count": 20,
+            "p50": 8.399999999999977,
+            "p95": 99.89999999999998,
+            "p99": 116.59999999999997,
+            "max": 116.59999999999997
+          },
+          "longFrames50ms": 3,
+          "longFrames33ms": 4,
+          "drawCalls": {
+            "count": 20,
+            "p50": 79,
+            "p95": 350,
+            "p99": 350,
+            "max": 350
+          },
+          "triangles": {
+            "count": 20,
+            "p50": 304587,
+            "p95": 2619222,
+            "p99": 2619222,
+            "max": 2619222
+          },
+          "last": {
+            "time": 622.8,
+            "intervalMs": 8.399999999999977,
+            "drawCalls": 350,
+            "triangles": 2619222,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 78,
+            "rendererTextures": 10,
+            "cpuFrameMs": 2.200000047683716,
+            "estimatedResidentBytes": 68671280,
+            "chunks": 4
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 269.89999997615814,
+        "firstRenderedAtMs": 314.10000002384186,
+        "allLoadedMs": 562.5999999046326,
+        "loadRequestedAtMs": 44.200000047683716,
+        "diagnostics": [
+          {
+            "code": "LOD_BUDGET_DOWNGRADE",
+            "stage": "runtime",
+            "message": "Detail was reduced to preserve coverage within the configured resource budget."
+          },
+          {
+            "code": "COVERAGE_EXCEEDS_BUDGET",
+            "stage": "runtime",
+            "message": "Even the coarsest visible coverage exceeds budget. Increase budget or build a smaller supported area.",
+            "totals": {
+              "bytes": 70057753,
+              "triangles": 539134,
+              "calls": 367.3401466027629,
+              "details": 0
+            }
+          },
+          {
+            "code": "MEASURED_DRAW_BUDGET",
+            "stage": "runtime",
+            "message": "Whole-frame renderer counters exceed budget; the next schedule reduces geometric detail.",
+            "drawCalls": 264,
+            "triangles": 1690950
+          }
+        ],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 629.5,
+      "errors": []
+    },
+    {
+      "name": "core-beijing-cbd-fixed-16",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-beijing-cbd-fixed-16/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 16,
+          "unloads": 0,
+          "cancelled": 1,
+          "failures": 0,
+          "fetchedBytes": 66021868,
+          "swaps": 0,
+          "peakConcurrentLoads": 3,
+          "peakEstimatedResidentBytes": 68733872,
+          "geometries": 238,
+          "textures": 0,
+          "materials": 238,
+          "geometryArrayBytes": 68733872,
+          "estimatedResidentBytes": 68733872,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 16,
+          "pendingLoads": 0,
+          "visibleChunks": 16,
+          "missingChunks": [],
+          "visibleIds": [
+            "2_3",
+            "1_3",
+            "3_3",
+            "3_2",
+            "1_1",
+            "2_2",
+            "2_1",
+            "3_1",
+            "1_2",
+            "1_0",
+            "0_3",
+            "0_1",
+            "3_0",
+            "0_2",
+            "2_0",
+            "0_0"
+          ],
+          "levels": {
+            "0": 16
+          },
+          "visibleTriangles": 539134,
+          "sceneDrawCalls": 238,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 104.29999995231628
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 35,
+          "windowFrames": 34,
+          "intervalsMs": {
+            "count": 34,
+            "p50": 8.400000000000006,
+            "p95": 49.89999999999998,
+            "p99": 141.7,
+            "max": 141.7
+          },
+          "longFrames50ms": 1,
+          "longFrames33ms": 4,
+          "drawCalls": {
+            "count": 34,
+            "p50": 419,
+            "p95": 1026,
+            "p99": 1026,
+            "max": 1026
+          },
+          "triangles": {
+            "count": 34,
+            "p50": 1338411,
+            "p95": 2498559,
+            "p99": 2498559,
+            "max": 2498559
+          },
+          "last": {
+            "time": 727.8,
+            "intervalMs": 8.299999999999955,
+            "drawCalls": 1026,
+            "triangles": 2498559,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 236,
+            "rendererTextures": 10,
+            "cpuFrameMs": 3.399999976158142,
+            "estimatedResidentBytes": 68733872,
+            "chunks": 16
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 292,
+        "firstRenderedAtMs": 338.60000002384186,
+        "allLoadedMs": 669.6000000238419,
+        "loadRequestedAtMs": 46.60000002384186,
+        "diagnostics": [
+          {
+            "code": "LOD_BUDGET_DOWNGRADE",
+            "stage": "runtime",
+            "message": "Detail was reduced to preserve coverage within the configured resource budget."
+          },
+          {
+            "code": "COVERAGE_EXCEEDS_BUDGET",
+            "stage": "runtime",
+            "message": "Even the coarsest visible coverage exceeds budget. Increase budget or build a smaller supported area.",
+            "totals": {
+              "bytes": 70054381,
+              "triangles": 539134,
+              "calls": 1172.711558854719,
+              "details": 0
+            }
+          },
+          {
+            "code": "MEASURED_DRAW_BUDGET",
+            "stage": "runtime",
+            "message": "Whole-frame renderer counters exceed budget; the next schedule reduces geometric detail.",
+            "drawCalls": 267,
+            "triangles": 987716
+          }
+        ],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 735.5,
+      "errors": []
+    },
+    {
+      "name": "core-beijing-cbd-grow-1",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-beijing-cbd-grow-1/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 2,
+          "unloads": 1,
+          "cancelled": 0,
+          "failures": 0,
+          "fetchedBytes": 12768028,
+          "swaps": 1,
+          "peakConcurrentLoads": 1,
+          "peakEstimatedResidentBytes": 12716564,
+          "geometries": 32,
+          "textures": 0,
+          "materials": 43,
+          "geometryArrayBytes": 9437628,
+          "estimatedResidentBytes": 9437628,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 1,
+          "pendingLoads": 0,
+          "visibleChunks": 1,
+          "missingChunks": [],
+          "visibleIds": [
+            "0_0"
+          ],
+          "levels": {
+            "2": 1
+          },
+          "visibleTriangles": 118757,
+          "sceneDrawCalls": 43,
+          "nearDetails": 442,
+          "settled": true,
+          "firstUsableMs": 39.10000002384186
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 9,
+          "windowFrames": 8,
+          "intervalsMs": {
+            "count": 8,
+            "p50": 8.399999999999977,
+            "p95": 108.30000000000001,
+            "p99": 108.30000000000001,
+            "max": 108.30000000000001
+          },
+          "longFrames50ms": 2,
+          "longFrames33ms": 2,
+          "drawCalls": {
+            "count": 8,
+            "p50": 74,
+            "p95": 210,
+            "p99": 210,
+            "max": 210
+          },
+          "triangles": {
+            "count": 8,
+            "p50": 156608,
+            "p95": 591244,
+            "p99": 591244,
+            "max": 591244
+          },
+          "last": {
+            "time": 339,
+            "intervalMs": 8.399999999999977,
+            "drawCalls": 210,
+            "triangles": 591244,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 33,
+            "rendererTextures": 10,
+            "cpuFrameMs": 2.5,
+            "estimatedResidentBytes": 9437628,
+            "chunks": 1
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 165.70000004768372,
+        "firstRenderedAtMs": 214,
+        "allLoadedMs": 289.2000000476837,
+        "loadRequestedAtMs": 48.299999952316284,
+        "diagnostics": [],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 346.89999997615814,
+      "errors": []
+    },
+    {
+      "name": "core-beijing-cbd-grow-4",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-beijing-cbd-grow-4/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 4,
+          "unloads": 0,
+          "cancelled": 1,
+          "failures": 0,
+          "fetchedBytes": 18586692,
+          "swaps": 0,
+          "peakConcurrentLoads": 3,
+          "peakEstimatedResidentBytes": 19610216,
+          "geometries": 65,
+          "textures": 0,
+          "materials": 65,
+          "geometryArrayBytes": 19610216,
+          "estimatedResidentBytes": 19610216,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 4,
+          "pendingLoads": 0,
+          "visibleChunks": 4,
+          "missingChunks": [],
+          "visibleIds": [
+            "1_0",
+            "1_1",
+            "0_0",
+            "0_1"
+          ],
+          "levels": {
+            "0": 4
+          },
+          "visibleTriangles": 163406,
+          "sceneDrawCalls": 65,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 27.300000071525574
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 14,
+          "windowFrames": 13,
+          "intervalsMs": {
+            "count": 13,
+            "p50": 8.399999999999991,
+            "p95": 91.69999999999999,
+            "p99": 91.69999999999999,
+            "max": 91.69999999999999
+          },
+          "longFrames50ms": 1,
+          "longFrames33ms": 3,
+          "drawCalls": {
+            "count": 13,
+            "p50": 202,
+            "p95": 292,
+            "p99": 292,
+            "max": 292
+          },
+          "triangles": {
+            "count": 13,
+            "p50": 438579,
+            "p95": 795593,
+            "p99": 795593,
+            "max": 795593
+          },
+          "last": {
+            "time": 347.5,
+            "intervalMs": 33.39999999999998,
+            "drawCalls": 292,
+            "triangles": 795593,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 66,
+            "rendererTextures": 10,
+            "cpuFrameMs": 1.3000000715255737,
+            "estimatedResidentBytes": 19610216,
+            "chunks": 4
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 171.20000004768372,
+        "firstRenderedAtMs": 216.60000002384186,
+        "allLoadedMs": 306.39999997615814,
+        "loadRequestedAtMs": 45.39999997615814,
+        "diagnostics": [
+          {
+            "code": "LOD_BUDGET_DOWNGRADE",
+            "stage": "runtime",
+            "message": "Detail was reduced to preserve coverage within the configured resource budget."
+          }
+        ],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 355.89999997615814,
+      "errors": []
+    },
+    {
+      "name": "core-beijing-cbd-grow-9",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-beijing-cbd-grow-9/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 9,
+          "unloads": 0,
+          "cancelled": 1,
+          "failures": 0,
+          "fetchedBytes": 38998608,
+          "swaps": 0,
+          "peakConcurrentLoads": 3,
+          "peakEstimatedResidentBytes": 40948976,
+          "geometries": 129,
+          "textures": 0,
+          "materials": 129,
+          "geometryArrayBytes": 40948976,
+          "estimatedResidentBytes": 40948976,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 9,
+          "pendingLoads": 0,
+          "visibleChunks": 9,
+          "missingChunks": [],
+          "visibleIds": [
+            "1_1",
+            "2_2",
+            "1_2",
+            "2_1",
+            "1_0",
+            "0_1",
+            "0_2",
+            "2_0",
+            "0_0"
+          ],
+          "levels": {
+            "0": 9
+          },
+          "visibleTriangles": 332769,
+          "sceneDrawCalls": 129,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 95.60000002384186
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 26,
+          "windowFrames": 25,
+          "intervalsMs": {
+            "count": 25,
+            "p50": 8.399999999999977,
+            "p95": 33.30000000000001,
+            "p99": 133.4,
+            "max": 133.4
+          },
+          "longFrames50ms": 1,
+          "longFrames33ms": 2,
+          "drawCalls": {
+            "count": 25,
+            "p50": 283,
+            "p95": 579,
+            "p99": 579,
+            "max": 579
+          },
+          "triangles": {
+            "count": 25,
+            "p50": 778419,
+            "p95": 1617636,
+            "p99": 1617636,
+            "max": 1617636
+          },
+          "last": {
+            "time": 516.8,
+            "intervalMs": 8.399999999999977,
+            "drawCalls": 579,
+            "triangles": 1617636,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 130,
+            "rendererTextures": 10,
+            "cpuFrameMs": 2.1999999284744263,
+            "estimatedResidentBytes": 40948976,
+            "chunks": 9
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 251.39999997615814,
+        "firstRenderedAtMs": 294,
+        "allLoadedMs": 451.2000000476837,
+        "loadRequestedAtMs": 42.60000002384186,
+        "diagnostics": [
+          {
+            "code": "LOD_BUDGET_DOWNGRADE",
+            "stage": "runtime",
+            "message": "Detail was reduced to preserve coverage within the configured resource budget."
+          },
+          {
+            "code": "COVERAGE_EXCEEDS_BUDGET",
+            "stage": "runtime",
+            "message": "Even the coarsest visible coverage exceeds budget. Increase budget or build a smaller supported area.",
+            "totals": {
+              "bytes": 41752813,
+              "triangles": 332769,
+              "calls": 634.9150602052316,
+              "details": 0
+            }
+          },
+          {
+            "code": "MEASURED_DRAW_BUDGET",
+            "stage": "runtime",
+            "message": "Whole-frame renderer counters exceed budget; the next schedule reduces geometric detail.",
+            "drawCalls": 392,
+            "triangles": 1031741
+          }
+        ],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 524.2000000476837,
+      "errors": []
+    },
+    {
+      "name": "core-kyoto-gion-fixed-1",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-kyoto-gion-fixed-1/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 1,
+          "unloads": 0,
+          "cancelled": 0,
+          "failures": 0,
+          "fetchedBytes": 92871140,
+          "swaps": 0,
+          "peakConcurrentLoads": 1,
+          "peakEstimatedResidentBytes": 99437308,
+          "geometries": 25,
+          "textures": 0,
+          "materials": 25,
+          "geometryArrayBytes": 99437308,
+          "estimatedResidentBytes": 99437308,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 1,
+          "pendingLoads": 0,
+          "visibleChunks": 1,
+          "missingChunks": [],
+          "visibleIds": [
+            "0_0"
+          ],
+          "levels": {
+            "0": 1
+          },
+          "visibleTriangles": 643417,
+          "sceneDrawCalls": 25,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 521.7999999523163
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 34,
+          "windowFrames": 33,
+          "intervalsMs": {
+            "count": 33,
+            "p50": 8.300000000000011,
+            "p95": 16.600000000000023,
+            "p99": 383.3,
+            "max": 383.3
+          },
+          "longFrames50ms": 1,
+          "longFrames33ms": 1,
+          "drawCalls": {
+            "count": 33,
+            "p50": 3,
+            "p95": 114,
+            "p99": 114,
+            "max": 114
+          },
+          "triangles": {
+            "count": 33,
+            "p50": 6,
+            "p95": 3062884,
+            "p99": 3062884,
+            "max": 3062884
+          },
+          "last": {
+            "time": 773,
+            "intervalMs": 8.399999999999977,
+            "drawCalls": 114,
+            "triangles": 3062884,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 26,
+            "rendererTextures": 10,
+            "cpuFrameMs": 1.2000000476837158,
+            "estimatedResidentBytes": 99437308,
+            "chunks": 1
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 727.5,
+        "firstRenderedAtMs": 770.8999999761581,
+        "allLoadedMs": 727.7000000476837,
+        "loadRequestedAtMs": 43.39999997615814,
+        "diagnostics": [
+          {
+            "code": "LOD_BUDGET_DOWNGRADE",
+            "stage": "runtime",
+            "message": "Detail was reduced to preserve coverage within the configured resource budget."
+          },
+          {
+            "code": "COVERAGE_EXCEEDS_BUDGET",
+            "stage": "runtime",
+            "message": "Even the coarsest visible coverage exceeds budget. Increase budget or build a smaller supported area.",
+            "totals": {
+              "bytes": 101584138,
+              "triangles": 643417,
+              "calls": 25,
+              "details": 0
+            }
+          },
+          {
+            "code": "MEASURED_DRAW_BUDGET",
+            "stage": "runtime",
+            "message": "Whole-frame renderer counters exceed budget; the next schedule reduces geometric detail.",
+            "drawCalls": 114,
+            "triangles": 3062884
+          }
+        ],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 778.1999999284744,
+      "errors": []
+    },
+    {
+      "name": "core-kyoto-gion-fixed-4",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-kyoto-gion-fixed-4/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 4,
+          "unloads": 0,
+          "cancelled": 0,
+          "failures": 0,
+          "fetchedBytes": 93508080,
+          "swaps": 0,
+          "peakConcurrentLoads": 3,
+          "peakEstimatedResidentBytes": 99462556,
+          "geometries": 95,
+          "textures": 0,
+          "materials": 95,
+          "geometryArrayBytes": 99462556,
+          "estimatedResidentBytes": 99462556,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 4,
+          "pendingLoads": 0,
+          "visibleChunks": 4,
+          "missingChunks": [],
+          "visibleIds": [
+            "1_1",
+            "0_1",
+            "1_0",
+            "0_0"
+          ],
+          "levels": {
+            "0": 4
+          },
+          "visibleTriangles": 643417,
+          "sceneDrawCalls": 95,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 84.70000004768372
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 25,
+          "windowFrames": 24,
+          "intervalsMs": {
+            "count": 24,
+            "p50": 8.300000000000011,
+            "p95": 124.80000000000007,
+            "p99": 125,
+            "max": 125
+          },
+          "longFrames50ms": 4,
+          "longFrames33ms": 4,
+          "drawCalls": {
+            "count": 24,
+            "p50": 110,
+            "p95": 427,
+            "p99": 427,
+            "max": 427
+          },
+          "triangles": {
+            "count": 24,
+            "p50": 265319,
+            "p95": 3062884,
+            "p99": 3062884,
+            "max": 3062884
+          },
+          "last": {
+            "time": 732.2,
+            "intervalMs": 124.80000000000007,
+            "drawCalls": 427,
+            "triangles": 3062884,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 96,
+            "rendererTextures": 10,
+            "cpuFrameMs": 1.899999976158142,
+            "estimatedResidentBytes": 99462556,
+            "chunks": 4
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 266.7999999523163,
+        "firstRenderedAtMs": 311.7999999523163,
+        "allLoadedMs": 687.3999999761581,
+        "loadRequestedAtMs": 45,
+        "diagnostics": [
+          {
+            "code": "LOD_BUDGET_DOWNGRADE",
+            "stage": "runtime",
+            "message": "Detail was reduced to preserve coverage within the configured resource budget."
+          },
+          {
+            "code": "COVERAGE_EXCEEDS_BUDGET",
+            "stage": "runtime",
+            "message": "Even the coarsest visible coverage exceeds budget. Increase budget or build a smaller supported area.",
+            "totals": {
+              "bytes": 101609167,
+              "triangles": 643417,
+              "calls": 95,
+              "details": 0
+            }
+          },
+          {
+            "code": "MEASURED_DRAW_BUDGET",
+            "stage": "runtime",
+            "message": "Whole-frame renderer counters exceed budget; the next schedule reduces geometric detail.",
+            "drawCalls": 320,
+            "triangles": 1954549
+          }
+        ],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 739,
+      "errors": []
+    },
+    {
+      "name": "core-kyoto-gion-fixed-16",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-kyoto-gion-fixed-16/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 16,
+          "unloads": 0,
+          "cancelled": 0,
+          "failures": 0,
+          "fetchedBytes": 95522524,
+          "swaps": 0,
+          "peakConcurrentLoads": 3,
+          "peakEstimatedResidentBytes": 99537148,
+          "geometries": 273,
+          "textures": 0,
+          "materials": 273,
+          "geometryArrayBytes": 99537148,
+          "estimatedResidentBytes": 99537148,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 16,
+          "pendingLoads": 0,
+          "visibleChunks": 16,
+          "missingChunks": [],
+          "visibleIds": [
+            "3_3",
+            "2_3",
+            "0_1",
+            "0_2",
+            "1_3",
+            "3_2",
+            "2_2",
+            "0_3",
+            "2_1",
+            "3_1",
+            "1_2",
+            "3_0",
+            "1_0",
+            "1_1",
+            "0_0",
+            "2_0"
+          ],
+          "levels": {
+            "0": 16
+          },
+          "visibleTriangles": 643417,
+          "sceneDrawCalls": 273,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 34.60000002384186
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 43,
+          "windowFrames": 42,
+          "intervalsMs": {
+            "count": 42,
+            "p50": 8.399999999999977,
+            "p95": 66.70000000000005,
+            "p99": 100,
+            "max": 100
+          },
+          "longFrames50ms": 3,
+          "longFrames33ms": 6,
+          "drawCalls": {
+            "count": 42,
+            "p50": 773,
+            "p95": 1212,
+            "p99": 1212,
+            "max": 1212
+          },
+          "triangles": {
+            "count": 42,
+            "p50": 1387615,
+            "p95": 3062884,
+            "p99": 3062884,
+            "max": 3062884
+          },
+          "last": {
+            "time": 884.7,
+            "intervalMs": 8.400000000000091,
+            "drawCalls": 1212,
+            "triangles": 3062884,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 274,
+            "rendererTextures": 10,
+            "cpuFrameMs": 7.300000071525574,
+            "estimatedResidentBytes": 99537148,
+            "chunks": 16
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 205.70000004768372,
+        "firstRenderedAtMs": 251.20000004768372,
+        "allLoadedMs": 816.8000000715256,
+        "loadRequestedAtMs": 45.5,
+        "diagnostics": [
+          {
+            "code": "LOD_BUDGET_DOWNGRADE",
+            "stage": "runtime",
+            "message": "Detail was reduced to preserve coverage within the configured resource budget."
+          },
+          {
+            "code": "COVERAGE_EXCEEDS_BUDGET",
+            "stage": "runtime",
+            "message": "Even the coarsest visible coverage exceeds budget. Increase budget or build a smaller supported area.",
+            "totals": {
+              "bytes": 101683146,
+              "triangles": 643417,
+              "calls": 273,
+              "details": 0
+            }
+          },
+          {
+            "code": "MEASURED_DRAW_BUDGET",
+            "stage": "runtime",
+            "message": "Whole-frame renderer counters exceed budget; the next schedule reduces geometric detail.",
+            "drawCalls": 450,
+            "triangles": 931864
+          }
+        ],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 893.1000000238419,
+      "errors": []
+    },
+    {
+      "name": "core-kyoto-gion-grow-1",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-kyoto-gion-grow-1/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 1,
+          "unloads": 0,
+          "cancelled": 1,
+          "failures": 0,
+          "fetchedBytes": 2613124,
+          "swaps": 0,
+          "peakConcurrentLoads": 1,
+          "peakEstimatedResidentBytes": 18902364,
+          "geometries": 15,
+          "textures": 0,
+          "materials": 15,
+          "geometryArrayBytes": 2756564,
+          "estimatedResidentBytes": 2756564,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 1,
+          "pendingLoads": 0,
+          "visibleChunks": 1,
+          "missingChunks": [],
+          "visibleIds": [
+            "0_0"
+          ],
+          "levels": {
+            "0": 1
+          },
+          "visibleTriangles": 19533,
+          "sceneDrawCalls": 15,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 32.89999997615814
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 6,
+          "windowFrames": 5,
+          "intervalsMs": {
+            "count": 5,
+            "p50": 8.299999999999997,
+            "p95": 100.10000000000001,
+            "p99": 100.10000000000001,
+            "max": 100.10000000000001
+          },
+          "longFrames50ms": 1,
+          "longFrames33ms": 1,
+          "drawCalls": {
+            "count": 5,
+            "p50": 69,
+            "p95": 69,
+            "p99": 69,
+            "max": 69
+          },
+          "triangles": {
+            "count": 5,
+            "p50": 82204,
+            "p95": 82204,
+            "p99": 82204,
+            "max": 82204
+          },
+          "last": {
+            "time": 216.5,
+            "intervalMs": 8.199999999999989,
+            "drawCalls": 69,
+            "triangles": 82204,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 16,
+            "rendererTextures": 10,
+            "cpuFrameMs": 1.2999999523162842,
+            "estimatedResidentBytes": 2756564,
+            "chunks": 1
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 168.39999997615814,
+        "firstRenderedAtMs": 213.10000002384186,
+        "allLoadedMs": 175.79999995231628,
+        "loadRequestedAtMs": 44.700000047683716,
+        "diagnostics": [
+          {
+            "code": "LOD_BUDGET_DOWNGRADE",
+            "stage": "runtime",
+            "message": "Detail was reduced to preserve coverage within the configured resource budget."
+          }
+        ],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 223.10000002384186,
+      "errors": []
+    },
+    {
+      "name": "core-kyoto-gion-grow-4",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-kyoto-gion-grow-4/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 4,
+          "unloads": 0,
+          "cancelled": 1,
+          "failures": 0,
+          "fetchedBytes": 24419056,
+          "swaps": 0,
+          "peakConcurrentLoads": 3,
+          "peakEstimatedResidentBytes": 25922980,
+          "geometries": 66,
+          "textures": 0,
+          "materials": 66,
+          "geometryArrayBytes": 25922980,
+          "estimatedResidentBytes": 25922980,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 4,
+          "pendingLoads": 0,
+          "visibleChunks": 4,
+          "missingChunks": [],
+          "visibleIds": [
+            "1_1",
+            "0_1",
+            "1_0",
+            "0_0"
+          ],
+          "levels": {
+            "0": 4
+          },
+          "visibleTriangles": 166988,
+          "sceneDrawCalls": 66,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 43.200000047683716
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 16,
+          "windowFrames": 15,
+          "intervalsMs": {
+            "count": 15,
+            "p50": 8.300000000000011,
+            "p95": 100,
+            "p99": 100,
+            "max": 100
+          },
+          "longFrames50ms": 1,
+          "longFrames33ms": 3,
+          "drawCalls": {
+            "count": 15,
+            "p50": 223,
+            "p95": 294,
+            "p99": 294,
+            "max": 294
+          },
+          "triangles": {
+            "count": 15,
+            "p50": 356371,
+            "p95": 772508,
+            "p99": 772508,
+            "max": 772508
+          },
+          "last": {
+            "time": 393.1,
+            "intervalMs": 8.300000000000011,
+            "drawCalls": 294,
+            "triangles": 772508,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 67,
+            "rendererTextures": 10,
+            "cpuFrameMs": 1.3000000715255737,
+            "estimatedResidentBytes": 25922980,
+            "chunks": 4
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 189.79999995231628,
+        "firstRenderedAtMs": 233.59999990463257,
+        "allLoadedMs": 346,
+        "loadRequestedAtMs": 43.799999952316284,
+        "diagnostics": [
+          {
+            "code": "LOD_BUDGET_DOWNGRADE",
+            "stage": "runtime",
+            "message": "Detail was reduced to preserve coverage within the configured resource budget."
+          }
+        ],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 397.39999997615814,
+      "errors": []
+    },
+    {
+      "name": "core-kyoto-gion-grow-9",
+      "stats": {
+        "schemaVersion": 1,
+        "manifestUrl": "http://127.0.0.1:5187/work/runtime-fixtures/core-kyoto-gion-grow-9/manifest.json",
+        "quality": "balanced",
+        "budget": {
+          "residentBytes": 100663296,
+          "visibleTriangles": 900000,
+          "drawCalls": 1500,
+          "concurrentLoads": 3,
+          "pixelRatio": 1,
+          "nearDetails": 18000,
+          "shadowQuality": 1,
+          "aoQuality": 1,
+          "hysteresis": 0.18,
+          "minResidenceMs": 700,
+          "unloadDelayMs": 350,
+          "prefetchMargin": 0.15
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "pixelRatio": 1,
+          "devicePixelRatio": 1
+        },
+        "runtime": {
+          "loads": 9,
+          "unloads": 0,
+          "cancelled": 1,
+          "failures": 0,
+          "fetchedBytes": 77408520,
+          "swaps": 0,
+          "peakConcurrentLoads": 3,
+          "peakEstimatedResidentBytes": 81798084,
+          "geometries": 157,
+          "textures": 0,
+          "materials": 157,
+          "geometryArrayBytes": 81798084,
+          "estimatedResidentBytes": 81798084,
+          "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+          "currentChunks": 9,
+          "pendingLoads": 0,
+          "visibleChunks": 9,
+          "missingChunks": [],
+          "visibleIds": [
+            "2_2",
+            "2_1",
+            "1_2",
+            "0_2",
+            "0_1",
+            "1_0",
+            "0_0",
+            "1_1",
+            "2_0"
+          ],
+          "levels": {
+            "0": 9
+          },
+          "visibleTriangles": 521407,
+          "sceneDrawCalls": 157,
+          "nearDetails": 0,
+          "settled": true,
+          "firstUsableMs": 46.5
+        },
+        "nearAttachments": {
+          "geometries": 0,
+          "textures": 0,
+          "materials": 0,
+          "geometryArrayBytes": 0,
+          "triangles": 0,
+          "drawCalls": 0,
+          "nearDetails": 0,
+          "frames": 0,
+          "crownClusters": 0,
+          "branches": 0,
+          "profiles": 0
+        },
+        "rendering": {
+          "frameCount": 33,
+          "windowFrames": 32,
+          "intervalsMs": {
+            "count": 32,
+            "p50": 8.399999999999977,
+            "p95": 74.90000000000003,
+            "p99": 100.19999999999999,
+            "max": 100.19999999999999
+          },
+          "longFrames50ms": 5,
+          "longFrames33ms": 5,
+          "drawCalls": {
+            "count": 32,
+            "p50": 299,
+            "p95": 702,
+            "p99": 702,
+            "max": 702
+          },
+          "triangles": {
+            "count": 32,
+            "p50": 424373,
+            "p95": 2476636,
+            "p99": 2476636,
+            "max": 2476636
+          },
+          "last": {
+            "time": 754.3,
+            "intervalMs": 8.399999999999977,
+            "drawCalls": 702,
+            "triangles": 2476636,
+            "lines": 0,
+            "points": 0,
+            "rendererGeometries": 158,
+            "rendererTextures": 10,
+            "cpuFrameMs": 2.299999952316284,
+            "estimatedResidentBytes": 81798084,
+            "chunks": 9
+          },
+          "gpuTime": {
+            "available": false,
+            "reason": "GPU timer queries are not collected; frame intervals are wall-clock requestAnimationFrame intervals."
+          }
+        },
+        "firstRenderedMs": 208.69999992847443,
+        "firstRenderedAtMs": 253.89999997615814,
+        "allLoadedMs": 702.7999999523163,
+        "loadRequestedAtMs": 45.200000047683716,
+        "diagnostics": [
+          {
+            "code": "LOD_BUDGET_DOWNGRADE",
+            "stage": "runtime",
+            "message": "Detail was reduced to preserve coverage within the configured resource budget."
+          },
+          {
+            "code": "COVERAGE_EXCEEDS_BUDGET",
+            "stage": "runtime",
+            "message": "Even the coarsest visible coverage exceeds budget. Increase budget or build a smaller supported area.",
+            "totals": {
+              "bytes": 83503408,
+              "triangles": 521407,
+              "calls": 672.8571428571429,
+              "details": 0
+            }
+          },
+          {
+            "code": "MEASURED_DRAW_BUDGET",
+            "stage": "runtime",
+            "message": "Whole-frame renderer counters exceed budget; the next schedule reduces geometric detail.",
+            "drawCalls": 381,
+            "triangles": 904749
+          }
+        ],
+        "disposed": false,
+        "paused": false,
+        "userPaused": false,
+        "lodMode": "auto"
+      },
+      "scripts": [
+        "http://127.0.0.1:5187/assets/index-VJBCMNA6.js"
+      ],
+      "observedAtMs": 759.1000000238419,
+      "errors": []
+    }
+  ]
+}

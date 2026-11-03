@@ -1,0 +1,116 @@
+{
+  "date": "2026-11-03",
+  "notes": [
+    "Sequential bounded small requests; no 429 endpoint rotation.",
+    "Diagnostic probes are separate from formal-provider-results.json official CLI success.",
+    "Global default POST still failed; Europe provider success does not establish global availability."
+  ],
+  "observations": [
+    {
+      "file": "private-coffee-probe.json",
+      "date": "2026-11-03T12:22:19.274Z",
+      "endpoint": "https://overpass.private.coffee/api/interpreter",
+      "area": {
+        "south": 39.9112,
+        "west": 116.4598,
+        "north": 39.9118,
+        "east": 116.4607
+      },
+      "status": "failed",
+      "elapsedMs": 76118,
+      "code": "TIMEOUT",
+      "message": "Request timed out."
+    },
+    {
+      "file": "vk-probe.json",
+      "date": "2026-11-03T12:22:32.444Z",
+      "endpoint": "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+      "area": {
+        "south": 39.9112,
+        "west": 116.4598,
+        "north": 39.9118,
+        "east": 116.4607
+      },
+      "status": "failed",
+      "elapsedMs": 3909,
+      "code": "HTTP_ERROR",
+      "message": "Source returned HTTP 504."
+    },
+    {
+      "file": "europe-probe.json",
+      "date": "2026-11-03T12:23:12.370Z",
+      "endpoint": "https://ovp.dresel.systems/api/interpreter",
+      "transport": "get",
+      "area": {
+        "south": 48.137,
+        "west": 11.575,
+        "north": 48.1375,
+        "east": 11.576
+      },
+      "status": "succeeded",
+      "elapsedMs": 8951,
+      "elements": 1111,
+      "osm3s": {
+        "timestamp_osm_base": "2026-11-02T21:21:26Z",
+        "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+      }
+    },
+    {
+      "file": "vk-get-probe.json",
+      "date": "2026-11-03T12:24:02.211Z",
+      "endpoint": "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+      "transport": "get",
+      "area": {
+        "south": 39.9112,
+        "west": 116.4598,
+        "north": 39.9118,
+        "east": 116.4607
+      },
+      "status": "succeeded",
+      "elapsedMs": 19506,
+      "elements": 1,
+      "osm3s": {
+        "timestamp_osm_base": "2026-11-03T12:21:51Z",
+        "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+      }
+    },
+    {
+      "file": "formal-cli-vk-failure.json",
+      "recordedAt": "2026-11-03T12:32:11.938Z",
+      "status": "failed",
+      "source": {
+        "kind": "overpass",
+        "file": "data/source.json",
+        "endpoint": "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+        "transport": "get"
+      },
+      "area": {
+        "south": 39.9109,
+        "west": 116.4595,
+        "north": 39.9122,
+        "east": 116.4615
+      },
+      "diagnostics": [
+        {
+          "code": "HTTP_ERROR",
+          "stage": "download",
+          "message": "Source returned HTTP 504.",
+          "hint": "Select a reachable or self-hosted endpoint (--endpoint URL --transport get|post).",
+          "httpStatus": 504,
+          "endpoint": "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+          "sourceAttempts": [
+            {
+              "endpoint": "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+              "transport": "get",
+              "status": "failed",
+              "code": "HTTP_ERROR",
+              "httpStatus": 504,
+              "elapsedMs": 11761
+            }
+          ]
+        }
+      ],
+      "elapsedMs": 11899
+    }
+  ]
+}

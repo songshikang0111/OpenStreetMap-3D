@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-03",
+  "implementationCommit": "664dfd2feeb90533b4a5243f7e891e6fd0a3d283",
+  "workingState": "Probes during the initial implementation/review iteration; final code retains the same default endpoint, query v1 and bounded request semantics. No live success is claimed for later commits.",
+  "environment": {"platform": "win32", "node": "v22.11.0"},
+  "area": {"south":39.9025,"west":116.4673,"north":39.903,"east":116.468},
+  "queryVersion": 1,
+  "attempts": [
+    {"endpoint":"https://overpass-api.de/api/interpreter","transport":"POST","retries":0,"timeoutMs":25000,"status":"failed","code":"HTTP_ERROR","httpStatus":502,"cacheWritten":false},
+    {"endpoint":"https://overpass-api.de/api/interpreter","transport":"GET with encoded identical query","retries":0,"timeoutMs":25000,"status":"failed","code":"HTTP_ERROR","httpStatus":502,"cacheWritten":false},
+    {"endpoint":"https://overpass.kumi.systems/api/interpreter","transport":"POST, explicitly selected source after 502, not 429 fallback","retries":0,"timeoutMs":25000,"status":"failed","code":"TIMEOUT","cacheWritten":false}
+  ],
+  "result":"No live download succeeded. AC04 live requirement is failed; deterministic source/429/timeout/cache tests passed separately.",
+  "policyReferencesChecked": ["https://photon.komoot.io/", "https://dev.overpass-api.de/overpass-doc/en/preface/commons.html"]
+}

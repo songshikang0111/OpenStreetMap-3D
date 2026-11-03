@@ -1,0 +1,11 @@
+{
+  "commit": "e5a7de48b92c10707ec3de3fb63e881a94b5def7",
+  "mainSource": "e5a7de4:studio/main.js",
+  "scope": "Actual Studio pollJob/preview/web click handler in Node VM; DOM/API/engine are controlled fixtures. No GPU/browser.",
+  "sequence": "build succeeds -> preview waits whenIdle -> enabled Web click -> export job fails -> original preview becomes idle",
+  "failedStatus": "export-web · failed · ",
+  "finalStatus": "场景已加载；拖动旋转，滚轮缩放，右键平移。",
+  "jobStatus": "failed",
+  "failedStatusPreserved": false,
+  "diagnostics": "{\n  \"diagnostics\": [\n    {\n      \"message\": \"Injected export failure\"\n    }\n  ],\n  \"artifacts\": []\n}"
+}

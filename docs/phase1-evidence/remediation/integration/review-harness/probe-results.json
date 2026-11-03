@@ -1,0 +1,124 @@
+{
+  "date": "2026-11-03T12:53:24.556Z",
+  "reviewedHead": "758782644c4dfc400cedd370eb64edb95bce2734",
+  "harnessCommit": "c7a4542",
+  "mode": "Pure assessment tests of preserved real browser raw; adversarial records are explicit data-integrity probes, not new hardware measurements",
+  "historicalHashes": {
+    "beijing-cbd-grow-4": "17dd762c8bbc01554b0c7db6a226718c1368bd048f523103c6f7107285ec8740",
+    "kyoto-gion-grow-1": "7fb907b223454c75141fc86d97a706b1cd0d4b409d3ba2ddc9025293d64606d5",
+    "beijing-cbd-grow-1": "43def67f0c37ef7be8ab1322a305bab6ede6b759954e6ccc805f11a4ecb9ed65"
+  },
+  "historicalRejection": [
+    {
+      "name": "beijing-cbd-grow-4",
+      "checks": {
+        "defaultBudget": true,
+        "viewport": true,
+        "duration": true,
+        "frames": true,
+        "completeSamples": true,
+        "p95": true,
+        "errors": true,
+        "gpuTiming": true,
+        "concurrency": true,
+        "drawingTriangles": false,
+        "drawingCalls": true,
+        "farGeometry": true,
+        "farTriangles": true,
+        "farDraws": true,
+        "unloads": true,
+        "lifecycleStable": true,
+        "residentBudget": true,
+        "gpuQueriesBounded": true,
+        "stationary": true
+      },
+      "maxTriangles": 810569,
+      "maxDrawCalls": 368
+    },
+    {
+      "name": "kyoto-gion-grow-1",
+      "checks": {
+        "defaultBudget": true,
+        "viewport": true,
+        "duration": true,
+        "frames": true,
+        "completeSamples": true,
+        "p95": true,
+        "errors": true,
+        "gpuTiming": true,
+        "concurrency": true,
+        "drawingTriangles": true,
+        "drawingCalls": false,
+        "farGeometry": true,
+        "farTriangles": true,
+        "farDraws": true,
+        "unloads": true,
+        "lifecycleStable": true,
+        "residentBudget": true,
+        "gpuQueriesBounded": true,
+        "stationary": true
+      },
+      "maxTriangles": 497820,
+      "maxDrawCalls": 2626
+    }
+  ],
+  "probes": {
+    "incompleteStationary": {
+      "rawFrames": 2,
+      "rawFrameSpanMs": 8.199999999999818,
+      "allChecksPass": false,
+      "checks": {
+        "camera": false,
+        "duration": true,
+        "frames": false,
+        "continuousSamples": false,
+        "running": true,
+        "drawingTriangles": true,
+        "drawingCalls": true,
+        "stableLod": true,
+        "noCancelledRequests": true,
+        "noRepeatedRequests": true,
+        "coverage": true
+      }
+    },
+    "duplicateTargetTime": {
+      "targetTimes": [
+        13,
+        13
+      ],
+      "stationaryGatePass": false,
+      "fullStatus": "fail",
+      "allFailedChecks": [
+        "stationary"
+      ]
+    }
+  },
+  "historicalStationaryProxy": {
+    "note": "This is a gate unit using moving-path historical browser raw, not a fixed-camera new browser pass/fail",
+    "swaps": 31,
+    "cancelled": 149,
+    "transitions": 10,
+    "requests": {
+      "total": 194,
+      "maxPerUrl": 160,
+      "urls": {
+        "http://127.0.0.1:62732/work/integration-scenes/beijing-cbd-grow-1/chunks/0_0.low.f9edc29720a11a9c.cink": 14,
+        "http://127.0.0.1:62732/work/integration-scenes/beijing-cbd-grow-1/chunks/0_0.high.fbe8aba94c60aa49.cink": 20,
+        "http://127.0.0.1:62732/work/integration-scenes/beijing-cbd-grow-1/chunks/0_0.medium.85bf86dcb48e5e44.cink": 160
+      }
+    },
+    "checks": {
+      "camera": false,
+      "duration": false,
+      "frames": false,
+      "continuousSamples": false,
+      "running": true,
+      "drawingTriangles": true,
+      "drawingCalls": true,
+      "stableLod": false,
+      "noCancelledRequests": false,
+      "noRepeatedRequests": false,
+      "coverage": true
+    }
+  }
+}

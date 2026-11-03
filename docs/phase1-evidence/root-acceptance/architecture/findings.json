@@ -1,0 +1,70 @@
+{
+  "commit": "7c837551f5e364c98bbc19adf8d5af73a6a2ab85",
+  "externalStyle": {
+    "exported": {
+      "schemaVersion": 1,
+      "status": "succeeded",
+      "artifacts": [
+        "site/index.html"
+      ],
+      "diagnostics": [],
+      "scope": "complete-area",
+      "attribution": "© OpenStreetMap contributors; ODbL"
+    },
+    "config": {
+      "quality": "balanced",
+      "style": {
+        "id": "project-sepia",
+        "parameters": {}
+      }
+    },
+    "siteFiles": [
+      "assets/city-ink.js",
+      "index.html",
+      "scene/attribution.json",
+      "scene/chunks/0_0.high.20a74b6316aa66fc.cink",
+      "scene/chunks/0_0.low.be0185e5813c91fb.cink",
+      "scene/chunks/0_0.medium.328e4e3e67e1ac7c.cink",
+      "scene/manifest.json",
+      "scene/report.json",
+      "viewer-config.json",
+      "viewer.js"
+    ],
+    "viewerHasRegistration": false,
+    "lookup": "Unknown style: project-sepia",
+    "explicitSDKRegistration": "project-sepia"
+  },
+  "endpoint": {
+    "savedSourceEndpoint": "http://127.0.0.1:1/custom",
+    "actualEndpoint": "https://overpass-api.de/api/interpreter",
+    "cliEndpoint": {
+      "schemaVersion": 1,
+      "status": "failed",
+      "artifacts": [],
+      "diagnostics": [
+        {
+          "code": "UNKNOWN_OPTION",
+          "stage": "cli",
+          "message": "Unknown option --endpoint.",
+          "hint": "Run city --help."
+        }
+      ]
+    },
+    "apiEndpoint": {
+      "status": 400,
+      "body": {
+        "schemaVersion": 1,
+        "status": "failed",
+        "artifacts": [],
+        "diagnostics": [
+          {
+            "code": "INVALID_PARAMETER",
+            "stage": "http",
+            "message": "Unsupported parameter endpoint.",
+            "hint": "Check the input and retry."
+          }
+        ]
+      }
+    }
+  }
+}

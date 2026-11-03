@@ -1,0 +1,87 @@
+{
+  "date": "2026-11-03T10:32:26.226Z",
+  "commit": "2c013fb0f8114c2dd1cba67ee1a2cd131e565aed",
+  "metric": "Actual Three.js/OrbitControls with no DOM or WebGL context",
+  "priorClampDelta": 3.23568112276681,
+  "views": [
+    {
+      "view": {
+        "position": [
+          48.08398,
+          2.1,
+          329.36284
+        ],
+        "target": [
+          46.58398,
+          4,
+          244.36284
+        ],
+        "fov": 55,
+        "near": 0.25
+      },
+      "positionError": 3.1086244689504383e-15,
+      "targetError": 8.881784197001252e-16,
+      "directionError": 2.2425620542765743e-16
+    },
+    {
+      "view": {
+        "position": [
+          8,
+          12,
+          20
+        ],
+        "target": [
+          0,
+          18,
+          0
+        ],
+        "fov": 45,
+        "near": 0.5
+      },
+      "positionError": 4.351167857633658e-15,
+      "targetError": 0,
+      "directionError": 2.2887833992611187e-16
+    },
+    {
+      "view": {
+        "position": [
+          -70,
+          4,
+          30
+        ],
+        "target": [
+          10,
+          28,
+          -30
+        ],
+        "fov": 140,
+        "near": 1
+      },
+      "positionError": 1.0658141036401503e-14,
+      "targetError": 1.0048591735576161e-14,
+      "directionError": 2.3714374201337736e-16
+    },
+    {
+      "view": {
+        "position": [
+          80,
+          180,
+          -100
+        ],
+        "target": [
+          -20,
+          30,
+          20
+        ],
+        "fov": 5,
+        "near": 0.1
+      },
+      "positionError": 3.1776437161565096e-14,
+      "targetError": 0,
+      "directionError": 3.510833468576701e-16
+    }
+  ],
+  "invalidCases": 9,
+  "invalidAtomic": true,
+  "sdkDelegation": true
+}

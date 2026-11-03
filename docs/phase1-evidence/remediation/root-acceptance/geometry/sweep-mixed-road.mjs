@@ -1,0 +1,17 @@
+import {writeFileSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
+import * as THREE from 'three';
+import {compileScene} from '../../src/core/index.js';
+import {decodeChunk} from '../../src/core/scene-codec.js';
+import {continuityFixture} from '../../test/phase1-core-fixture.js';
+const cwd='C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink',commit=execFileSync('git',['rev-parse','HEAD'],{cwd,encoding:'utf8'}).trim();
+const {raw,config}=continuityFixture();raw.elements=raw.elements.filter(e=>e.type==='node'&&e.id>=1000||e.type==='way'&&e.id===60);const r=await compileScene(raw,{...config,tiling:{divisions:4}}),groundId=r.manifest.featureIndex['generated:continuous-carriageways'].renderId,triangles={};
+for(const c of r.manifest.chunks){triangles[c.id]={};for(const level of ['low','medium','high']){const d=c.lods.find(l=>l.id===level),g=await decodeChunk(r.assets[d.uri],d);g.updateMatrixWorld(true);const ts=[];g.traverse(o=>{if(!o.isMesh||o.isInstancedMesh)return;const geo=o.geometry,p=geo.attributes.position,f=geo.attributes.cityFeature,ix=geo.index?.array;for(let i=0;i<(ix?.length??p.count);i+=3)if(o.userData.city.kind==='road'&&geo.attributes.normal.getY(ix?ix[i]:i)>.5)ts.push([0,1,2].map(k=>new THREE.Vector3().fromBufferAttribute(p,ix?ix[i+k]:i+k).applyMatrix4(o.matrixWorld).toArray()));});triangles[c.id][level]=ts;}}
+const area=ts=>ts.reduce((n,[a,b,c])=>n+Math.abs((b[0]-a[0])*(c[2]-a[2])-(b[2]-a[2])*(c[0]-a[0]))/2,0);
+const contains=([a,b,c],p)=>{const cross=(a,b,p)=>(b[0]-a[0])*(p[1]-a[2])-(b[2]-a[2])*(p[0]-a[0]),s=[cross(a,b,p),cross(b,c,p),cross(c,a,p)];return s.every(v=>v>1e-6)||s.every(v=>v< -1e-6);};
+function coverage(name,levels){const ts=Object.entries(triangles).flatMap(([id,t])=>t[levels[id]||'low']),holes=[],overlaps=[];for(let x=0;x<60;x++)for(let z=0;z<5;z++){const p=[-290+(x+.37)*(580/60),-90+(z+.61)*2],n=ts.filter(t=>contains(t,p)).length;if(!n)holes.push(p);if(n>1)overlaps.push(p);}return {name,levels,triangleArea:area(ts),samplePoints:300,holePoints:holes.length,overlapPoints:overlaps.length,holeExample:holes[0],overlapExample:overlaps[0]};}
+
+const names=Object.keys(triangles),all=level=>Object.fromEntries(names.map(id=>[id,level])),patterns=[['all-low',{}],['all-medium',all('medium')],['all-high',all('high')]];
+for(const id of names){patterns.push(['low-with-'+id+'-medium',{[id]:'medium'}],['low-with-'+id+'-high',{[id]:'high'}],['high-with-'+id+'-low',{...all('high'),[id]:'low'}]);}
+patterns.push(['checker-low-high',Object.fromEntries(names.map(id=>{const [x,z]=id.split('_').map(Number);return [id,(x+z)%2?'high':'low'];}))],['three-level-stripes',Object.fromEntries(names.map(id=>[id,['low','medium','high'][Number(id.split('_')[0])%3]]))]);
+const results=patterns.map(([name,levels])=>coverage(name,levels)),failed=results.filter(x=>x.holePoints||x.overlapPoints),report={date:new Date().toISOString(),commit,input:'explicit synthetic road coverage, seed71, divisions4',patterns:patterns.length,status:failed.length?'fail':'pass',results};writeFileSync(new URL('mixed-lod-sweep-road-results.json',import.meta.url),JSON.stringify(report,null,2));console.log(JSON.stringify({commit,type:'road',patterns:patterns.length,failedPatterns:failed.length,baseline:results.slice(0,3).map(x=>({name:x.name,holes:x.holePoints,overlaps:x.overlapPoints})),maxHoles:Math.max(...results.map(x=>x.holePoints)),maxOverlaps:Math.max(...results.map(x=>x.overlapPoints))},null,2));

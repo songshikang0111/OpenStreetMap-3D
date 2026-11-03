@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-03T15:07:32.860Z",
+  "mode": "formal-offline-cli",
+  "status": "failed",
+  "repository": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink",
+  "project": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-acceptance\\live-rebuild",
+  "expected": {
+    "sourceFileHash": "cc8d7da7f9059f9705091995c348c57cf9a656cc48de42a21fd2ab50a319e4a6",
+    "contentHash": "69427e177a82fc1671deee1230ff438bccf6482af014e350dce82859c1c11aab"
+  },
+  "requestedFreeze": "e11990c5dc6175dbdae7c2789b2c3a4e4f7f0a9c",
+  "commandsExecuted": 1,
+  "records": [
+    {
+      "argv": [
+        "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\bin\\city.js",
+        "data",
+        "fetch",
+        "--project",
+        "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-acceptance\\live-rebuild",
+        "--offline",
+        "--json"
+      ],
+      "exitCode": 1,
+      "elapsedMs": 121,
+      "result": {
+        "schemaVersion": 1,
+        "status": "failed",
+        "artifacts": [],
+        "diagnostics": [
+          {
+            "code": "JOB_PROJECT_ESCAPE",
+            "stage": "job",
+            "message": "Job project differs from the selected project.",
+            "hint": "Check the input and retry."
+          }
+        ]
+      },
+      "stderr": ""
+    }
+  ],
+  "limits": [
+    "No new public download; this reuses the separately evidenced B live snapshot.",
+    "Only the copied work/root-remediation-acceptance/live-rebuild project may be changed.",
+    "No browser, GPU, npm build, full test suite or edits to the original B project."
+  ],
+  "preflight": {
+    "head": "e11990c5dc6175dbdae7c2789b2c3a4e4f7f0a9c",
+    "trackedChanges": "",
+    "source": {
+      "provider": "dresel-europe",
+      "endpoint": "https://ovp.dresel.systems/api/interpreter",
+      "transport": "get",
+      "retrievedAt": "2026-11-03T12:48:21.266Z",
+      "osmBaseTimestamp": "2026-11-02T21:21:26Z",
+      "sourceHash": "caa4e0dc9c7e4a493f5ba6fd688cdbf9e8c7f4759d04d4b0ed9690a58cc5d880",
+      "contentHash": "69427e177a82fc1671deee1230ff438bccf6482af014e350dce82859c1c11aab",
+      "sourceFileHash": "cc8d7da7f9059f9705091995c348c57cf9a656cc48de42a21fd2ab50a319e4a6",
+      "attribution": "© OpenStreetMap contributors",
+      "license": "ODbL-1.0",
+      "queryVersion": 1
+    },
+    "elements": 1111,
+    "buildings": 5,
+    "buildingParts": 21,
+    "cacheKey": "997628cfe5a979922a23cf687d20b5541bf51603e0c3a1ddca4b18ce9ed89689",
+    "cacheSnapshotHash": "cc8d7da7f9059f9705091995c348c57cf9a656cc48de42a21fd2ab50a319e4a6",
+    "previousEngineHash": "2a8ede5d1ad5aa8cfb325bf4058173f6ba25eb32207f624d514efcaa29d85b16",
+    "previousContentHash": "30dbdfb89912001064191f784c16fc43feba4647eeac396c18eae19453d7b95c",
+    "previousManifestHash": "04e9b128e1180ef9d7402b791ae6b44858f94dc0007203177c1ce57b59d29b61",
+    "previousBuiltAt": "2026-11-03T12:48:28.076Z",
+    "commandsExecuted": 0
+  },
+  "error": {
+    "name": "AssertionError",
+    "code": "ERR_ASSERTION",
+    "message": "CLI exit for data fetch\n\n1 !== 0\n"
+  },
+  "finishedAt": "2026-11-03T15:07:33.235Z"
+}

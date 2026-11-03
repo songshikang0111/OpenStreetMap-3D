@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-03T13:04:51.154Z",
+  "commit": "0e9d282863afbb5c6f1aa4ab01014a84566c1366",
+  "project": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\remediation-review-studio\\integration-node-1793711091132",
+  "scope": "Real local API/esbuild and generated SDK/loader modules evaluated in Node; no renderer/browser/GPU.",
+  "results": [
+    {
+      "name": "effective provider / full declaration restore / switch / actual PATCH round trip",
+      "status": "pass",
+      "details": {
+        "source": {
+          "file": "data/source.json",
+          "kind": "sample",
+          "provider": "custom",
+          "endpoint": "http://127.0.0.1:9000/interpreter",
+          "transport": "get",
+          "fallbackEndpoints": [
+            "https://overpass.private.coffee/api/interpreter"
+          ],
+          "fallbackPolicy": "unavailable"
+        },
+        "style": {
+          "id": "project-sepia",
+          "parameters": {
+            "warmth": 0.42
+          },
+          "entry": "styles/sepia.js",
+          "dependencies": {
+            "local-palette": "styles/vendor.js"
+          },
+          "assets": [
+            "styles/paper #1%25.svg"
+          ]
+        },
+        "effective": {
+          "provider": "custom",
+          "endpoint": "http://127.0.0.1:9000/interpreter",
+          "transport": "get",
+          "fallbackEndpoints": [
+            "https://overpass.private.coffee/api/interpreter"
+          ],
+          "fallbackPolicy": "unavailable"
+        },
+        "searchSource": {
+          "provider": "custom",
+          "endpoint": "http://127.0.0.1:9000/interpreter",
+          "transport": "get",
+          "fallbackEndpoints": [
+            "https://overpass.private.coffee/api/interpreter"
+          ],
+          "fallbackPolicy": "unavailable"
+        },
+        "invalidPatchPreservesConfig": true
+      }
+    },
+    {
+      "name": "style-preview real route / same generated engine registry / CSS success and failure ownership / cache boundary",
+      "status": "pass",
+      "details": {
+        "previewId": "project-sepia",
+        "parameters": {
+          "warmth": 0.42
+        },
+        "sharedRegistry": true,
+        "assetKeys": [
+          "styles/paper #1%25.svg"
+        ],
+        "specialCharacterAssetFactoryRead": true,
+        "cssCountPerHandle": 1,
+        "cssFailureCleansOnlyNewLinks": true,
+        "repeatedDisposeLeavesZeroLinks": true,
+        "failedValidationPreservesCacheAndConfig": true,
+        "pathEscapeStatus": 403,
+        "sdkBytes": 210889
+      }
+    }
+  ],
+  "status": "pass"
+}

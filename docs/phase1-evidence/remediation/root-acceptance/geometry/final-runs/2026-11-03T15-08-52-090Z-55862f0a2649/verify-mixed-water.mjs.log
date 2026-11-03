@@ -1,0 +1,5 @@
+{
+  "name": "verify-mixed-water.mjs",
+  "status": "pass",
+  "stdout": "{\n  \"commit\": \"55862f0a2649fb9289331c9ea19b2325f35f3037\",\n  \"status\": \"pass\",\n  \"waterTriangles\": 14,\n  \"statement\": \"Water triangle positions/IDs are identical in each physical chunk at all LODs; every arbitrary per-chunk LOD combination preserves this water coverage.\"\n}\n"
+}

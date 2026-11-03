@@ -1,0 +1,43 @@
+{
+  "commit": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "scope": "One synthetic sample compile and read-only validate/hash checks; no npm build, network, browser, or GPU",
+  "records": [
+    {
+      "name": "all acquisition fields change without staling locked snapshot",
+      "status": "pass"
+    },
+    {
+      "name": "source kind remains locked",
+      "status": "pass"
+    },
+    {
+      "name": "source path identity remains locked despite equal bytes",
+      "status": "pass"
+    },
+    {
+      "name": "area remains locked",
+      "status": "pass"
+    },
+    {
+      "name": "seed remains locked",
+      "status": "pass"
+    },
+    {
+      "name": "generation remains locked",
+      "status": "pass"
+    },
+    {
+      "name": "metadata-only byte changes remain locked",
+      "status": "pass"
+    },
+    {
+      "name": "OSM element changes remain locked",
+      "status": "pass"
+    },
+    {
+      "name": "projection origin stays in geometry hash",
+      "status": "pass"
+    }
+  ],
+  "failures": 0
+}

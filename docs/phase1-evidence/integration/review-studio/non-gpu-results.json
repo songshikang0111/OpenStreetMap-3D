@@ -1,0 +1,116 @@
+{
+  "date": "2026-11-03T10:14:51.522Z",
+  "commit": "73738b3c700baef0de82959c1ab0e534aa40a88f",
+  "node": "v22.11.0",
+  "results": [
+    {
+      "name": "independent offline package install / public entry points / strict declarations",
+      "status": "pass",
+      "details": {
+        "files": 120,
+        "archive": "beijing-city-ink-0.8.1.tgz",
+        "integrity": "sha512-9Ap4CWhuAkf8Hi9e8Dx8isX60GthKjkhuMHHxvNgSt8kMeXZc2erzsHy4MSyU1pUsiy43LW/dux270EuKgvZ+g==",
+        "offline": true
+      }
+    },
+    {
+      "name": "installed README sample commands / runtime save and static output",
+      "status": "pass",
+      "details": {
+        "project": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\consumer\\sample",
+        "camera": {
+          "fov": 55,
+          "position": [
+            150,
+            120,
+            150
+          ],
+          "target": [
+            0,
+            10,
+            0
+          ]
+        },
+        "style": {
+          "id": "line",
+          "parameters": {}
+        }
+      }
+    },
+    {
+      "name": "stranger recipe tutorial / real source geometry change / rollback",
+      "status": "pass",
+      "details": {
+        "input": "Real repository OSM way/599547918, complete geometry; not a live download",
+        "features": 2,
+        "chunks": 9,
+        "initial": [
+          "ad7c9f47e3d2ec0af8f53962536dddf34fe33f1e36cdd7c60d89cf7a43ea0c36",
+          "a8c1ee415eaf5ed67e116f79804009f09c832e0481cc12d07291521eb5962022",
+          "bf81d363a48180f016758b21590c4d40a5be18cfaa651f8027c9826afe1baef2",
+          "abb9b4fd04e5c1a858ec9744b488640c515429c75ec8339ad1473f12c92e0e4d",
+          "9ec595aa6d85094b57f832e232a53600e120bbdabf1947b11117266df31c1162",
+          "cccaecb6fedd46e194fb6190ae232bcd6fb6566d39baf16e0c1b75ba2def7450",
+          "aa83f54bb4b25918aa784b54b9ff738928a290b2087a1ebee430bf2fd4043a35",
+          "9eb49a2b755f528b2bd162846baaec4c0c322ad028d4fdcbfc054b9547ae7e05",
+          "20ed317509efe557213c81dc0e7f3fac4f3644e72aeea588db6fe5eea746f1b7"
+        ],
+        "updated": [
+          "ad7c9f47e3d2ec0af8f53962536dddf34fe33f1e36cdd7c60d89cf7a43ea0c36",
+          "a8c1ee415eaf5ed67e116f79804009f09c832e0481cc12d07291521eb5962022",
+          "bf81d363a48180f016758b21590c4d40a5be18cfaa651f8027c9826afe1baef2",
+          "abb9b4fd04e5c1a858ec9744b488640c515429c75ec8339ad1473f12c92e0e4d",
+          "f8043d2d5001b52c93c5e30bdb65dc7e9040c0704b18cffd195e9f1532c2b4f4",
+          "cccaecb6fedd46e194fb6190ae232bcd6fb6566d39baf16e0c1b75ba2def7450",
+          "aa83f54bb4b25918aa784b54b9ff738928a290b2087a1ebee430bf2fd4043a35",
+          "9eb49a2b755f528b2bd162846baaec4c0c322ad028d4fdcbfc054b9547ae7e05",
+          "20ed317509efe557213c81dc0e7f3fac4f3644e72aeea588db6fe5eea746f1b7"
+        ],
+        "rollback": [
+          "ad7c9f47e3d2ec0af8f53962536dddf34fe33f1e36cdd7c60d89cf7a43ea0c36",
+          "a8c1ee415eaf5ed67e116f79804009f09c832e0481cc12d07291521eb5962022",
+          "bf81d363a48180f016758b21590c4d40a5be18cfaa651f8027c9826afe1baef2",
+          "abb9b4fd04e5c1a858ec9744b488640c515429c75ec8339ad1473f12c92e0e4d",
+          "9ec595aa6d85094b57f832e232a53600e120bbdabf1947b11117266df31c1162",
+          "cccaecb6fedd46e194fb6190ae232bcd6fb6566d39baf16e0c1b75ba2def7450",
+          "aa83f54bb4b25918aa784b54b9ff738928a290b2087a1ebee430bf2fd4043a35",
+          "9eb49a2b755f528b2bd162846baaec4c0c322ad028d4fdcbfc054b9547ae7e05",
+          "20ed317509efe557213c81dc0e7f3fac4f3644e72aeea588db6fe5eea746f1b7"
+        ]
+      }
+    },
+    {
+      "name": "stranger style tutorial / roles / actual external application bundling",
+      "status": "pass",
+      "initialDefaultTargetError": "[vite:esbuild-transpile] Transform failed with 2 errors:\nassets/index-!~{001}~.js:57471:18: ERROR: Top-level await is not available in the configured target environment (\"chrome87\", \"edge88\", \"es2020\", \"firefox78\", \"safari14\" + 2 overrides)\nassets/index-!~{001}~.js:57473:0: ERROR: Top-level await is not available in the configured target environment (\"chrome87\", \"edge88\", \"es2020\", \"firefox78\", \"safari14\" + 2 overrides)\nfile: assets/index-!~{001}~.js:57471:18\n\nTop-level await is not available in the configured target environment (\"chrome87\", \"edge88\", \"es2020\", \"firefox78\", \"safari14\" + 2 overrides)\n57469|  registerStyle(sepia);\n57470|  const events=[];\n57471|  globalThis.viewer=await createCityViewer({container:document.getElementById('city'),manifestUrl:'./scene/manifest.json',style:'project-sepia',onDiagnostic:d=>events.push(d)});\n   |                    ^\n57472|  globalThis.events=events;\n57473|  await viewer.whenIdle();\n\nTop-level await is not available in the configured target environment (\"chrome87\", \"edge88\", \"es2020\", \"firefox78\", \"safari14\" + 2 overrides)\n57471|  globalThis.viewer=await createCityViewer({container:document.getElementById('city'),manifestUrl:'./scene/manifest.json',style:'project-sepia',onDiagnostic:d=>events.push(d)});\n57472|  globalThis.events=events;\n57473|  await viewer.whenIdle();\n   |  ^\n57474|  globalThis.reviewReady=true;\n\n    at failureErrorWithLog (C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\node_modules\\esbuild\\lib\\main.js:1467:15)\n    at C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\node_modules\\esbuild\\lib\\main.js:736:50\n    at responseCallbacks.<computed> (C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\node_modules\\esbuild\\lib\\main.js:603:9)\n    at handleIncomingPacket (C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\node_modules\\esbuild\\lib\\main.js:658:12)\n    at Socket.readFromStdout (C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\node_modules\\esbuild\\lib\\main.js:581:7)\n    at Socket.emit (node:events:518:28)\n    at addChunk (node:internal/streams/readable:561:12)\n    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)\n    at Readable.push (node:internal/streams/readable:392:5)\n    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)",
+      "details": {
+        "application": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\independent-studio-review\\consumer\\app",
+        "style": "project-sepia",
+        "roles": [
+          "wall",
+          "glass",
+          "roof",
+          "structure",
+          "road",
+          "water",
+          "foliage",
+          "ground",
+          "facility",
+          "landmark"
+        ],
+        "buildTarget": "es2022",
+        "note": "Default Vite target rejected tutorial top-level await; modern ES2022 target builds unchanged tutorial imports successfully."
+      }
+    },
+    {
+      "name": "project camera schema and SDK accepted-range consistency",
+      "status": "pass",
+      "details": {
+        "projectAcceptsFov170": true,
+        "sdkSourceRejectsOutside": "[5,140]",
+        "requiresBrowserReproduction": true
+      }
+    }
+  ],
+  "status": "pass"
+}

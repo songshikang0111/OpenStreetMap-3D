@@ -1,0 +1,1 @@
+{"case":"original Beijing grow1, t13 fixed camera, configured nearDetails=420; CPU only","selectedLod":"high","budget":420,"persistedDetails":410,"runtimeAttachments":10,"total":420,"passes":true,"mainFrameCost":{"triangles":115628,"drawCalls":44,"shadowTriangles":116136,"shadowCalls":63,"frameTriangles":578648,"frameCalls":239}}

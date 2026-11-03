@@ -1,0 +1,149 @@
+{
+  "date": "2026-11-03T12:49:15.410Z",
+  "harnessCommit": "c7a4542",
+  "reviewedHead": "758782644c4dfc400cedd370eb64edb95bce2734",
+  "branch": "codex/phase1-integration",
+  "mode": "Read-only source/Node gate review; no browser/GPU, no product edits or commits",
+  "status": "fail",
+  "findings": [
+    {
+      "priority": "P2",
+      "file": "scripts/benchmark-integration/assessment.mjs",
+      "lines": [
+        10,
+        15,
+        24
+      ],
+      "title": "Stationary acceptance can pass incomplete recording and duplicated t13, omitting t19",
+      "reproduction": {
+        "incompleteStationary": {
+          "rawFrames": 2,
+          "rawFrameSpanMs": 8.199999999999818,
+          "allChecksPass": true,
+          "checks": {
+            "duration": true,
+            "frames": true,
+            "drawingTriangles": true,
+            "drawingCalls": true,
+            "stableLod": true,
+            "noCancelledRequests": true,
+            "noRepeatedRequests": true,
+            "coverage": true
+          }
+        },
+        "duplicateTargetTime": {
+          "targetTimes": [
+            13,
+            13
+          ],
+          "stationaryGatePass": true,
+          "fullStatus": "pass",
+          "allFailedChecks": []
+        }
+      },
+      "impact": "Does not establish two required distinct fixed views each rendered for >=15 seconds, but can return entire case pass.",
+      "recommendation": "Validate frameCount/window/span, finite chronological frames and elapsed samples, epoch interval, active render state/diagnostics, and exact targetTime set {13,19}; verify stored view against the archived reference."
+    }
+  ],
+  "positiveChecks": {
+    "productionSdkEntry": true,
+    "newRemediationOutputDefault": true,
+    "explicitOutputParser": true,
+    "inputCli": {
+      "date": "2026-11-03T12:46:59.052Z",
+      "summarizeExit": 1,
+      "completedCases": 12,
+      "status": "fail",
+      "failedCases": [
+        "beijing-cbd-fixed-1",
+        "beijing-cbd-fixed-4",
+        "beijing-cbd-fixed-16",
+        "beijing-cbd-grow-1",
+        "beijing-cbd-grow-4",
+        "beijing-cbd-grow-9",
+        "kyoto-gion-fixed-1",
+        "kyoto-gion-fixed-4",
+        "kyoto-gion-fixed-16",
+        "kyoto-gion-grow-1",
+        "kyoto-gion-grow-4",
+        "kyoto-gion-grow-9"
+      ],
+      "originalUnchanged": true,
+      "copiesUnchanged": true,
+      "explicitOutputParsed": true,
+      "noBrowserLaunched": "unknown-case validation throws before browser loop",
+      "stdout": "{\"completedCases\":12,\"status\":\"fail\",\"timingStatus\":\"pass\",\"failedCases\":[\"beijing-cbd-fixed-1\",\"beijing-cbd-fixed-4\",\"beijing-cbd-fixed-16\",\"beijing-cbd-grow-1\",\"beijing-cbd-grow-4\",\"beijing-cbd-grow-9\",\"kyoto-gion-fixed-1\",\"kyoto-gion-fixed-4\",\"kyoto-gion-fixed-16\",\"kyoto-gion-grow-1\",\"kyoto-gion-grow-4\",\"kyoto-gion-grow-9\"],\"budgetFailures\":[\"beijing-cbd-fixed-1\",\"beijing-cbd-fixed-4\",\"beijing-cbd-fixed-16\",\"beijing-cbd-grow-4\",\"beijing-cbd-grow-9\",\"kyoto-gion-fixed-1\",\"kyoto-gion-fixed-4\",\"kyoto-gion-fixed-16\",\"kyoto-gion-grow-1\",\"kyoto-gion-grow-4\",\"kyoto-gion-grow-9\"]}"
+    },
+    "historicalBudgetRejections": [
+      {
+        "name": "beijing-cbd-grow-4",
+        "checks": {
+          "defaultBudget": true,
+          "viewport": true,
+          "duration": true,
+          "frames": true,
+          "completeSamples": true,
+          "p95": true,
+          "errors": true,
+          "gpuTiming": true,
+          "concurrency": true,
+          "drawingTriangles": false,
+          "drawingCalls": true,
+          "farGeometry": true,
+          "farTriangles": true,
+          "farDraws": true,
+          "unloads": true,
+          "lifecycleStable": true,
+          "residentBudget": true,
+          "gpuQueriesBounded": true,
+          "stationary": true
+        }
+      },
+      {
+        "name": "kyoto-gion-grow-1",
+        "checks": {
+          "defaultBudget": true,
+          "viewport": true,
+          "duration": true,
+          "frames": true,
+          "completeSamples": true,
+          "p95": true,
+          "errors": true,
+          "gpuTiming": true,
+          "concurrency": true,
+          "drawingTriangles": true,
+          "drawingCalls": false,
+          "farGeometry": true,
+          "farTriangles": true,
+          "farDraws": true,
+          "unloads": true,
+          "lifecycleStable": true,
+          "residentBudget": true,
+          "gpuQueriesBounded": true,
+          "stationary": true
+        }
+      }
+    ],
+    "historicalRequestStormRejected": {
+      "swaps": 31,
+      "cancelled": 149,
+      "maxPerUrl": 160
+    },
+    "authorTests": "3/3 pass",
+    "historicalGitDiffVsDee3cc8": "empty"
+  },
+  "sourceHashes": {
+    "scripts/benchmark-integration/assessment.mjs": "d47871e20ad10047131b00194f82c0cc3a366b074ed76b5e03e35090a6c46e16",
+    "scripts/benchmark-integration/page.js": "d1dce4b92e051b315d5deed0fd7bf024fa5cf40dc58ed101aa0141784e264202",
+    "scripts/benchmark-integration/run.mjs": "90d962acf80b62d0a2b193ebeb7ed8ad2ecd3ffa3cca7129f31b76c93b92658a",
+    "scripts/phase1-summarize.mjs": "1d478cc9ef3033eba92eed303ce1c30b7b34522070a668d512c38ba467c8bb8a",
+    "src/cli/browser-session.js": "ad99c3453fdb7f68c745d542b43117c2f0b5c7ad4d5e5fbe71616e511ac61d32"
+  },
+  "limitations": [
+    "No new >=60-second matrix or fixed-camera GPU run was launched by this reviewer.",
+    "Current parent changes to package.json/package-lock.json are outside this harness review and were not edited.",
+    "observedAt is Node receipt time on the local wall clock, not CDP request initiation time; phaseRequests preserves the wider warmup/measurement boundary for final auditing.",
+    "Measurement records use measuredRequests as prefiltered data; final evidence audit must verify it is the phaseRequests subset in the recorded epoch window.",
+    "Runner records git HEAD and bundle hash but does not itself reject a dirty product tree or enforce every scene compilerCommit equals the measured commit; final integration must freeze these inputs."
+  ]
+}

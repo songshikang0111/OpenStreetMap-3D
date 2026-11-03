@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-03T14:43:08.122Z",
+  "mode": "preflight-only",
+  "status": "prepared",
+  "repository": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink",
+  "project": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-acceptance\\live-rebuild",
+  "expected": {
+    "sourceFileHash": "cc8d7da7f9059f9705091995c348c57cf9a656cc48de42a21fd2ab50a319e4a6",
+    "contentHash": "69427e177a82fc1671deee1230ff438bccf6482af014e350dce82859c1c11aab"
+  },
+  "requestedFreeze": null,
+  "commandsExecuted": 0,
+  "records": [],
+  "limits": [
+    "No new public download; this reuses the separately evidenced B live snapshot.",
+    "Only the copied work/root-remediation-acceptance/live-rebuild project may be changed.",
+    "No browser, GPU, npm build, full test suite or edits to the original B project."
+  ],
+  "preflight": {
+    "head": "a273e6a05182f989966cc3136b1cd6ea7f289889",
+    "trackedChanges": "",
+    "source": {
+      "provider": "dresel-europe",
+      "endpoint": "https://ovp.dresel.systems/api/interpreter",
+      "transport": "get",
+      "retrievedAt": "2026-11-03T12:48:21.266Z",
+      "osmBaseTimestamp": "2026-11-02T21:21:26Z",
+      "sourceHash": "caa4e0dc9c7e4a493f5ba6fd688cdbf9e8c7f4759d04d4b0ed9690a58cc5d880",
+      "contentHash": "69427e177a82fc1671deee1230ff438bccf6482af014e350dce82859c1c11aab",
+      "sourceFileHash": "cc8d7da7f9059f9705091995c348c57cf9a656cc48de42a21fd2ab50a319e4a6",
+      "attribution": "© OpenStreetMap contributors",
+      "license": "ODbL-1.0",
+      "queryVersion": 1
+    },
+    "elements": 1111,
+    "buildings": 5,
+    "buildingParts": 21,
+    "cacheKey": "997628cfe5a979922a23cf687d20b5541bf51603e0c3a1ddca4b18ce9ed89689",
+    "cacheSnapshotHash": "cc8d7da7f9059f9705091995c348c57cf9a656cc48de42a21fd2ab50a319e4a6",
+    "previousEngineHash": "2a8ede5d1ad5aa8cfb325bf4058173f6ba25eb32207f624d514efcaa29d85b16",
+    "previousContentHash": "30dbdfb89912001064191f784c16fc43feba4647eeac396c18eae19453d7b95c",
+    "previousManifestHash": "04e9b128e1180ef9d7402b791ae6b44858f94dc0007203177c1ce57b59d29b61",
+    "previousBuiltAt": "2026-11-03T12:48:28.076Z",
+    "commandsExecuted": 0
+  },
+  "note": "No CLI commands or scene rebuild executed. Await an explicit product freeze and permission to run during a CPU/GPU-safe window.",
+  "finishedAt": "2026-11-03T14:43:08.231Z"
+}

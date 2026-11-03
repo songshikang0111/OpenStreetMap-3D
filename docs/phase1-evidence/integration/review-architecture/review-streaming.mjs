@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';import {writeFile} from 'node:fs/promises';import * as THREE from 'three';
+import {compileScene} from '../../src/core/index.js';import {decodeChunk} from '../../src/core/scene-codec.js';import {continuityFixture} from '../../test/phase1-core-fixture.js';import {normalizeManifest} from '../../src/runtime/manifest.js';import {createBudget} from '../../src/runtime/policy.js';import {ChunkStreamer} from '../../src/runtime/streamer.js';import {NearDetails} from '../../src/runtime/near-details.js';import {InkRenderer} from '../../src/ink-renderer.js';import {bindSceneStyle,createStyleShared} from '../../src/styles/index.js';
+const {raw,config}=continuityFixture(),result=await compileScene(raw,{...config,tiling:{divisions:2}}),manifest=normalizeManifest(result.manifest,'https://review.test/city/manifest.json');
+const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(45,16/9,.25,30000),ink=new InkRenderer({},scene,camera),shared=createStyleShared();
+const budget=createBudget({residentBytes:1e9,visibleTriangles:1e8,drawCalls:1e6,nearDetails:1500,unloadDelayMs:0,minResidenceMs:0});
+const bindGroup=g=>bindSceneStyle(g,{style:'comic',shared}),releaseGroup=g=>ink.releaseGroup(g);
+const streamer=new ChunkStreamer({manifest,budget,readAsset:async url=>{const bytes=result.assets[new URL(url).pathname.slice('/city/'.length)];return bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength);},decodeChunk,bindGroup,prepareGroup:g=>ink.prepareGroup(g),releaseGroup});
+const near=new NearDetails({budget,bindGroup,releaseGroup});scene.add(streamer.group,near.group);
+const samples=[];let time=0,wall;
+for(const chunk of result.manifest.chunks){const lod=chunk.lods.find(l=>l.id==='high'),group=await decodeChunk(result.assets[lod.uri],lod);wall ||=group.userData.city.nearDetails.facadeWalls[0];group.traverse(o=>{o.geometry?.dispose();for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[])m.dispose();});}
+try{for(let cycle=0;cycle<5;cycle++){
+ camera.position.set(wall.a[0]+wall.normal[0]*8,15,wall.a[1]+wall.normal[2]*8);camera.lookAt(wall.a[0],15,wall.a[1]);camera.updateMatrixWorld(true);
+ for(let step=0;step<100;step++){streamer.update(camera,720,time+=40,{forceLod:0});await new Promise(resolve=>setTimeout(resolve,0));if(streamer.isSettled())break;}assert(streamer.isSettled());
+ near.update(streamer.current.values(),camera,time,1e8,5,{residentBytes:1e9,drawCalls:1e6});ink.prepareGroup(near.group);near.refreshResources();streamer.refreshResources();assert(near.stats().frames>0);
+ const baseline={main:streamer.registry.stats(),near:near.stats(),classificationClones:ink._classificationClones.size,loaded:streamer.current.size};samples.push(baseline);if(cycle)assert.deepEqual(baseline,samples[0]);
+ camera.position.set(5000,5000,5000);camera.lookAt(6000,5000,6000);camera.updateMatrixWorld(true);streamer.update(camera,720,time+=2000,{forceLod:0});near.update(streamer.current.values(),camera,time,1e8,5,{residentBytes:1e9,drawCalls:1e6});assert.equal(streamer.registry.refs.size,0);assert.equal(near.registry.refs.size,0);assert.equal(ink._classificationClones.size,0);
+}}finally{near.dispose();await streamer.dispose();ink.dispose();}
+const report={date:new Date().toISOString(),metric:'Node actual CINK/official style resource lifecycle, no WebGL rendering or GPU measurement',cycles:samples,afterDispose:{streamerReferences:streamer.registry.refs.size,nearReferences:near.registry.refs.size,classificationClones:ink._classificationClones.size,estimatedBytes:streamer.estimatedBytes()}};console.log(JSON.stringify(report));await writeFile(new URL('./streaming-results.json',import.meta.url),JSON.stringify(report,null,2));

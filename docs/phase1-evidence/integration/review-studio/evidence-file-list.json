@@ -1,0 +1,673 @@
+{
+  "date": "2026-11-03T10:42:30.321Z",
+  "scope": "All own source, HTML, TypeScript, JSON, PNG/JPG, Markdown, GLB and local archive; installed node_modules dependencies and inventory files excluded.",
+  "count": 111,
+  "entries": [
+    {
+      "relativePath": "api-restart-results.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/api-restart-results.json",
+      "bytes": 861,
+      "sha256": "c7eaa25b0da617dac702987906b6244b5ef7e96b2d4f1265435f741b7c989c4c"
+    },
+    {
+      "relativePath": "api-restart.mjs",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/api-restart.mjs",
+      "bytes": 5267,
+      "sha256": "233dc39714203083060a20a144ff45ab2e202ccd467434954f70aa98ca6b5d8e"
+    },
+    {
+      "relativePath": "beijing-city-ink-0.8.1.tgz",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/beijing-city-ink-0.8.1.tgz",
+      "bytes": 703770,
+      "sha256": "5877215cf622e9a5e0f6a1f4b5b34257c1aea09d4f924e03d90a715757a3ed3a"
+    },
+    {
+      "relativePath": "beijing-views.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/beijing-views.json",
+      "bytes": 1221,
+      "sha256": "a242c6a11e9cb44114a270811ff669f69c18ffee0f640641534634c415377e49"
+    },
+    {
+      "relativePath": "beijing-visual-source.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/beijing-visual-source.json",
+      "bytes": 774367,
+      "sha256": "6741ee3e559df2cd83a22221be87337f3569f26387416ebf1d51cec8578a0f6f"
+    },
+    {
+      "relativePath": "beijing-visual/city.config.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/beijing-visual/city.config.json",
+      "bytes": 454,
+      "sha256": "92e58d64e167c2b7a7da8419eb10aca5957c27416a11e1e0970341847a893ef6"
+    },
+    {
+      "relativePath": "beijing-visual/city.lock.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/beijing-visual/city.lock.json",
+      "bytes": 5483,
+      "sha256": "5f5a77f087eec1d881315b7ff8ecf1dc2d75421a5e3b00db313aed6fab2b6e70"
+    },
+    {
+      "relativePath": "beijing-visual/data/source.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/beijing-visual/data/source.json",
+      "bytes": 778132,
+      "sha256": "0eaa60f728e1eb0670adffae8ad496c55db93f270a4b479504b52cdff126ac07"
+    },
+    {
+      "relativePath": "beijing-visual/dist/attribution.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/beijing-visual/dist/attribution.json",
+      "bytes": 131,
+      "sha256": "d9941bc114e52332f42e61bc63a60ce6d6250392f4717d103be5c4b68160d8b0"
+    },
+    {
+      "relativePath": "beijing-visual/dist/city.build-lock.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/beijing-visual/dist/city.build-lock.json",
+      "bytes": 5483,
+      "sha256": "5f5a77f087eec1d881315b7ff8ecf1dc2d75421a5e3b00db313aed6fab2b6e70"
+    },
+    {
+      "relativePath": "beijing-visual/dist/manifest.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/beijing-visual/dist/manifest.json",
+      "bytes": 12776151,
+      "sha256": "71faf8f4cc515cacfd6d5dba79eb7f46afc3f00717c034282b741e7edd9d9c6d"
+    },
+    {
+      "relativePath": "beijing-visual/dist/report.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/beijing-visual/dist/report.json",
+      "bytes": 3183,
+      "sha256": "be866978b52a1b09c81b99d4149326977fc4120aeb43d59124ba827e241ebbfc"
+    },
+    {
+      "relativePath": "browser-results.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/browser-results.json",
+      "bytes": 66140,
+      "sha256": "555d52a53f89059ab0b90564156599a05c1e2add69495c9bf325d2d8dfda046b"
+    },
+    {
+      "relativePath": "browser-review.mjs",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/browser-review.mjs",
+      "bytes": 9702,
+      "sha256": "5ba96840e973e97386e27232ed84c5cb9650066354e6267979243d6531097dd6"
+    },
+    {
+      "relativePath": "browser-session-visible.mjs",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/browser-session-visible.mjs",
+      "bytes": 6514,
+      "sha256": "e137c4320484bc0b7a85b0d0253e507e6e40952f5b07f1febf238055fc5c2671"
+    },
+    {
+      "relativePath": "camera-fixed-results.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/camera-fixed-results.json",
+      "bytes": 456,
+      "sha256": "68ddc84ac0c516a3f3ea8f56884c833d3d7b777eb278e7fdff4c326382503812"
+    },
+    {
+      "relativePath": "camera-fixed/city.config.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/camera-fixed/city.config.json",
+      "bytes": 421,
+      "sha256": "db18e8e5a5368de1e3e40bb243e56ebf267ddea0219cd79c730c82c94dd2d9a5"
+    },
+    {
+      "relativePath": "camera-fixed/city.lock.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/camera-fixed/city.lock.json",
+      "bytes": 123,
+      "sha256": "3806db061c6f8a7704f17739b44ae6ce1aadaa3efbb79042798e9f860dca18e7"
+    },
+    {
+      "relativePath": "camera-fixed/data/source.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/camera-fixed/data/source.json",
+      "bytes": 1036,
+      "sha256": "35efaf0790d7c007ec57b6a18c556a7ec014013e0c55ed08c77c5f66383614f2"
+    },
+    {
+      "relativePath": "camera-look-up-results.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/camera-look-up-results.json",
+      "bytes": 1138,
+      "sha256": "27a46d9bbfca030b7492a391731cc168464177ae83c8f9c1006bb47507375ce9"
+    },
+    {
+      "relativePath": "complete-unloaded-real.glb",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/complete-unloaded-real.glb",
+      "bytes": 3660820,
+      "sha256": "03ced847b63aa30848bae7d3cc10edf137e6f61382450d8a7a4002d5e48fd555"
+    },
+    {
+      "relativePath": "consumer/app/assets/index-6QQI0ruX.js",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/app/assets/index-6QQI0ruX.js",
+      "bytes": 718529,
+      "sha256": "3f9fd0e2942982cc99778ee1d87e7828e7207bdd3d7f0aefbc7f29e95f521faf"
+    },
+    {
+      "relativePath": "consumer/app/index.html",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/app/index.html",
+      "bytes": 161,
+      "sha256": "ebc8a9900ef97a9d2ab0d5923eab54fddfe7fe4781dd89984f0edca9cc46d30b"
+    },
+    {
+      "relativePath": "consumer/app/scene/attribution.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/app/scene/attribution.json",
+      "bytes": 131,
+      "sha256": "06aa544cc70f3108da8bb6e5914f1974cfa338ff9245b3af7a7019c5eee19fc3"
+    },
+    {
+      "relativePath": "consumer/app/scene/city.build-lock.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/app/scene/city.build-lock.json",
+      "bytes": 3954,
+      "sha256": "387750b138c5d39ab8adc3cee332c91672e27fa6e2fe8ff9faa6d857887531b3"
+    },
+    {
+      "relativePath": "consumer/app/scene/manifest.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/app/scene/manifest.json",
+      "bytes": 9076,
+      "sha256": "81342827273cbb8bbf0ab8ad25f7c5d558eec9a355b5208aa5bf8748cf9e242c"
+    },
+    {
+      "relativePath": "consumer/app/scene/report.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/app/scene/report.json",
+      "bytes": 2620,
+      "sha256": "c4f9ffdefb4fab9bb9f18ea8aef30d11f0c5c21fc04f4fc0e32f20574faa401c"
+    },
+    {
+      "relativePath": "consumer/index.html",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/index.html",
+      "bytes": 131,
+      "sha256": "73602b943adea690af1cf0a5cd6a3a14d9fc02670366477e57c1f3abc6079dce"
+    },
+    {
+      "relativePath": "consumer/main.js",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/main.js",
+      "bytes": 440,
+      "sha256": "24d9791ba025f3e6a5f43dfa9a9eda5a343d6555fb524a8de816a7103c5bda6d"
+    },
+    {
+      "relativePath": "consumer/my-landmarks/recipes.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/my-landmarks/recipes.json",
+      "bytes": 1353,
+      "sha256": "2d0999eb0d15e29d9ecf2b1ad65299655f17c9359545572443d956a9e0cd61aa"
+    },
+    {
+      "relativePath": "consumer/package-lock.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/package-lock.json",
+      "bytes": 5152,
+      "sha256": "e835086b3f7cfed9923d929117039502b60ba65b884b4dcf74744300b2e0feb0"
+    },
+    {
+      "relativePath": "consumer/package.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/package.json",
+      "bytes": 138,
+      "sha256": "9e29613b883e7d7fe3ce17c763419e9d71ada6d7185eec29b4f329c67c667da8"
+    },
+    {
+      "relativePath": "consumer/real-zun.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun.json",
+      "bytes": 2355,
+      "sha256": "71c05d222d4b90b440a7152bee408c46fd18c0fe832955a01bd439d8b1691c42"
+    },
+    {
+      "relativePath": "consumer/real-zun/.city-cache/jobs/65dcc2bc-0dc1-4271-9c1d-ce38d3f5add9.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/.city-cache/jobs/65dcc2bc-0dc1-4271-9c1d-ce38d3f5add9.json",
+      "bytes": 649,
+      "sha256": "5de514e1758eb8fc15ceb22b19c0f36e0fd7614557b80edd80f15d3c63b128ed"
+    },
+    {
+      "relativePath": "consumer/real-zun/.city-cache/jobs/775097e7-98a7-4bff-ace2-8a379940eec6.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/.city-cache/jobs/775097e7-98a7-4bff-ace2-8a379940eec6.json",
+      "bytes": 3286,
+      "sha256": "27a8268e1d57f7c1cd32d530f03a6fba49809e381a345660b76efbd3a6d1a76f"
+    },
+    {
+      "relativePath": "consumer/real-zun/.city-cache/jobs/9ae60959-9588-4735-bd1d-59214ba0deac.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/.city-cache/jobs/9ae60959-9588-4735-bd1d-59214ba0deac.json",
+      "bytes": 3696,
+      "sha256": "a74d47d33325823620c0f737fb04e6499a95703b67c31fc3d0243ecfe194add3"
+    },
+    {
+      "relativePath": "consumer/real-zun/.city-cache/jobs/f9ae3a93-15cd-4c99-9e00-9f006d76cb69.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/.city-cache/jobs/f9ae3a93-15cd-4c99-9e00-9f006d76cb69.json",
+      "bytes": 3326,
+      "sha256": "1ceabbcac5a8d69f50ec428b41948c475b81bc4c4df263ffb85dffb6f636cb90"
+    },
+    {
+      "relativePath": "consumer/real-zun/city.config.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/city.config.json",
+      "bytes": 450,
+      "sha256": "0ba88aec6a04205e13836e0465e163675a4b721d76776158c331253df915be58"
+    },
+    {
+      "relativePath": "consumer/real-zun/city.lock.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/city.lock.json",
+      "bytes": 7877,
+      "sha256": "97adfbb6a4fdddd1cca41808e927116b834b4cac5ec91da7bb8b52aa01afcf05"
+    },
+    {
+      "relativePath": "consumer/real-zun/data/source.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/data/source.json",
+      "bytes": 2415,
+      "sha256": "0a00df8ec6e712b2745466aff9fb71da269687ebf3a9c6255874e02fc985ceae"
+    },
+    {
+      "relativePath": "consumer/real-zun/dist/attribution.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/dist/attribution.json",
+      "bytes": 133,
+      "sha256": "9774a9f60cc4ebf2875df78db407874abe4606799b125f83b458b0b5171dc79a"
+    },
+    {
+      "relativePath": "consumer/real-zun/dist/city.build-lock.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/dist/city.build-lock.json",
+      "bytes": 7877,
+      "sha256": "97adfbb6a4fdddd1cca41808e927116b834b4cac5ec91da7bb8b52aa01afcf05"
+    },
+    {
+      "relativePath": "consumer/real-zun/dist/manifest.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/dist/manifest.json",
+      "bytes": 26587,
+      "sha256": "3416e4100398456322ba51561a8497120d6784644f9e784a3e79cce2383bbcbc"
+    },
+    {
+      "relativePath": "consumer/real-zun/dist/report.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/dist/report.json",
+      "bytes": 2587,
+      "sha256": "25592eed33cd175b3b5bdc204ded625cc414dd83dd106aff64ac32951b0929de"
+    },
+    {
+      "relativePath": "consumer/real-zun/rules/packages/418288a5c99daac6ac5b3b95ad35ad18a2e9232bdc4717221f8db4b5ad479daa.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/rules/packages/418288a5c99daac6ac5b3b95ad35ad18a2e9232bdc4717221f8db4b5ad479daa.json",
+      "bytes": 757,
+      "sha256": "cffc3e203e599cfeb15ba06d20ff4bba5138c95a91d9dd9e456be7206ec1e4d2"
+    },
+    {
+      "relativePath": "consumer/real-zun/site/assets/city-ink.js",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/site/assets/city-ink.js",
+      "bytes": 1111253,
+      "sha256": "87f5a81554ce734de3ad4d3a88349b5bc593d40457126b42171d66a732fab12c"
+    },
+    {
+      "relativePath": "consumer/real-zun/site/index.html",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/site/index.html",
+      "bytes": 818,
+      "sha256": "b738b9dfd9c8fc2085aaaef3ee9771501734e651d1942bf6e0124d054c7c0b15"
+    },
+    {
+      "relativePath": "consumer/real-zun/site/scene/attribution.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/site/scene/attribution.json",
+      "bytes": 133,
+      "sha256": "9774a9f60cc4ebf2875df78db407874abe4606799b125f83b458b0b5171dc79a"
+    },
+    {
+      "relativePath": "consumer/real-zun/site/scene/manifest.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/site/scene/manifest.json",
+      "bytes": 26587,
+      "sha256": "3416e4100398456322ba51561a8497120d6784644f9e784a3e79cce2383bbcbc"
+    },
+    {
+      "relativePath": "consumer/real-zun/site/scene/report.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/site/scene/report.json",
+      "bytes": 2587,
+      "sha256": "25592eed33cd175b3b5bdc204ded625cc414dd83dd106aff64ac32951b0929de"
+    },
+    {
+      "relativePath": "consumer/real-zun/site/viewer-config.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/site/viewer-config.json",
+      "bytes": 61,
+      "sha256": "04419a82b2e8d5f182b11708239d0b1ab52b9d3746d9c6762eef626f7f089882"
+    },
+    {
+      "relativePath": "consumer/real-zun/site/viewer.js",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/real-zun/site/viewer.js",
+      "bytes": 1182,
+      "sha256": "e19f1d37c7f7d45e7bfd103b0df272489ed8db309947a85f58c61eb230f1e0a3"
+    },
+    {
+      "relativePath": "consumer/sample/.city-cache/jobs/1869bf20-581e-4720-876f-f35bcf5d25a0.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/.city-cache/jobs/1869bf20-581e-4720-876f-f35bcf5d25a0.json",
+      "bytes": 3317,
+      "sha256": "0c06d4fd2c8ac2677ead1fc596da53714a92d0777fb9bad96e9390a6a9edd358"
+    },
+    {
+      "relativePath": "consumer/sample/.city-cache/jobs/496bb9ff-b802-4014-98da-ab0ce3cbcf1c.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/.city-cache/jobs/496bb9ff-b802-4014-98da-ab0ce3cbcf1c.json",
+      "bytes": 692,
+      "sha256": "0701c75979774ab78ad1e608413f47d0147a374f7b79994713dc171a083e6df1"
+    },
+    {
+      "relativePath": "consumer/sample/city.config.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/city.config.json",
+      "bytes": 451,
+      "sha256": "61fe2e49fa7844c9479f3650e244cf52bc4d494a776e661ccc76a12d69e48769"
+    },
+    {
+      "relativePath": "consumer/sample/city.lock.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/city.lock.json",
+      "bytes": 3954,
+      "sha256": "387750b138c5d39ab8adc3cee332c91672e27fa6e2fe8ff9faa6d857887531b3"
+    },
+    {
+      "relativePath": "consumer/sample/data/source.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/data/source.json",
+      "bytes": 1030,
+      "sha256": "97e66b61c64345a0c4a6bfe8fddc9a42e86e8b129aa1ceff45c39fce85c1da39"
+    },
+    {
+      "relativePath": "consumer/sample/dist/attribution.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/dist/attribution.json",
+      "bytes": 131,
+      "sha256": "06aa544cc70f3108da8bb6e5914f1974cfa338ff9245b3af7a7019c5eee19fc3"
+    },
+    {
+      "relativePath": "consumer/sample/dist/city.build-lock.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/dist/city.build-lock.json",
+      "bytes": 3954,
+      "sha256": "387750b138c5d39ab8adc3cee332c91672e27fa6e2fe8ff9faa6d857887531b3"
+    },
+    {
+      "relativePath": "consumer/sample/dist/manifest.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/dist/manifest.json",
+      "bytes": 9076,
+      "sha256": "81342827273cbb8bbf0ab8ad25f7c5d558eec9a355b5208aa5bf8748cf9e242c"
+    },
+    {
+      "relativePath": "consumer/sample/dist/report.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/dist/report.json",
+      "bytes": 2620,
+      "sha256": "c4f9ffdefb4fab9bb9f18ea8aef30d11f0c5c21fc04f4fc0e32f20574faa401c"
+    },
+    {
+      "relativePath": "consumer/sample/exports/nested/assets/city-ink.js",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/exports/nested/assets/city-ink.js",
+      "bytes": 1111253,
+      "sha256": "87f5a81554ce734de3ad4d3a88349b5bc593d40457126b42171d66a732fab12c"
+    },
+    {
+      "relativePath": "consumer/sample/exports/nested/index.html",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/exports/nested/index.html",
+      "bytes": 818,
+      "sha256": "b738b9dfd9c8fc2085aaaef3ee9771501734e651d1942bf6e0124d054c7c0b15"
+    },
+    {
+      "relativePath": "consumer/sample/exports/nested/scene/attribution.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/exports/nested/scene/attribution.json",
+      "bytes": 131,
+      "sha256": "06aa544cc70f3108da8bb6e5914f1974cfa338ff9245b3af7a7019c5eee19fc3"
+    },
+    {
+      "relativePath": "consumer/sample/exports/nested/scene/manifest.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/exports/nested/scene/manifest.json",
+      "bytes": 9076,
+      "sha256": "81342827273cbb8bbf0ab8ad25f7c5d558eec9a355b5208aa5bf8748cf9e242c"
+    },
+    {
+      "relativePath": "consumer/sample/exports/nested/scene/report.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/exports/nested/scene/report.json",
+      "bytes": 2620,
+      "sha256": "c4f9ffdefb4fab9bb9f18ea8aef30d11f0c5c21fc04f4fc0e32f20574faa401c"
+    },
+    {
+      "relativePath": "consumer/sample/exports/nested/viewer-config.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/exports/nested/viewer-config.json",
+      "bytes": 118,
+      "sha256": "e27c39c217fc055198bc51090a6bb989960c771bbb2391b211a0a94a1f5d2038"
+    },
+    {
+      "relativePath": "consumer/sample/exports/nested/viewer.js",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/sample/exports/nested/viewer.js",
+      "bytes": 1182,
+      "sha256": "e19f1d37c7f7d45e7bfd103b0df272489ed8db309947a85f58c61eb230f1e0a3"
+    },
+    {
+      "relativePath": "consumer/styles/sepia.js",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/styles/sepia.js",
+      "bytes": 931,
+      "sha256": "df916d8221a81e788d81d2c83e4418841460b411afad25aca9874cb229b8156c"
+    },
+    {
+      "relativePath": "consumer/typecheck.ts",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/consumer/typecheck.ts",
+      "bytes": 1807,
+      "sha256": "7da361437561a7a616ed231b12daca89833d50836fbd57a24a1fb0f36222046f"
+    },
+    {
+      "relativePath": "final-review.md",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/final-review.md",
+      "bytes": 17683,
+      "sha256": "de26dbb2b87a001dd3d14c0836960e7dfd71461f75dee38b23f96739dfc2a682"
+    },
+    {
+      "relativePath": "non-gpu-results.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/non-gpu-results.json",
+      "bytes": 7150,
+      "sha256": "d8421eba0018068028b45300dc3dc0fdf38f4547843cc6cce650794c3a73e11b"
+    },
+    {
+      "relativePath": "non-gpu.mjs",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/non-gpu.mjs",
+      "bytes": 9417,
+      "sha256": "5266d3a307b6b5dcb5508157e8c3e2eabeef12e6d2a7c022c53347c113e48118"
+    },
+    {
+      "relativePath": "prepare-beijing.mjs",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/prepare-beijing.mjs",
+      "bytes": 2277,
+      "sha256": "f1e642d9c4f83ce2a32321c03d02fc0f200dc0a7c208f2fc4a944f36f94d0e0f"
+    },
+    {
+      "relativePath": "review-progress.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/review-progress.json",
+      "bytes": 10354,
+      "sha256": "36cc4df93238d325e6f128c0e3f2fdebde0ef6828cea2dc426958413cfccb5a8"
+    },
+    {
+      "relativePath": "screenshots/beijing-old-cctv.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/beijing-old-cctv.png",
+      "bytes": 1747827,
+      "sha256": "da6ef421f9b4dc52d33d12650dd337f608f4595aa0e53fac941ec33f936221aa"
+    },
+    {
+      "relativePath": "screenshots/beijing-old-citic.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/beijing-old-citic.png",
+      "bytes": 849740,
+      "sha256": "0d357fdb50ec3f6909bb4bfb37377123f5d0ef5f35d9dee1f419db0a98879795"
+    },
+    {
+      "relativePath": "screenshots/beijing-old-crossing.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/beijing-old-crossing.png",
+      "bytes": 847785,
+      "sha256": "67a5e19d62c0499897972b57251fd35768c8d83eda849317d351bf72b5d113bd"
+    },
+    {
+      "relativePath": "screenshots/beijing-old-overview.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/beijing-old-overview.png",
+      "bytes": 594566,
+      "sha256": "94770f3cfc2bbf1803b0a18576c8fabbc92c0ee81f0039c492bf6629b8364afe"
+    },
+    {
+      "relativePath": "screenshots/beijing-sdk-cctv.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/beijing-sdk-cctv.png",
+      "bytes": 1734943,
+      "sha256": "c5ec73eada068c613d059045ba97a20eb84d8973cb00d6711c56f9c737fb6427"
+    },
+    {
+      "relativePath": "screenshots/beijing-sdk-citic.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/beijing-sdk-citic.png",
+      "bytes": 889579,
+      "sha256": "b06c89d1dcefbcbe5aebb264994f3676f3216d124cd48004e7dabc169eff8ea9"
+    },
+    {
+      "relativePath": "screenshots/beijing-sdk-crossing.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/beijing-sdk-crossing.png",
+      "bytes": 1322596,
+      "sha256": "4085d68c1beb516d3a34f034a3a3396da517dc4e66915fb4aa18cf884bb6c8b6"
+    },
+    {
+      "relativePath": "screenshots/beijing-sdk-overview.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/beijing-sdk-overview.png",
+      "bytes": 548946,
+      "sha256": "407459c07fa79186addcf8d8d301fb4788f6387f6070eb88c298f2f594ef9e0a"
+    },
+    {
+      "relativePath": "screenshots/external-color.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/external-color.png",
+      "bytes": 43049,
+      "sha256": "e9cd69879a50ff7bfd2c3014434a4c6adc7bd4fcc50cf33dab0ed04ac2f01523"
+    },
+    {
+      "relativePath": "screenshots/external-comic.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/external-comic.png",
+      "bytes": 44537,
+      "sha256": "571417738131b68dbbb6c0a0163e7a25046436d58d6d5cd74f38da31d9fa061b"
+    },
+    {
+      "relativePath": "screenshots/external-line.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/external-line.png",
+      "bytes": 31078,
+      "sha256": "812c43cc09402866e600d703fbba004c0912f51ec3873a827355c253d09cae65"
+    },
+    {
+      "relativePath": "screenshots/external-project-sepia.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/external-project-sepia.png",
+      "bytes": 38205,
+      "sha256": "a0bfb954a816e2fc66d3e1e200ae14ce4edebf690245e8ecc6394019c3cf2bc7"
+    },
+    {
+      "relativePath": "screenshots/external-white.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/external-white.png",
+      "bytes": 24411,
+      "sha256": "7e51a02696fa98a60fdd16524c86551a1deb84a621ecdbd0444983795d21f788"
+    },
+    {
+      "relativePath": "screenshots/sdk-attributed-export.png",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/screenshots/sdk-attributed-export.png",
+      "bytes": 82593,
+      "sha256": "1f601ef71d11dcdc81ceef339bd562c8ff3846c16d0f01431936ca2faaa9893f"
+    },
+    {
+      "relativePath": "sdk-reference.html",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/sdk-reference.html",
+      "bytes": 211,
+      "sha256": "b3d2c55db87a7b85ffafae9a0635342a4c20711a34716ec4e9f6fe21c251818b"
+    },
+    {
+      "relativePath": "sdk-reference.js",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/sdk-reference.js",
+      "bytes": 660,
+      "sha256": "5862cb2428b7171cd02699fc7041857c137e3514cb6654602a64de0957437194"
+    },
+    {
+      "relativePath": "server-child.mjs",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/server-child.mjs",
+      "bytes": 219,
+      "sha256": "c8a8e7924b544e8bfb1e53b265fea1ca2814378dc98c74d5b3d6b1f52cb7912b"
+    },
+    {
+      "relativePath": "server-workspace/.city-service/jobs/24264c17-a569-4e9e-a348-559784f52376.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/server-workspace/.city-service/jobs/24264c17-a569-4e9e-a348-559784f52376.json",
+      "bytes": 3815,
+      "sha256": "62e5e1fb4d621956e2e12d0c01eca81621e8a90e89cdf33ce211906e25e6493a"
+    },
+    {
+      "relativePath": "server-workspace/.city-service/jobs/a51408dc-fd41-44b8-869e-f8ce611a6864.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/server-workspace/.city-service/jobs/a51408dc-fd41-44b8-869e-f8ce611a6864.json",
+      "bytes": 3815,
+      "sha256": "d367da05b4c92e93dc4182054afce95fedc7c19700b196fecbbe8fa0c507b91a"
+    },
+    {
+      "relativePath": "server-workspace/.city-service/jobs/owner.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/server-workspace/.city-service/jobs/owner.json",
+      "bytes": 60,
+      "sha256": "0fa3149bdbb0fb95de4b7ee1e422c1856131b67679d1995e57dcec2ce6028c4c"
+    },
+    {
+      "relativePath": "server-workspace/.city-service/projects.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/server-workspace/.city-service/projects.json",
+      "bytes": 77,
+      "sha256": "08fb953cd443435df4cf0156bf9958d7950f2d0621c08068038e0f29838927df"
+    },
+    {
+      "relativePath": "server-workspace/real-beijing/city.config.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/server-workspace/real-beijing/city.config.json",
+      "bytes": 441,
+      "sha256": "a44c079cc8b47d925aa11a557fd71573467c8cf35feb577beb3820c41712cbcb"
+    },
+    {
+      "relativePath": "server-workspace/real-beijing/city.lock.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/server-workspace/real-beijing/city.lock.json",
+      "bytes": 9230,
+      "sha256": "452ada7897d5d8e5b01115b72bb55aad8c2480975bb6d1b57bdf0b0452b1c331"
+    },
+    {
+      "relativePath": "server-workspace/real-beijing/data/source.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/server-workspace/real-beijing/data/source.json",
+      "bytes": 694200,
+      "sha256": "84f5735189b762e553f193da091d6e168a98f0c0ad98065e8fa9b1cc47e9a31a"
+    },
+    {
+      "relativePath": "server-workspace/real-beijing/dist/attribution.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/server-workspace/real-beijing/dist/attribution.json",
+      "bytes": 133,
+      "sha256": "9774a9f60cc4ebf2875df78db407874abe4606799b125f83b458b0b5171dc79a"
+    },
+    {
+      "relativePath": "server-workspace/real-beijing/dist/city.build-lock.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/server-workspace/real-beijing/dist/city.build-lock.json",
+      "bytes": 9230,
+      "sha256": "452ada7897d5d8e5b01115b72bb55aad8c2480975bb6d1b57bdf0b0452b1c331"
+    },
+    {
+      "relativePath": "server-workspace/real-beijing/dist/manifest.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/server-workspace/real-beijing/dist/manifest.json",
+      "bytes": 10990027,
+      "sha256": "7afa7b9d216f8f64689aa18eb71e0472c220c759d3f7bb88245750260695ccf4"
+    },
+    {
+      "relativePath": "server-workspace/real-beijing/dist/report.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/server-workspace/real-beijing/dist/report.json",
+      "bytes": 3066,
+      "sha256": "da6788d55a6c2a982439ef6a83daa2af405c17e76c6b29f2224c768e2067f5c4"
+    },
+    {
+      "relativePath": "ui-ready.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/ui-ready.json",
+      "bytes": 32,
+      "sha256": "5c342c38329b0bc63b8763db40b9f752be292a884038c282998aba7fa426db8c"
+    },
+    {
+      "relativePath": "ui-server-visible.mjs",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/ui-server-visible.mjs",
+      "bytes": 2729,
+      "sha256": "42a94db66a488d1519e847c95b8819851e83d08592ee4e9ed7d67e8133361f53"
+    },
+    {
+      "relativePath": "ui-server.mjs",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/ui-server.mjs",
+      "bytes": 2732,
+      "sha256": "9ff8aa8f6567553b995e039ea006178751cffea566bda197f5cd698c6fca3387"
+    },
+    {
+      "relativePath": "ui-workspace/.city-service/projects.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/ui-workspace/.city-service/projects.json",
+      "bytes": 71,
+      "sha256": "286b281dafb05d3e934a08de7456bd3062a3d66ee7da4bffe0763c4daf6b408e"
+    },
+    {
+      "relativePath": "ui-workspace/sample/city.config.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/ui-workspace/sample/city.config.json",
+      "bytes": 412,
+      "sha256": "60a8cf084fb6b31113749513bca4ed5bb8042fc89e958e6aea4beab70be4dc23"
+    },
+    {
+      "relativePath": "ui-workspace/sample/city.lock.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/ui-workspace/sample/city.lock.json",
+      "bytes": 123,
+      "sha256": "f81d53e15ac3a12a33517b27f1434852fca80d7f01f4867a321c93bbe1af93d6"
+    },
+    {
+      "relativePath": "ui-workspace/sample/data/source.json",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/ui-workspace/sample/data/source.json",
+      "bytes": 1048,
+      "sha256": "6a3a48ee2949e94f6231fe89f57730286a915617b31cd9b63b034d3abb28522d"
+    },
+    {
+      "relativePath": "upgrade-consumer.mjs",
+      "absolutePath": "C:/Users/宋世康/.codex/worktrees/phase1-integration/beijing-city-ink/work/independent-studio-review/upgrade-consumer.mjs",
+      "bytes": 1339,
+      "sha256": "8d617b9751da6e9a9ffca8df07f98f7fbac125828f1ea6ffc363dc146a9ed047"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "date": "2026-11-03",
+  "node": "v22.11.0",
+  "platform": "win32",
+  "packages": [
+    {
+      "id": "@city-ink/landmarks@1.0.0",
+      "name": "@city-ink/landmarks",
+      "version": "1.0.0",
+      "size": 3205,
+      "unpackedSize": 6348,
+      "shasum": "a5e7f41c9ee09501223440a1e598197a91283f28",
+      "integrity": "sha512-xRJ3F9by1JdZY0wxMcn/kPi+V7Ao6aC2VKlUGhByTD2loUQcZRKV+dDEn8ipLbG/hiPM5DN1wnsqkQX/Y5jxog==",
+      "filename": "city-ink-landmarks-1.0.0.tgz",
+      "files": [
+        {
+          "path": "LICENSE",
+          "size": 1267,
+          "mode": 420
+        },
+        {
+          "path": "README.md",
+          "size": 2354,
+          "mode": 420
+        },
+        {
+          "path": "index.d.ts",
+          "size": 761,
+          "mode": 420
+        },
+        {
+          "path": "index.js",
+          "size": 1603,
+          "mode": 420
+        },
+        {
+          "path": "package.json",
+          "size": 363,
+          "mode": 420
+        }
+      ],
+      "entryCount": 5,
+      "bundled": []
+    },
+    {
+      "id": "@city-ink/styles@1.0.0",
+      "name": "@city-ink/styles",
+      "version": "1.0.0",
+      "size": 4703,
+      "unpackedSize": 11010,
+      "shasum": "31bb8de95f141c9d567d331eeb011ddb716f949c",
+      "integrity": "sha512-DvuUnV8QwMExi5vh1IxazivlyLOffBFTZS8hpE3nFRyZ4gwgT0xhuTc3bh3Vd2IaphIvCtE10iB2b0OOm062/g==",
+      "filename": "city-ink-styles-1.0.0.tgz",
+      "files": [
+        {
+          "path": "LICENSE",
+          "size": 1267,
+          "mode": 420
+        },
+        {
+          "path": "README.md",
+          "size": 3768,
+          "mode": 420
+        },
+        {
+          "path": "cel.d.ts",
+          "size": 96,
+          "mode": 420
+        },
+        {
+          "path": "cel.js",
+          "size": 1601,
+          "mode": 420
+        },
+        {
+          "path": "index.d.ts",
+          "size": 1558,
+          "mode": 420
+        },
+        {
+          "path": "index.js",
+          "size": 2239,
+          "mode": 420
+        },
+        {
+          "path": "package.json",
+          "size": 481,
+          "mode": 420
+        }
+      ],
+      "entryCount": 7,
+      "bundled": []
+    }
+  ],
+  "update": {
+    "version": "1.1.0",
+    "hash": "19cab2250ea60a50a6fb5ee6f335d64c2a79bd882c5569ac769d6f2b0a0d0a19"
+  },
+  "rollback": {
+    "version": "1.0.0",
+    "hash": "4742e1b33012af809115c7e1cf32395883dc492560e21998268cee91669d1ace"
+  },
+  "offlineInstall": true,
+  "commit": "ce9c40c4d5d7b8040e49aa6192f704424c22284c",
+  "command": "node --test test/phase1-landmark-packages.test.js",
+  "input": "public/data/beijing-cbd.json",
+  "seed": 1
+}

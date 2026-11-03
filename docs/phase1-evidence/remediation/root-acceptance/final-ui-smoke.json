@@ -1,0 +1,85 @@
+{
+  "date": "2026-11-03T15:36:45.413Z",
+  "productCommit": "55862f0",
+  "mode": "Independent CUA UI on rebuilt synthetic sample and standard export web; no network blocking in this manual UI pass",
+  "records": [
+    {
+      "step": "reopen",
+      "observed": {
+        "camera": "street",
+        "diagnostics": "暂无诊断。",
+        "fov": "55",
+        "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.31\n}",
+        "quality": "low",
+        "style": "external"
+      }
+    },
+    {
+      "step": "export-web",
+      "observed": {
+        "diagnostics": "{\n  \"diagnostics\": [],\n  \"artifacts\": [\n    \"site/index.html\"\n  ],\n  \"result\": {\n    \"schemaVersion\": 1,\n    \"status\": \"succeeded\",\n    \"artifacts\": [\n      \"site/index.html\"\n    ],\n    \"diagnostics\": [],\n    \"scope\": \"complete-area\",\n    \"attribution\": \"© OpenStreetMap contributors; ODbL\"\n  }\n}",
+        "saveEnabled": true,
+        "status": "export-web · succeeded · complete"
+      }
+    },
+    {
+      "step": "static-external",
+      "observed": {
+        "canvas": 1,
+        "css": [
+          "http://127.0.0.1:51883/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/site/assets/project-style.css"
+        ],
+        "options": [
+          "漫画",
+          "线稿",
+          "彩色",
+          "白模",
+          "project-sepia"
+        ],
+        "status": "© OpenStreetMap contributors · ODbL",
+        "style": "project-sepia"
+      }
+    },
+    {
+      "step": "static-comic",
+      "observed": {
+        "canvas": 1,
+        "css": [
+          "http://127.0.0.1:51883/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/site/assets/project-style.css"
+        ],
+        "status": "© OpenStreetMap contributors · ODbL",
+        "style": "comic"
+      }
+    },
+    {
+      "step": "static-reload",
+      "observed": {
+        "css": [
+          "http://127.0.0.1:51883/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/site/assets/project-style.css"
+        ],
+        "status": "© OpenStreetMap contributors · ODbL",
+        "style": "project-sepia"
+      }
+    },
+    {
+      "step": "studio-final-reload",
+      "observed": {
+        "canvas": 1,
+        "css": [
+          "http://127.0.0.1:51883/assets/index-Cv6U9Mg_.css",
+          "http://127.0.0.1:51883/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/e2eaa139c18630ff7aab5525c6314f6797a6fcc494626ba145ef10d63bc325cd/assets/project-style.css"
+        ],
+        "diagnostics": "{\n  \"diagnostics\": [],\n  \"artifacts\": [\n    \"site/index.html\"\n  ],\n  \"result\": {\n    \"schemaVersion\": 1,\n    \"status\": \"succeeded\",\n    \"artifacts\": [\n      \"site/index.html\"\n    ],\n    \"diagnostics\": [],\n    \"scope\": \"complete-area\",\n    \"attribution\": \"© OpenStreetMap contributors; ODbL\"\n  }\n}",
+        "fov": "55",
+        "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.31\n}",
+        "project": "aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e",
+        "quality": "low",
+        "saveEnabled": true,
+        "style": "external"
+      }
+    }
+  ],
+  "studioLogs": [],
+  "staticLogs": [],
+  "scope": "Final short rerun after geometry changes; full earlier manual workflow and separate loopback-only export checks retained."
+}

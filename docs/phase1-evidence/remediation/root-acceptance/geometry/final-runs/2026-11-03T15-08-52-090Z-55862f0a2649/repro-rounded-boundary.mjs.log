@@ -1,0 +1,5 @@
+{
+  "name": "repro-rounded-boundary.mjs",
+  "status": "pass",
+  "stdout": "{\n  \"source\": \"Synthetic external vertical wall with IEEE-sized near-grid-plane tilt, matching observed high guardrail endcap signed z~1e-17\",\n  \"sourceArea\": 32,\n  \"emittedArea\": 32,\n  \"worldZRange\": [\n    -9.99999983775159e-18,\n    9.99999983775159e-18\n  ],\n  \"computedOwnersForRange\": [\n    \"0_1\",\n    \"1_1\"\n  ],\n  \"pieces\": [\n    \"0_0\",\n    \"1_1\"\n  ],\n  \"sourceInteriorPoint\": [\n    -4,\n    2,\n    -5e-18\n  ],\n  \"nearestEmittedSurfaceDistanceMeters\": 8.112420523638183e-26,\n  \"status\": \"pass\"\n}\n"
+}

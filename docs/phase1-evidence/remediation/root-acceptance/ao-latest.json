@@ -1,0 +1,269 @@
+{
+  "directory": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-acceptance\\ao-1793718510472",
+  "date": "2026-11-03T15:08:33.793Z",
+  "commit": "e11990c5dc6175dbdae7c2789b2c3a4e4f7f0a9c",
+  "status": "pass",
+  "mode": "Independent public createCityViewer, official createInkPipeline service observed through a custom StylePack factory; actual WebGL/PNG, no GPU performance claim",
+  "checks": [
+    {
+      "quality": "balanced",
+      "requested": 0.12,
+      "effectiveStrength": 0.12,
+      "aoEnabled": true,
+      "view": {
+        "position": [
+          153.91292724609383,
+          243.83730449676514,
+          256.52154541015636
+        ],
+        "target": [
+          0,
+          12.967913627624512,
+          0
+        ],
+        "fov": 45,
+        "near": 0.25
+      },
+      "rendering": {
+        "time": 1143.5,
+        "intervalMs": 8.299999999999955,
+        "drawCalls": 45,
+        "triangles": 2152,
+        "lines": 0,
+        "points": 0,
+        "rendererGeometries": 13,
+        "rendererTextures": 10,
+        "rendererPrograms": 19,
+        "cpuFrameMs": 0.8000000715255737,
+        "estimatedResidentBytes": 86292,
+        "chunks": 1,
+        "bodyNearDetails": 1,
+        "nearAttachmentDetails": 0,
+        "totalNearDetails": 1,
+        "nearGeometryArrayBytes": 0
+      }
+    },
+    {
+      "quality": "low",
+      "requested": 0.12,
+      "effectiveStrength": 0.12,
+      "aoEnabled": false,
+      "view": {
+        "position": [
+          153.91292724609383,
+          243.83730449676514,
+          256.52154541015636
+        ],
+        "target": [
+          0,
+          12.967913627624512,
+          0
+        ],
+        "fov": 45,
+        "near": 0.25
+      },
+      "rendering": {
+        "time": 1626.9,
+        "intervalMs": 8.400000000000091,
+        "drawCalls": 38,
+        "triangles": 1788,
+        "lines": 0,
+        "points": 0,
+        "rendererGeometries": 13,
+        "rendererTextures": 8,
+        "rendererPrograms": 15,
+        "cpuFrameMs": 0.5,
+        "estimatedResidentBytes": 86292,
+        "chunks": 1,
+        "bodyNearDetails": 1,
+        "nearAttachmentDetails": 0,
+        "totalNearDetails": 1,
+        "nearGeometryArrayBytes": 0
+      }
+    },
+    {
+      "quality": "high",
+      "requested": 0.12,
+      "effectiveStrength": 0.12,
+      "aoEnabled": true,
+      "view": {
+        "position": [
+          153.91292724609383,
+          243.83730449676514,
+          256.52154541015636
+        ],
+        "target": [
+          0,
+          12.967913627624512,
+          0
+        ],
+        "fov": 45,
+        "near": 0.25
+      },
+      "rendering": {
+        "time": 1801.9,
+        "intervalMs": 8.300000000000182,
+        "drawCalls": 45,
+        "triangles": 2152,
+        "lines": 0,
+        "points": 0,
+        "rendererGeometries": 13,
+        "rendererTextures": 10,
+        "rendererPrograms": 19,
+        "cpuFrameMs": 0.8999999761581421,
+        "estimatedResidentBytes": 86292,
+        "chunks": 1,
+        "bodyNearDetails": 1,
+        "nearAttachmentDetails": 0,
+        "totalNearDetails": 1,
+        "nearGeometryArrayBytes": 0
+      }
+    },
+    {
+      "quality": "balanced",
+      "requested": 0,
+      "effectiveStrength": 0,
+      "aoEnabled": true,
+      "view": {
+        "position": [
+          153.91292724609383,
+          243.83730449676514,
+          256.52154541015636
+        ],
+        "target": [
+          0,
+          12.967913627624512,
+          0
+        ],
+        "fov": 45,
+        "near": 0.25
+      },
+      "rendering": {
+        "time": 2101.9,
+        "intervalMs": 8.300000000000182,
+        "drawCalls": 45,
+        "triangles": 2152,
+        "lines": 0,
+        "points": 0,
+        "rendererGeometries": 13,
+        "rendererTextures": 10,
+        "rendererPrograms": 19,
+        "cpuFrameMs": 0.6000000238418579,
+        "estimatedResidentBytes": 86292,
+        "chunks": 1,
+        "bodyNearDetails": 1,
+        "nearAttachmentDetails": 0,
+        "totalNearDetails": 1,
+        "nearGeometryArrayBytes": 0
+      }
+    },
+    {
+      "quality": "balanced",
+      "requested": 0.12,
+      "effectiveStrength": 0.12,
+      "aoEnabled": true,
+      "view": {
+        "position": [
+          153.91292724609383,
+          243.83730449676514,
+          256.52154541015636
+        ],
+        "target": [
+          0,
+          12.967913627624512,
+          0
+        ],
+        "fov": 45,
+        "near": 0.25
+      },
+      "rendering": {
+        "time": 2260.3,
+        "intervalMs": 8.300000000000182,
+        "drawCalls": 45,
+        "triangles": 2152,
+        "lines": 0,
+        "points": 0,
+        "rendererGeometries": 13,
+        "rendererTextures": 10,
+        "rendererPrograms": 19,
+        "cpuFrameMs": 0.5,
+        "estimatedResidentBytes": 86292,
+        "chunks": 1,
+        "bodyNearDetails": 1,
+        "nearAttachmentDetails": 0,
+        "totalNearDetails": 1,
+        "nearGeometryArrayBytes": 0
+      }
+    },
+    {
+      "quality": "balanced",
+      "requested": 0.9,
+      "effectiveStrength": 0.9,
+      "aoEnabled": true,
+      "view": {
+        "position": [
+          153.91292724609383,
+          243.83730449676514,
+          256.52154541015636
+        ],
+        "target": [
+          0,
+          12.967913627624512,
+          0
+        ],
+        "fov": 45,
+        "near": 0.25
+      },
+      "rendering": {
+        "time": 2410.2,
+        "intervalMs": 8.199999999999818,
+        "drawCalls": 45,
+        "triangles": 2152,
+        "lines": 0,
+        "points": 0,
+        "rendererGeometries": 13,
+        "rendererTextures": 10,
+        "rendererPrograms": 19,
+        "cpuFrameMs": 0.5,
+        "estimatedResidentBytes": 86292,
+        "chunks": 1,
+        "bodyNearDetails": 1,
+        "nearAttachmentDetails": 0,
+        "totalNearDetails": 1,
+        "nearGeometryArrayBytes": 0
+      }
+    }
+  ],
+  "pngs": [
+    {
+      "strength": 0,
+      "sha256": "8ccb0b92d94a96a873692e86748509814f5fe70510b21806e795ed13024c4a7f",
+      "bytes": 52140
+    },
+    {
+      "strength": 0.12,
+      "sha256": "750d2aa53f06840813b27b0694a445785d786243e4796cdc0f85dfdeb7ab0fd7",
+      "bytes": 52132
+    },
+    {
+      "strength": 0.9,
+      "sha256": "20092c7f5fe3265d895fcf001dbc3d1047b50b815648494d840fdb590d8fc308",
+      "bytes": 52148
+    }
+  ],
+  "networkPolicy": "loopback-only",
+  "errors": [
+    {
+      "level": "warning",
+      "message": "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
+    },
+    {
+      "level": "warning",
+      "message": "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
+    },
+    {
+      "level": "warning",
+      "message": "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
+    }
+  ]
+}

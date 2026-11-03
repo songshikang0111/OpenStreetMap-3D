@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-03",
+  "branch": "codex/phase1-styles-repair",
+  "base": "278811f",
+  "commits": [
+    "3f605cb509d18eed2af5386c416f0d121b7b79a8",
+    "9ef9b0342f8b8d291dc40b7f26ec737907926589"
+  ],
+  "issue": "Root independent review: integer count0..5 accepted1.25; bundle accepted saved -2.75",
+  "contract": "finite number, safe integer, boolean, string; bounds/default/enum checked; unsupported types/keywords rejected; omitted-only defaults; explicit null/undefined rejected",
+  "verification": {
+    "npm test": {
+      "tests": 274,
+      "pass": 274,
+      "fail": 0,
+      "finalIndependentRerun": true
+    },
+    "npm run build": "pass",
+    "npm run test:types": "pass",
+    "parameter-typecheck.ts": "pass",
+    "independentPureCases": 62,
+    "registeredMutationCases": 10,
+    "loaderRegistryCases": 7,
+    "realExportRejections": 10,
+    "wholePriorSiteHashRetained": true,
+    "actualPublishedBundleLoader": "1.25/-2.75/6/null reject;5 accepted",
+    "sparseEnumFix": "Array(1) and [1,,] rejected including actual ESM bundle/CLI"
+  },
+  "scope": "C primitive parameter contract only; no SDK AO/runtime/GPU/integration writes or claims"
+}

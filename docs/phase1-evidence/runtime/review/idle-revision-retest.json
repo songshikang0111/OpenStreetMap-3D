@@ -1,0 +1,29 @@
+{
+  "result": {
+    "failures": 2,
+    "first": {
+      "ok": false,
+      "code": "ASSET_REQUEST_FAILED"
+    },
+    "immediate": {
+      "ok": true,
+      "visible": [
+        "0_1",
+        "1_1",
+        "1_0"
+      ]
+    },
+    "full": {
+      "2": 3
+    },
+    "far": {
+      "0": 3
+    },
+    "sky": {
+      "ok": true,
+      "elapsed": 30.5,
+      "visible": 0
+    }
+  },
+  "errors": []
+}

@@ -1,0 +1,281 @@
+{
+  "date": "2026-11-03T14:53:24.108Z",
+  "commit": "b40e6049a94075d34c11b8c946df33445bb5e3f6",
+  "status": "pass",
+  "input": "synthetic continuity fixture, seed71, divisions4",
+  "statement": "Water triangle positions/IDs are identical in each physical chunk at all LODs; every arbitrary per-chunk LOD combination preserves this water coverage.",
+  "perChunk": [
+    {
+      "id": "0_0",
+      "levels": {
+        "low": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "medium": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "high": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "1_0",
+      "levels": {
+        "low": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "medium": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "high": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "2_0",
+      "levels": {
+        "low": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "medium": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "high": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "3_0",
+      "levels": {
+        "low": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "medium": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "high": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "0_1",
+      "levels": {
+        "low": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "medium": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "high": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "1_1",
+      "levels": {
+        "low": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "medium": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "high": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "2_1",
+      "levels": {
+        "low": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "medium": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "high": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "3_1",
+      "levels": {
+        "low": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "medium": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "high": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "0_2",
+      "levels": {
+        "low": {
+          "triangles": 3,
+          "hash": "58438f2171c60c90c7d6dd2f3a6aaf9fff2bb6ce8f8f7c1b3ca16e3256eb695a"
+        },
+        "medium": {
+          "triangles": 3,
+          "hash": "58438f2171c60c90c7d6dd2f3a6aaf9fff2bb6ce8f8f7c1b3ca16e3256eb695a"
+        },
+        "high": {
+          "triangles": 3,
+          "hash": "58438f2171c60c90c7d6dd2f3a6aaf9fff2bb6ce8f8f7c1b3ca16e3256eb695a"
+        }
+      }
+    },
+    {
+      "id": "1_2",
+      "levels": {
+        "low": {
+          "triangles": 4,
+          "hash": "3f4a04bad86a1e3a3736641619ec7bb23ae5437c0fc34fe7a008ae5baa41fa76"
+        },
+        "medium": {
+          "triangles": 4,
+          "hash": "3f4a04bad86a1e3a3736641619ec7bb23ae5437c0fc34fe7a008ae5baa41fa76"
+        },
+        "high": {
+          "triangles": 4,
+          "hash": "3f4a04bad86a1e3a3736641619ec7bb23ae5437c0fc34fe7a008ae5baa41fa76"
+        }
+      }
+    },
+    {
+      "id": "2_2",
+      "levels": {
+        "low": {
+          "triangles": 4,
+          "hash": "d8f7c6bf01b62b7c66164bcdf95a14dfb08dacdd4d830ec6a2aa4318cfc7eaff"
+        },
+        "medium": {
+          "triangles": 4,
+          "hash": "d8f7c6bf01b62b7c66164bcdf95a14dfb08dacdd4d830ec6a2aa4318cfc7eaff"
+        },
+        "high": {
+          "triangles": 4,
+          "hash": "d8f7c6bf01b62b7c66164bcdf95a14dfb08dacdd4d830ec6a2aa4318cfc7eaff"
+        }
+      }
+    },
+    {
+      "id": "3_2",
+      "levels": {
+        "low": {
+          "triangles": 3,
+          "hash": "12048d2c2fa4ce07a0291bd8e93adb7a39d873d98ede108a215ca321a48d68fd"
+        },
+        "medium": {
+          "triangles": 3,
+          "hash": "12048d2c2fa4ce07a0291bd8e93adb7a39d873d98ede108a215ca321a48d68fd"
+        },
+        "high": {
+          "triangles": 3,
+          "hash": "12048d2c2fa4ce07a0291bd8e93adb7a39d873d98ede108a215ca321a48d68fd"
+        }
+      }
+    },
+    {
+      "id": "0_3",
+      "levels": {
+        "low": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "medium": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "high": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "1_3",
+      "levels": {
+        "low": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "medium": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "high": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "2_3",
+      "levels": {
+        "low": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "medium": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "high": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "3_3",
+      "levels": {
+        "low": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "medium": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "high": {
+          "triangles": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ]
+}

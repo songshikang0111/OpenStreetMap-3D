@@ -1,0 +1,24 @@
+{
+  "status": "prepared-not-executed",
+  "originalFiles": 94,
+  "recordedHashesVerified": 110,
+  "canonicalReplayFiles": 18,
+  "newFiles": [
+    {
+      "path": "replay.mjs",
+      "sha256": "80457a6c9e001784e5de0e5066586c58a80359fce9401d7659f8c1d24b5691b3",
+      "bytes": 4481
+    },
+    {
+      "path": "README.md",
+      "sha256": "8b894f18bb98a3cacad4bfe5df5709c531b28484301aeebac1cb3d4ee4557a25",
+      "bytes": 3035
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "6e679fa5210fd6eca62a324286cdaa20771a6c4e1a85288bd00a10892b6b1500",
+      "bytes": 54816
+    }
+  ],
+  "scope": "Read/copy/hash plus new wrapper/documentation authoring only. No test/build/browser/GPU or replay process executed."
+}

@@ -1,0 +1,930 @@
+{
+  "date": "2026-11-03T14:44:36.287Z",
+  "reviewedHead": "a273e6a05182f989966cc3136b1cd6ea7f289889",
+  "measuredCommit": "9407af9c752b6b7cfc32eb4fb17622824e453cfd",
+  "bundleSha256": "d867e0608eb7e7e3cc16f75f1d90e219f47cfbdcf94ea9b19d3d07c20b48e66b",
+  "mode": "Independent re-computation of saved raw GPU/frame data; this program does not measure GPU performance",
+  "status": "fail",
+  "errors": [
+    "Summary matrix is incomplete",
+    "Publisher summary is not pass",
+    "Current SDK differs from measured bundle",
+    "beijing-cbd-fixed-1: missing/invalid initial physical frame",
+    "beijing-cbd-fixed-1: truncated physical-frame window",
+    "beijing-cbd-fixed-1: initial/interval frame chronology mismatch",
+    "beijing-cbd-fixed-1: short physical-frame measurement window",
+    "beijing-cbd-fixed-1: drawing cap exceeded, including initial frame",
+    "beijing-cbd-fixed-1: near/bytes evidence invalid or exceeds cap, including initial frame",
+    "beijing-cbd-fixed-1 GPU: GPU sample outside this physical-frame window",
+    "beijing-cbd-fixed-1: build compiler commit differs from summary measurement commit",
+    "beijing-cbd-fixed-1: summary entry differs from raw SDK interval aggregates",
+    "beijing-cbd-fixed-1: drawing budget exceeded in an actual measured frame",
+    "beijing-cbd-fixed-1: missing or over-budget shared near-detail evidence",
+    "beijing-cbd-fixed-4: missing/invalid initial physical frame",
+    "beijing-cbd-fixed-4: truncated physical-frame window",
+    "beijing-cbd-fixed-4: initial/interval frame chronology mismatch",
+    "beijing-cbd-fixed-4: short physical-frame measurement window",
+    "beijing-cbd-fixed-4: drawing cap exceeded, including initial frame",
+    "beijing-cbd-fixed-4: near/bytes evidence invalid or exceeds cap, including initial frame",
+    "beijing-cbd-fixed-4 GPU: GPU sample outside this physical-frame window",
+    "beijing-cbd-fixed-4: build compiler commit differs from summary measurement commit",
+    "beijing-cbd-fixed-4: summary entry differs from raw SDK interval aggregates",
+    "beijing-cbd-fixed-4: drawing budget exceeded in an actual measured frame",
+    "beijing-cbd-fixed-4: missing or over-budget shared near-detail evidence",
+    "beijing-cbd-fixed-16: missing/invalid initial physical frame",
+    "beijing-cbd-fixed-16: truncated physical-frame window",
+    "beijing-cbd-fixed-16: initial/interval frame chronology mismatch",
+    "beijing-cbd-fixed-16: short physical-frame measurement window",
+    "beijing-cbd-fixed-16: drawing cap exceeded, including initial frame",
+    "beijing-cbd-fixed-16: near/bytes evidence invalid or exceeds cap, including initial frame",
+    "beijing-cbd-fixed-16 GPU: GPU sample outside this physical-frame window",
+    "beijing-cbd-fixed-16: build compiler commit differs from summary measurement commit",
+    "beijing-cbd-fixed-16: summary entry differs from raw SDK interval aggregates",
+    "beijing-cbd-fixed-16: drawing budget exceeded in an actual measured frame",
+    "beijing-cbd-fixed-16: missing or over-budget shared near-detail evidence",
+    "beijing-cbd-grow-1: missing/invalid initial physical frame",
+    "beijing-cbd-grow-1: truncated physical-frame window",
+    "beijing-cbd-grow-1: initial/interval frame chronology mismatch",
+    "beijing-cbd-grow-1: short physical-frame measurement window",
+    "beijing-cbd-grow-1: near/bytes evidence invalid or exceeds cap, including initial frame",
+    "beijing-cbd-grow-1 GPU: GPU sample outside this physical-frame window",
+    "beijing-cbd-grow-1: build compiler commit differs from summary measurement commit",
+    "beijing-cbd-grow-1: summary entry differs from raw SDK interval aggregates",
+    "beijing-cbd-grow-1: missing or over-budget shared near-detail evidence",
+    "beijing-cbd-grow-1: missing two stationary regression phases",
+    "beijing-cbd-grow-1: missing stationary t=13",
+    "beijing-cbd-grow-1: missing stationary t=19",
+    "beijing-cbd-grow-4: missing/invalid initial physical frame",
+    "beijing-cbd-grow-4: truncated physical-frame window",
+    "beijing-cbd-grow-4: initial/interval frame chronology mismatch",
+    "beijing-cbd-grow-4: short physical-frame measurement window",
+    "beijing-cbd-grow-4: drawing cap exceeded, including initial frame",
+    "beijing-cbd-grow-4: near/bytes evidence invalid or exceeds cap, including initial frame",
+    "beijing-cbd-grow-4 GPU: GPU sample outside this physical-frame window",
+    "beijing-cbd-grow-4: build compiler commit differs from summary measurement commit",
+    "beijing-cbd-grow-4: summary entry differs from raw SDK interval aggregates",
+    "beijing-cbd-grow-4: drawing budget exceeded in an actual measured frame",
+    "beijing-cbd-grow-4: missing or over-budget shared near-detail evidence",
+    "beijing-cbd-grow-9: missing/invalid initial physical frame",
+    "beijing-cbd-grow-9: truncated physical-frame window",
+    "beijing-cbd-grow-9: initial/interval frame chronology mismatch",
+    "beijing-cbd-grow-9: short physical-frame measurement window",
+    "beijing-cbd-grow-9: drawing cap exceeded, including initial frame",
+    "beijing-cbd-grow-9: near/bytes evidence invalid or exceeds cap, including initial frame",
+    "beijing-cbd-grow-9 GPU: GPU sample outside this physical-frame window",
+    "beijing-cbd-grow-9: build compiler commit differs from summary measurement commit",
+    "beijing-cbd-grow-9: summary entry differs from raw SDK interval aggregates",
+    "beijing-cbd-grow-9: drawing budget exceeded in an actual measured frame",
+    "beijing-cbd-grow-9: missing or over-budget shared near-detail evidence",
+    "kyoto-gion-fixed-1: missing/invalid initial physical frame",
+    "kyoto-gion-fixed-1: truncated physical-frame window",
+    "kyoto-gion-fixed-1: initial/interval frame chronology mismatch",
+    "kyoto-gion-fixed-1: short physical-frame measurement window",
+    "kyoto-gion-fixed-1: drawing cap exceeded, including initial frame",
+    "kyoto-gion-fixed-1: near/bytes evidence invalid or exceeds cap, including initial frame",
+    "kyoto-gion-fixed-1 GPU: GPU sample outside this physical-frame window",
+    "kyoto-gion-fixed-1: build compiler commit differs from summary measurement commit",
+    "kyoto-gion-fixed-1: summary entry differs from raw SDK interval aggregates",
+    "kyoto-gion-fixed-1: drawing budget exceeded in an actual measured frame",
+    "kyoto-gion-fixed-1: missing or over-budget shared near-detail evidence",
+    "kyoto-gion-fixed-4: missing/invalid initial physical frame",
+    "kyoto-gion-fixed-4: truncated physical-frame window",
+    "kyoto-gion-fixed-4: initial/interval frame chronology mismatch",
+    "kyoto-gion-fixed-4: short physical-frame measurement window",
+    "kyoto-gion-fixed-4: drawing cap exceeded, including initial frame",
+    "kyoto-gion-fixed-4: near/bytes evidence invalid or exceeds cap, including initial frame",
+    "kyoto-gion-fixed-4 GPU: GPU sample outside this physical-frame window",
+    "kyoto-gion-fixed-4: build compiler commit differs from summary measurement commit",
+    "kyoto-gion-fixed-4: summary entry differs from raw SDK interval aggregates",
+    "kyoto-gion-fixed-4: drawing budget exceeded in an actual measured frame",
+    "kyoto-gion-fixed-4: missing or over-budget shared near-detail evidence",
+    "kyoto-gion-fixed-16: missing/invalid initial physical frame",
+    "kyoto-gion-fixed-16: truncated physical-frame window",
+    "kyoto-gion-fixed-16: initial/interval frame chronology mismatch",
+    "kyoto-gion-fixed-16: short physical-frame measurement window",
+    "kyoto-gion-fixed-16: drawing cap exceeded, including initial frame",
+    "kyoto-gion-fixed-16: near/bytes evidence invalid or exceeds cap, including initial frame",
+    "kyoto-gion-fixed-16 GPU: GPU sample outside this physical-frame window",
+    "kyoto-gion-fixed-16: build compiler commit differs from summary measurement commit",
+    "kyoto-gion-fixed-16: summary entry differs from raw SDK interval aggregates",
+    "kyoto-gion-fixed-16: drawing budget exceeded in an actual measured frame",
+    "kyoto-gion-fixed-16: missing or over-budget shared near-detail evidence",
+    "kyoto-gion-grow-1: missing/invalid initial physical frame",
+    "kyoto-gion-grow-1: truncated physical-frame window",
+    "kyoto-gion-grow-1: initial/interval frame chronology mismatch",
+    "kyoto-gion-grow-1: short physical-frame measurement window",
+    "kyoto-gion-grow-1: drawing cap exceeded, including initial frame",
+    "kyoto-gion-grow-1: near/bytes evidence invalid or exceeds cap, including initial frame",
+    "kyoto-gion-grow-1 GPU: GPU sample outside this physical-frame window",
+    "kyoto-gion-grow-1: build compiler commit differs from summary measurement commit",
+    "kyoto-gion-grow-1: summary entry differs from raw SDK interval aggregates",
+    "kyoto-gion-grow-1: drawing budget exceeded in an actual measured frame",
+    "kyoto-gion-grow-1: missing or over-budget shared near-detail evidence",
+    "kyoto-gion-grow-4: missing/invalid initial physical frame",
+    "kyoto-gion-grow-4: truncated physical-frame window",
+    "kyoto-gion-grow-4: initial/interval frame chronology mismatch",
+    "kyoto-gion-grow-4: short physical-frame measurement window",
+    "kyoto-gion-grow-4: drawing cap exceeded, including initial frame",
+    "kyoto-gion-grow-4: near/bytes evidence invalid or exceeds cap, including initial frame",
+    "kyoto-gion-grow-4 GPU: GPU sample outside this physical-frame window",
+    "kyoto-gion-grow-4: build compiler commit differs from summary measurement commit",
+    "kyoto-gion-grow-4: summary entry differs from raw SDK interval aggregates",
+    "kyoto-gion-grow-4: drawing budget exceeded in an actual measured frame",
+    "kyoto-gion-grow-4: missing or over-budget shared near-detail evidence",
+    "kyoto-gion-grow-9: missing/invalid initial physical frame",
+    "kyoto-gion-grow-9: truncated physical-frame window",
+    "kyoto-gion-grow-9: initial/interval frame chronology mismatch",
+    "kyoto-gion-grow-9: short physical-frame measurement window",
+    "kyoto-gion-grow-9: drawing cap exceeded, including initial frame",
+    "kyoto-gion-grow-9: near/bytes evidence invalid or exceeds cap, including initial frame",
+    "kyoto-gion-grow-9 GPU: GPU sample outside this physical-frame window",
+    "kyoto-gion-grow-9: build compiler commit differs from summary measurement commit",
+    "kyoto-gion-grow-9: summary entry differs from raw SDK interval aggregates",
+    "kyoto-gion-grow-9: drawing budget exceeded in an actual measured frame",
+    "kyoto-gion-grow-9: missing or over-budget shared near-detail evidence"
+  ],
+  "cases": [
+    {
+      "name": "beijing-cbd-fixed-1",
+      "frames": 7199,
+      "intervalFrames": 7199,
+      "initialFrame": null,
+      "gpuWindow": {
+        "errors": [
+          "beijing-cbd-fixed-1 GPU: GPU sample outside this physical-frame window"
+        ],
+        "required": true,
+        "samples": 7199,
+        "pending": 1,
+        "active": false,
+        "statistics": {
+          "count": 7199,
+          "p50": 4.34176,
+          "p95": 5.661696,
+          "p99": 6.519808,
+          "max": 7.913472
+        }
+      },
+      "gpuSamples": 7199,
+      "rafP95": 8.400000000001455,
+      "triP95": 2638236,
+      "drawP95": 118,
+      "physicalDrawing": {
+        "triangles": {
+          "count": 7199,
+          "p50": 2638236,
+          "p95": 2638236,
+          "p99": 2638236,
+          "max": 2638236
+        },
+        "drawCalls": {
+          "count": 7199,
+          "p50": 118,
+          "p95": 118,
+          "p99": 118,
+          "max": 118
+        }
+      },
+      "triMax": 2638236,
+      "drawMax": 118,
+      "residentMax": 69948810,
+      "nearDetailsMax": null,
+      "triangleFramesOver": 7199,
+      "drawFramesOver": 0,
+      "swaps": 0,
+      "cancelled": 0,
+      "requestCounts": {
+        "manifest.json": 1,
+        "0_0.low.5b299e0651ecbf73.cink": 1
+      },
+      "stationary": [],
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "chunks": 1,
+      "features": 13293
+    },
+    {
+      "name": "beijing-cbd-fixed-4",
+      "frames": 7199,
+      "intervalFrames": 7199,
+      "initialFrame": null,
+      "gpuWindow": {
+        "errors": [
+          "beijing-cbd-fixed-4 GPU: GPU sample outside this physical-frame window"
+        ],
+        "required": true,
+        "samples": 7199,
+        "pending": 1,
+        "active": false,
+        "statistics": {
+          "count": 7199,
+          "p50": 3.92704,
+          "p95": 5.075968,
+          "p99": 5.563392,
+          "max": 7.9872
+        }
+      },
+      "gpuSamples": 7199,
+      "rafP95": 8.400000000001455,
+      "triP95": 2638230,
+      "drawP95": 430,
+      "physicalDrawing": {
+        "triangles": {
+          "count": 7199,
+          "p50": 2637078,
+          "p95": 2638230,
+          "p99": 2638230,
+          "max": 2638230
+        },
+        "drawCalls": {
+          "count": 7199,
+          "p50": 426,
+          "p95": 430,
+          "p99": 430,
+          "max": 430
+        }
+      },
+      "triMax": 2638230,
+      "drawMax": 430,
+      "residentMax": 69972930,
+      "nearDetailsMax": null,
+      "triangleFramesOver": 7199,
+      "drawFramesOver": 0,
+      "swaps": 0,
+      "cancelled": 0,
+      "requestCounts": {
+        "manifest.json": 1,
+        "0_1.low.b7afe74514e85035.cink": 1,
+        "1_1.low.8f0c16536bcff9c1.cink": 1,
+        "1_0.low.f39bb1d6569edde1.cink": 1,
+        "0_0.low.3071dd6c25acae61.cink": 1
+      },
+      "stationary": [],
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "chunks": 4,
+      "features": 13293
+    },
+    {
+      "name": "beijing-cbd-fixed-16",
+      "frames": 7187,
+      "intervalFrames": 7187,
+      "initialFrame": null,
+      "gpuWindow": {
+        "errors": [
+          "beijing-cbd-fixed-16 GPU: GPU sample outside this physical-frame window"
+        ],
+        "required": true,
+        "samples": 7187,
+        "pending": 1,
+        "active": false,
+        "statistics": {
+          "count": 7187,
+          "p50": 5.505024,
+          "p95": 6.808576,
+          "p99": 7.622656,
+          "max": 14.508032
+        }
+      },
+      "gpuSamples": 7187,
+      "rafP95": 8.400000000001455,
+      "triP95": 2531375,
+      "drawP95": 1298,
+      "physicalDrawing": {
+        "triangles": {
+          "count": 7187,
+          "p50": 2270639,
+          "p95": 2531375,
+          "p99": 2531375,
+          "max": 2531375
+        },
+        "drawCalls": {
+          "count": 7187,
+          "p50": 1126,
+          "p95": 1298,
+          "p99": 1298,
+          "max": 1298
+        }
+      },
+      "triMax": 2531375,
+      "drawMax": 1298,
+      "residentMax": 70042338,
+      "nearDetailsMax": null,
+      "triangleFramesOver": 7167,
+      "drawFramesOver": 3031,
+      "swaps": 0,
+      "cancelled": 1,
+      "requestCounts": {
+        "manifest.json": 1,
+        "2_3.low.379856d4b176eef4.cink": 2,
+        "1_3.low.7ab2bf4825f6e5bc.cink": 2,
+        "3_3.low.8d7a129d1cb89b22.cink": 4,
+        "2_3.medium.aed88fabb782bad1.cink": 1,
+        "3_2.low.9ca604efc9c2b5bd.cink": 3,
+        "1_1.low.4ee38b1db24698f3.cink": 1,
+        "2_2.low.46b3889360fb1069.cink": 1,
+        "2_1.low.0558934c218be088.cink": 1,
+        "1_2.low.f976cf9f29dcbc65.cink": 1,
+        "3_1.low.825bc8e5b9672315.cink": 2,
+        "0_3.low.beaae94ddb3194c7.cink": 5,
+        "1_0.low.5fa31c72634be9c1.cink": 2,
+        "0_1.low.2385b7215ed21086.cink": 2,
+        "3_0.low.438e65bdece85731.cink": 3,
+        "0_2.low.8dd42f81382f0af5.cink": 5,
+        "2_0.low.2c76b5f73a65ffb2.cink": 2,
+        "0_0.low.3ebff5df366b6335.cink": 4
+      },
+      "stationary": [],
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "chunks": 16,
+      "features": 13293
+    },
+    {
+      "name": "beijing-cbd-grow-1",
+      "frames": 7061,
+      "intervalFrames": 7061,
+      "initialFrame": null,
+      "gpuWindow": {
+        "errors": [
+          "beijing-cbd-grow-1 GPU: GPU sample outside this physical-frame window"
+        ],
+        "required": true,
+        "samples": 7061,
+        "pending": 1,
+        "active": false,
+        "statistics": {
+          "count": 7061,
+          "p50": 4.21376,
+          "p95": 5.920768,
+          "p99": 9.510912,
+          "max": 52.32128
+        }
+      },
+      "gpuSamples": 7061,
+      "rafP95": 8.400000000001455,
+      "triP95": 592086,
+      "drawP95": 350,
+      "physicalDrawing": {
+        "triangles": {
+          "count": 7061,
+          "p50": 590438,
+          "p95": 592086,
+          "p99": 595658,
+          "max": 599918
+        },
+        "drawCalls": {
+          "count": 7061,
+          "p50": 326,
+          "p95": 350,
+          "p99": 350,
+          "max": 350
+        }
+      },
+      "triMax": 599918,
+      "drawMax": 350,
+      "residentMax": 18118212,
+      "nearDetailsMax": null,
+      "triangleFramesOver": 0,
+      "drawFramesOver": 0,
+      "swaps": 31,
+      "cancelled": 149,
+      "requestCounts": {
+        "manifest.json": 1,
+        "0_0.low.f9edc29720a11a9c.cink": 7,
+        "0_0.high.fbe8aba94c60aa49.cink": 14,
+        "0_0.medium.85bf86dcb48e5e44.cink": 160
+      },
+      "stationary": [],
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "chunks": 1,
+      "features": 778
+    },
+    {
+      "name": "beijing-cbd-grow-4",
+      "frames": 7200,
+      "intervalFrames": 7200,
+      "initialFrame": null,
+      "gpuWindow": {
+        "errors": [
+          "beijing-cbd-grow-4 GPU: GPU sample outside this physical-frame window"
+        ],
+        "required": true,
+        "samples": 7200,
+        "pending": 1,
+        "active": false,
+        "statistics": {
+          "count": 7200,
+          "p50": 3.610624,
+          "p95": 4.77184,
+          "p99": 5.465088,
+          "max": 9.004032
+        }
+      },
+      "gpuSamples": 7200,
+      "rafP95": 8.400000000001455,
+      "triP95": 810569,
+      "drawP95": 368,
+      "physicalDrawing": {
+        "triangles": {
+          "count": 7200,
+          "p50": 808249,
+          "p95": 810569,
+          "p99": 810569,
+          "max": 810569
+        },
+        "drawCalls": {
+          "count": 7200,
+          "p50": 360,
+          "p95": 368,
+          "p99": 368,
+          "max": 368
+        }
+      },
+      "triMax": 810569,
+      "drawMax": 368,
+      "residentMax": 25432816,
+      "nearDetailsMax": null,
+      "triangleFramesOver": 7113,
+      "drawFramesOver": 0,
+      "swaps": 0,
+      "cancelled": 2,
+      "requestCounts": {
+        "manifest.json": 1,
+        "0_0.low.8288cc52c39568e6.cink": 1,
+        "1_1.low.ee865df28772733f.cink": 1,
+        "1_0.low.21f2467562d24e6f.cink": 1,
+        "0_0.medium.dd2c5a8420bd58ca.cink": 1,
+        "0_1.low.7d1d2f89fa948fa9.cink": 1,
+        "1_1.medium.fc6c6d58302c6485.cink": 1
+      },
+      "stationary": [],
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "chunks": 4,
+      "features": 5476
+    },
+    {
+      "name": "beijing-cbd-grow-9",
+      "frames": 7189,
+      "intervalFrames": 7189,
+      "initialFrame": null,
+      "gpuWindow": {
+        "errors": [
+          "beijing-cbd-grow-9 GPU: GPU sample outside this physical-frame window"
+        ],
+        "required": true,
+        "samples": 7189,
+        "pending": 1,
+        "active": false,
+        "statistics": {
+          "count": 7189,
+          "p50": 4.48,
+          "p95": 5.90848,
+          "p99": 6.6304,
+          "max": 9.877504
+        }
+      },
+      "gpuSamples": 7189,
+      "rafP95": 8.400000000001455,
+      "triP95": 1632516,
+      "drawP95": 731,
+      "physicalDrawing": {
+        "triangles": {
+          "count": 7189,
+          "p50": 1581048,
+          "p95": 1632516,
+          "p99": 1632516,
+          "max": 1632516
+        },
+        "drawCalls": {
+          "count": 7189,
+          "p50": 691,
+          "p95": 731,
+          "p99": 731,
+          "max": 731
+        }
+      },
+      "triMax": 1632516,
+      "drawMax": 731,
+      "residentMax": 50529425,
+      "nearDetailsMax": null,
+      "triangleFramesOver": 6858,
+      "drawFramesOver": 0,
+      "swaps": 2,
+      "cancelled": 12,
+      "requestCounts": {
+        "manifest.json": 1,
+        "2_2.low.4ac2221a5a54f3a4.cink": 2,
+        "1_2.low.1eef767cfc655351.cink": 2,
+        "1_1.low.149a29efe0e22aab.cink": 1,
+        "1_1.medium.8a04a93d755a26d4.cink": 8,
+        "0_1.low.aa992b8fd4518c68.cink": 3,
+        "0_2.low.2dc52c59f6d80532.cink": 3,
+        "2_1.low.39dcd7af63dc5e9d.cink": 2,
+        "1_0.low.fb2264ee78510f4e.cink": 2,
+        "2_0.low.86ad93701e54af39.cink": 2,
+        "0_0.low.5b0164b52fc81d0c.cink": 3,
+        "1_1.high.3f93153429ac7f66.cink": 2,
+        "0_1.medium.f30999377b35136a.cink": 1,
+        "2_2.medium.51bfd5d32197367b.cink": 1
+      },
+      "stationary": [],
+      "sourceHash": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "chunks": 9,
+      "features": 9417
+    },
+    {
+      "name": "kyoto-gion-fixed-1",
+      "frames": 7199,
+      "intervalFrames": 7199,
+      "initialFrame": null,
+      "gpuWindow": {
+        "errors": [
+          "kyoto-gion-fixed-1 GPU: GPU sample outside this physical-frame window"
+        ],
+        "required": true,
+        "samples": 7199,
+        "pending": 1,
+        "active": false,
+        "statistics": {
+          "count": 7199,
+          "p50": 4.497408,
+          "p95": 5.8112,
+          "p99": 6.375424,
+          "max": 7.723008
+        }
+      },
+      "gpuSamples": 7199,
+      "rafP95": 8.400000000001455,
+      "triP95": 3090196,
+      "drawP95": 126,
+      "physicalDrawing": {
+        "triangles": {
+          "count": 7199,
+          "p50": 3090196,
+          "p95": 3090196,
+          "p99": 3090196,
+          "max": 3090196
+        },
+        "drawCalls": {
+          "count": 7199,
+          "p50": 126,
+          "p95": 126,
+          "p99": 126,
+          "max": 126
+        }
+      },
+      "triMax": 3090196,
+      "drawMax": 126,
+      "residentMax": 102218323,
+      "nearDetailsMax": null,
+      "triangleFramesOver": 7199,
+      "drawFramesOver": 0,
+      "swaps": 0,
+      "cancelled": 0,
+      "requestCounts": {
+        "manifest.json": 1,
+        "0_0.low.f3ade470496ebc7b.cink": 1
+      },
+      "stationary": [],
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "chunks": 1,
+      "features": 8281
+    },
+    {
+      "name": "kyoto-gion-fixed-4",
+      "frames": 7199,
+      "intervalFrames": 7199,
+      "initialFrame": null,
+      "gpuWindow": {
+        "errors": [
+          "kyoto-gion-fixed-4 GPU: GPU sample outside this physical-frame window"
+        ],
+        "required": true,
+        "samples": 7199,
+        "pending": 1,
+        "active": false,
+        "statistics": {
+          "count": 7199,
+          "p50": 4.063232,
+          "p95": 5.20192,
+          "p99": 5.753856,
+          "max": 7.84384
+        }
+      },
+      "gpuSamples": 7199,
+      "rafP95": 8.400000000001455,
+      "triP95": 3090196,
+      "drawP95": 475,
+      "physicalDrawing": {
+        "triangles": {
+          "count": 7199,
+          "p50": 3086496,
+          "p95": 3090196,
+          "p99": 3090196,
+          "max": 3090196
+        },
+        "drawCalls": {
+          "count": 7199,
+          "p50": 451,
+          "p95": 475,
+          "p99": 475,
+          "max": 475
+        }
+      },
+      "triMax": 3090196,
+      "drawMax": 475,
+      "residentMax": 101761603,
+      "nearDetailsMax": null,
+      "triangleFramesOver": 7199,
+      "drawFramesOver": 0,
+      "swaps": 0,
+      "cancelled": 0,
+      "requestCounts": {
+        "manifest.json": 1,
+        "1_1.low.ebb0e3151f26705d.cink": 1,
+        "0_1.low.1063630d142b6115.cink": 1,
+        "1_0.low.b52cb4db39c619e3.cink": 1,
+        "0_0.low.adf749de3aac5105.cink": 1
+      },
+      "stationary": [],
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "chunks": 4,
+      "features": 8281
+    },
+    {
+      "name": "kyoto-gion-fixed-16",
+      "frames": 7185,
+      "intervalFrames": 7185,
+      "initialFrame": null,
+      "gpuWindow": {
+        "errors": [
+          "kyoto-gion-fixed-16 GPU: GPU sample outside this physical-frame window"
+        ],
+        "required": true,
+        "samples": 7185,
+        "pending": 1,
+        "active": false,
+        "statistics": {
+          "count": 7185,
+          "p50": 5.67296,
+          "p95": 7.036928,
+          "p99": 7.3472,
+          "max": 11.602944
+        }
+      },
+      "gpuSamples": 7185,
+      "rafP95": 8.400000000001455,
+      "triP95": 3090196,
+      "drawP95": 1404,
+      "physicalDrawing": {
+        "triangles": {
+          "count": 7185,
+          "p50": 2860872,
+          "p95": 3090196,
+          "p99": 3090196,
+          "max": 3090196
+        },
+        "drawCalls": {
+          "count": 7185,
+          "p50": 1268,
+          "p95": 1404,
+          "p99": 1404,
+          "max": 1404
+        }
+      },
+      "triMax": 3090196,
+      "drawMax": 1404,
+      "residentMax": 101850703,
+      "nearDetailsMax": null,
+      "triangleFramesOver": 7185,
+      "drawFramesOver": 4063,
+      "swaps": 0,
+      "cancelled": 0,
+      "requestCounts": {
+        "manifest.json": 1,
+        "0_2.low.e3143794949943b6.cink": 2,
+        "0_1.low.e7abe7f5cefaf0bd.cink": 2,
+        "3_3.low.963a15e684650c76.cink": 4,
+        "2_3.low.b5e8acf225ac1d50.cink": 3,
+        "1_3.low.ab008b4dd03920d1.cink": 3,
+        "3_2.low.953c19e7d00452ca.cink": 3,
+        "0_3.low.350d98e989f28ec0.cink": 5,
+        "2_2.low.c25fd3a7dba8dcfe.cink": 1,
+        "3_1.low.96b69ccbc080f5a4.cink": 3,
+        "2_1.low.639b8c3d380352e1.cink": 1,
+        "1_2.low.ad298aa2ebaa77df.cink": 1,
+        "3_0.low.c8c22b971939f6a7.cink": 2,
+        "1_0.low.debd902bf09f47b3.cink": 2,
+        "1_1.low.21b1c2ab829facd8.cink": 1,
+        "2_0.low.c180f5934a2c8a1c.cink": 1,
+        "0_0.low.9591c7d027657f8a.cink": 3
+      },
+      "stationary": [],
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "chunks": 16,
+      "features": 8281
+    },
+    {
+      "name": "kyoto-gion-grow-1",
+      "frames": 7125,
+      "intervalFrames": 7125,
+      "initialFrame": null,
+      "gpuWindow": {
+        "errors": [
+          "kyoto-gion-grow-1 GPU: GPU sample outside this physical-frame window"
+        ],
+        "required": true,
+        "samples": 7125,
+        "pending": 1,
+        "active": false,
+        "statistics": {
+          "count": 7125,
+          "p50": 4.0192,
+          "p95": 6.350848,
+          "p99": 9.767936,
+          "max": 236.583936
+        }
+      },
+      "gpuSamples": 7125,
+      "rafP95": 8.400000000001455,
+      "triP95": 83980,
+      "drawP95": 81,
+      "physicalDrawing": {
+        "triangles": {
+          "count": 7125,
+          "p50": 83980,
+          "p95": 83980,
+          "p99": 83980,
+          "max": 497820
+        },
+        "drawCalls": {
+          "count": 7125,
+          "p50": 81,
+          "p95": 81,
+          "p99": 81,
+          "max": 2626
+        }
+      },
+      "triMax": 497820,
+      "drawMax": 2626,
+      "residentMax": 19777166,
+      "nearDetailsMax": null,
+      "triangleFramesOver": 0,
+      "drawFramesOver": 10,
+      "swaps": 4,
+      "cancelled": 1,
+      "requestCounts": {
+        "manifest.json": 1,
+        "0_0.low.337b708b7ddff3a4.cink": 3,
+        "0_0.high.786195905145a97c.cink": 3
+      },
+      "stationary": [],
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "chunks": 1,
+      "features": 883
+    },
+    {
+      "name": "kyoto-gion-grow-4",
+      "frames": 7200,
+      "intervalFrames": 7200,
+      "initialFrame": null,
+      "gpuWindow": {
+        "errors": [
+          "kyoto-gion-grow-4 GPU: GPU sample outside this physical-frame window"
+        ],
+        "required": true,
+        "samples": 7200,
+        "pending": 1,
+        "active": false,
+        "statistics": {
+          "count": 7200,
+          "p50": 3.648512,
+          "p95": 4.852736,
+          "p99": 5.368832,
+          "max": 7.42912
+        }
+      },
+      "gpuSamples": 7200,
+      "rafP95": 8.400000000001455,
+      "triP95": 785420,
+      "drawP95": 342,
+      "physicalDrawing": {
+        "triangles": {
+          "count": 7200,
+          "p50": 783920,
+          "p95": 785420,
+          "p99": 785420,
+          "max": 785420
+        },
+        "drawCalls": {
+          "count": 7200,
+          "p50": 322,
+          "p95": 342,
+          "p99": 342,
+          "max": 342
+        }
+      },
+      "triMax": 785420,
+      "drawMax": 342,
+      "residentMax": 26622724,
+      "nearDetailsMax": null,
+      "triangleFramesOver": 7199,
+      "drawFramesOver": 0,
+      "swaps": 0,
+      "cancelled": 0,
+      "requestCounts": {
+        "manifest.json": 1,
+        "1_1.low.8292cea68456281e.cink": 1,
+        "0_1.low.7afcfdf9c90496c6.cink": 1,
+        "1_0.low.5aefaab7cd633098.cink": 1,
+        "0_0.low.3dd784436fafc204.cink": 1
+      },
+      "stationary": [],
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "chunks": 4,
+      "features": 3329
+    },
+    {
+      "name": "kyoto-gion-grow-9",
+      "frames": 7166,
+      "intervalFrames": 7166,
+      "initialFrame": null,
+      "gpuWindow": {
+        "errors": [
+          "kyoto-gion-grow-9 GPU: GPU sample outside this physical-frame window"
+        ],
+        "required": true,
+        "samples": 7166,
+        "pending": 1,
+        "active": false,
+        "statistics": {
+          "count": 7166,
+          "p50": 4.619264,
+          "p95": 5.896192,
+          "p99": 6.474752,
+          "max": 37.429248
+        }
+      },
+      "gpuSamples": 7166,
+      "rafP95": 8.400000000001455,
+      "triP95": 2499436,
+      "drawP95": 806,
+      "physicalDrawing": {
+        "triangles": {
+          "count": 7166,
+          "p50": 2469712,
+          "p95": 2499436,
+          "p99": 2499436,
+          "max": 2499436
+        },
+        "drawCalls": {
+          "count": 7166,
+          "p50": 742,
+          "p95": 806,
+          "p99": 806,
+          "max": 1627
+        }
+      },
+      "triMax": 2499436,
+      "drawMax": 1627,
+      "residentMax": 105491697,
+      "nearDetailsMax": null,
+      "triangleFramesOver": 6943,
+      "drawFramesOver": 7,
+      "swaps": 2,
+      "cancelled": 9,
+      "requestCounts": {
+        "manifest.json": 1,
+        "2_2.low.7c8feaceaadb193e.cink": 4,
+        "2_1.low.668d00413a64f1b5.cink": 2,
+        "1_2.low.0347297190eb56f6.cink": 2,
+        "1_0.low.18d8ecd488c9e4e4.cink": 2,
+        "0_2.low.18f2844c67b24f5a.cink": 4,
+        "0_1.low.c096732e412be23f.cink": 3,
+        "0_0.low.8d395093e7bcc222.cink": 3,
+        "1_1.low.ac64087c4f326310.cink": 1,
+        "2_0.low.ff515d7a5bea9471.cink": 2,
+        "0_0.medium.409adf5d6256106d.cink": 2,
+        "1_1.high.bbd31f8971b062e0.cink": 3,
+        "1_2.medium.2e80450e3f51eeec.cink": 1,
+        "1_1.medium.f2db5d34d4a6c55e.cink": 1,
+        "1_0.medium.2ff7cb07c4eb24d9.cink": 1,
+        "2_1.high.094f0a89ad3b0c66.cink": 1
+      },
+      "stationary": [],
+      "sourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+      "compilerCommit": "2ee762984ec643f8d3da74c39867cce631ff0bae",
+      "chunks": 9,
+      "features": 6698
+    }
+  ]
+}

@@ -1,0 +1,292 @@
+{
+  "environment": {
+    "date": "2026-11-03T09:41:03.889Z",
+    "commit": "024e12a656a6026ec87a554324ed74887213e595",
+    "platform": "win32",
+    "release": "10.0.26300",
+    "arch": "x64",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13600KF",
+    "cpuLogicalCount": 20,
+    "totalMemory": 34163961856,
+    "browserVersion": "153.0.8010.12",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "devicePixelRatio": 1,
+    "quality": "balanced",
+    "seconds": 60,
+    "acceptanceDuration": true,
+    "notes": [
+      "GPU memory is not measurable through WebGL. Resident byte values are estimates and CPU array counts.",
+      "Names prefixed core- use the real A CINK codec and C official styles. Others use the explicitly labelled fixture adapter.",
+      "Frames include every renderer pass, shadows, AO, composite and resolve. GPU timer queries not collected."
+    ]
+  },
+  "hardware": {
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+    "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "shadingLanguage": "WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4090 (0x00002684) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "gpuTimerExtension": true
+  },
+  "pathDurationSeconds": 60,
+  "lastSampleSeconds": 60.00459999995232,
+  "rawFrameCount": 7118,
+  "independentTiming": {
+    "p50": 8.30000000000291,
+    "p95": 8.400000000001455,
+    "p99": 8.5,
+    "long50": 6,
+    "long33": 6,
+    "max": 108.40000000000146,
+    "sumIntervals": 60035.899999999965,
+    "frameSpanMs": 60027.5
+  },
+  "source": {
+    "rawFile": "public/data/kyoto-gion.json",
+    "rawHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+    "reportSourceHash": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+    "manifestHash": "d58a7d27990cb10e91adb1242ab26cd89a68aabaef1d3ce7e173678cf0137794",
+    "servedManifestHash": "d58a7d27990cb10e91adb1242ab26cd89a68aabaef1d3ce7e173678cf0137794",
+    "reportManifestHash": "d58a7d27990cb10e91adb1242ab26cd89a68aabaef1d3ce7e173678cf0137794",
+    "codec": "CINK-v1",
+    "kind": "core-CINK-official-styles",
+    "normalizedSourceHash": "343a120c2f097a0d5bdd14916ef871245a7281672710438436a237ccb4569455",
+    "counts": {
+      "inputElements": 7014,
+      "features": 6698,
+      "buildings": 3912,
+      "trees": 993,
+      "chunks": 9
+    }
+  },
+  "cold": {
+    "firstUsableMountOnlyMs": 49.39999997615814,
+    "firstRenderedMs": 842.2999999523163,
+    "firstRenderedAtMs": 1023.3999999761581,
+    "loadRequestedAtMs": 181.10000002384186,
+    "computedFirstRenderedMs": 842.2999999523163,
+    "allLoadedMs": 1267.2999999523163,
+    "lastCounters": {
+      "time": 1920.9,
+      "intervalMs": 8.400000000000091,
+      "drawCalls": 702,
+      "triangles": 2476636,
+      "lines": 0,
+      "points": 0,
+      "rendererGeometries": 158,
+      "rendererTextures": 10,
+      "cpuFrameMs": 2.200000047683716,
+      "estimatedResidentBytes": 81798084,
+      "chunks": 9
+    }
+  },
+  "budget": {
+    "residentBytes": 100663296,
+    "visibleTriangles": 900000,
+    "drawCalls": 1500,
+    "concurrentLoads": 3,
+    "pixelRatio": 1,
+    "nearDetails": 18000,
+    "shadowQuality": 1,
+    "aoQuality": 1,
+    "hysteresis": 0.18,
+    "minResidenceMs": 700,
+    "unloadDelayMs": 350,
+    "prefetchMargin": 0.15
+  },
+  "runtime": {
+    "loads": 30,
+    "unloads": 21,
+    "cancelled": 1,
+    "failures": 0,
+    "fetchedBytes": 214906156,
+    "swaps": 0,
+    "peakConcurrentLoads": 3,
+    "peakEstimatedResidentBytes": 81798084,
+    "geometries": 157,
+    "textures": 0,
+    "materials": 157,
+    "geometryArrayBytes": 81798084,
+    "estimatedResidentBytes": 81798084,
+    "byteMetric": "CPU geometry arrays and manifest residentBytes/encoded bytes estimates; not measured GPU memory",
+    "currentChunks": 9,
+    "pendingLoads": 0,
+    "visibleChunks": 9,
+    "missingChunks": [],
+    "visibleIds": [
+      "2_2",
+      "1_2",
+      "2_1",
+      "0_2",
+      "1_1",
+      "0_1",
+      "2_0",
+      "1_0",
+      "0_0"
+    ],
+    "levels": {
+      "0": 9
+    },
+    "visibleTriangles": 521407,
+    "sceneDrawCalls": 157,
+    "nearDetails": 0,
+    "settled": true,
+    "firstUsableMs": 49.39999997615814
+  },
+  "rawPeaks": {
+    "calls": 702,
+    "triangles": 2476636,
+    "estimatedResidentBytes": 81798084
+  },
+  "comparisons": {
+    "far": {
+      "geometryArrayBytes": 81798084,
+      "estimatedResidentBytes": 81798084,
+      "draws": 702,
+      "triangles": 2476636,
+      "levels": {
+        "0": 9
+      }
+    },
+    "full": {
+      "geometryArrayBytes": 176772060,
+      "estimatedResidentBytes": 176772060,
+      "draws": 20623,
+      "triangles": 5260202,
+      "levels": {
+        "2": 9
+      }
+    },
+    "farAfter": {
+      "geometryArrayBytes": 81798084,
+      "estimatedResidentBytes": 81798084,
+      "draws": 702,
+      "triangles": 2476636,
+      "levels": {
+        "0": 9
+      }
+    }
+  },
+  "lifecycle": [
+    {
+      "cycle": 0,
+      "away": {
+        "geometry": 0,
+        "bytes": 0,
+        "near": 0
+      },
+      "returned": {
+        "geometry": 157,
+        "bytes": 81798084,
+        "estimated": 81798084,
+        "near": 0
+      }
+    },
+    {
+      "cycle": 1,
+      "away": {
+        "geometry": 0,
+        "bytes": 0,
+        "near": 0
+      },
+      "returned": {
+        "geometry": 157,
+        "bytes": 81798084,
+        "estimated": 81798084,
+        "near": 0
+      }
+    },
+    {
+      "cycle": 2,
+      "away": {
+        "geometry": 0,
+        "bytes": 0,
+        "near": 0
+      },
+      "returned": {
+        "geometry": 157,
+        "bytes": 81798084,
+        "estimated": 81798084,
+        "near": 0
+      }
+    },
+    {
+      "cycle": 3,
+      "away": {
+        "geometry": 0,
+        "bytes": 0,
+        "near": 0
+      },
+      "returned": {
+        "geometry": 157,
+        "bytes": 81798084,
+        "estimated": 81798084,
+        "near": 0
+      }
+    },
+    {
+      "cycle": 4,
+      "away": {
+        "geometry": 0,
+        "bytes": 0,
+        "near": 0
+      },
+      "returned": {
+        "geometry": 157,
+        "bytes": 81798084,
+        "estimated": 81798084,
+        "near": 0
+      }
+    }
+  ],
+  "network": {
+    "entries": 95,
+    "transferBytes": 731222661,
+    "encodedBodyBytes": 865633709,
+    "sdkFetched": 214906156
+  },
+  "diagnostics": [
+    {
+      "code": "LOD_BUDGET_DOWNGRADE",
+      "stage": "runtime",
+      "message": "Detail was reduced to preserve coverage within the configured resource budget."
+    },
+    {
+      "code": "COVERAGE_EXCEEDS_BUDGET",
+      "stage": "runtime",
+      "message": "Even the coarsest visible coverage exceeds budget. Increase budget or build a smaller supported area.",
+      "totals": {
+        "bytes": 83516693,
+        "triangles": 521407,
+        "calls": 709.3049142638183,
+        "details": 0
+      }
+    },
+    {
+      "code": "MEASURED_DRAW_BUDGET",
+      "stage": "runtime",
+      "message": "Whole-frame renderer counters exceed budget; the next schedule reduces geometric detail.",
+      "drawCalls": 370,
+      "triangles": 933776
+    }
+  ],
+  "errors": [],
+  "failedRequests": [
+    {
+      "url": "http://127.0.0.1:5187/work/runtime-fixtures/core-kyoto-gion-grow-9/chunks/2_2.medium.078583bc60dce9a8.cink",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "checks": {
+    "duration": true,
+    "p95": true,
+    "concurrency": true,
+    "farDrawReduction": true,
+    "farResidentReduction": true,
+    "lifecycle": true,
+    "errors": true
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "commit": "cf9c74f59faf5cf8b19ecfe8e5207c9c3dbc0e4a",
+  "candidateStatus": "rejected-before-GPU",
+  "reason": "Independent geometry review reproduced lost half-wall and guardrail end caps from rounded boundary candidate selection.",
+  "checks": "342 tests, types, three builds and isolated production package passed",
+  "gpuMatrix": "not-run",
+  "next": "Wait for the A boundary candidate/half-open fix, independent verification, and a new frozen commit."
+}

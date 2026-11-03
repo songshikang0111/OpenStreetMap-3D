@@ -1,6 +1,69 @@
-# 京城线境 / Beijing City Ink · v0.8.0
+# 城市线境 / City Ink
 
-开发者工具化的一期范围、使用流程、架构、并行任务与验收标准见 [一期实施规划](docs/phase1-plan.md)。规划包含本地工作台、标准化下载、CLI、Web SDK、可更新地标、连续分块与 LOD 性能验证；其中的新接口尚待实施，不代表当前版本已提供。
+本地城市生成工具链与 Three.js / WebGL 2 SDK：定位地点、确定范围、下载或导入 OSM、离线构建连续区域、预览画风，并交付可复现项目和静态网页。维护者不运营地图或构建服务器。包名暂沿用 `beijing-city-ink`，本轮仅本地打包，不远端发布。
+
+一期已在集成分支完成，AC01–AC27 独立验收全部通过：344项测试、严格类型、三套构建和140文件生产安装包验证通过。参考RTX4090上的北京/京都12组60秒路径及60轮资源往返通过，默认整帧预算不变；实际支持范围、下载源限制和可复跑证据见 [最新整体验收](docs/phase1-evidence/remediation/root-acceptance/acceptance.md)。[首次失败报告](docs/phase1-evidence/root-acceptance/acceptance.md)与旧原始记录保留，完整约定见 [一期规划](docs/phase1-plan.md)。历史版本与视觉研究保留在本文后半部分。
+
+## 快速开始
+
+需要 Node 22.11+；安装依赖后，内置合成小街区可断外网试用：
+
+```sh
+npm ci
+npm run build
+npm run studio -- --workspace ./work/studio
+```
+
+打开命令输出的本机 URL（默认 `http://127.0.0.1:4178/`），点击“打开内置离线样例”。也可输入坐标、官方地标 ID、OSM 链接或地址，选择候选、确认范围、创建项目、下载数据并构建。保存会保留范围、种子、规则/风格配置及当前相机；下次从项目列表或工作目录内相对路径重开。输入没有建筑或服务失败会给出诊断，不替换地点。
+
+CLI 使用同一管线和持久化任务：
+
+```sh
+node bin/city.js init ./work/my-city --sample --json
+node bin/city.js build --project ./work/my-city --offline --json
+node bin/city.js validate --project ./work/my-city --offline --json
+node bin/city.js export web --project ./work/my-city --json
+node scripts/serve-static.mjs ./work/my-city/site --port 4180
+```
+
+真实小范围示例：`city init my-city --area 39.908,116.459,39.910,116.462`，再 `city data fetch --project my-city`。本地 JSON 用 `city data import file.json --project my-city`。普通 build/export 不刷新网络；刷新数据须 `data fetch --refresh`。完整命令、JSON 输出和退出码见 `node bin/city.js --help`。失败任务用 `city jobs resume JOB_ID --project my-city` 恢复；批处理输入为 `{"projects":[{"project":"relative/path","kind":"build"}]}`，`city batch list.json --concurrency 2 --json` 可受控并行，部分失败返回非零。
+
+工作台只绑定 loopback、只访问指定工作根；Web SDK 和静态站点不依赖工作台 API。PNG/GLB CLI 导出使用已安装 Chrome/Edge（可设置 `CITY_BROWSER`）；PNG 为当前视野及已加载 LOD，GLB 明确完整范围并遵守资源预算。程序窗格、玻璃与漫画后处理不保证通用 GLB 保留。
+
+## 嵌入自己的网页
+
+将项目 `dist/` 作为静态 `scene/` 目录，安装本地 `npm pack` 产出的包，在自己的打包器项目中：
+
+```js
+import {createCityViewer} from 'beijing-city-ink';
+const viewer = await createCityViewer({
+  container: document.getElementById('city'),
+  manifestUrl: './scene/manifest.json',
+  style: 'comic', quality: 'balanced',
+  onDiagnostic: console.warn,
+  onSelect: feature => console.log(feature),
+});
+await viewer.whenIdle();
+await viewer.setStyle('line');
+// 容器卸载时：await viewer.dispose();
+```
+
+容器需有明确宽高。清单 URL 相对页面 base，块 URL 相对清单；可注入 `readAsset(url,{signal,responseType})`。SDK 提供相机、LOD/驻留预算、整帧统计、选择与 PNG/GLB 导出；类型位于 `src/sdk/index.d.ts`，独立例子位于 [examples/quickstart](examples/quickstart/index.html)。静态导出全部资源在本地，支持非根路径部署，需通过 HTTP 访问。
+
+## 开发与扩展
+
+```sh
+npm test
+npm run build
+npm pack --ignore-scripts --dry-run
+npm run dev
+```
+
+`npm run dev` 保留旧独立演示（默认端口 5178）。公共入口：根包为 SDK，`/core` 为编译与校验，`/styles` 为风格注册，`/landmarks` 为地标注册；JSON Schema 位于 `schemas/`。查看 [CONTRIBUTING](CONTRIBUTING.md)、[扩展教程](docs/extensions.md)、[支持与故障诊断](docs/support.md)、[AGENTS](AGENTS.md)。
+
+地图数据 © OpenStreetMap contributors，ODbL；原创代码与配方 MIT。地形、缺失高度与部分地标是明确的规则近似，不代表测绘级还原。下载和搜索依赖公开服务的当前配额，运行已构建场景可离线于外网。移动 GPU 和未实测平台不承诺支持。
+
+## 历史版本与演示研究
 
 使用真实北京 OSM 数据、Three.js 与独立编写的程序化建模/漫画渲染代码，在浏览器中构建国贸 CBD 街区。
 
@@ -70,7 +133,7 @@ npm run build     # 生成 dist/
 npm run preview   # 预览生产构建；请先停止同端口的 dev 服务
 ```
 
-当前通过121项完整自动测试与生产构建。v0.2的历史截图和评分见 [对比验收报告](docs/comparison-report.md)；依据见 [需求与评分约定](docs/comparison-requirements.md)及[原项目证据研究](docs/research-evidence.md)。构建仍会提示 Three.js 分包超过500kB，这是体积提示，不是失败。
+该历史阶段记录为121项完整自动测试与生产构建通过；当前一期结果见本文开头。v0.2的历史截图和评分见 [对比验收报告](docs/comparison-report.md)；依据见 [需求与评分约定](docs/comparison-requirements.md)及[原项目证据研究](docs/research-evidence.md)。构建仍会提示 Three.js 分包超过500kB，这是体积提示，不是失败。
 
 ## v0.2 已实现
 

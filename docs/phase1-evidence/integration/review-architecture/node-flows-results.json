@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-03T10:17:55.146Z",
+  "nearOwnership": [
+    {
+      "divisions": 1,
+      "walls": 8,
+      "trees": 349,
+      "claimedLandmarks": 5,
+      "signature": "d46ab8b2fdf8d68080ae5a263598e8c893cd6326f817fd8bc83571b51f829fca"
+    },
+    {
+      "divisions": 2,
+      "walls": 8,
+      "trees": 349,
+      "claimedLandmarks": 5,
+      "signature": "d46ab8b2fdf8d68080ae5a263598e8c893cd6326f817fd8bc83571b51f829fca"
+    },
+    {
+      "divisions": 4,
+      "walls": 8,
+      "trees": 349,
+      "claimedLandmarks": 5,
+      "signature": "d46ab8b2fdf8d68080ae5a263598e8c893cd6326f817fd8bc83571b51f829fca"
+    }
+  ],
+  "worker": {
+    "baseline": "succeeded",
+    "cancelled": "cancelled",
+    "priorManifestPreserved": true,
+    "projectLockRejected": true,
+    "resumed": "succeeded",
+    "attempt": 2,
+    "validateAfterResume": "succeeded",
+    "recipes": {
+      "versions": [
+        "1.0.1",
+        "1.0.2"
+      ],
+      "assetsChanged": true,
+      "rollbackAssetsEqual": true,
+      "rollbackContentHashEqual": true,
+      "finalValidate": "succeeded"
+    }
+  }
+}

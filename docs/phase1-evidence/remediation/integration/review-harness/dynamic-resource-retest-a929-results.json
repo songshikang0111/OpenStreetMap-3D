@@ -1,0 +1,108 @@
+{
+  "date": "2026-11-03T13:30:32.859Z",
+  "head": "8df77a3f2b566f893b5fd09caacb3bc841c54ab2",
+  "harnessCommit": "a929ceba548f20527798e91459fed6a14ddd9ac7",
+  "mode": "Constructed integrity units; no browser/GPU",
+  "positive": true,
+  "closedProbes": [
+    {
+      "name": "away-frames",
+      "rejected": true
+    },
+    {
+      "name": "away-crownClusters",
+      "rejected": true
+    },
+    {
+      "name": "away-branches",
+      "rejected": true
+    },
+    {
+      "name": "away-profiles",
+      "rejected": true
+    },
+    {
+      "name": "near-bytes-over-total",
+      "rejected": true
+    },
+    {
+      "name": "negative-near-component",
+      "rejected": true
+    },
+    {
+      "name": "peak-below-raw-max",
+      "rejected": true
+    },
+    {
+      "name": "end-above-peak",
+      "rejected": true
+    },
+    {
+      "name": "sample-total-mismatch",
+      "rejected": true
+    },
+    {
+      "name": "sample-near-bytes-over-total",
+      "rejected": true
+    },
+    {
+      "name": "missing-sample-render",
+      "rejected": true
+    }
+  ],
+  "additionalProbes": [
+    {
+      "name": "sample-observed-resident-over-limit-and-end-peak",
+      "sampleResident": 134217729,
+      "rawFrameMax": 1000,
+      "endPeak": 1000,
+      "status": "fail",
+      "stationaryResources": {
+        "resourceEvidence": true,
+        "resident": false,
+        "nearDetails": true
+      }
+    },
+    {
+      "name": "stationary-sample-over-end-peak",
+      "sampleResident": 1001,
+      "endPeak": 1000,
+      "status": "fail",
+      "sampleResidentDistribution": {
+        "count": 151,
+        "p50": 1000,
+        "p95": 1000,
+        "p99": 1000,
+        "max": 1001
+      }
+    },
+    {
+      "name": "path-sample-over-limit",
+      "sampleResident": 134217729,
+      "endPeak": 18118212,
+      "status": "fail",
+      "sampleResidentDistribution": {
+        "count": 61,
+        "p50": 9540465,
+        "p95": 18118212,
+        "p99": 134217729,
+        "max": 134217729
+      }
+    },
+    {
+      "name": "path-sample-over-end-peak",
+      "sampleResident": 18118213,
+      "endPeak": 18118212,
+      "status": "fail",
+      "sampleResidentDistribution": {
+        "count": 61,
+        "p50": 9540465,
+        "p95": 18118212,
+        "p99": 18118213,
+        "max": 18118213
+      }
+    }
+  ],
+  "exactResidentBoundaryPass": true,
+  "exactPathResidentBoundaryPass": true
+}

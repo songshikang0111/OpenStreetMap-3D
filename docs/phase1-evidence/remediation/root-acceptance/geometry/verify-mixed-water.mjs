@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {writeFileSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
+import * as THREE from 'three';
+import {compileScene} from '../../src/core/index.js';
+import {decodeChunk} from '../../src/core/scene-codec.js';
+import {continuityFixture} from '../../test/phase1-core-fixture.js';
+const cwd='C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink',commit=execFileSync('git',['rev-parse','HEAD'],{cwd,encoding:'utf8'}).trim(),{raw,config}=continuityFixture(),r=await compileScene(raw,{...config,tiling:{divisions:4}}),perChunk=[];
+const hash=ts=>createHash('sha256').update(ts.sort().join('\n')).digest('hex');
+for(const c of r.manifest.chunks){const row={id:c.id,levels:{}};for(const level of ['low','medium','high']){const d=c.lods.find(l=>l.id===level),g=await decodeChunk(r.assets[d.uri],d);g.updateMatrixWorld(true);const ts=[];g.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.userData.city.kind!=='water')return;const geo=o.geometry,p=geo.attributes.position,f=geo.attributes.cityFeature,ix=geo.index?.array;for(let i=0;i<(ix?.length??p.count);i+=3){const v=[0,1,2].map(k=>new THREE.Vector3().fromBufferAttribute(p,ix?ix[i+k]:i+k).applyMatrix4(o.matrixWorld).toArray());const cyclic=[v,[v[1],v[2],v[0]],[v[2],v[0],v[1]]].map(JSON.stringify).sort()[0];ts.push(JSON.stringify([f.getX(ix?ix[i]:i),cyclic]));}});row.levels[level]={triangles:ts.length,hash:hash(ts)};}
+ assert.deepEqual(row.levels.low,row.levels.medium,`${c.id} water low/medium`);assert.deepEqual(row.levels.low,row.levels.high,`${c.id} water low/high`);perChunk.push(row);}
+assert.ok(perChunk.some(c=>c.levels.low.triangles>0));const report={date:new Date().toISOString(),commit,status:'pass',input:'synthetic continuity fixture, seed71, divisions4',statement:'Water triangle positions/IDs are identical in each physical chunk at all LODs; every arbitrary per-chunk LOD combination preserves this water coverage.',perChunk};writeFileSync(new URL('./water-mixed-results.json',import.meta.url),JSON.stringify(report,null,2));console.log(JSON.stringify({commit,status:report.status,waterTriangles:perChunk.reduce((n,c)=>n+c.levels.low.triangles,0),statement:report.statement},null,2));

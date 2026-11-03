@@ -1,0 +1,80 @@
+{
+  "mode": "Synthetic assertion injection, not measured product behavior",
+  "baselineChecks": {
+    "resourceEvidence": true,
+    "resident": true,
+    "nearDetails": true,
+    "defaultBudget": true,
+    "camera": true,
+    "duration": true,
+    "frames": true,
+    "continuousSamples": true,
+    "requestEvidence": true,
+    "p95": true,
+    "running": true,
+    "drawingTriangles": true,
+    "drawingCalls": true,
+    "stableLod": true,
+    "noCancelledRequests": true,
+    "noRepeatedRequests": true,
+    "coverage": true
+  },
+  "residentOverChecks": {
+    "resourceEvidence": true,
+    "resident": false,
+    "nearDetails": true,
+    "defaultBudget": true,
+    "camera": true,
+    "duration": true,
+    "frames": true,
+    "continuousSamples": true,
+    "requestEvidence": true,
+    "p95": true,
+    "running": true,
+    "drawingTriangles": true,
+    "drawingCalls": true,
+    "stableLod": true,
+    "noCancelledRequests": true,
+    "noRepeatedRequests": true,
+    "coverage": true
+  },
+  "nearOverChecks": {
+    "resourceEvidence": true,
+    "resident": true,
+    "nearDetails": false,
+    "defaultBudget": true,
+    "camera": true,
+    "duration": true,
+    "frames": true,
+    "continuousSamples": true,
+    "requestEvidence": true,
+    "p95": true,
+    "running": true,
+    "drawingTriangles": true,
+    "drawingCalls": true,
+    "stableLod": true,
+    "noCancelledRequests": true,
+    "noRepeatedRequests": true,
+    "coverage": true
+  },
+  "residentOverPassed": false,
+  "nearOverPassed": false,
+  "oldFailures": [
+    {
+      "name": "beijing-cbd-grow-4",
+      "status": "fail",
+      "triangles": false,
+      "drawCalls": true,
+      "triangleFramesOver": 7113,
+      "drawCallFramesOver": 0
+    },
+    {
+      "name": "kyoto-gion-grow-1",
+      "status": "fail",
+      "triangles": true,
+      "drawCalls": false,
+      "triangleFramesOver": 0,
+      "drawCallFramesOver": 10
+    }
+  ]
+}

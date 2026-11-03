@@ -1,0 +1,4 @@
+
+> beijing-city-ink@0.8.1 test:types
+> tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 examples/quickstart/typecheck.ts
+

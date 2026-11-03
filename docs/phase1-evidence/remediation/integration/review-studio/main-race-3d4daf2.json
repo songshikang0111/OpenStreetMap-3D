@@ -1,0 +1,41 @@
+{
+  "commit": "3d4daf248224ce5675436f0b09d85512ac7aefa0",
+  "mainSource": "3d4daf2:studio/main.js",
+  "scope": "Actual main.js with injected DOM/API/imported engine fixtures; no GPU/browser.",
+  "beforeDispose": {
+    "activeViewers": [
+      2
+    ],
+    "ownedViewer": 2,
+    "activeCSS": 1
+  },
+  "afterDispose": {
+    "activeViewers": [],
+    "activeCSS": 0
+  },
+  "savedDuringLoad": {
+    "formStyle": "line",
+    "savedStyle": "line",
+    "renderedStyle": "line",
+    "newPreviewRequested": true
+  },
+  "projectSwitch": {
+    "id": "p2",
+    "liveViewers": 1,
+    "liveCSS": 1
+  },
+  "trace": [
+    "viewer-dispose-1",
+    "css-dispose-comic",
+    "viewer-dispose-2",
+    "css-dispose-comic",
+    "viewer-dispose-3",
+    "css-dispose-comic",
+    "viewer-dispose-4",
+    "css-dispose-line",
+    "viewer-dispose-5",
+    "css-dispose-line",
+    "viewer-dispose-6",
+    "css-dispose-comic"
+  ]
+}

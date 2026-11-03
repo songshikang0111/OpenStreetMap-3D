@@ -1,0 +1,633 @@
+{
+  "date": "2026-11-03T15:33:14.345Z",
+  "commit": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "projectRoot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\style-remediation-1793719989772",
+  "source": "Explicit synthetic offline sample; project-owned sepia + relative palette/CSS/SVG + mapped local dependency",
+  "standardCLI": [
+    {
+      "args": [
+        "build",
+        "--project",
+        "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\style-remediation-1793719989772",
+        "--offline",
+        "--json"
+      ],
+      "result": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "artifacts": [
+          "dist/manifest.json",
+          "city.lock.json"
+        ],
+        "diagnostics": [],
+        "job": {
+          "schemaVersion": 1,
+          "id": "6d2c2149-d05f-4583-8fde-5b891f9845a4",
+          "kind": "build",
+          "project": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\style-remediation-1793719989772",
+          "parameters": {},
+          "status": "succeeded",
+          "stage": "complete",
+          "progress": 1,
+          "artifacts": [
+            "dist/manifest.json",
+            "city.lock.json"
+          ],
+          "diagnostics": [],
+          "attempt": 1,
+          "createdAt": "2026-11-03T15:33:09.905Z",
+          "startedAt": "2026-11-03T15:33:09.907Z",
+          "result": {
+            "schemaVersion": 1,
+            "status": "succeeded",
+            "artifacts": [
+              "dist/manifest.json",
+              "city.lock.json"
+            ],
+            "diagnostics": [],
+            "contentHash": "175850475529b32619b6e3aa7986a9ec0a15fe5f7b1d47f292ab60f7f397ba4c",
+            "report": {
+              "schemaVersion": 1,
+              "status": "succeeded",
+              "diagnostics": [],
+              "hashes": {
+                "config": "96f6a4c74b6e071b752e399e80dda07a593287a50ffef1b71f6c36665a5a3c5e",
+                "source": "f6242b26ab60f3b23a021a0f21df51e2576a296f695ddc9f5a3ebdb00eba00c2",
+                "world": "b26c68d0b8a8e6b6d61c780073d462ef78e1f0a870b1f65ddaf04ebe19b03f77"
+              },
+              "counts": {
+                "inputElements": 3,
+                "features": 7,
+                "buildings": 1,
+                "trees": 1,
+                "chunks": 1
+              },
+              "road": {
+                "sourceRoads": 1,
+                "segments": 1,
+                "driveSegments": 1,
+                "walkSegments": 0,
+                "miterJoins": 0,
+                "bevelJoins": 0,
+                "duplicateSegments": 0,
+                "clippedOverlaps": 0,
+                "junctions": 0,
+                "crossingExclusions": 0,
+                "dashes": 0,
+                "stopLines": 0,
+                "drivePolygons": 1,
+                "walkPolygons": 0,
+                "pavingPolygons": 2,
+                "surfaceTriangles": 6,
+                "roadArea": 1332.4074902206153,
+                "pavementArea": 777.2377026286922,
+                "observedSidewalkWays": 0,
+                "observedCrossingWays": 0,
+                "inferredMarginWays": 1,
+                "pavementBuildingBlockers": 2,
+                "gradeSource": "OSM connectivity + inferred layer heights",
+                "gradeOriginalDiscontinuities": 0,
+                "gradeResolvedConnections": 0,
+                "gradeChangedWays": 0,
+                "gradeMaxVehicleSlope": 0,
+                "gradeSteepVehicleRuns": 0,
+                "gradeCrossingConstraints": 0,
+                "gradeRemainingDiscontinuities": 0,
+                "gradeConstraintIterations": 0,
+                "gradeConstraintConflicts": 0,
+                "gradeAmbiguousCrossings": 0,
+                "stairFlights": 0,
+                "gradeSteepWalkingWays": 0,
+                "gradeMaxWalkingSlope": 0,
+                "renderedTriangles": 6,
+                "bridgeWays": 0,
+                "bridgeSegments": 0,
+                "bridgeDecks": 0,
+                "bridgePiers": 0,
+                "bridgeSupportCandidates": 0,
+                "bridgeGuardrailSegments": 0,
+                "bridgeRailInteriorSkipped": 0,
+                "bridgeRejectedSupports": {},
+                "unsupportedBridgeWays": 0,
+                "bridgeHeightSource": "inferred-layer-times-7m",
+                "bridgeGradeConnectionsUnresolved": 0,
+                "bridgeStructureTriangles": 0,
+                "stairTreads": 0,
+                "stairPosts": 0,
+                "stairTriangles": 0,
+                "stairSkippedFlights": 0,
+                "stairSteepFlights": 0,
+                "stairHeightSource": "shared-road-grade-inference"
+              },
+              "landscape": {
+                "observedFeatures": 0,
+                "observedSurfaceArea": 0,
+                "inferredSites": 0,
+                "inferredPavedArea": 0,
+                "inferredPlantedArea": 0,
+                "rejectedCandidates": 0,
+                "rejectedGeometry": 0,
+                "templates": {},
+                "layouts": {},
+                "kindAreas": {},
+                "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+                "availableTreeCandidates": 0,
+                "availablePropCandidates": 0,
+                "treesByTemplate": {},
+                "commonCandidates": 0,
+                "treeCandidates": 0,
+                "props": 0,
+                "surfaces": 0,
+                "inferredArea": 0,
+                "inferredFraction": 0,
+                "knownGroundFraction": 0,
+                "unfilledBeforeFraction": 0.9223057644110275,
+                "unfilledAfterFraction": 0.9223057644110275,
+                "coverageSampleSpacing": 12,
+                "coverageSamples": 399,
+                "markingStrips": 0,
+                "markingPrecisionRetries": 0,
+                "omittedMarkingStrips": 0,
+                "renderedTriangles": 0,
+                "drawMeshes": 0
+              },
+              "roof": {
+                "tagged": 0,
+                "inferred": 0,
+                "unsupported": 0
+              },
+              "determinism": {
+                "timestampsExcluded": true,
+                "uuidExcluded": true,
+                "worldHashExcludesTiling": true
+              }
+            }
+          },
+          "finishedAt": "2026-11-03T15:33:10.191Z"
+        }
+      }
+    },
+    {
+      "args": [
+        "export",
+        "web",
+        "--project",
+        "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\style-remediation-1793719989772",
+        "--output",
+        "exports/nonroot/city",
+        "--offline",
+        "--json"
+      ],
+      "result": {
+        "schemaVersion": 1,
+        "status": "succeeded",
+        "artifacts": [
+          "exports/nonroot/city/index.html"
+        ],
+        "diagnostics": [],
+        "job": {
+          "schemaVersion": 1,
+          "id": "c69e13dc-7be1-4a4e-bf91-a0adb1cdb357",
+          "kind": "export-web",
+          "project": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\style-remediation-1793719989772",
+          "parameters": {
+            "output": "exports/nonroot/city"
+          },
+          "status": "succeeded",
+          "stage": "complete",
+          "progress": 1,
+          "artifacts": [
+            "exports/nonroot/city/index.html"
+          ],
+          "diagnostics": [],
+          "attempt": 1,
+          "createdAt": "2026-11-03T15:33:10.307Z",
+          "startedAt": "2026-11-03T15:33:10.309Z",
+          "result": {
+            "schemaVersion": 1,
+            "status": "succeeded",
+            "artifacts": [
+              "exports/nonroot/city/index.html"
+            ],
+            "diagnostics": [],
+            "scope": "complete-area",
+            "attribution": "© OpenStreetMap contributors; ODbL"
+          },
+          "finishedAt": "2026-11-03T15:33:10.589Z"
+        }
+      }
+    }
+  ],
+  "configStyle": {
+    "id": "project-sepia",
+    "entry": "styles/sepia.js",
+    "dependencies": {
+      "local-palette": "styles/vendor.js"
+    },
+    "assets": [
+      "styles/paper#v2%done.svg"
+    ],
+    "parameters": {
+      "warmth": 0.23
+    }
+  },
+  "environment": {
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4090 (0x00002684) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "viewport": [
+      960,
+      640
+    ],
+    "assetOK": true,
+    "css": "yes",
+    "savedParameters": {
+      "warmth": 0.23
+    }
+  },
+  "assetPaths": [
+    {
+      "path": "./assets/style-files/styles/paper%23v2%25done.svg",
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/style-files/styles/paper%23v2%25done.svg",
+      "status": 200
+    },
+    {
+      "path": "http://127.0.0.1:56893/exports/nonroot/city/assets/resources/VQYB6Z5L.svg",
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/resources/VQYB6Z5L.svg",
+      "status": 200
+    }
+  ],
+  "styles": [
+    {
+      "id": "comic",
+      "triangles": {
+        "count": 9,
+        "p50": 1706,
+        "p95": 2152,
+        "p99": 2152,
+        "max": 2152
+      },
+      "diagnostics": [],
+      "parameters": {
+        "warmth": 0.23
+      }
+    },
+    {
+      "id": "line",
+      "triangles": {
+        "count": 55,
+        "p50": 1706,
+        "p95": 2152,
+        "p99": 2152,
+        "max": 2152
+      },
+      "diagnostics": [],
+      "parameters": {
+        "warmth": 0.23
+      }
+    },
+    {
+      "id": "color",
+      "triangles": {
+        "count": 100,
+        "p50": 1706,
+        "p95": 2152,
+        "p99": 2152,
+        "max": 2152
+      },
+      "diagnostics": [],
+      "parameters": {
+        "warmth": 0.23
+      }
+    },
+    {
+      "id": "white",
+      "triangles": {
+        "count": 139,
+        "p50": 1706,
+        "p95": 2152,
+        "p99": 2152,
+        "max": 2152
+      },
+      "diagnostics": [],
+      "parameters": {
+        "warmth": 0.23
+      }
+    },
+    {
+      "id": "project-sepia",
+      "triangles": {
+        "count": 186,
+        "p50": 1706,
+        "p95": 1706,
+        "p99": 2152,
+        "max": 2152
+      },
+      "diagnostics": [],
+      "parameters": {
+        "warmth": 0.23
+      }
+    }
+  ],
+  "exports": [
+    {
+      "format": "png",
+      "bytes": 34011,
+      "signature": [
+        137,
+        80,
+        78,
+        71,
+        13,
+        10,
+        26,
+        10
+      ],
+      "scope": "current-view-loaded-lods"
+    },
+    {
+      "format": "glb",
+      "bytes": 103900,
+      "signature": [
+        103,
+        108,
+        84,
+        70,
+        2,
+        0,
+        0,
+        0
+      ],
+      "scope": "complete"
+    }
+  ],
+  "cssLifecycle": {
+    "baseline": 1,
+    "counts": [
+      2,
+      1,
+      2,
+      1,
+      2,
+      1,
+      2,
+      1,
+      2,
+      1
+    ]
+  },
+  "initializationFailure": {
+    "error": "Unable to load http://127.0.0.1:56893/exports/nonroot/city/scene/manifest.json: HTTP 404 Not Found",
+    "stylesheets": 0,
+    "css": ""
+  },
+  "errors": [
+    {
+      "level": "warning",
+      "message": "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
+    },
+    {
+      "level": "warning",
+      "message": "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
+    },
+    {
+      "level": "warning",
+      "message": "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
+    }
+  ],
+  "networkPolicy": "loopback-only",
+  "network": [
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/index.html",
+      "allowed": true,
+      "observedAt": 1793719990931
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/viewer.js",
+      "allowed": true,
+      "observedAt": 1793719990948
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/city-ink.js",
+      "allowed": true,
+      "observedAt": 1793719990956
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/chunks/chunk-UV7IOE7I.js",
+      "allowed": true,
+      "observedAt": 1793719990965
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/viewer-config.json",
+      "allowed": true,
+      "observedAt": 1793719990983
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/project-style.css",
+      "allowed": true,
+      "observedAt": 1793719991001
+    },
+    {
+      "url": "http://127.0.0.1:56893/favicon.ico",
+      "allowed": true,
+      "observedAt": 1793719991001
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/project-style.js",
+      "allowed": true,
+      "observedAt": 1793719991005
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/resources/VQYB6Z5L.svg",
+      "allowed": true,
+      "observedAt": 1793719991037
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/scene/manifest.json",
+      "allowed": true,
+      "observedAt": 1793719991037
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/scene/chunks/0_0.low.9cacef94e9ec8148.cink",
+      "allowed": true,
+      "observedAt": 1793719991468
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/resources/1376e38f32688a98-paper%23v2%25done.svg",
+      "allowed": true,
+      "observedAt": 1793719991477
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/scene/chunks/0_0.high.f43f4d0c7f534bf8.cink",
+      "allowed": true,
+      "observedAt": 1793719991526
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/viewer-config.json",
+      "allowed": true,
+      "observedAt": 1793719991694
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/style-files/styles/paper%23v2%25done.svg",
+      "allowed": true,
+      "observedAt": 1793719991697
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/resources/VQYB6Z5L.svg",
+      "allowed": true,
+      "observedAt": 1793719991697
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/index.html",
+      "allowed": true,
+      "observedAt": 1793719993947
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/viewer.js",
+      "allowed": true,
+      "observedAt": 1793719993966
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/city-ink.js",
+      "allowed": true,
+      "observedAt": 1793719993973
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/chunks/chunk-UV7IOE7I.js",
+      "allowed": true,
+      "observedAt": 1793719993983
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/viewer-config.json",
+      "allowed": true,
+      "observedAt": 1793719994004
+    },
+    {
+      "url": "http://127.0.0.1:56893/favicon.ico",
+      "allowed": true,
+      "observedAt": 1793719994004
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/project-style.css",
+      "allowed": true,
+      "observedAt": 1793719994009
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/project-style.js",
+      "allowed": true,
+      "observedAt": 1793719994014
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/resources/VQYB6Z5L.svg",
+      "allowed": true,
+      "observedAt": 1793719994018
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/scene/manifest.json",
+      "allowed": true,
+      "observedAt": 1793719994033
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/scene/chunks/0_0.low.9cacef94e9ec8148.cink",
+      "allowed": true,
+      "observedAt": 1793719994052
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/resources/1376e38f32688a98-paper%23v2%25done.svg",
+      "allowed": true,
+      "observedAt": 1793719994058
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/scene/chunks/0_0.high.f43f4d0c7f534bf8.cink",
+      "allowed": true,
+      "observedAt": 1793719994060
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/viewer-config.json",
+      "allowed": true,
+      "observedAt": 1793719994135
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/project-style.css",
+      "allowed": true,
+      "observedAt": 1793719994140
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/project-style.css",
+      "allowed": true,
+      "observedAt": 1793719994144
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/project-style.css",
+      "allowed": true,
+      "observedAt": 1793719994148
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/project-style.css",
+      "allowed": true,
+      "observedAt": 1793719994153
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/project-style.css",
+      "allowed": true,
+      "observedAt": 1793719994158
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/scene/chunks/0_0.high.f43f4d0c7f534bf8.cink",
+      "allowed": true,
+      "observedAt": 1793719994209
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/index.html",
+      "allowed": true,
+      "observedAt": 1793719994237
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/viewer.js",
+      "allowed": true,
+      "observedAt": 1793719994254
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/city-ink.js",
+      "allowed": true,
+      "observedAt": 1793719994261
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/chunks/chunk-UV7IOE7I.js",
+      "allowed": true,
+      "observedAt": 1793719994271
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/viewer-config.json",
+      "allowed": true,
+      "observedAt": 1793719994290
+    },
+    {
+      "url": "http://127.0.0.1:56893/favicon.ico",
+      "allowed": true,
+      "observedAt": 1793719994291
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/project-style.css",
+      "allowed": true,
+      "observedAt": 1793719994296
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/project-style.js",
+      "allowed": true,
+      "observedAt": 1793719994301
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/assets/resources/VQYB6Z5L.svg",
+      "allowed": true,
+      "observedAt": 1793719994319
+    },
+    {
+      "url": "http://127.0.0.1:56893/exports/nonroot/city/scene/manifest.json",
+      "allowed": true,
+      "observedAt": 1793719994322
+    }
+  ],
+  "nonRootPath": "/exports/nonroot/city/index.html",
+  "scope": "Functional static export only; no GPU benchmark"
+}

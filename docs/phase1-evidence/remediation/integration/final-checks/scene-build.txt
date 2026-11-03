@@ -1,0 +1,12 @@
+{"name":"beijing-cbd-fixed-1","chunks":1,"features":13293,"buildMs":12428.568800000001,"packageBytes":166607319}
+{"name":"beijing-cbd-fixed-4","chunks":4,"features":13293,"buildMs":12130.7547,"packageBytes":168006412}
+{"name":"beijing-cbd-fixed-16","chunks":16,"features":13293,"buildMs":12537.0658,"packageBytes":172958295}
+{"name":"beijing-cbd-grow-1","chunks":1,"features":778,"buildMs":1061.2716,"packageBytes":14157809}
+{"name":"beijing-cbd-grow-4","chunks":4,"features":5476,"buildMs":3702.5409,"packageBytes":50551640}
+{"name":"beijing-cbd-grow-9","chunks":9,"features":9417,"buildMs":7553.6584,"packageBytes":110613462}
+{"name":"kyoto-gion-fixed-1","chunks":1,"features":8281,"buildMs":21335.5382,"packageBytes":355455975}
+{"name":"kyoto-gion-fixed-4","chunks":4,"features":8281,"buildMs":21377.7325,"packageBytes":357477935}
+{"name":"kyoto-gion-fixed-16","chunks":16,"features":8281,"buildMs":21409.4209,"packageBytes":362922836}
+{"name":"kyoto-gion-grow-1","chunks":1,"features":883,"buildMs":1594.6538,"packageBytes":31715188}
+{"name":"kyoto-gion-grow-4","chunks":4,"features":3329,"buildMs":6217.209,"packageBytes":129374899}
+{"name":"kyoto-gion-grow-9","chunks":9,"features":6698,"buildMs":16369.690599999998,"packageBytes":296927307}

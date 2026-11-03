@@ -1,0 +1,26 @@
+{
+  "result": {
+    "before": {
+      "disposes": 0,
+      "bitmapWidth": 16,
+      "textures": 1
+    },
+    "exportBytes": 16991756,
+    "after": {
+      "disposes": 1,
+      "bitmapWidth": 0,
+      "textures": 1
+    }
+  },
+  "warnings": [
+    "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead.",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "THREE.WARNING: Multiple instances of Three.js being imported.",
+    "THREE.GLTFExporter: Creating normalized normal attribute from the non-normalized one.",
+    "THREE.GLTFExporter: Creating normalized normal attribute from the non-normalized one.",
+    "THREE.GLTFExporter: Creating normalized normal attribute from the non-normalized one.",
+    "WebGL: INVALID_VALUE: texSubImage2D: The source data has been detached.",
+    "[.WebGL-0x7d8c001d7200] GL_INVALID_VALUE: glTexStorage2D: One or more image dimensions are not positive.",
+    "[.WebGL-0x7d8c001d7200] GL_INVALID_OPERATION: glGenerateMipmap: Texture format does not support mipmap generation."
+  ]
+}

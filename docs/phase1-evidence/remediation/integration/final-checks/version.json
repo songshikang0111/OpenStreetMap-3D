@@ -1,0 +1,706 @@
+{
+  "date": "2026-11-03T15:39:07.575Z",
+  "measurementCommit": "55862f0a2649fb9289331c9ea19b2325f35f3037",
+  "fullChecksProductCommit": "e11990c5dc6175dbdae7c2789b2c3a4e4f7f0a9c",
+  "changedPathsSinceFullChecks": [
+    "docs/phase1-evidence/remediation/core/audit-costs.mjs",
+    "docs/phase1-evidence/remediation/core/boundary-regression.json",
+    "docs/phase1-evidence/remediation/core/cost-summary.json",
+    "docs/phase1-evidence/remediation/core/handoff.md",
+    "docs/phase1-evidence/remediation/core/implementation.md",
+    "docs/phase1-evidence/remediation/core/mixed-bridge.json",
+    "docs/phase1-evidence/remediation/core/mixed-ground.json",
+    "docs/phase1-evidence/remediation/core/mixed-road.json",
+    "docs/phase1-evidence/remediation/core/review.md"
+  ],
+  "productDiffSinceFullChecks": "",
+  "sceneCompilerCommits": [
+    "55862f0a2649fb9289331c9ea19b2325f35f3037"
+  ],
+  "productionBundleSha256": "d867e0608eb7e7e3cc16f75f1d90e219f47cfbdcf94ea9b19d3d07c20b48e66b",
+  "sourceDigest": "95541ee96ae088e1dcddacfb0f3656a5c858ace40e9d11c67a129f437245ce1f",
+  "sourceFiles": [
+    {
+      "file": "bin/city.js",
+      "sha256": "d85ccd22f2cd0fc69eb310085eeca5b241cbaae7d34a664c13c835a80cbdafc6"
+    },
+    {
+      "file": "package-lock.json",
+      "sha256": "fa112cee2e4094afd9d10f634127c55be1f2bba45109de3fabc702096e82f9df"
+    },
+    {
+      "file": "package.json",
+      "sha256": "18c7707c4723eb45e9389c1667a42aabfd0d3cc6181f90fe39f019442626e23d"
+    },
+    {
+      "file": "packages/landmarks/LICENSE",
+      "sha256": "01ac21c68844a54e13d67603f04447af8d75bfb53fb08648809a97875b72e5b6"
+    },
+    {
+      "file": "packages/landmarks/README.md",
+      "sha256": "e1e9f600fce35c5100830c7fac78b6e549d627d21d0da8caa8173c34a8fb23d1"
+    },
+    {
+      "file": "packages/landmarks/index.d.ts",
+      "sha256": "5a10ec179b47a61e2798e4edc8561156326535c3d08922817fb33a87a5cd28fa"
+    },
+    {
+      "file": "packages/landmarks/index.js",
+      "sha256": "12719cdf32ba9f43b83c0d1f39b56b93a54b3f4a21335b40d1f3a58fa8b521c0"
+    },
+    {
+      "file": "packages/landmarks/package.json",
+      "sha256": "2e48bbdebe2b9dabc61203b7a8ffbfc10cfbd4b734f847a20fb7f5ceebbc179c"
+    },
+    {
+      "file": "packages/styles/LICENSE",
+      "sha256": "01ac21c68844a54e13d67603f04447af8d75bfb53fb08648809a97875b72e5b6"
+    },
+    {
+      "file": "packages/styles/README.md",
+      "sha256": "68d7393c20060bdfad3f1bb22cd4a1786aed64ab2d2f4f9b4667dd03705f8196"
+    },
+    {
+      "file": "packages/styles/cel.d.ts",
+      "sha256": "c9182203ebf34a3e09999206d57c13d06bf32d7ef7fada157ffcc07f2e2dc21a"
+    },
+    {
+      "file": "packages/styles/cel.js",
+      "sha256": "9928622239b00d56ec8af0e9cd60694d3c5b5f3103841700df2bc1afd109bbef"
+    },
+    {
+      "file": "packages/styles/index.d.ts",
+      "sha256": "de09ee8472a11a042aa0bd9bb3e8f1989bf244dec6d50ee97e0cbc9f98b14800"
+    },
+    {
+      "file": "packages/styles/index.js",
+      "sha256": "9e19c4bce1e9598f281566ee2e2b51fcbf121df3fb5220b4424cc0b097c0a4cd"
+    },
+    {
+      "file": "packages/styles/package.json",
+      "sha256": "20374861dfba4d0eb650d4260dacd812331aa83219673262d73cf8ad49cd513a"
+    },
+    {
+      "file": "schemas/landmark-recipe.schema.json",
+      "sha256": "a8fd5cb99a816dd7b260d37f548d9478477fe299bff5e21e6c8b21416283ba73"
+    },
+    {
+      "file": "schemas/project.schema.json",
+      "sha256": "a59a9b5c5f4c63bb3e2ebe5a29a968c9ec1ffc1473d934ed2d5b4d24664a621a"
+    },
+    {
+      "file": "schemas/scene.schema.json",
+      "sha256": "d09da8cd7efd175cf0b3f7eda1c6263db6a82ce954b5680c74c936a74216c724"
+    },
+    {
+      "file": "schemas/style.schema.json",
+      "sha256": "cf2a0d36a24671d78804439448daf6690d2b501b9d9876a70e226141a1b3f055"
+    },
+    {
+      "file": "scripts/audit_distance.mjs",
+      "sha256": "b7144a1a129dd3cdbecce3fae6409b32faf807ad112acb5df89652c7047d5318"
+    },
+    {
+      "file": "scripts/audit_ground_roofs.mjs",
+      "sha256": "c7699ef6f0f0c5b479cc3f38625c45420be516251aaa05230c06a05300924539"
+    },
+    {
+      "file": "scripts/audit_landscape.mjs",
+      "sha256": "060442f2f872009249ceb381d6f22c6eb46ac41ac65b08d7917e4b273f85d589"
+    },
+    {
+      "file": "scripts/audit_materials.mjs",
+      "sha256": "fad5c4b1a5f1799f7d7d7b426ec94c81171f79db5aa2bc88c562e284ed406bae"
+    },
+    {
+      "file": "scripts/audit_region_heights.mjs",
+      "sha256": "cfa8f6666ec3ea809f1808dfc4e083da67b0ca23cfaee198526226ccaacec863"
+    },
+    {
+      "file": "scripts/audit_regions.mjs",
+      "sha256": "88809b88bb13544b5dd25e698c3b5bc8a8f565e13cc29636b8419bd7e12cabc3"
+    },
+    {
+      "file": "scripts/audit_trees.mjs",
+      "sha256": "47c52fc048c6a3096c323959526378685d968496af1aa273146d725088b843ea"
+    },
+    {
+      "file": "scripts/audit_vegetation.mjs",
+      "sha256": "4432ad21172eb34e74be8b21db4eb1a14085579409063f475bee965196c949ec"
+    },
+    {
+      "file": "scripts/benchmark-integration/assessment.mjs",
+      "sha256": "3db20ef4412f7466918a9c0081b220cb8be5184a847421a0e8e4d5756b2d23d1"
+    },
+    {
+      "file": "scripts/benchmark-integration/index.html",
+      "sha256": "ae0fed2650f91429716ceb1280068838075964ffa42a35dc3d804cb71d2527d0"
+    },
+    {
+      "file": "scripts/benchmark-integration/page.js",
+      "sha256": "1d65e4cf07170f6b08ba7c9e7aa354d1f3c79a4c7156cb172abb6c5f8cf4951c"
+    },
+    {
+      "file": "scripts/benchmark-integration/run.mjs",
+      "sha256": "6cedfc46f4af336977529bf9e64c954e20b1bd35b68667c5df77d727fab1f2df"
+    },
+    {
+      "file": "scripts/benchmark-runtime/build-embed.mjs",
+      "sha256": "f8b55b0e17bf9c435a5f95cf2ade0688949e0ef89937917ff08bc291ab57e08c"
+    },
+    {
+      "file": "scripts/benchmark-runtime/build-fixtures.mjs",
+      "sha256": "f81ef0440fc34572b2683d9fc7413ca996155a02cb2a48c68fc1913de819386f"
+    },
+    {
+      "file": "scripts/benchmark-runtime/build-scenes.mjs",
+      "sha256": "7c10747838fb4eb9cf9e086394ff849d7683d1859c6527847c6da2ff30f65099"
+    },
+    {
+      "file": "scripts/benchmark-runtime/check-browser.mjs",
+      "sha256": "f586aff67b88bf303694924472a0da22246e3d930f252ce761a7dcb745e9a99d"
+    },
+    {
+      "file": "scripts/benchmark-runtime/check-races.mjs",
+      "sha256": "006a2e7a3f57883bed0b4d0dd0f25e1f403e9900277d3089509322d0a62681bd"
+    },
+    {
+      "file": "scripts/benchmark-runtime/cold-start.mjs",
+      "sha256": "eb339d01e1ad338ba535f69413355444c800aa408045a34dba0e6705858fba23"
+    },
+    {
+      "file": "scripts/benchmark-runtime/report.mjs",
+      "sha256": "add3d9ef49c6044432006c714c88e94098d1b473adcd1aa005d940ba314d7c94"
+    },
+    {
+      "file": "scripts/benchmark-runtime/run.mjs",
+      "sha256": "288b297ecb059c02f46586a41219689c4c97701cd7bf3f00aa25aa892fed4dc5"
+    },
+    {
+      "file": "scripts/benchmark-runtime/serve.mjs",
+      "sha256": "ebcee06ca0da265db464a9ad1976fff45cda92289a7b53297f150d27bb21420c"
+    },
+    {
+      "file": "scripts/build_comparison_report.py",
+      "sha256": "cd1050d51ee2987eb4db98feaa1721e8a122173108046ac2633053b04474889f"
+    },
+    {
+      "file": "scripts/build_conifer_evidence.py",
+      "sha256": "16cb58341e263b45c80d96051684ba1474879d2bec3c075b75e2becea7a84c57"
+    },
+    {
+      "file": "scripts/build_distance_report.py",
+      "sha256": "859400c976acc57c12f860c625efef96b0acb85dfb7d35a97a28d9235d3a2d05"
+    },
+    {
+      "file": "scripts/build_landscape_report.py",
+      "sha256": "3613349a00abfb9e8a64eafba309f51edb0d81de5c297e51489f7bd85f5f8643"
+    },
+    {
+      "file": "scripts/build_polish_report.py",
+      "sha256": "1683e9e9b41877862d6c399f4a022158b90b29293fee93b350b1bcebb98d0be2"
+    },
+    {
+      "file": "scripts/build_road_grade_report.py",
+      "sha256": "12426cb3ee2b69d3c3542ea20e28014d132b7c823309fe307c96754552432041"
+    },
+    {
+      "file": "scripts/build_trees_report.py",
+      "sha256": "aa75f9f5b4d5e6e17ce76931038d9609a4978a3ac8dff46a5206a63eaafb3cc3"
+    },
+    {
+      "file": "scripts/build_v04_report.py",
+      "sha256": "5538842f8786a559718da7e4b3270207e4e5d9335cf46133eb28b22cfca167b2"
+    },
+    {
+      "file": "scripts/distance_evidence.py",
+      "sha256": "9ce178698e4bcb535925eb6eab039dbcb9143e2064f5f1085bf5e3e41c03c0bb"
+    },
+    {
+      "file": "scripts/fetch_landscape_details.py",
+      "sha256": "028ad180c501b8f52bd1c224adff3db81b6809afe6bf2bf04de5e0564ac309a0"
+    },
+    {
+      "file": "scripts/fetch_osm.py",
+      "sha256": "c69532678d031b20e1aefc1550e66b18649e53e55bf68e6cf3c95c7e912f01cc"
+    },
+    {
+      "file": "scripts/fetch_street_details.py",
+      "sha256": "d8da89a393809627c06f737795a45511912c09b593565f6f2b54c8d3543beaec"
+    },
+    {
+      "file": "scripts/generalization_evidence.py",
+      "sha256": "578af5b3c0e05f8fd8176cb2cf3fbdbf8c8eb2dbb443ef20c3aed1a46567ccc1"
+    },
+    {
+      "file": "scripts/measure-polish.mjs",
+      "sha256": "ec1d320e8f8d9cfdf587327dfdb1b98ab57767d5367b0efcf89ffd0937859512"
+    },
+    {
+      "file": "scripts/measure-v04.mjs",
+      "sha256": "81fbc82855d0d5854ac609bdde7e4d8b97ab6dd545e1392c7d5cf06f6b3ff289"
+    },
+    {
+      "file": "scripts/osm_map_areas.py",
+      "sha256": "a560c73c47f5022261add8f6549fc4a799c28dc64946ff9ea4facd8178de5146"
+    },
+    {
+      "file": "scripts/phase1-build-cases.mjs",
+      "sha256": "e34261c845af98e04e227870841475dbe73a73a9484e55dc7ec5216eb73dceef"
+    },
+    {
+      "file": "scripts/phase1-integration-check.mjs",
+      "sha256": "fb6bf81153b78013d458624e5deaab14212e17b051054a71522ada5fbdb0f83c"
+    },
+    {
+      "file": "scripts/phase1-package-check.mjs",
+      "sha256": "d38a2d681d258584f8852e5c107b2c080d5ebd917ec29e3ef8b09047994dfc65"
+    },
+    {
+      "file": "scripts/phase1-remediation-studio.mjs",
+      "sha256": "b2f336dd190491238d4730b082a1e71a2a4cd6da3193c55fed82c9767ac9240c"
+    },
+    {
+      "file": "scripts/phase1-summarize.mjs",
+      "sha256": "301649bbe075e206140120227df5d3df33925245856d76baeb28243134127d64"
+    },
+    {
+      "file": "scripts/serve-static.mjs",
+      "sha256": "caa3d3094110b69ca478ea2c3dfd7805a8d9dfbdb6db58b466ecc91b076efdb5"
+    },
+    {
+      "file": "scripts/stability-lab.html",
+      "sha256": "4419b9e83c0dc77c3e567dca46c4d80e426f60c0db12b806b38f7bf3ed7e7bea"
+    },
+    {
+      "file": "scripts/stability-lab.js",
+      "sha256": "4e6f65b324755c48f521f963ae2156bd7d6e75ef3e50e5f900ab9c4f826932a6"
+    },
+    {
+      "file": "src/baseline/city-v1.js",
+      "sha256": "7b62d2f0416c5c51c70178cc1538daf1445099b2087d350d33c9817b5985faa8"
+    },
+    {
+      "file": "src/baseline/ink-v1.js",
+      "sha256": "81a361db1d2286a5b7a34ccdec1b70a17552bf793b5ec2c38b82425f288c5138"
+    },
+    {
+      "file": "src/building-envelope.js",
+      "sha256": "61b3a3df33e8c17aa72ff1398dfc8093590cba6db2743411fa287972899425d2"
+    },
+    {
+      "file": "src/building-rules.js",
+      "sha256": "2dbb631586b422a2d01e4429df1e5e7c4dbaf98cd027f251369737ee2c49819f"
+    },
+    {
+      "file": "src/city.js",
+      "sha256": "8d9d77ab38fd4e7bf1fa66dc2a71e53a269166d039ce1dacbba871f230ab9ca5"
+    },
+    {
+      "file": "src/cli/browser-export.js",
+      "sha256": "8a7927a9606131909237c5696d150215afb06f74626ac17abb9c69a2ac691191"
+    },
+    {
+      "file": "src/cli/browser-session.js",
+      "sha256": "ad99c3453fdb7f68c745d542b43117c2f0b5c7ad4d5e5fbe71616e511ac61d32"
+    },
+    {
+      "file": "src/cli/export.js",
+      "sha256": "3bcd0f0de79b7ee8a8c472b1570d8a2378444950859665c7b56d9739255cd910"
+    },
+    {
+      "file": "src/cli/index.d.ts",
+      "sha256": "c8b414c2648a2887d9ff163a2cd323906d8672baf3389515d035ef1171e657f8"
+    },
+    {
+      "file": "src/cli/index.js",
+      "sha256": "5d559ee870ffcd9a178228978b0a4a3b4659625ac9387ee0d2dbad99bf4f62c8"
+    },
+    {
+      "file": "src/cli/jobs.js",
+      "sha256": "ec2b13f569c90cc6f23644fa0d12ebf619fdda92c652d77cc1f302284c848af4"
+    },
+    {
+      "file": "src/cli/landmarks.js",
+      "sha256": "807955627872f7495899e9919e9eb7cd398872148cdb98eca9c0d5c0e4a6f37b"
+    },
+    {
+      "file": "src/cli/project-lock.js",
+      "sha256": "c0ffd3d0a2b7c537eb010e8e3668d989b13789f1e936e6044317ba140da78094"
+    },
+    {
+      "file": "src/cli/project.js",
+      "sha256": "f310f683eda00c8cb3f9e628de9eb8f82d6d9c67259c4f5efbb311d7da7f9c31"
+    },
+    {
+      "file": "src/cli/tasks.js",
+      "sha256": "e4b74e488b776ef7918dfe5947f94dba2b6fb3ff1687d6c831bc07e3a224a52f"
+    },
+    {
+      "file": "src/cli/worker.js",
+      "sha256": "4658e21b8c9244605b48df58c96c65510b8d7c4ae11af8c4b6ee5025bd52f91a"
+    },
+    {
+      "file": "src/core/config.js",
+      "sha256": "0571c553c63afd99479b2476e9fb23c64e786d937b64ff16fcf5617352a111bb"
+    },
+    {
+      "file": "src/core/contract.js",
+      "sha256": "e2755626b722d44a011eef1e21e5290e3b4e3bdb52ddaeda05b51b65dc2974aa"
+    },
+    {
+      "file": "src/core/geometry.js",
+      "sha256": "1c7d2ddf43f312b97c3f899069184c4d7f3a18825e7c7055fa51b2ed6c9041de"
+    },
+    {
+      "file": "src/core/index.d.ts",
+      "sha256": "11eb97fa1d4c19835695ad2c14ceecb53e44721a20b02fb8e2f6f6f0e2995d09"
+    },
+    {
+      "file": "src/core/index.js",
+      "sha256": "2525dcec30a46cd7087caaa277865cf5491f5610adbd1c9627a02a3d2e01def1"
+    },
+    {
+      "file": "src/core/lod-batching.js",
+      "sha256": "8678b17819734fbb25016464dce5c9aab4d500a5453928ca1149634ec1bbf1b0"
+    },
+    {
+      "file": "src/core/lod-simplify.js",
+      "sha256": "b06e6f694df9531a806df520bc8e738faa2b1cfb87434ec4d12baddee2e1452f"
+    },
+    {
+      "file": "src/core/lod-surfaces.js",
+      "sha256": "401702610e3b8893439269114e847c88fe3ac44548979ab65a50a433a8fc19cd"
+    },
+    {
+      "file": "src/core/scene-codec.d.ts",
+      "sha256": "61a9c3fa495b1cd81a2759fd4b0260b4ba4a8b8b86ecfe1c1d63343903d1270c"
+    },
+    {
+      "file": "src/core/scene-codec.js",
+      "sha256": "07971175d9dc0b7b8b89258b70e900366ec4c5093c38f2596a4a661f027273f0"
+    },
+    {
+      "file": "src/core/scene-manifest.d.ts",
+      "sha256": "6ea61676caa21bd83fc796b04b7a602026c40b6096ffa96623d0e95a5180f7ab"
+    },
+    {
+      "file": "src/core/scene-manifest.js",
+      "sha256": "0af2b9beef42b5988a440da6537c6059a741ca454daf2e17ab249ca483244009"
+    },
+    {
+      "file": "src/core/spatial-partition.js",
+      "sha256": "8ae1181d9c39d29c4aa693b3836a8db77a9d14374c883914b8a6b05a7f736ddd"
+    },
+    {
+      "file": "src/data/common.js",
+      "sha256": "b2f4d0ec80c754173b69d10844654da862835771145aedea158a8b66ed4c4900"
+    },
+    {
+      "file": "src/data/errors.js",
+      "sha256": "c30b49ccc4866cbef20400366b7f91140273c8c7c4fb03e7d938f15267eb58a9"
+    },
+    {
+      "file": "src/data/http.js",
+      "sha256": "418201516c92f8cf5eee55f32e6ba4b329b2c669ba89c3ec5a34e3444c90144c"
+    },
+    {
+      "file": "src/data/index.d.ts",
+      "sha256": "e2636a4adba47d08dc96fd6ee43c5ff55fa7a547ba4c54e7f35515fa4ef66234"
+    },
+    {
+      "file": "src/data/index.js",
+      "sha256": "efffb9c83baac6f0bc8d0ff006caf0a64dd24831dc5c8f9201a31433a75e6c44"
+    },
+    {
+      "file": "src/data/normalize.js",
+      "sha256": "1bb73e9d0e29bae84c3c9a531e778c4ee819f4e80885599097ec1117462d87eb"
+    },
+    {
+      "file": "src/data/overpass.js",
+      "sha256": "716978a774f5bc5be55001d96a3d388daefa4d86e03e551a427601e7388cd87d"
+    },
+    {
+      "file": "src/data/search.js",
+      "sha256": "aa6470e631a0c135801f07782db0d800f6fee3fc40d963ec922f727dabf9d63a"
+    },
+    {
+      "file": "src/data/source.js",
+      "sha256": "3e67b24ede6ec3d6afd265194ff8fbefc8010fb028244e8243091c9779595aff"
+    },
+    {
+      "file": "src/depth-policy.js",
+      "sha256": "3293c48aa89c3d9f45b78cb351efa76fb38befc4f5d69e31ffe7801798189e28"
+    },
+    {
+      "file": "src/distance-style.js",
+      "sha256": "f88fdda6532196fe588af1242f525f4fe692b823fd52a96b2aab541cb0125cd7"
+    },
+    {
+      "file": "src/facade-layout.js",
+      "sha256": "065d81d97214ef8ba3a8b3145b851c5dc5e78e235c5bc9ae30b78f7dc6fc33ce"
+    },
+    {
+      "file": "src/facade-loft.js",
+      "sha256": "3c82d72fe6a80b2e194dffd1926b41e6627d58bdb826f54885197cedea26566f"
+    },
+    {
+      "file": "src/facade-shader.js",
+      "sha256": "1dc0e1e0d910195d86c9f561110966049fd066cbd1080e6313fdc2403662b9dd"
+    },
+    {
+      "file": "src/foliage.js",
+      "sha256": "c4886db3ec868c37b0ec38ad18c71f5d4e0dca1b098ceaedc35eb2c818283fb2"
+    },
+    {
+      "file": "src/generators/compatibility.js",
+      "sha256": "c8af99dc8cb2843d810900b5575ddab8a193ccb4b2b0c0bd2cae43d956af0281"
+    },
+    {
+      "file": "src/generators/mesh-tools.js",
+      "sha256": "dae59cf257abe99bfc4b93eb7f5cdc269470ec3b0d70e8d7019fd6b60c489c17"
+    },
+    {
+      "file": "src/generators/official.js",
+      "sha256": "3efe8e36b5b25b9ac2456a081acc3b4c9e1e29ee43dd2fc3f17919c2448f42dd"
+    },
+    {
+      "file": "src/halftone.js",
+      "sha256": "660f1e085bb18e7b09478f3d79a5d867cb9d72f1cbad6e5d63002ecf84c1fece"
+    },
+    {
+      "file": "src/ink-renderer.js",
+      "sha256": "0efe9c87c349fbe90843296ae68ac577e5599fbb69bbab94238c2983f726f3f4"
+    },
+    {
+      "file": "src/landmark-registry.d.ts",
+      "sha256": "a97b5d02cbedf8d62a3a14b13834cbc1c3c351c0a672944870966da7e3269103"
+    },
+    {
+      "file": "src/landmark-registry.js",
+      "sha256": "fcd69012b9f3311bb2ce485e502a4928a300df3259d4eda7bfca2549f54a2e33"
+    },
+    {
+      "file": "src/landmarks.js",
+      "sha256": "0848d7c611e14cd92c551373dccb86f017d79f780ad1d9acbc8de3932b779d66"
+    },
+    {
+      "file": "src/landscape-markings.js",
+      "sha256": "c1afc33095293d9711f3fc1ff83c8497da903470c1807a68c834d3c7ef418d71"
+    },
+    {
+      "file": "src/landscape-plan.js",
+      "sha256": "06b0a809f6fa249ec16a238c61c816c955bd244f21d36f3cf37db45da06882e8"
+    },
+    {
+      "file": "src/landscape-tags.js",
+      "sha256": "af4b36e17e65e8a50738b8725d68d9047c3389dec6d01b094dfbc513f81e0998"
+    },
+    {
+      "file": "src/landscape.js",
+      "sha256": "7086655a8d7a11be5d52ce1fe157301e11af6f80a9ebc414048929eb2b9d58ba"
+    },
+    {
+      "file": "src/local-server/index.d.ts",
+      "sha256": "802ce3aec9ebf6f7ba8af6f1f855dd8ad1a114bee82bafb9bdd17f56c09ee585"
+    },
+    {
+      "file": "src/local-server/index.js",
+      "sha256": "ec0858b853be447fc4e4052f4adc00101e2ba0cc26c9d7a55fa44ada04691ae6"
+    },
+    {
+      "file": "src/local-server/project-styles.js",
+      "sha256": "86dc9f36da2db35c457262f60957526b60b83f2060f1ffc15363a746abf37649"
+    },
+    {
+      "file": "src/locations.js",
+      "sha256": "c70bfc67ee7c4b82e4e7795003c4c167f67a09dfa710033ffa533acd3f9e6226"
+    },
+    {
+      "file": "src/main.js",
+      "sha256": "f7a6c702fbaeb8bca205fb7ccadae5fa14358faf1dfa9912c2b52b8c48db02c8"
+    },
+    {
+      "file": "src/osm.js",
+      "sha256": "d2290f252e45ed812cb15a721206d4ff27d43e2f446ceb6b985d85c7fb912f2d"
+    },
+    {
+      "file": "src/paint-inlay.js",
+      "sha256": "cf65ab3809be4cc81f80eea764f269c708c78068bd18232468d6671945833195"
+    },
+    {
+      "file": "src/road-grade.js",
+      "sha256": "f34102ed01a7a942c9ebe4ea967d25abdfab55cb87903fcf05afeaa96a5e41c4"
+    },
+    {
+      "file": "src/road-stairs.js",
+      "sha256": "57a48652caf81a2b67a08d358a1e923780cffc04e7ec93c7e8b423f3bcb015c0"
+    },
+    {
+      "file": "src/road-structures.js",
+      "sha256": "525f22231cdd6200ac06d1a12ff0937ba2a3e5593a28ba84788dfd0703873fbe"
+    },
+    {
+      "file": "src/road-surface.js",
+      "sha256": "c8d78a4d2cee25113fbed3c6936f0f986b4b9301d49cdb58d046025e075b7272"
+    },
+    {
+      "file": "src/roofs.js",
+      "sha256": "d1a77dcd792208760dce666adb90c66d845fc78d6936a606fa770ffd7b951547"
+    },
+    {
+      "file": "src/runtime/camera.js",
+      "sha256": "4f8e1a60bf1aaeae1ae5036fba5ea787f63418d60702126b410d7a59627f3b48"
+    },
+    {
+      "file": "src/runtime/gpu-timer.js",
+      "sha256": "82a013a2f2bed656de197cc3c61b22071faf1a961a1b186930e23fbec66ae01f"
+    },
+    {
+      "file": "src/runtime/integrations.js",
+      "sha256": "f8a406ae1c0c7d13ca8cd5c1fd5ba7d2e8e749ea4d702d70e910e6083fb9f03d"
+    },
+    {
+      "file": "src/runtime/manifest.js",
+      "sha256": "2dcbd1c9e09ff5f4ac0d15799b91cc4a5efcd3063ed54ad7ac159e8e7440d564"
+    },
+    {
+      "file": "src/runtime/near-details.js",
+      "sha256": "d857702a9844384c680dcf670a26a5d4497537416b1aa63ef70500075a6a0048"
+    },
+    {
+      "file": "src/runtime/policy.js",
+      "sha256": "708069e75b800ba196beeb0725e0dea0788397ab53cb7d9ad3b718bb0e969c74"
+    },
+    {
+      "file": "src/runtime/render-cost.js",
+      "sha256": "6ed52711752356f6a7426ddc74dffdec181db0053a7fd71bbd82bcad3686a459"
+    },
+    {
+      "file": "src/runtime/resources.js",
+      "sha256": "dbf89ff8b8c7a4689b2b4a00772e9a56295f137d8b3817617fb05ca06b16e3cc"
+    },
+    {
+      "file": "src/runtime/statistics.js",
+      "sha256": "8620bfb4b8eac9672c2b2d186b11d3a9348fa53309dba51b424b8bb3931e7876"
+    },
+    {
+      "file": "src/runtime/streamer.js",
+      "sha256": "8ee47816326a5111d0e4296f5d0596cff4937718873bdd9b79c71d2b9e5bd771"
+    },
+    {
+      "file": "src/runtime/style-quality.js",
+      "sha256": "7c04705a53aeebac846cab3c69d62c330c86fd29405ba56bb01acf09f439449b"
+    },
+    {
+      "file": "src/sdk/exports.js",
+      "sha256": "1fde5e9a656fbcd1d4ffa7772ad6ddc2855b69ef539f0a4cf78af67d5ee198af"
+    },
+    {
+      "file": "src/sdk/index.d.ts",
+      "sha256": "3ab95739fe07be19f2a8966dc8b075a53fc9a356bccffbee61ffa0417c81a8bb"
+    },
+    {
+      "file": "src/sdk/index.js",
+      "sha256": "ec434986d5df3eda30ce644c886082fe452df1834f67aa384086331dbb15d3b9"
+    },
+    {
+      "file": "src/streetlife.js",
+      "sha256": "99d05ce271efaa73e533d26f515ba474d831c52671140a436c4ba8b216728241"
+    },
+    {
+      "file": "src/style.css",
+      "sha256": "c2bf059f465503b9da0b480193026d8cdd309e1f4fff799915bb0cfacc5bbfc5"
+    },
+    {
+      "file": "src/styles/index.d.ts",
+      "sha256": "93577cb64b5cd23e036fb1dc550ec5ccf215b67bdd38d31df3d5db7b18ec334e"
+    },
+    {
+      "file": "src/styles/index.js",
+      "sha256": "80b13732002290829a84d7938bcf5cd03c7f1ef4441b078a63b699d2fcea5ee8"
+    },
+    {
+      "file": "src/styles/parameters.js",
+      "sha256": "a4208daefd1345f2efeb64d423b4bc1dc6693a9af5740402ecf32cde0c02793b"
+    },
+    {
+      "file": "src/styles/project-bundle.d.ts",
+      "sha256": "f56bc8c0a1fa080a5e851e81430df8e0d1a66e1b812185f98d29086b3c6a2069"
+    },
+    {
+      "file": "src/styles/project-bundle.js",
+      "sha256": "162a8c8b523f78e1ed7945245386ccf44db86693fc366286ce4e183cd85928cd"
+    },
+    {
+      "file": "src/styles/project-contract.d.ts",
+      "sha256": "10ee7bf6f0a2f2fabdbb900cca632f7219879a102c19e6820be5ac7a3042cc54"
+    },
+    {
+      "file": "src/styles/project-contract.js",
+      "sha256": "9e3d0f551b56898597c0dfd04b85ba05f939b671113903ce15da6c7928cf1bc5"
+    },
+    {
+      "file": "src/styles/project-loader.d.ts",
+      "sha256": "0ffb17b9f34c4051345c84eefa7aa389ff2e67889495fd006b4d82a7bcb7b566"
+    },
+    {
+      "file": "src/styles/project-loader.js",
+      "sha256": "ce1624f8ca6a1b50e8cb17cfefc4f49045ee4223d99f87f005ecb1468f1a5267"
+    },
+    {
+      "file": "src/styles/viewer-entry.js",
+      "sha256": "9c51753d99560e657e04e7bcae648ff11fd45fe99c7546b6e4776e12af9a4485"
+    },
+    {
+      "file": "src/tree-clearance.js",
+      "sha256": "cecd51bd4847650074b02ea9f918183871ac81ce91ccdbc45ec4bbdb1d052eb1"
+    },
+    {
+      "file": "src/vegetation-rules.js",
+      "sha256": "8e8c4dfa023955aaae2437480b7f166b29a411dbf7c053333253f96e6820e669"
+    },
+    {
+      "file": "src/view-state.js",
+      "sha256": "0857206d131b73ceacbe0bef94a8e00f5b33d78da698fcd26e84d5a37558bd2a"
+    },
+    {
+      "file": "studio/api.js",
+      "sha256": "053b757d68151b6d66055ef7ee476ac04e679d6252378821ece3cc9b72642f40"
+    },
+    {
+      "file": "studio/index.html",
+      "sha256": "e6267a030d8df5c79946526233e6fcc4ca1a17c4852fe79f64e74c45e2bead02"
+    },
+    {
+      "file": "studio/main.js",
+      "sha256": "6d263b84edf56ee9e1e1171339da207ce3723bb8a8176f956941eb372d0d8c8e"
+    },
+    {
+      "file": "studio/project-settings.js",
+      "sha256": "36075d84080164788003348a5e679bd782a6342e3e75a6a576af843c5fa283ba"
+    },
+    {
+      "file": "studio/settings.js",
+      "sha256": "41a7eee30177e69e393e7262c088d9be29674426c34adeeb7e97002ffdb8c018"
+    },
+    {
+      "file": "studio/static-viewer.html",
+      "sha256": "b738b9dfd9c8fc2085aaaef3ee9771501734e651d1942bf6e0124d054c7c0b15"
+    },
+    {
+      "file": "studio/static-viewer.js",
+      "sha256": "f0b1ab1fc355a1f53f67f0d4624b256f3ff2a743d887636c7c9644dbbe1a26a4"
+    },
+    {
+      "file": "studio/style.css",
+      "sha256": "35555fc02339784fa7c85b2ac832c3afdc6197eda57004388c95abe9f3565812"
+    }
+  ],
+  "historicalEvidenceChanged": [],
+  "notes": [
+    "Root full 344-test/types/3-build/production-only offline package verification ran at e11990c. Only A evidence documentation differs at measured 55862f0.",
+    "Every scene compilerCommit and runtime environment commit equals 55862f0; runtime bundle hash stayed frozen throughout the full 12-case run.",
+    "Final E archive commit only changes documentation/evidence; product source must remain identical to this record."
+  ]
+}

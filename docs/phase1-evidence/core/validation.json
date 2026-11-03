@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-03",
+  "implementationCommit": "ebb81022e569b5f18e64a27ca10c5ca5ee143e77",
+  "fullVerificationCommit": "457087a752ed8c070f50274f2b811441ebaf6957",
+  "environment": {"os":"Windows x64","node":"v22.11.0","typescript":"7.0.2","typesThree":"0.187.0","three":"0.186.1"},
+  "checks": [
+    {"command":"node --test test/phase1-core.test.js","commit":"ebb8102","exitCode":0,"tests":20,"passed":20},
+    {"command":"npm test","commit":"457087a","exitCode":0,"tests":158,"passed":158,"originalTestsRetained":138},
+    {"command":"npm run build","commit":"457087a","exitCode":0,"warnings":["Existing Three.js bundle exceeds 500 kB minified."]},
+    {"command":"npx --no-install tsc --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext test/phase1-core.types.ts","commit":"457087a","exitCode":0},
+    {"command":"node --expose-gc docs/phase1-evidence/core/audit-snapshots.mjs --write-assets","commit":"40cad28","exitCode":0,"result":"snapshot-audit.json","experiments":12},
+    {"command":"git diff --check","commit":"ebb8102","exitCode":0}
+  ],
+  "independentReview": {"agent":"/root/core_review","model":"gpt-6.1-sol","reasoningEffort":"xhigh","fullCommit":"457087a","supplementalCommit":"ebb8102","result":"pass for A component","evidence":"review.md"},
+  "notRunHere": ["Actual WebGL renderer draw and resource measurements","60 second browser performance path","Five load/unload round trips","C official registry and style package integration","B project lock-file lifecycle","E Beijing visual comparison"]
+}

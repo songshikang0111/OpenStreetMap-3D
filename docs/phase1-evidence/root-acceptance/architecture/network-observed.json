@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-11-03",
+  "commit": "7c837551f5e364c98bbc19adf8d5af73a6a2ab85",
+  "actualCommands": [
+    {"probe":"Node requestJSON default Overpass /api/status","status":"failed","timeoutMs":15000,"elapsedMs":15016,"code":"TIMEOUT"},
+    {"probe":"PowerShell Invoke-WebRequest same /api/status","status":"failed","timeoutSeconds":15,"elapsedMs":15128,"message":"HttpClient.Timeout elapsed"},
+    {"probe":"fetchArea default endpoint /api/interpreter same AC04 bbox","status":"failed","timeoutMs":75000,"retries":0,"elapsedMs":1317,"code":"HTTP_ERROR","message":"Source returned HTTP 502."},
+    {"probe":"searchPlaces Photon query 北京 中国尊","status":"succeeded","timeoutMs":15000,"retries":0,"elapsedMs":2407,"candidateCount":1}
+  ],
+  "note":"Recorded from completed tool outputs. network-probe.mjs preserves the exact second pair for optional later reproduction. Native and Node proxy environment variables were unset. A 502 cannot distinguish the public origin from an intermediary gateway."
+}

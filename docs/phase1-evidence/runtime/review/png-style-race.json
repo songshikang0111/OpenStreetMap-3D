@@ -1,0 +1,22 @@
+{
+  "before": {
+    "paused": false,
+    "frameCount": 11
+  },
+  "outcomes": [
+    {
+      "status": "fulfilled"
+    },
+    {
+      "status": "fulfilled"
+    }
+  ],
+  "after": {
+    "paused": true,
+    "frameCount": 47
+  },
+  "later": {
+    "paused": true,
+    "frameCount": 47
+  }
+}

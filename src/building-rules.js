@@ -37,8 +37,9 @@ export function buildingStyle(building, seed = 1) {
 }
 
 export function landmarkKind(building) {
-  const tags=building.tags||{},name=`${tags.name||''} ${tags['name:en']||''} ${tags.alt_name||''}`;
-  if (building.osmId===599547918 || /中国尊|CITIC Tower|China Zun/.test(name)) return 'china-zun';
+  // Identity includes OSM type; names alone never replace unrelated buildings.
+  if (building.osmType && building.osmType !== 'way') return null;
+  if (building.osmId===599547918) return 'china-zun';
   if ([547523486,547523487,548126516,548126517].includes(building.osmId)) return 'cctv';
   return null;
 }

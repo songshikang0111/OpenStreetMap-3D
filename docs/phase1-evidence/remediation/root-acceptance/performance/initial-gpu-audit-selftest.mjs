@@ -1,0 +1,28 @@
+// Constructed integrity checks only; no hardware/frame performance is measured.
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import {auditGpuWindow,auditPhysicalWindow,auditBuildIdentity} from './audit-results.mjs';
+const frame=time=>({time,intervalMs:time?16:null,triangles:100,drawCalls:2,estimatedResidentBytes:1000,bodyNearDetails:1,nearAttachmentDetails:2,totalNearDetails:3,nearGeometryArrayBytes:200});
+const valid={initialFrame:frame(0),frames:[frame(16),frame(32),frame(48)],frameCount:4,windowFrames:3,gpuTime:{available:true,measurement:'gpu-elapsed',unit:'ms',errors:0,deleteErrors:0,invalidResults:0,samples:3,rawSamples:[{time:0,ms:1},{time:16,ms:2},{time:32,ms:3}],p50:2,p95:3,p99:3,max:3,pending:1,active:false,maxPending:8,maxSamples:18000,created:14,deleted:13,unreleased:1}};
+const results=[];
+const run=(name,mutate,expected)=>{const r=structuredClone(valid);mutate(r);const audit=auditPhysicalWindow(r,{gpuRequired:true,label:name});assert.equal(audit.errors.length===0,expected);results.push({name,accepted:audit.errors.length===0,errors:audit.errors});};
+run('positive complete physical frame + GPU query window',()=>{},true);
+run('missing initial physical frame',r=>{delete r.initialFrame;},false);
+run('initial-only triangle/draw overflow',r=>Object.assign(r.initialFrame,{triangles:600001,drawCalls:1201}),false);
+run('initial-only resident overflow',r=>{r.initialFrame.estimatedResidentBytes=134217729;},false);
+run('initial-only shared near overflow',r=>Object.assign(r.initialFrame,{bodyNearDetails:1,nearAttachmentDetails:18000,totalNearDetails:18001}),false);
+run('initial-only array bytes inconsistent',r=>{r.initialFrame.nearGeometryArrayBytes=1001;},false);
+run('first interval detached from initial physical frame',r=>{r.initialFrame.time=-20;},false);
+run('GPU samples truncated but header count adjusted',r=>{r.gpuTime.rawSamples.pop();r.gpuTime.samples=2;},false);
+run('GPU repeated timestamp',r=>{r.gpuTime.rawSamples[1].time=0;},false);
+run('GPU timestamp outside physical window',r=>{r.gpuTime.rawSamples[1].time=17;},false);
+run('GPU incorrect percentile',r=>{r.gpuTime.p95=1;},false);
+run('GPU invalid ownership counts',r=>{r.gpuTime.deleted=14;},false);
+run('GPU pending over bound',r=>{r.gpuTime.pending=9;},false);
+run('GPU arbitrary declared capacity increase',r=>{r.gpuTime.maxPending=99;},false);
+run('GPU active query is not boolean',r=>{r.gpuTime.active=1;},false);
+const unsupported=auditGpuWindow({gpuTime:{available:false,reason:'Extension unavailable',rawSamples:[],samples:0,p50:null,p95:null,p99:null,max:null,maxPending:8}},false);assert.deepEqual(unsupported.errors,[]);results.push({name:'positive explicitly unavailable GPU',accepted:true});
+const summary={environment:{commit:'a'.repeat(40)}};assert.deepEqual(auditBuildIdentity(summary,{build:{compilerCommit:'a'.repeat(40)}}),[]);
+const mismatched=auditBuildIdentity(summary,{name:'mismatch',build:{compilerCommit:'b'.repeat(40)}});assert.equal(mismatched.length,1);results.push({name:'build commit differs from measurement commit',accepted:false,errors:mismatched});
+const rerunDirectory=new URL('../../../../../work/root-remediation-performance-rerun/',import.meta.url);await fs.mkdir(rerunDirectory,{recursive:true});await fs.writeFile(new URL('initial-gpu-audit-selftest.json',rerunDirectory),JSON.stringify({mode:'Constructed audit integrity examples; not browser or GPU measurements',tests:results.length,passed:results.length,results},null,2));
+console.log(JSON.stringify({tests:results.length,passed:results.length}));

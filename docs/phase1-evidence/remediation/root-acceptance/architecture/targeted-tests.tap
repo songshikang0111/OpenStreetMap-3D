@@ -1,0 +1,105 @@
+TAP version 13
+# Subtest: source validation is shared by project/core, allows self-hosted HTTP and rejects unsafe/duplicate endpoints
+ok 1 - source validation is shared by project/core, allows self-hosted HTTP and rejects unsafe/duplicate endpoints
+  ---
+  duration_ms: 20.8865
+  ...
+# Subtest: provider presets select URL/transport without manual methods, and explicit fields override defaults
+ok 2 - provider presets select URL/transport without manual methods, and explicit fields override defaults
+  ---
+  duration_ms: 11.3421
+  ...
+# Subtest: a higher-priority provider replaces lower endpoint/transport in batch and CLI resume
+ok 3 - a higher-priority provider replaces lower endpoint/transport in batch and CLI resume
+  ---
+  duration_ms: 39.2452
+  ...
+# Subtest: fallback-only overrides validate against the actual project primary, not a missing override default
+ok 4 - fallback-only overrides validate against the actual project primary, not a missing override default
+  ---
+  duration_ms: 24.0893
+  ...
+# Subtest: OSM object search shares explicit GET fallback semantics and default legacy search caches remain offline
+ok 5 - OSM object search shares explicit GET fallback semantics and default legacy search caches remain offline
+  ---
+  duration_ms: 8.2252
+  ...
+# Subtest: explicit GET source records provenance and has a separate cache from legacy POST
+ok 6 - explicit GET source records provenance and has a separate cache from legacy POST
+  ---
+  duration_ms: 3.543
+  ...
+# Subtest: unavailable fallback is explicit, finite, cache preferred, and refresh failure cannot overwrite old cache
+ok 7 - unavailable fallback is explicit, finite, cache preferred, and refresh failure cannot overwrite old cache
+  ---
+  duration_ms: 5.1889
+  ...
+# Subtest: fallback never rotates on rate limiting, invalid data or cancellation
+ok 8 - fallback never rotates on rate limiting, invalid data or cancellation
+  ---
+  duration_ms: 9.6439
+  ...
+# Subtest: exhausted rate limits retain cooldown for next same-origin request, which is cancellable
+ok 9 - exhausted rate limits retain cooldown for next same-origin request, which is cancellable
+  ---
+  duration_ms: 42.1537
+  ...
+# Subtest: formal CLI fetch uses saved source and explicit override; batch applies global source flags to fetch entries
+ok 10 - formal CLI fetch uses saved source and explicit override; batch applies global source flags to fetch entries
+  ---
+  duration_ms: 3607.2638
+  ...
+# Subtest: studio source catalog/defaults/project PATCH and per-job overrides use the same contract
+ok 11 - studio source catalog/defaults/project PATCH and per-job overrides use the same contract
+  ---
+  duration_ms: 2390.6782
+  ...
+# Subtest: nested HTTP provider override has priority over flat endpoint/transport parameters
+ok 12 - nested HTTP provider override has priority over flat endpoint/transport parameters
+  ---
+  duration_ms: 23.3843
+  ...
+# Subtest: SDK quality preserves validated AO strengths and disables only the AO pass
+ok 13 - SDK quality preserves validated AO strengths and disables only the AO pass
+  ---
+  duration_ms: 4.1338
+  ...
+# Subtest: project style bundles relative ESM, explicit dependency, CSS and asset; loader preserves saved parameters
+ok 14 - project style bundles relative ESM, explicit dependency, CSS and asset; loader preserves saved parameters
+  ---
+  duration_ms: 380.4388
+  ...
+# Subtest: unknown or broken project styles fail before replacing an existing standard site
+ok 15 - unknown or broken project styles fail before replacing an existing standard site
+  ---
+  duration_ms: 694.1708
+  ...
+# Subtest: style configuration paths and import graph are explicit and cannot escape the project
+ok 16 - style configuration paths and import graph are explicit and cannot escape the project
+  ---
+  duration_ms: 487.9414
+  ...
+# Subtest: project loader CSS ownership supports repeated opens and releases a previous project
+ok 17 - project loader CSS ownership supports repeated opens and releases a previous project
+  ---
+  duration_ms: 1.1556
+  ...
+# Subtest: JS, CSS and descriptor asset URLs preserve hash/percent filename characters
+ok 18 - JS, CSS and descriptor asset URLs preserve hash/percent filename characters
+  ---
+  duration_ms: 240.8406
+  ...
+# Subtest: dependency specifier Schema and runtime agree on dot segments and engine aliases
+ok 19 - dependency specifier Schema and runtime agree on dot segments and engine aliases
+  ---
+  duration_ms: 1.0093
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6310.7371

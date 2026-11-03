@@ -1,0 +1,451 @@
+{
+  "date": "2026-11-03T14:16:44.477Z",
+  "commit": "d028e7e",
+  "kind": "Independent actual Chrome CUA actions; synthetic fixtures; not a network-blocked or performance experiment",
+  "observations": [
+    {
+      "camera": "street",
+      "canvasCount": 1,
+      "params": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.23\n}",
+      "quality": "balanced",
+      "stage": "initial-external",
+      "style": "external",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css",
+        "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/ab842ee5ee76beb84e51f11dbefbea19f9a16fd3de4bd1093c71db6f5d706dec/assets/project-style.css"
+      ]
+    },
+    {
+      "stage": "saved-low-params",
+      "assets": "[\n  \"styles/paper #1%25.svg\"\n]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "styles/sepia.js",
+      "fov": "55",
+      "parameters": "{\"aoStrength\":0.12,\"warmth\":0.31}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": false,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）",
+        "场景已加载；拖动旋转，滚轮缩放，右键平移。"
+      ],
+      "style": "external",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css",
+        "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/ab842ee5ee76beb84e51f11dbefbea19f9a16fd3de4bd1093c71db6f5d706dec/assets/project-style.css"
+      ]
+    },
+    {
+      "stage": "reload-restoring",
+      "assets": "[\n  \"styles/paper #1%25.svg\"\n]",
+      "camera": "custom",
+      "canvasCount": 0,
+      "entry": "styles/sepia.js",
+      "fov": "55",
+      "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.31\n}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": true,
+      "statusText": [],
+      "style": "external",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css"
+      ]
+    },
+    {
+      "stage": "reloaded-external",
+      "assets": "[\n  \"styles/paper #1%25.svg\"\n]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "styles/sepia.js",
+      "fov": "55",
+      "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.31\n}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": false,
+      "statusText": [
+        "场景已加载；拖动旋转，滚轮缩放，右键平移。"
+      ],
+      "style": "external",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css",
+        "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/ab842ee5ee76beb84e51f11dbefbea19f9a16fd3de4bd1093c71db6f5d706dec/assets/project-style.css"
+      ]
+    },
+    {
+      "stage": "switch-comic",
+      "assets": "[]",
+      "camera": "street",
+      "canvasCount": 0,
+      "entry": "",
+      "fov": "55",
+      "parameters": "{}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": true,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）",
+        "场景已加载；拖动旋转，滚轮缩放，右键平移。"
+      ],
+      "style": "comic",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css"
+      ]
+    },
+    {
+      "stage": "comic-rendered",
+      "assets": "[]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "",
+      "fov": "55",
+      "parameters": "{}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": false,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）",
+        "场景已加载；拖动旋转，滚轮缩放，右键平移。"
+      ],
+      "style": "comic",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css"
+      ]
+    },
+    {
+      "stage": "official-线稿",
+      "assets": "[]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "",
+      "fov": "55",
+      "parameters": "{}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": false,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）",
+        "场景已加载；拖动旋转，滚轮缩放，右键平移。"
+      ],
+      "style": "line",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css"
+      ]
+    },
+    {
+      "stage": "official-彩色",
+      "assets": "[]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "",
+      "fov": "55",
+      "parameters": "{}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": false,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）",
+        "场景已加载；拖动旋转，滚轮缩放，右键平移。"
+      ],
+      "style": "color",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css"
+      ]
+    },
+    {
+      "stage": "official-白模",
+      "assets": "[]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "",
+      "fov": "55",
+      "parameters": "{}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": false,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）",
+        "场景已加载；拖动旋转，滚轮缩放，右键平移。"
+      ],
+      "style": "white",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css"
+      ]
+    },
+    {
+      "stage": "external-draft-restored",
+      "assets": "[\n  \"styles/paper #1%25.svg\"\n]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "styles/sepia.js",
+      "fov": "55",
+      "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.31\n}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": false,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）",
+        "场景已加载；拖动旋转，滚轮缩放，右键平移。"
+      ],
+      "style": "external",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css"
+      ]
+    },
+    {
+      "stage": "external-after-settled",
+      "assets": "[\n  \"styles/paper #1%25.svg\"\n]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "styles/sepia.js",
+      "fov": "55",
+      "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.31\n}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": false,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）",
+        "场景已加载；拖动旋转，滚轮缩放，右键平移。"
+      ],
+      "style": "external",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css"
+      ]
+    },
+    {
+      "stage": "external-validated-again",
+      "assets": "[\n  \"styles/paper #1%25.svg\"\n]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "styles/sepia.js",
+      "fov": "55",
+      "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.31\n}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": true,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）"
+      ],
+      "style": "external",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css",
+        "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/ab842ee5ee76beb84e51f11dbefbea19f9a16fd3de4bd1093c71db6f5d706dec/assets/project-style.css"
+      ]
+    },
+    {
+      "stage": "network-preference-saved",
+      "assets": "[\n  \"styles/paper #1%25.svg\"\n]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "styles/sepia.js",
+      "fov": "55",
+      "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.31\n}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": false,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）",
+        "场景已加载；拖动旋转，滚轮缩放，右键平移。"
+      ],
+      "style": "external",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css",
+        "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/ab842ee5ee76beb84e51f11dbefbea19f9a16fd3de4bd1093c71db6f5d706dec/assets/project-style.css"
+      ]
+    },
+    {
+      "stage": "static-export-started",
+      "assets": "[\n  \"styles/paper #1%25.svg\"\n]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "styles/sepia.js",
+      "fov": "55",
+      "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.31\n}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": true,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）"
+      ],
+      "style": "external",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css",
+        "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/ab842ee5ee76beb84e51f11dbefbea19f9a16fd3de4bd1093c71db6f5d706dec/assets/project-style.css"
+      ]
+    },
+    {
+      "stage": "static-export-completed",
+      "assets": "[\n  \"styles/paper #1%25.svg\"\n]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "styles/sepia.js",
+      "fov": "55",
+      "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.31\n}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": false,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）"
+      ],
+      "style": "external",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css",
+        "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/ab842ee5ee76beb84e51f11dbefbea19f9a16fd3de4bd1093c71db6f5d706dec/assets/project-style.css"
+      ]
+    },
+    {
+      "stage": "static-subpath-external",
+      "canvasCount": 1,
+      "style": "project-sepia",
+      "stylesheets": [
+        "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/site/assets/project-style.css"
+      ],
+      "text": "城市线境 \n漫画\n线稿\n彩色\n白模\nproject-sepia\n© OpenStreetMap contributors · ODbL"
+    },
+    {
+      "stage": "static-style-漫画",
+      "canvasCount": 1,
+      "style": "comic",
+      "text": "城市线境 \n漫画\n线稿\n彩色\n白模\nproject-sepia\n© OpenStreetMap contributors · ODbL"
+    },
+    {
+      "stage": "static-style-线稿",
+      "canvasCount": 1,
+      "style": "line",
+      "text": "城市线境 \n漫画\n线稿\n彩色\n白模\nproject-sepia\n© OpenStreetMap contributors · ODbL"
+    },
+    {
+      "stage": "static-style-彩色",
+      "canvasCount": 1,
+      "style": "color",
+      "text": "城市线境 \n漫画\n线稿\n彩色\n白模\nproject-sepia\n© OpenStreetMap contributors · ODbL"
+    },
+    {
+      "stage": "static-style-白模",
+      "canvasCount": 1,
+      "style": "white",
+      "text": "城市线境 \n漫画\n线稿\n彩色\n白模\nproject-sepia\n© OpenStreetMap contributors · ODbL"
+    },
+    {
+      "stage": "static-style-project-sepia",
+      "canvasCount": 1,
+      "style": "project-sepia",
+      "text": "城市线境 \n漫画\n线稿\n彩色\n白模\nproject-sepia\n© OpenStreetMap contributors · ODbL"
+    },
+    {
+      "stage": "png-after-download-event-timeout",
+      "assets": "[\n  \"styles/paper #1%25.svg\"\n]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "styles/sepia.js",
+      "fov": "55",
+      "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.31\n}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": false,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）"
+      ],
+      "style": "external",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css",
+        "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/ab842ee5ee76beb84e51f11dbefbea19f9a16fd3de4bd1093c71db6f5d706dec/assets/project-style.css"
+      ]
+    },
+    {
+      "stage": "glb-export",
+      "assets": "[\n  \"styles/paper #1%25.svg\"\n]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "styles/sepia.js",
+      "fov": "55",
+      "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.31\n}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": false,
+      "statusText": [
+        "Project sepia / declared JS CSS SVG · 配置已保存（包括当前相机）"
+      ],
+      "style": "external",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css",
+        "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/ab842ee5ee76beb84e51f11dbefbea19f9a16fd3de4bd1093c71db6f5d706dec/assets/project-style.css"
+      ]
+    },
+    {
+      "stage": "official-project-open",
+      "assets": "[]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "",
+      "fov": "55",
+      "parameters": "{\n  \"aoStrength\": 0.12\n}",
+      "project": "Official style / synthetic offline sample",
+      "quality": "balanced",
+      "saveDisabled": false,
+      "statusText": [
+        "场景已加载；拖动旋转，滚轮缩放，右键平移。"
+      ],
+      "style": "comic",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css"
+      ]
+    },
+    {
+      "stage": "external-open-relative-after-wait",
+      "assets": "[\n  \"styles/paper #1%25.svg\"\n]",
+      "camera": "street",
+      "canvasCount": 1,
+      "entry": "styles/sepia.js",
+      "fov": "55",
+      "parameters": "{\n  \"aoStrength\": 0.12,\n  \"warmth\": 0.31\n}",
+      "project": "Project sepia / declared JS CSS SVG",
+      "quality": "low",
+      "saveDisabled": false,
+      "statusText": [
+        "场景已加载；拖动旋转，滚轮缩放，右键平移。"
+      ],
+      "style": "external",
+      "stylesheets": [
+        "http://127.0.0.1:54861/assets/index-Cv6U9Mg_.css",
+        "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/ab842ee5ee76beb84e51f11dbefbea19f9a16fd3de4bd1093c71db6f5d706dec/assets/project-style.css"
+      ]
+    }
+  ],
+  "console": [
+    {
+      "level": "warn",
+      "message": "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead.",
+      "timestamp": "2026-11-03T14:09:23.511Z",
+      "url": "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/ab842ee5ee76beb84e51f11dbefbea19f9a16fd3de4bd1093c71db6f5d706dec/assets/chunks/chunk-UV7IOE7I.js"
+    },
+    {
+      "level": "warn",
+      "message": "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead.",
+      "timestamp": "2026-11-03T14:10:05.887Z",
+      "url": "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/ab842ee5ee76beb84e51f11dbefbea19f9a16fd3de4bd1093c71db6f5d706dec/assets/chunks/chunk-UV7IOE7I.js"
+    },
+    {
+      "level": "warn",
+      "message": "THREE.WARNING: Multiple instances of Three.js being imported.",
+      "timestamp": "2026-11-03T14:11:14.500Z",
+      "url": "http://127.0.0.1:54861/projects/aa42a3f5-fabb-40a1-b1eb-52bae9c0a85e/style-preview/8ce3b7dbf7bd54f00f5cde55da9507d40f2903d53324502f11c953fe14bfdb07/assets/city-ink.js"
+    },
+    {
+      "level": "warn",
+      "message": "THREE.WARNING: Multiple instances of Three.js being imported.",
+      "timestamp": "2026-11-03T14:16:29.606Z",
+      "url": "http://127.0.0.1:54861/projects/6ebbb358-a53a-4e7b-9f60-c787de8f3099/style-preview/8ce3b7dbf7bd54f00f5cde55da9507d40f2903d53324502f11c953fe14bfdb07/assets/city-ink.js"
+    },
+    {
+      "level": "warn",
+      "message": "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead.",
+      "timestamp": "2026-11-03T14:16:29.928Z",
+      "url": "http://127.0.0.1:54861/projects/6ebbb358-a53a-4e7b-9f60-c787de8f3099/style-preview/8ce3b7dbf7bd54f00f5cde55da9507d40f2903d53324502f11c953fe14bfdb07/assets/city-ink.js"
+    }
+  ],
+  "toolNotes": [
+    "Three CUA waits timed out while asynchronous UI transitions or download observation were completing; state and actual output files were verified before any retry."
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "status": "fail",
+  "commit": "b40e6049a94075d34c11b8c946df33445bb5e3f6",
+  "primaryArchiveManifest": "final-runs/2026-11-03T14-53-20-820Z-b40e6049a940/archive-manifest.json",
+  "purpose": "Preserve the complete failed final run and the unchanged rounded-boundary exterior-wall reproduction, actual missing faces and causal analysis before future repair.",
+  "additionalItems": [
+    {
+      "path": "finding-rounded-boundary.md",
+      "sha256": "5b66b40aef0155ee2b3b4127bd477bd715c38ddc89e009a2664ccf7546465e89",
+      "bytes": 3058
+    },
+    {
+      "path": "repro-rounded-boundary.mjs",
+      "sha256": "789d48b0d2b9affc080b18ccde0a11993fc205fc7f05d61743e54ad4d50f8428",
+      "bytes": 2094
+    },
+    {
+      "path": "rounded-boundary-results.json",
+      "sha256": "a4e388e74cf79aae682a35c450e84544af10847d00f9360d7787b165855ca6ef",
+      "bytes": 467
+    },
+    {
+      "path": "diagnose-world-area.mjs",
+      "sha256": "7b9dbc8dab062a96bfcb95244fb4c7cc777d9182dfa4926933954969bae17b93",
+      "bytes": 7620
+    },
+    {
+      "path": "area-diagnostic-results.json",
+      "sha256": "bf7873510c5a089259561c11cd0ad0681bad71ec1df0d283c315192f4a9a6efc",
+      "bytes": 25219
+    },
+    {
+      "path": "diagnose-guardrail-domain.mjs",
+      "sha256": "807f9c12a8cfc20592cb425a7fc54691e5602ec7b9e68db6c4d521672cdaa93b",
+      "bytes": 3924
+    },
+    {
+      "path": "guardrail-domain-diagnostic.json",
+      "sha256": "1dfef909b45adc19edb380c10232e11c91a5df91b9d69705529bfa49b31def09",
+      "bytes": 6477
+    }
+  ]
+}

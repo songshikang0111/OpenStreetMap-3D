@@ -1,0 +1,127 @@
+{
+  "date": "2026-11-03T10:18:01.402Z",
+  "metric": "Node actual CINK/official style resource lifecycle, no WebGL rendering or GPU measurement",
+  "cycles": [
+    {
+      "main": {
+        "geometries": 35,
+        "textures": 0,
+        "materials": 57,
+        "geometryArrayBytes": 1054794
+      },
+      "near": {
+        "geometries": 3,
+        "textures": 0,
+        "materials": 3,
+        "geometryArrayBytes": 65992,
+        "triangles": 2688,
+        "drawCalls": 1,
+        "nearDetails": 224,
+        "frames": 224,
+        "crownClusters": 0,
+        "branches": 0,
+        "profiles": 0
+      },
+      "classificationClones": 0,
+      "loaded": 3
+    },
+    {
+      "main": {
+        "geometries": 35,
+        "textures": 0,
+        "materials": 57,
+        "geometryArrayBytes": 1054794
+      },
+      "near": {
+        "geometries": 3,
+        "textures": 0,
+        "materials": 3,
+        "geometryArrayBytes": 65992,
+        "triangles": 2688,
+        "drawCalls": 1,
+        "nearDetails": 224,
+        "frames": 224,
+        "crownClusters": 0,
+        "branches": 0,
+        "profiles": 0
+      },
+      "classificationClones": 0,
+      "loaded": 3
+    },
+    {
+      "main": {
+        "geometries": 35,
+        "textures": 0,
+        "materials": 57,
+        "geometryArrayBytes": 1054794
+      },
+      "near": {
+        "geometries": 3,
+        "textures": 0,
+        "materials": 3,
+        "geometryArrayBytes": 65992,
+        "triangles": 2688,
+        "drawCalls": 1,
+        "nearDetails": 224,
+        "frames": 224,
+        "crownClusters": 0,
+        "branches": 0,
+        "profiles": 0
+      },
+      "classificationClones": 0,
+      "loaded": 3
+    },
+    {
+      "main": {
+        "geometries": 35,
+        "textures": 0,
+        "materials": 57,
+        "geometryArrayBytes": 1054794
+      },
+      "near": {
+        "geometries": 3,
+        "textures": 0,
+        "materials": 3,
+        "geometryArrayBytes": 65992,
+        "triangles": 2688,
+        "drawCalls": 1,
+        "nearDetails": 224,
+        "frames": 224,
+        "crownClusters": 0,
+        "branches": 0,
+        "profiles": 0
+      },
+      "classificationClones": 0,
+      "loaded": 3
+    },
+    {
+      "main": {
+        "geometries": 35,
+        "textures": 0,
+        "materials": 57,
+        "geometryArrayBytes": 1054794
+      },
+      "near": {
+        "geometries": 3,
+        "textures": 0,
+        "materials": 3,
+        "geometryArrayBytes": 65992,
+        "triangles": 2688,
+        "drawCalls": 1,
+        "nearDetails": 224,
+        "frames": 224,
+        "crownClusters": 0,
+        "branches": 0,
+        "profiles": 0
+      },
+      "classificationClones": 0,
+      "loaded": 3
+    }
+  ],
+  "afterDispose": {
+    "streamerReferences": 0,
+    "nearReferences": 0,
+    "classificationClones": 0,
+    "estimatedBytes": 0
+  }
+}

@@ -1,0 +1,280 @@
+{
+  "date": "2026-11-03",
+  "commit": "307c9b48838be620cd4827164d67e783266ee9b6",
+  "environment": {
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36 Edg/156.0.0.0",
+    "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4090 (0x00002684) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "viewport": [
+      960,
+      640
+    ],
+    "dpr": 1,
+    "origin": [
+      39.909499999999994,
+      116.4605
+    ],
+    "seed": 1,
+    "source": "public/data/beijing-cbd.json plus explicit water/tree fixtures",
+    "platform": "win32",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13600KF"
+  },
+  "results": [
+    {
+      "id": "comic",
+      "nonWhitePixels": 29883,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 135,
+      "triangles": 106918,
+      "geometries": 22,
+      "textures": 8
+    },
+    {
+      "id": "line",
+      "nonWhitePixels": 11201,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 102,
+      "triangles": 80190,
+      "geometries": 22,
+      "textures": 7
+    },
+    {
+      "id": "color",
+      "nonWhitePixels": 320558,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 102,
+      "triangles": 80190,
+      "geometries": 22,
+      "textures": 7
+    },
+    {
+      "id": "white",
+      "nonWhitePixels": 23430,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 102,
+      "triangles": 80190,
+      "geometries": 22,
+      "textures": 7
+    },
+    {
+      "id": "external-cel",
+      "nonWhitePixels": 317386,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 33,
+      "triangles": 26728,
+      "geometries": 20,
+      "textures": 44
+    }
+  ],
+  "lifecycle": [
+    {
+      "cycle": 0,
+      "id": "comic",
+      "nonWhitePixels": 29883,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 135,
+      "triangles": 106918,
+      "geometries": 22,
+      "textures": 8
+    },
+    {
+      "cycle": 0,
+      "id": "external-cel",
+      "nonWhitePixels": 317386,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 33,
+      "triangles": 26728,
+      "geometries": 20,
+      "textures": 44
+    },
+    {
+      "cycle": 1,
+      "id": "comic",
+      "nonWhitePixels": 29883,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 135,
+      "triangles": 106918,
+      "geometries": 22,
+      "textures": 8
+    },
+    {
+      "cycle": 1,
+      "id": "external-cel",
+      "nonWhitePixels": 317386,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 33,
+      "triangles": 26728,
+      "geometries": 20,
+      "textures": 44
+    },
+    {
+      "cycle": 2,
+      "id": "comic",
+      "nonWhitePixels": 29883,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 135,
+      "triangles": 106918,
+      "geometries": 22,
+      "textures": 8
+    },
+    {
+      "cycle": 2,
+      "id": "external-cel",
+      "nonWhitePixels": 317386,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 33,
+      "triangles": 26728,
+      "geometries": 20,
+      "textures": 44
+    },
+    {
+      "cycle": 3,
+      "id": "comic",
+      "nonWhitePixels": 29883,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 135,
+      "triangles": 106918,
+      "geometries": 22,
+      "textures": 8
+    },
+    {
+      "cycle": 3,
+      "id": "external-cel",
+      "nonWhitePixels": 317386,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 33,
+      "triangles": 26728,
+      "geometries": 20,
+      "textures": 44
+    },
+    {
+      "cycle": 4,
+      "id": "comic",
+      "nonWhitePixels": 29883,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 135,
+      "triangles": 106918,
+      "geometries": 22,
+      "textures": 8
+    },
+    {
+      "cycle": 4,
+      "id": "external-cel",
+      "nonWhitePixels": 317386,
+      "roles": [
+        "ground",
+        "water",
+        "road",
+        "facility",
+        "glass",
+        "foliage"
+      ],
+      "calls": 33,
+      "triangles": 26728,
+      "geometries": 20,
+      "textures": 44
+    }
+  ],
+  "errors": [],
+  "warnings": [],
+  "scope": "Component WebGL/decoded shader acceptance, not full-city GPU performance or SDK integration"
+}

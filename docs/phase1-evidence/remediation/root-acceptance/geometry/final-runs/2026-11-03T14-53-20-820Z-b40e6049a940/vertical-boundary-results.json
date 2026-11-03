@@ -1,0 +1,24 @@
+{
+  "status": "pass",
+  "label": "final integrated-commit acceptance",
+  "cases": [
+    {
+      "axis": "x",
+      "source": "exact grid plane 0; y1..3, lateral -8..8; two different tessellations",
+      "area": 32,
+      "perOwnerArea": 16,
+      "patterns": 16,
+      "samplePointsPerPattern": 320,
+      "status": "pass"
+    },
+    {
+      "axis": "z",
+      "source": "exact grid plane 0; y1..3, lateral -8..8; two different tessellations",
+      "area": 32,
+      "perOwnerArea": 16,
+      "patterns": 16,
+      "samplePointsPerPattern": 320,
+      "status": "pass"
+    }
+  ]
+}

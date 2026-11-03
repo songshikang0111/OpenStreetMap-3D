@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-03T15:21:39.8114662Z",
+  "scope": "File copying, hashing and path/I-O adaptation only; no acceptance scripts executed",
+  "sourceRoot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture",
+  "stagedRoot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-staged\\architecture",
+  "finalRoot": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture",
+  "scriptImportsDepth": 5,
+  "temporaryRoot": "work/root-remediation-architecture/replay",
+  "resultsCopiedVerbatim": true,
+  "files": [
+    {
+      "file": "review.md",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\review.md",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\review.md",
+      "sourceSha256": "0e893a00dfd2c44875ac7a27cbb10f8f21a4601d548cbf951770bcb6be9cbe87",
+      "targetSha256": "0e893a00dfd2c44875ac7a27cbb10f8f21a4601d548cbf951770bcb6be9cbe87",
+      "sourceBytes": 11527,
+      "targetBytes": 11527,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "style-probe.mjs",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\style-probe.mjs",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\style-probe.mjs",
+      "sourceSha256": "f33163ba3d1cd6588e11818cb25549ef6846599d451039685a915e964c0ea7af",
+      "targetSha256": "ee0b70711299f8b97fb361c81f73a7052c9996260c7c807becb6553808ef0986",
+      "sourceBytes": 2024,
+      "targetBytes": 2056,
+      "verbatim": false,
+      "adaptations": [
+        "relative src import: depth 2 to depth 5",
+        "temporary output/project root moved to ignored work/root-remediation-architecture/replay; fixed live-rebuild target unchanged"
+      ]
+    },
+    {
+      "file": "style-before-fix.json",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\style-before-fix.json",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\style-before-fix.json",
+      "sourceSha256": "1a310a68c53c7ab519e8e7dc1c8774db790fb6a1f5c2d03d5be1e490bf4db24f",
+      "targetSha256": "1a310a68c53c7ab519e8e7dc1c8774db790fb6a1f5c2d03d5be1e490bf4db24f",
+      "sourceBytes": 758,
+      "targetBytes": 758,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "verify-parameters.mjs",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\verify-parameters.mjs",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\verify-parameters.mjs",
+      "sourceSha256": "706a34ae33079b61b17cb8c0b019190e0380a85d44470e900979f307d0d900de",
+      "targetSha256": "a0de3a6cc69b9e6e698c277d015f599dc9da966db4f43a88c8ccaaf4198e104b",
+      "sourceBytes": 5363,
+      "targetBytes": 5429,
+      "verbatim": false,
+      "adaptations": [
+        "relative src import: depth 2 to depth 5",
+        "temporary output/project root moved to ignored work/root-remediation-architecture/replay; fixed live-rebuild target unchanged"
+      ]
+    },
+    {
+      "file": "parameter-retest.json",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\parameter-retest.json",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\parameter-retest.json",
+      "sourceSha256": "13524538db80d49e812026ffde01f659857a4097951bd9b83de608dda00e560a",
+      "targetSha256": "13524538db80d49e812026ffde01f659857a4097951bd9b83de608dda00e560a",
+      "sourceBytes": 2919,
+      "targetBytes": 2919,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "verify-source-build.mjs",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\verify-source-build.mjs",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\verify-source-build.mjs",
+      "sourceSha256": "036ebcec186f71f22860c53448a5c4a44d39603aadcce3fd2629140adab9c46d",
+      "targetSha256": "6be8569a0a6818b56cd68d77f10e329bf97d6e1c308f552865caa4a5f6265ba5",
+      "sourceBytes": 4282,
+      "targetBytes": 4323,
+      "verbatim": false,
+      "adaptations": [
+        "relative src import: depth 2 to depth 5",
+        "temporary output/project root moved to ignored work/root-remediation-architecture/replay; fixed live-rebuild target unchanged"
+      ]
+    },
+    {
+      "file": "source-lock-results.json",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\source-lock-results.json",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\source-lock-results.json",
+      "sourceSha256": "e4f79108e65b2effe8842fe05db144523e4ec21c0432d3b047399b0bd8602129",
+      "targetSha256": "e4f79108e65b2effe8842fe05db144523e4ec21c0432d3b047399b0bd8602129",
+      "sourceBytes": 1016,
+      "targetBytes": 1016,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "source-ui-targeted-tests.tap",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\source-ui-targeted-tests.tap",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\source-ui-targeted-tests.tap",
+      "sourceSha256": "579bd7529538869894d594f30a498c596b425027b706b7254fd0ac8d5e6a39db",
+      "targetSha256": "579bd7529538869894d594f30a498c596b425027b706b7254fd0ac8d5e6a39db",
+      "sourceBytes": 874,
+      "targetBytes": 874,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "sparse-targeted-tests.tap",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\sparse-targeted-tests.tap",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\sparse-targeted-tests.tap",
+      "sourceSha256": "5936a156ae5d2d262a8bfe78d128d5c311b33444d7ef93f2224b6a77ff87786a",
+      "targetSha256": "5936a156ae5d2d262a8bfe78d128d5c311b33444d7ef93f2224b6a77ff87786a",
+      "sourceBytes": 1045,
+      "targetBytes": 1045,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "parameter-targeted-tests.tap",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\parameter-targeted-tests.tap",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\parameter-targeted-tests.tap",
+      "sourceSha256": "cf7e60586881d2565c45bc96365bcd7f6baf627669d1ed5c1a4e9ca083fa5018",
+      "targetSha256": "cf7e60586881d2565c45bc96365bcd7f6baf627669d1ed5c1a4e9ca083fa5018",
+      "sourceBytes": 2602,
+      "targetBytes": 2602,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "targeted-tests.tap",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\targeted-tests.tap",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\targeted-tests.tap",
+      "sourceSha256": "d8ef85768ba178a2684f4c75b36f0e848c2032f973422a43788016010cad79a3",
+      "targetSha256": "d8ef85768ba178a2684f4c75b36f0e848c2032f973422a43788016010cad79a3",
+      "sourceBytes": 4568,
+      "targetBytes": 4568,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "data-and-ao-probe.mjs",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\data-and-ao-probe.mjs",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\data-and-ao-probe.mjs",
+      "sourceSha256": "0cac376079c2cc9a8d64200f66624c19fb5b4e74c2bb441a65aa711925fee9fe",
+      "targetSha256": "1696d2d932d36465fa7ad3b85424c916a5a1597408a5e43097d5b0dc9a253dbd",
+      "sourceBytes": 2177,
+      "targetBytes": 2314,
+      "verbatim": false,
+      "adaptations": [
+        "relative src import: depth 2 to depth 5",
+        "temporary output/project root moved to ignored work/root-remediation-architecture/replay; fixed live-rebuild target unchanged",
+        "create replay output directory only; historical B machine dependency retained and documented"
+      ]
+    },
+    {
+      "file": "data-and-ao-results.json",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\data-and-ao-results.json",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\data-and-ao-results.json",
+      "sourceSha256": "4a935b427744453d5a12211e3bdf29db226682c53bce49e145527095fd752b52",
+      "targetSha256": "4a935b427744453d5a12211e3bdf29db226682c53bce49e145527095fd752b52",
+      "sourceBytes": 2408,
+      "targetBytes": 2408,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "verify-live-cli.mjs",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\verify-live-cli.mjs",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\verify-live-cli.mjs",
+      "sourceSha256": "fbcc4fb21f80c15a4e18004c0adddbad9843bfcdf59ec8faf61eb25b2b42e8f2",
+      "targetSha256": "b1f5d657f922ca99e71000cabcde2f627198a283b37d48ef586b5455e9b5548f",
+      "sourceBytes": 10635,
+      "targetBytes": 10649,
+      "verbatim": false,
+      "adaptations": [
+        "temporary output/project root moved to ignored work/root-remediation-architecture/replay; fixed live-rebuild target unchanged"
+      ]
+    },
+    {
+      "file": "cli-preflight.json",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\cli-preflight.json",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\cli-preflight.json",
+      "sourceSha256": "d47f145c94ce781d2fc0cd7806b59644094cc8a8ab3d27d17a51db962cf4724e",
+      "targetSha256": "d47f145c94ce781d2fc0cd7806b59644094cc8a8ab3d27d17a51db962cf4724e",
+      "sourceBytes": 2415,
+      "targetBytes": 2415,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "cli-preflight.md",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\cli-preflight.md",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\cli-preflight.md",
+      "sourceSha256": "aeb0c5a7b5a141c9d263a8b0a534db654dd0d5ba032f719daf6e5fb83d7ca57f",
+      "targetSha256": "aeb0c5a7b5a141c9d263a8b0a534db654dd0d5ba032f719daf6e5fb83d7ca57f",
+      "sourceBytes": 3562,
+      "targetBytes": 3562,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "formal-live-cli-results.json",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\formal-live-cli-results.json",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\formal-live-cli-results.json",
+      "sourceSha256": "e2cdec9f9759d50968ff2c0f4c5ee4fbe2a378f961f912d5f00434537f4ff304",
+      "targetSha256": "e2cdec9f9759d50968ff2c0f4c5ee4fbe2a378f961f912d5f00434537f4ff304",
+      "sourceBytes": 24107,
+      "targetBytes": 24107,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "audit-formal-cli.mjs",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\audit-formal-cli.mjs",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\audit-formal-cli.mjs",
+      "sourceSha256": "e2e175e3f2fe4bddfa51b56b0ea7c4aaf6a44e4ced7e0acaa89e2599aa01d46e",
+      "targetSha256": "b957e1b7bc81da9d361a9027b3cbc3e0b03593af4ac8270ca651794ae4a98fbe",
+      "sourceBytes": 7108,
+      "targetBytes": 7234,
+      "verbatim": false,
+      "adaptations": [
+        "audit reads byte-identical archived JSON beside the script; output remains ignored work",
+        "temporary output/project root moved to ignored work/root-remediation-architecture/replay; fixed live-rebuild target unchanged"
+      ]
+    },
+    {
+      "file": "formal-cli-audit.json",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\formal-cli-audit.json",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\formal-cli-audit.json",
+      "sourceSha256": "5d692007bdd4012f788a971955f37532dd7b32df1b6e1e446fc834ad6083afc9",
+      "targetSha256": "5d692007bdd4012f788a971955f37532dd7b32df1b6e1e446fc834ad6083afc9",
+      "sourceBytes": 3603,
+      "targetBytes": 3603,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "cli-copied-job-store-rejected.json",
+      "source": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\work\\root-remediation-architecture\\cli-copied-job-store-rejected.json",
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\cli-copied-job-store-rejected.json",
+      "sourceSha256": "990355a02a5909e41a1a2495da225cf58608cf0f056cd3483e4459c924603966",
+      "targetSha256": "990355a02a5909e41a1a2495da225cf58608cf0f056cd3483e4459c924603966",
+      "sourceBytes": 3241,
+      "targetBytes": 3241,
+      "verbatim": true,
+      "adaptations": []
+    },
+    {
+      "file": "README.md",
+      "source": null,
+      "finalTarget": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-integration\\beijing-city-ink\\docs\\phase1-evidence\\remediation\\root-acceptance\\architecture\\README.md",
+      "sourceSha256": null,
+      "targetSha256": "fd5c0463f0095ff210b5a4d5282e85e16335b4fd4801fd41c1e12ce70be8fcd4",
+      "sourceBytes": null,
+      "targetBytes": 5648,
+      "verbatim": false,
+      "adaptations": [
+        "new staging/dependency instructions; no execution claims added"
+      ]
+    }
+  ],
+  "excluded": [
+    "acceptance-matrix-draft.md",
+    "style-findings.json",
+    "project directories",
+    "source elements",
+    "cache and generated assets",
+    "machine job stores",
+    "browser data"
+  ],
+  "manifestSelfHash": "Not recursively included; hash this manifest externally after final copy."
+}

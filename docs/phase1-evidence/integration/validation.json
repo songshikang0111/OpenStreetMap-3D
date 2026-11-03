@@ -1,0 +1,101 @@
+{
+  "date": "2026-11-03T11:12:11.704185+00:00",
+  "evidenceAssemblyCommit": "4dd35b3985c45ad8f7416612050e6033700199e8",
+  "productCommit": "2c013fb0f8114c2dd1cba67ee1a2cd131e565aed",
+  "frozenPerformanceCommit": "9407af9c752b6b7cfc32eb4fb17622824e453cfd",
+  "frozenBundleSha256": "d22408bc6be5535a5ddd2645bdb22ddcde79c25103cd6721407a2abe5a2a0900",
+  "node": "v22.11.0",
+  "commands": [
+    {
+      "command": "npm test",
+      "status": "pass",
+      "tests": 264,
+      "failed": 0,
+      "evidence": "tests.tap"
+    },
+    {
+      "command": "npm run test:types",
+      "status": "pass"
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "targets": [
+        "legacy demo + quickstart",
+        "studio production",
+        "SDK bundle"
+      ],
+      "notes": [
+        "Existing >500 kB bundle warnings retained."
+      ]
+    },
+    {
+      "command": "npm run check:package",
+      "status": "pass",
+      "files": 121,
+      "archiveBytes": 704445,
+      "evidence": "package-results.json"
+    },
+    {
+      "command": "node scripts/phase1-integration-check.mjs",
+      "status": "pass",
+      "checks": 7,
+      "evidence": "e2e-results.json"
+    },
+    {
+      "command": "node scripts/benchmark-integration/run.mjs",
+      "status": "pass",
+      "cases": 12,
+      "seconds": 60,
+      "evidence": "performance/summary.json",
+      "scope": "Original non-drawing gates; drawing budget checked separately and fails in assessment.json."
+    },
+    {
+      "command": "node scripts/phase1-summarize.mjs",
+      "status": "fail",
+      "timingStatus": "pass",
+      "notes": [
+        "Drawing budget failures are retained; this is not overall phase acceptance."
+      ],
+      "evidence": "performance/assessment.json"
+    }
+  ],
+  "phaseAccepted": false,
+  "outstanding": [
+    {
+      "id": "AC04",
+      "status": "fail",
+      "reason": "Actual default-source small-area fetch timed out; no live success."
+    },
+    {
+      "id": "AC18",
+      "status": "fail",
+      "reason": "10/12 cases exceed default whole-frame triangle p95; both fixed16 cases exceed draws p95."
+    },
+    {
+      "id": "AC27",
+      "status": "not-run",
+      "reason": "Independent studio UI blocked by tool URL confidence and unavailable browser provider; implementer UI recorded separately."
+    }
+  ],
+  "notRun": [
+    "Cloud CI execution",
+    "Linux/macOS/mobile GPU verification"
+  ],
+  "scope": [
+    "No main merge/push/npm publish/deployment.",
+    "CPU/estimated resource bytes are not measured VRAM."
+  ],
+  "acceptanceCounts": {
+    "pass": 24,
+    "fail": 2,
+    "not-run": 1
+  },
+  "independentReviews": {
+    "architectureProduct": "pass, all reproduced P1/P2 closed",
+    "architectureRawPerformance": "pass, zero inconsistencies",
+    "sdkBrowserExtensionsCLI": "pass",
+    "studioDocumentRawMetrics": "pass, zero inconsistencies",
+    "independentStudioUI": "not-run, URL confidence refusal and browser provider unavailable"
+  }
+}

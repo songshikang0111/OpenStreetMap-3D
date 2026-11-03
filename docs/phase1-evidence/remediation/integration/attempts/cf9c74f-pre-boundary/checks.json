@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-03T14:59:09.3627716Z",
+  "commit": "cf9c74f59faf5cf8b19ecfe8e5207c9c3dbc0e4a",
+  "status": "pass",
+  "checks": [
+    {
+      "name": "tests",
+      "command": "npm test",
+      "exitCode": 0,
+      "status": "pass",
+      "elapsedSeconds": 14.745752,
+      "log": "tests.tap"
+    },
+    {
+      "name": "types",
+      "command": "npm run test:types",
+      "exitCode": 0,
+      "status": "pass",
+      "elapsedSeconds": 0.7643309,
+      "log": "types.txt"
+    },
+    {
+      "name": "production-builds",
+      "command": "npm run build",
+      "exitCode": 0,
+      "status": "pass",
+      "elapsedSeconds": 3.5388913,
+      "log": "build.txt"
+    },
+    {
+      "name": "production-package",
+      "command": "npm run check:package",
+      "exitCode": 0,
+      "status": "pass",
+      "elapsedSeconds": 7.2931112,
+      "log": "package.txt"
+    }
+  ],
+  "completedAt": "2026-11-03T14:59:35.7735768Z"
+}

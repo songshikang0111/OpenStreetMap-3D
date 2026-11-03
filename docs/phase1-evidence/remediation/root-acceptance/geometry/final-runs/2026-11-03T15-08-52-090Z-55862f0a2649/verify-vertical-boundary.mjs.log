@@ -1,0 +1,5 @@
+{
+  "name": "verify-vertical-boundary.mjs",
+  "status": "pass",
+  "stdout": "{\n  \"status\": \"pass\",\n  \"label\": \"final integrated-commit acceptance\",\n  \"cases\": [\n    {\n      \"axis\": \"x\",\n      \"source\": \"exact grid plane 0; y1..3, lateral -8..8; two different tessellations\",\n      \"area\": 32,\n      \"perOwnerArea\": 16,\n      \"patterns\": 16,\n      \"samplePointsPerPattern\": 320,\n      \"status\": \"pass\"\n    },\n    {\n      \"axis\": \"z\",\n      \"source\": \"exact grid plane 0; y1..3, lateral -8..8; two different tessellations\",\n      \"area\": 32,\n      \"perOwnerArea\": 16,\n      \"patterns\": 16,\n      \"samplePointsPerPattern\": 320,\n      \"status\": \"pass\"\n    }\n  ]\n}\n"
+}

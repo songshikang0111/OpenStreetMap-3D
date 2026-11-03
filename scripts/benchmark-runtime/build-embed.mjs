@@ -1,0 +1,10 @@
+import { build } from 'vite';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
+const outDir=path.resolve(process.argv[2]||'work/runtime-embed');
+await build({configFile:false,root:process.cwd(),base:'./',build:{outDir,emptyOutDir:true,rollupOptions:{input:path.resolve('examples/embed/index.html')}}});
+const scene=process.argv[3]||'core-synthetic-fixed-4';
+await fs.cp(path.resolve('work/runtime-fixtures',scene),path.join(outDir,'examples/scenes',scene),{recursive:true});
+await fs.writeFile(path.join(outDir,'sdk-build.json'),JSON.stringify({commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),entry:'examples/embed/index.html',bundleFiles:await fs.readdir(path.join(outDir,'assets'))},null,2));
+console.log(JSON.stringify({outDir,entry:'examples/embed/index.html',query:`?manifest=../scenes/${scene}/manifest.json`}));

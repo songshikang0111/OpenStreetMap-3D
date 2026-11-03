@@ -1,0 +1,1465 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "/root/styles_repair_review",
+  "date": "2026-11-03T12:48:39.624Z",
+  "independent": true,
+  "readOnlyTrackedFiles": true,
+  "workspace": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink",
+  "branch": "codex/phase1-styles-repair",
+  "baseline": "dee3cc8",
+  "initialProductCommit": "599c4486b86d4e28917526463b64cca49b51addf",
+  "reviewedProductCommit": "5c204b212395d357daeb7cf286db6a39d846cd9d",
+  "finalTrackedDiffAtReview": [],
+  "conclusion": "pass for remediation C component scope after fixing all three independently found issues; not whole-phase acceptance",
+  "openComponentFindings": [],
+  "findings": [
+    {
+      "id": "C-01",
+      "priority": "P2",
+      "title": "Static viewer retained owned CSS after initialization failure",
+      "baselineLocation": {
+        "file": "studio/static-viewer.js",
+        "line": 5
+      },
+      "reproduction": "Export an external CSS style via the standard CLI, remove exported scene/manifest.json, open the non-root exported page through the loopback-only browser. The original catch reported HTTP404 but retained one stylesheet even after pagehide.",
+      "baselineActual": {
+        "error": "Unable to load http://127.0.0.1:60791/exports/nonroot/city/scene/manifest.json: HTTP 404 Not Found",
+        "styleLinksBeforePagehide": 1,
+        "styleLinksAfterPagehide": 1,
+        "css": "yes",
+        "canvases": 0
+      },
+      "fixCommit": "1e4296fba480d7028fa2ec1b706da7ae74e25738",
+      "fix": "Retain the loaded style/viewer handles, dispose both in catch, and release owned CSS in pagehide finally.",
+      "retest": {
+        "manifestFailure": {
+          "error": "Unable to load http://127.0.0.1:61688/exports/nested/city/scene/manifest.json: HTTP 404 Not Found",
+          "links": 0,
+          "css": "",
+          "canvases": 0
+        },
+        "cameraFailure": {
+          "error": "View needs finite position/target and FOV in [5, 140].",
+          "links": 0,
+          "css": "",
+          "canvases": 0
+        },
+        "normalPagehide": 0,
+        "disposeRejection": {
+          "fault": "synthetic viewer.dispose rejection after real disposal",
+          "rejection": "synthetic disposal rejection",
+          "links": 0,
+          "css": "",
+          "canvases": 0
+        }
+      },
+      "status": "fixed-and-independently-retested"
+    },
+    {
+      "id": "C-02",
+      "priority": "P2",
+      "title": "Asset filenames containing URL metacharacters broke exported URLs",
+      "baselineLocation": {
+        "file": "src/styles/project-bundle.js",
+        "line": 51
+      },
+      "relatedBaselineLines": [
+        69,
+        75
+      ],
+      "reproduction": "Use static import of declared local styles/paper#v2.svg. Standard export web succeeded, but the generated new URL interpreted #v2.svg as a fragment and requested a missing ...-paper pathname.",
+      "baselineActual": {
+        "assetError": "paper asset unavailable",
+        "assetOK": false,
+        "requests": [
+          {
+            "url": "http://127.0.0.1:55991/exports/hash/city/assets/resources/paper-VQYB6Z5L.svg",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:55991/exports/hash/city/assets/resources/1376e38f32688a98-paper",
+            "allowed": true
+          }
+        ]
+      },
+      "fixCommit": "1e4296fba480d7028fa2ec1b706da7ae74e25738",
+      "fix": "Encode URL path segments in JavaScript asset URLs and descriptor URLs, and use hash-only CSS output names.",
+      "retest": {
+        "jsAssetOK": true,
+        "percentSvg": true,
+        "descriptors": [
+          {
+            "name": "styles/paper#v2.svg",
+            "url": "./assets/style-files/styles/paper%23v2.svg",
+            "status": 200,
+            "svg": true
+          },
+          {
+            "name": "styles/paper%23.svg",
+            "url": "./assets/style-files/styles/paper%2523.svg",
+            "status": 200,
+            "svg": true
+          }
+        ],
+        "css": [
+          {
+            "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/5ZNK7FAS.svg",
+            "status": 200
+          },
+          {
+            "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/NCJ27TBC.svg",
+            "status": 200
+          }
+        ],
+        "warmth": 0.23
+      },
+      "status": "fixed-and-independently-retested"
+    },
+    {
+      "id": "C-03",
+      "priority": "P3",
+      "title": "Dependency-name Schema accepted dot segments rejected by the pure contract",
+      "baselineLocation": {
+        "file": "schemas/project.schema.json",
+        "line": 16
+      },
+      "reproduction": "Apply dependency propertyNames.pattern to foo/., foo/.. and @foo/bar/.: original Schema returned true while validateProjectStyleConfig rejected all three.",
+      "fixCommit": "5c204b212395d357daeb7cf286db6a39d846cd9d",
+      "fix": "Add the same dot-segment negative lookahead to Schema propertyNames and a Schema/runtime parity regression.",
+      "retest": [
+        {
+          "name": "foo/.",
+          "schemaPatternValid": false,
+          "runtimeContractValid": false
+        },
+        {
+          "name": "foo/..",
+          "schemaPatternValid": false,
+          "runtimeContractValid": false
+        },
+        {
+          "name": "foo/bar",
+          "schemaPatternValid": true,
+          "runtimeContractValid": true
+        },
+        {
+          "name": "@foo/bar/.",
+          "schemaPatternValid": false,
+          "runtimeContractValid": false
+        }
+      ],
+      "status": "fixed-and-independently-retested"
+    }
+  ],
+  "checks": {
+    "initial": {
+      "commit": "599c4486b86d4e28917526463b64cca49b51addf",
+      "npmTest": {
+        "exitCode": 0,
+        "tests": 268,
+        "pass": 268,
+        "fail": 0,
+        "skipped": 0
+      },
+      "build": {
+        "exitCode": 0
+      },
+      "testTypes": {
+        "exitCode": 0
+      },
+      "styleConsumerTypes": {
+        "exitCode": 0
+      }
+    },
+    "final": {
+      "commit": "5c204b212395d357daeb7cf286db6a39d846cd9d",
+      "npmTest": {
+        "command": "npm test",
+        "exitCode": 0,
+        "tests": 270,
+        "pass": 270,
+        "fail": 0,
+        "skipped": 0
+      },
+      "build": {
+        "command": "npm run build",
+        "exitCode": 0,
+        "note": "Existing >500kB bundle-size warning remains."
+      },
+      "testTypes": {
+        "command": "npm run test:types",
+        "exitCode": 0
+      },
+      "styleConsumerTypes": {
+        "command": "npx tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 docs/phase1-evidence/remediation/styles/typecheck.ts",
+        "exitCode": 0
+      },
+      "independentFunctionalProbe": {
+        "command": "node work/styles-independent-review/retest.mjs",
+        "exitCode": 0,
+        "styles": [
+          "comic",
+          "line",
+          "color",
+          "white",
+          "project-sepia"
+        ],
+        "nonRootPath": "/exports/nested/city/index.html",
+        "networkPolicy": "loopback-only",
+        "savedAndRefreshedWarmth": 0.23,
+        "cliFormats": [
+          "web",
+          "png",
+          "glb"
+        ],
+        "viewExports": [
+          "png",
+          "glb"
+        ]
+      },
+      "cliArtifacts": {
+        "png": {
+          "bytes": 81086,
+          "sha256": "218501a77463c4e58e930391ff795cbd8be750281c91189748bb4d274d5a7ec4",
+          "signature": [
+            137,
+            80,
+            78,
+            71,
+            13,
+            10,
+            26,
+            10
+          ]
+        },
+        "glb": {
+          "bytes": 101728,
+          "sha256": "60c58e332f7fe95cec6392a32f7c93142f7f5eb5d25683ff3a2676e66994f8aa",
+          "signature": [
+            103,
+            108,
+            84,
+            70,
+            2,
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "cssOwnership": {
+      "baseline": 1,
+      "counts": [
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1
+      ],
+      "concurrent": [
+        3,
+        2,
+        1
+      ],
+      "preserveB": true,
+      "enumerable": false,
+      "failed": [
+        "Unsupported style schema/contract version",
+        1,
+        "Style stylesheet failed: http://127.0.0.1:54184/exports/nested/city/missing.css",
+        1
+      ],
+      "sharedRegistry": true,
+      "afterPagehide": 0,
+      "cssAfterPagehide": ""
+    },
+    "atomicFailuresAndPathBoundary": [
+      {
+        "name": "unknown",
+        "exitCode": 1,
+        "diagnostic": {
+          "code": "STYLE_ENTRY_REQUIRED",
+          "stage": "style",
+          "message": "Unknown project style unknown: declare style.entry.",
+          "hint": "Add the local ESM entry to city.config.json before exporting."
+        },
+        "siteUnchanged": true
+      },
+      {
+        "name": "missing-entry",
+        "exitCode": 1,
+        "diagnostic": {
+          "code": "STYLE_INPUT_MISSING",
+          "stage": "style",
+          "message": "Project style input is unavailable: styles/missing.js",
+          "hint": "Check style.entry, dependencies and assets before exporting."
+        },
+        "siteUnchanged": true
+      },
+      {
+        "name": "bad-parameters",
+        "exitCode": 1,
+        "diagnostic": {
+          "code": "STYLE_MODULE_INVALID",
+          "stage": "style",
+          "message": "Invalid style parameter warmth",
+          "hint": "The entry must export a Node/browser-compatible StylePack with matching id and valid saved parameters; put DOM work inside factories."
+        },
+        "siteUnchanged": true
+      },
+      {
+        "name": "remote-import",
+        "exitCode": 1,
+        "diagnostic": {
+          "code": "STYLE_BUNDLE_FAILED",
+          "stage": "style",
+          "message": "Build failed with 1 error:\nnode_modules/esbuild/lib/main.js:1217:27: ERROR: [plugin: explicit-project-style] Undeclared or nonlocal style import: https://example.com/x.js",
+          "hint": "Check local entry/imports/assets and explicit dependency mappings."
+        },
+        "siteUnchanged": true
+      },
+      {
+        "name": "node-import",
+        "exitCode": 1,
+        "diagnostic": {
+          "code": "STYLE_BUNDLE_FAILED",
+          "stage": "style",
+          "message": "Build failed with 1 error:\nnode_modules/esbuild/lib/main.js:1217:27: ERROR: [plugin: explicit-project-style] Undeclared or nonlocal style import: node:fs",
+          "hint": "Check local entry/imports/assets and explicit dependency mappings."
+        },
+        "siteUnchanged": true
+      },
+      {
+        "name": "unmapped-bare",
+        "exitCode": 1,
+        "diagnostic": {
+          "code": "STYLE_BUNDLE_FAILED",
+          "stage": "style",
+          "message": "Build failed with 1 error:\nnode_modules/esbuild/lib/main.js:1217:27: ERROR: [plugin: explicit-project-style] Undeclared or nonlocal style import: local-palette",
+          "hint": "Check local entry/imports/assets and explicit dependency mappings."
+        },
+        "siteUnchanged": true
+      },
+      {
+        "name": "traversal-import",
+        "exitCode": 1,
+        "diagnostic": {
+          "code": "STYLE_BUNDLE_FAILED",
+          "stage": "style",
+          "message": "Build failed with 1 error:\ncity-project:C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\styles-independent-review\\fixture-\\styles\\sepia.js:1:14: ERROR: [plugin: explicit-project-style] Could not resolve \"../../../outside.js\"",
+          "hint": "Check local entry/imports/assets and explicit dependency mappings."
+        },
+        "siteUnchanged": true
+      },
+      {
+        "name": "junction-escape",
+        "status": "rejected",
+        "code": "STYLE_BUNDLE_FAILED",
+        "message": "Build failed with 1 error:\nnode_modules/esbuild/lib/main.js:1217:21: ERROR: [plugin: explicit-project-style] Expected a relative path within the project."
+      }
+    ],
+    "ownership": {
+      "changedFiles": [
+        "docs/extensions.md",
+        "docs/phase1-evidence/remediation/styles/handoff.md",
+        "docs/phase1-evidence/remediation/styles/typecheck.ts",
+        "docs/phase1-evidence/remediation/styles/verify-standard-export.mjs",
+        "schemas/project.schema.json",
+        "src/cli/export.js",
+        "src/core/config.js",
+        "src/core/index.d.ts",
+        "src/styles/index.d.ts",
+        "src/styles/index.js",
+        "src/styles/project-bundle.d.ts",
+        "src/styles/project-bundle.js",
+        "src/styles/project-contract.d.ts",
+        "src/styles/project-contract.js",
+        "src/styles/project-loader.d.ts",
+        "src/styles/project-loader.js",
+        "src/styles/viewer-entry.js",
+        "studio/static-viewer.js",
+        "test/helpers/project-style.js",
+        "test/phase1-styles-export.test.js"
+      ],
+      "forbiddenScopeChanges": []
+    },
+    "logs": {
+      "tests.tap": {
+        "bytes": 70875,
+        "sha256": "8a093d6f33a4cc71742e421b66c3c5d4221761a53ee293f3870ca18ea0405701"
+      },
+      "build.txt": {
+        "bytes": 2129,
+        "sha256": "0d560538c0c7369a44e16f976ff31e77165055bb04466e773288396df7998c62"
+      },
+      "types.txt": {
+        "bytes": 161,
+        "sha256": "0649436daedb89cf61d6e683dd31155d63f0ab5dbf5100d4f228e7c6fbf2b5f5"
+      },
+      "styles-types.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "final-tests.tap": {
+        "bytes": 71316,
+        "sha256": "5a0fc3ee4225882c1597f5827d70aa6ef61698fab52ae6bc0f344f647396209d"
+      },
+      "final-build.txt": {
+        "bytes": 2129,
+        "sha256": "f1d9c856f8c3e4e19bae4db743e4546f74830c4878c3a394c4bf7fe181a85869"
+      },
+      "final-types.txt": {
+        "bytes": 161,
+        "sha256": "0649436daedb89cf61d6e683dd31155d63f0ab5dbf5100d4f228e7c6fbf2b5f5"
+      },
+      "final-styles-types.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "final-schema.txt": {
+        "bytes": 302,
+        "sha256": "b27cbae256d8702784b2771956680f10c57768f32708f906c644553d7d50c308"
+      }
+    }
+  },
+  "acceptanceScope": {
+    "AC21": "pass in C scope: actual standard static CLI export, non-root path, loopback-only network, four official plus declared external style, local relative/mapped imports and SVG/CSS assets.",
+    "AC24": "pass for the C style declaration, Schema/type/loader/bundle parameter contract. Whole AC24 remains pending D AO fix and E integrated/package checks.",
+    "AC22": "pass for C shared style resolution path: actual viewer and public CLI PNG/GLB both succeeded. Not a new complete-area, attribution, or cross-chunk completeness audit.",
+    "AC27": "pass for this independent C component review with three findings fixed and independently rechecked. Not whole-phase AC27 release."
+  },
+  "pendingIntegration": [
+    {
+      "owner": "E",
+      "item": "Add esbuild 0.25.12 to production dependencies and update lock. Current checkout resolves it transitively through Vite dev dependency; production-only package installation has not been passed here.",
+      "status": "not-integrated-not-claimed-pass"
+    },
+    {
+      "owner": "E",
+      "item": "Add the suggested public Node styles/project-bundle export and verify installed-package consumer/imports.",
+      "status": "not-integrated-not-claimed-pass"
+    },
+    {
+      "owner": "E",
+      "item": "Wire Studio protected style routes, cache publication, entry/dependencies/assets-preserving save, external-style selector, old viewer then old LoadedProjectStyle disposal on repeated opens/switches, and failure cleanup.",
+      "status": "not-integrated-not-claimed-pass"
+    },
+    {
+      "owner": "D/E",
+      "item": "Fix and independently verify SDK AO parameter override from original R4; C did not change SDK/runtime/AO.",
+      "status": "out-of-scope-still-pending"
+    },
+    {
+      "owner": "D/root/E",
+      "item": "Whole-phase R4, performance/GPU requirements, final integrated AC01-AC27 and production package acceptance.",
+      "status": "not-run-by-this-review"
+    }
+  ],
+  "evidence": {
+    "originalIndependentProbe": {
+      "baseCommit": "599c4486b86d4e28917526463b64cca49b51addf",
+      "date": "2026-11-03T12:41:06.819Z",
+      "scope": "Independent C functional review; loopback only, not GPU performance",
+      "checks": [
+        {
+          "name": "unknown",
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_ENTRY_REQUIRED",
+            "stage": "style",
+            "message": "Unknown project style unknown: declare style.entry.",
+            "hint": "Add the local ESM entry to city.config.json before exporting."
+          },
+          "siteUnchanged": true
+        },
+        {
+          "name": "missing-entry",
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_INPUT_MISSING",
+            "stage": "style",
+            "message": "Project style input is unavailable: styles/missing.js",
+            "hint": "Check style.entry, dependencies and assets before exporting."
+          },
+          "siteUnchanged": true
+        },
+        {
+          "name": "bad-parameters",
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_MODULE_INVALID",
+            "stage": "style",
+            "message": "Invalid style parameter warmth",
+            "hint": "The entry must export a Node/browser-compatible StylePack with matching id and valid saved parameters; put DOM work inside factories."
+          },
+          "siteUnchanged": true
+        },
+        {
+          "name": "remote-import",
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_BUNDLE_FAILED",
+            "stage": "style",
+            "message": "Build failed with 1 error:\nnode_modules/esbuild/lib/main.js:1217:27: ERROR: [plugin: explicit-project-style] Undeclared or nonlocal style import: https://example.com/x.js",
+            "hint": "Check local entry/imports/assets and explicit dependency mappings."
+          },
+          "siteUnchanged": true
+        },
+        {
+          "name": "node-import",
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_BUNDLE_FAILED",
+            "stage": "style",
+            "message": "Build failed with 1 error:\nnode_modules/esbuild/lib/main.js:1217:27: ERROR: [plugin: explicit-project-style] Undeclared or nonlocal style import: node:fs",
+            "hint": "Check local entry/imports/assets and explicit dependency mappings."
+          },
+          "siteUnchanged": true
+        },
+        {
+          "name": "unmapped-bare",
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_BUNDLE_FAILED",
+            "stage": "style",
+            "message": "Build failed with 1 error:\nnode_modules/esbuild/lib/main.js:1217:27: ERROR: [plugin: explicit-project-style] Undeclared or nonlocal style import: local-palette",
+            "hint": "Check local entry/imports/assets and explicit dependency mappings."
+          },
+          "siteUnchanged": true
+        },
+        {
+          "name": "traversal-import",
+          "exitCode": 1,
+          "diagnostic": {
+            "code": "STYLE_BUNDLE_FAILED",
+            "stage": "style",
+            "message": "Build failed with 1 error:\ncity-project:C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\styles-independent-review\\fixture-\\styles\\sepia.js:1:14: ERROR: [plugin: explicit-project-style] Could not resolve \"../../../outside.js\"",
+            "hint": "Check local entry/imports/assets and explicit dependency mappings."
+          },
+          "siteUnchanged": true
+        },
+        {
+          "name": "junction-escape",
+          "status": "rejected",
+          "code": "STYLE_BUNDLE_FAILED",
+          "message": "Build failed with 1 error:\nnode_modules/esbuild/lib/main.js:1217:21: ERROR: [plugin: explicit-project-style] Expected a relative path within the project."
+        }
+      ],
+      "findings": [
+        {
+          "id": "C-01",
+          "priority": "P2",
+          "file": "studio/static-viewer.js",
+          "line": 5,
+          "title": "Release loaded style when viewer initialization fails",
+          "actual": {
+            "error": "Unable to load http://127.0.0.1:60791/exports/nonroot/city/scene/manifest.json: HTTP 404 Not Found",
+            "styleLinksBeforePagehide": 1,
+            "styleLinksAfterPagehide": 1,
+            "css": "yes",
+            "canvases": 0
+          }
+        },
+        {
+          "id": "C-02",
+          "priority": "P2",
+          "file": "src/styles/project-bundle.js",
+          "line": 49,
+          "title": "Encode imported asset filenames before constructing module-relative URL",
+          "actual": {
+            "assetError": "paper asset unavailable",
+            "assetOK": false,
+            "requests": [
+              {
+                "url": "http://127.0.0.1:55991/exports/hash/city/assets/resources/paper-VQYB6Z5L.svg",
+                "allowed": true
+              },
+              {
+                "url": "http://127.0.0.1:55991/exports/hash/city/assets/resources/1376e38f32688a98-paper",
+                "allowed": true
+              }
+            ]
+          }
+        }
+      ],
+      "cli": [
+        {
+          "args": [
+            "build",
+            "--project",
+            "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\styles-independent-review\\fixture-",
+            "--offline",
+            "--json"
+          ],
+          "exitCode": 0,
+          "response": {
+            "schemaVersion": 1,
+            "status": "succeeded",
+            "artifacts": [
+              "dist/manifest.json",
+              "city.lock.json"
+            ],
+            "diagnostics": [],
+            "job": {
+              "schemaVersion": 1,
+              "id": "4a187bac-4364-431a-b01f-d88144fc2e36",
+              "kind": "build",
+              "project": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\styles-independent-review\\fixture-",
+              "parameters": {},
+              "status": "succeeded",
+              "stage": "complete",
+              "progress": 1,
+              "artifacts": [
+                "dist/manifest.json",
+                "city.lock.json"
+              ],
+              "diagnostics": [],
+              "attempt": 1,
+              "createdAt": "2026-11-03T12:41:06.893Z",
+              "startedAt": "2026-11-03T12:41:06.895Z",
+              "result": {
+                "schemaVersion": 1,
+                "status": "succeeded",
+                "artifacts": [
+                  "dist/manifest.json",
+                  "city.lock.json"
+                ],
+                "diagnostics": [],
+                "contentHash": "dd46517fff776347ab177b7106419cb6a9e66053fbfddc3249845fa1ba769727",
+                "report": {
+                  "schemaVersion": 1,
+                  "status": "succeeded",
+                  "diagnostics": [],
+                  "hashes": {
+                    "config": "245187bc65798b0df0f6daa655983df3de88c2328356b6655bdadbb858753dda",
+                    "source": "fa90f21b97b3019777a34817cb8affacde1e3a28ba1d2674c40fda6b1ba8c598",
+                    "world": "226055c71d28217741009ebf75e13d1083bbad13b07cd610b01a0ad0df8b956b"
+                  },
+                  "counts": {
+                    "inputElements": 3,
+                    "features": 7,
+                    "buildings": 1,
+                    "trees": 1,
+                    "chunks": 1
+                  },
+                  "road": {
+                    "sourceRoads": 1,
+                    "segments": 1,
+                    "driveSegments": 1,
+                    "walkSegments": 0,
+                    "miterJoins": 0,
+                    "bevelJoins": 0,
+                    "duplicateSegments": 0,
+                    "clippedOverlaps": 0,
+                    "junctions": 0,
+                    "crossingExclusions": 0,
+                    "dashes": 0,
+                    "stopLines": 0,
+                    "drivePolygons": 1,
+                    "walkPolygons": 0,
+                    "pavingPolygons": 2,
+                    "surfaceTriangles": 6,
+                    "roadArea": 1332.4074902206153,
+                    "pavementArea": 777.2377026286922,
+                    "observedSidewalkWays": 0,
+                    "observedCrossingWays": 0,
+                    "inferredMarginWays": 1,
+                    "pavementBuildingBlockers": 2,
+                    "gradeSource": "OSM connectivity + inferred layer heights",
+                    "gradeOriginalDiscontinuities": 0,
+                    "gradeResolvedConnections": 0,
+                    "gradeChangedWays": 0,
+                    "gradeMaxVehicleSlope": 0,
+                    "gradeSteepVehicleRuns": 0,
+                    "gradeCrossingConstraints": 0,
+                    "gradeRemainingDiscontinuities": 0,
+                    "gradeConstraintIterations": 0,
+                    "gradeConstraintConflicts": 0,
+                    "gradeAmbiguousCrossings": 0,
+                    "stairFlights": 0,
+                    "gradeSteepWalkingWays": 0,
+                    "gradeMaxWalkingSlope": 0,
+                    "renderedTriangles": 6,
+                    "bridgeWays": 0,
+                    "bridgeSegments": 0,
+                    "bridgeDecks": 0,
+                    "bridgePiers": 0,
+                    "bridgeSupportCandidates": 0,
+                    "bridgeGuardrailSegments": 0,
+                    "bridgeRailInteriorSkipped": 0,
+                    "bridgeRejectedSupports": {},
+                    "unsupportedBridgeWays": 0,
+                    "bridgeHeightSource": "inferred-layer-times-7m",
+                    "bridgeGradeConnectionsUnresolved": 0,
+                    "bridgeStructureTriangles": 0,
+                    "stairTreads": 0,
+                    "stairPosts": 0,
+                    "stairTriangles": 0,
+                    "stairSkippedFlights": 0,
+                    "stairSteepFlights": 0,
+                    "stairHeightSource": "shared-road-grade-inference"
+                  },
+                  "landscape": {
+                    "observedFeatures": 0,
+                    "observedSurfaceArea": 0,
+                    "inferredSites": 0,
+                    "inferredPavedArea": 0,
+                    "inferredPlantedArea": 0,
+                    "rejectedCandidates": 0,
+                    "rejectedGeometry": 0,
+                    "templates": {},
+                    "layouts": {},
+                    "kindAreas": {},
+                    "source": "OSM tagged ground polygons + constrained illustrative site templates; no imagery-derived masks",
+                    "availableTreeCandidates": 0,
+                    "availablePropCandidates": 0,
+                    "treesByTemplate": {},
+                    "commonCandidates": 0,
+                    "treeCandidates": 0,
+                    "props": 0,
+                    "surfaces": 0,
+                    "inferredArea": 0,
+                    "inferredFraction": 0,
+                    "knownGroundFraction": 0,
+                    "unfilledBeforeFraction": 0.9223057644110275,
+                    "unfilledAfterFraction": 0.9223057644110275,
+                    "coverageSampleSpacing": 12,
+                    "coverageSamples": 399,
+                    "markingStrips": 0,
+                    "markingPrecisionRetries": 0,
+                    "omittedMarkingStrips": 0,
+                    "renderedTriangles": 0,
+                    "drawMeshes": 0
+                  },
+                  "roof": {
+                    "tagged": 0,
+                    "inferred": 0,
+                    "unsupported": 0
+                  },
+                  "determinism": {
+                    "timestampsExcluded": true,
+                    "uuidExcluded": true,
+                    "worldHashExcludesTiling": true
+                  }
+                }
+              },
+              "finishedAt": "2026-11-03T12:41:07.160Z"
+            }
+          }
+        },
+        {
+          "args": [
+            "export",
+            "web",
+            "--project",
+            "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\styles-independent-review\\fixture-",
+            "--output",
+            "exports/nonroot/city",
+            "--offline",
+            "--json"
+          ],
+          "exitCode": 0,
+          "response": {
+            "schemaVersion": 1,
+            "status": "succeeded",
+            "artifacts": [
+              "exports/nonroot/city/index.html"
+            ],
+            "diagnostics": [],
+            "job": {
+              "schemaVersion": 1,
+              "id": "afffef7e-4d28-48ef-97ae-332735256b13",
+              "kind": "export-web",
+              "project": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\styles-independent-review\\fixture-",
+              "parameters": {
+                "output": "exports/nonroot/city"
+              },
+              "status": "succeeded",
+              "stage": "complete",
+              "progress": 1,
+              "artifacts": [
+                "exports/nonroot/city/index.html"
+              ],
+              "diagnostics": [],
+              "attempt": 1,
+              "createdAt": "2026-11-03T12:41:07.244Z",
+              "startedAt": "2026-11-03T12:41:07.247Z",
+              "result": {
+                "schemaVersion": 1,
+                "status": "succeeded",
+                "artifacts": [
+                  "exports/nonroot/city/index.html"
+                ],
+                "diagnostics": [],
+                "scope": "complete-area",
+                "attribution": "© OpenStreetMap contributors; ODbL"
+              },
+              "finishedAt": "2026-11-03T12:41:07.524Z"
+            }
+          }
+        }
+      ],
+      "browser": {
+        "baseline": 1,
+        "counts": [
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1
+        ],
+        "coexist": [
+          3,
+          2,
+          1
+        ],
+        "preservesB": true,
+        "nonEnumerable": true,
+        "errors": [
+          "Unsupported style schema/contract version",
+          1,
+          "Style stylesheet failed: http://127.0.0.1:59422/exports/nonroot/city/missing.css",
+          1
+        ],
+        "sharedRegistry": true,
+        "cssUrl": "http://127.0.0.1:59422/exports/nonroot/city/assets/resources/paper-VQYB6Z5L.svg",
+        "cssAssetStatus": 200,
+        "cssAssetText": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><path fill=\"#d7cfb5\" d=\"M0 0h8v8H0z\"/></svg>",
+        "warmth": 0.23,
+        "network": [
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/index.html",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/viewer.js",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/city-ink.js",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/chunks/chunk-UV7IOE7I.js",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/viewer-config.json",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/project-style.css",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/favicon.ico",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/project-style.js",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/resources/paper-VQYB6Z5L.svg",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/scene/manifest.json",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/scene/chunks/0_0.low.be0185e5813c91fb.cink",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/resources/1376e38f32688a98-paper.svg",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/scene/chunks/0_0.high.20a74b6316aa66fc.cink",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/viewer-config.json",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/project-style.css",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/project-style.css",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/project-style.css",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/project-style.css",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/project-style.css",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/project-style.css",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/project-style.css",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/resources/paper-VQYB6Z5L.svg",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/project-style.css",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/missing.css",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:59422/exports/nonroot/city/assets/resources/paper-VQYB6Z5L.svg",
+            "allowed": true
+          }
+        ],
+        "events": [
+          {
+            "level": "warning",
+            "message": "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
+          }
+        ]
+      },
+      "viewerInitializationFailure": {
+        "error": "Unable to load http://127.0.0.1:60791/exports/nonroot/city/scene/manifest.json: HTTP 404 Not Found",
+        "styleLinksBeforePagehide": 1,
+        "styleLinksAfterPagehide": 1,
+        "css": "yes",
+        "canvases": 0
+      },
+      "hashAssetExport": {
+        "args": [
+          "export",
+          "web",
+          "--project",
+          "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\styles-independent-review\\fixture-",
+          "--output",
+          "exports/hash/city",
+          "--offline",
+          "--json"
+        ],
+        "exitCode": 0,
+        "response": {
+          "schemaVersion": 1,
+          "status": "succeeded",
+          "artifacts": [
+            "exports/hash/city/index.html"
+          ],
+          "diagnostics": [],
+          "job": {
+            "schemaVersion": 1,
+            "id": "e7ca70e5-e1d7-4d70-9910-2571c67dcf0f",
+            "kind": "export-web",
+            "project": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\styles-independent-review\\fixture-",
+            "parameters": {
+              "output": "exports/hash/city"
+            },
+            "status": "succeeded",
+            "stage": "complete",
+            "progress": 1,
+            "artifacts": [
+              "exports/hash/city/index.html"
+            ],
+            "diagnostics": [],
+            "attempt": 1,
+            "createdAt": "2026-11-03T12:41:12.283Z",
+            "startedAt": "2026-11-03T12:41:12.286Z",
+            "result": {
+              "schemaVersion": 1,
+              "status": "succeeded",
+              "artifacts": [
+                "exports/hash/city/index.html"
+              ],
+              "diagnostics": [],
+              "scope": "complete-area",
+              "attribution": "© OpenStreetMap contributors; ODbL"
+            },
+            "finishedAt": "2026-11-03T12:41:12.602Z"
+          }
+        }
+      },
+      "hashAssetBrowser": {
+        "assetError": "paper asset unavailable",
+        "assetOK": false,
+        "requests": [
+          {
+            "url": "http://127.0.0.1:55991/exports/hash/city/assets/resources/paper-VQYB6Z5L.svg",
+            "allowed": true
+          },
+          {
+            "url": "http://127.0.0.1:55991/exports/hash/city/assets/resources/1376e38f32688a98-paper",
+            "allowed": true
+          }
+        ]
+      }
+    },
+    "finalIndependentProbe": {
+      "date": "2026-11-03T12:47:16.407Z",
+      "commit": "5c204b212395d357daeb7cf286db6a39d846cd9d",
+      "trackedDiff": [],
+      "root": "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\styles-independent-review\\retest-1793710036380",
+      "scope": "Independent corrected C retest; loopback-only functional checks, not GPU performance",
+      "cli": [
+        {
+          "args": [
+            "build",
+            "--project",
+            "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\styles-independent-review\\retest-1793710036380",
+            "--offline",
+            "--json"
+          ],
+          "status": "succeeded",
+          "artifacts": [
+            "dist/manifest.json",
+            "city.lock.json"
+          ]
+        },
+        {
+          "args": [
+            "export",
+            "web",
+            "--project",
+            "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\styles-independent-review\\retest-1793710036380",
+            "--output",
+            "exports/nested/city",
+            "--offline",
+            "--json"
+          ],
+          "status": "succeeded",
+          "artifacts": [
+            "exports/nested/city/index.html"
+          ]
+        },
+        {
+          "args": [
+            "export",
+            "png",
+            "--project",
+            "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\styles-independent-review\\retest-1793710036380",
+            "--offline",
+            "--json"
+          ],
+          "status": "succeeded",
+          "artifacts": [
+            "exports/city.png"
+          ]
+        },
+        {
+          "args": [
+            "export",
+            "glb",
+            "--project",
+            "C:\\Users\\宋世康\\.codex\\worktrees\\phase1-landmarks\\beijing-city-ink\\work\\styles-independent-review\\retest-1793710036380",
+            "--offline",
+            "--json"
+          ],
+          "status": "succeeded",
+          "artifacts": [
+            "exports/city.glb"
+          ]
+        }
+      ],
+      "assetURLs": {
+        "jsAssetOK": true,
+        "percentSvg": true,
+        "descriptors": [
+          {
+            "name": "styles/paper#v2.svg",
+            "url": "./assets/style-files/styles/paper%23v2.svg",
+            "status": 200,
+            "svg": true
+          },
+          {
+            "name": "styles/paper%23.svg",
+            "url": "./assets/style-files/styles/paper%2523.svg",
+            "status": 200,
+            "svg": true
+          }
+        ],
+        "css": [
+          {
+            "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/5ZNK7FAS.svg",
+            "status": 200
+          },
+          {
+            "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/NCJ27TBC.svg",
+            "status": 200
+          }
+        ],
+        "warmth": 0.23
+      },
+      "styles": [
+        {
+          "id": "comic",
+          "triangles": {
+            "count": 9,
+            "p50": 1652,
+            "p95": 2080,
+            "p99": 2080,
+            "max": 2080
+          },
+          "diagnostics": []
+        },
+        {
+          "id": "line",
+          "triangles": {
+            "count": 10,
+            "p50": 1652,
+            "p95": 2080,
+            "p99": 2080,
+            "max": 2080
+          },
+          "diagnostics": []
+        },
+        {
+          "id": "color",
+          "triangles": {
+            "count": 11,
+            "p50": 1652,
+            "p95": 2080,
+            "p99": 2080,
+            "max": 2080
+          },
+          "diagnostics": []
+        },
+        {
+          "id": "white",
+          "triangles": {
+            "count": 13,
+            "p50": 1652,
+            "p95": 2080,
+            "p99": 2080,
+            "max": 2080
+          },
+          "diagnostics": []
+        },
+        {
+          "id": "project-sepia",
+          "triangles": {
+            "count": 15,
+            "p50": 1652,
+            "p95": 2080,
+            "p99": 2080,
+            "max": 2080
+          },
+          "diagnostics": []
+        }
+      ],
+      "viewerExports": [
+        {
+          "format": "png",
+          "bytes": 19832,
+          "signature": [
+            137,
+            80,
+            78,
+            71,
+            13,
+            10,
+            26,
+            10
+          ],
+          "scope": "current-view-loaded-lods"
+        },
+        {
+          "format": "glb",
+          "bytes": 101728,
+          "signature": [
+            103,
+            108,
+            84,
+            70,
+            2,
+            0,
+            0,
+            0
+          ],
+          "scope": "complete"
+        }
+      ],
+      "refreshedWarmth": 0.23,
+      "lifecycle": {
+        "baseline": 1,
+        "counts": [
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1,
+          2,
+          1
+        ],
+        "concurrent": [
+          3,
+          2,
+          1
+        ],
+        "preserveB": true,
+        "enumerable": false,
+        "failed": [
+          "Unsupported style schema/contract version",
+          1,
+          "Style stylesheet failed: http://127.0.0.1:54184/exports/nested/city/missing.css",
+          1
+        ],
+        "sharedRegistry": true,
+        "afterPagehide": 0,
+        "cssAfterPagehide": ""
+      },
+      "network": [
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/index.html",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/viewer.js",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/city-ink.js",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/chunks/chunk-UV7IOE7I.js",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/viewer-config.json",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/project-style.css",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/favicon.ico",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/project-style.js",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/5ZNK7FAS.svg",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/NCJ27TBC.svg",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/scene/manifest.json",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/scene/chunks/0_0.low.be0185e5813c91fb.cink",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/f6e56892e84076b0-paper%2523.svg",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/fc6ac6abd1b9ce6a-paper%23v2.svg",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/scene/chunks/0_0.high.20a74b6316aa66fc.cink",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/viewer-config.json",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/style-files/styles/paper%23v2.svg",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/style-files/styles/paper%2523.svg",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/5ZNK7FAS.svg",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/NCJ27TBC.svg",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/viewer-config.json",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/scene/chunks/0_0.high.20a74b6316aa66fc.cink",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/index.html",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/viewer.js",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/city-ink.js",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/chunks/chunk-UV7IOE7I.js",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/viewer-config.json",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/favicon.ico",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/project-style.css",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/project-style.js",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/5ZNK7FAS.svg",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/NCJ27TBC.svg",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/scene/manifest.json",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/scene/chunks/0_0.low.be0185e5813c91fb.cink",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/f6e56892e84076b0-paper%2523.svg",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/resources/fc6ac6abd1b9ce6a-paper%23v2.svg",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/scene/chunks/0_0.high.20a74b6316aa66fc.cink",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/viewer-config.json",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/project-style.css",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/project-style.css",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/project-style.css",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/project-style.css",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/project-style.css",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/project-style.css",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/project-style.css",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/assets/project-style.css",
+          "allowed": true
+        },
+        {
+          "url": "http://127.0.0.1:54184/exports/nested/city/missing.css",
+          "allowed": true
+        }
+      ],
+      "events": [
+        {
+          "level": "warning",
+          "message": "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
+        },
+        {
+          "level": "warning",
+          "message": "THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead."
+        }
+      ],
+      "manifestFailure": {
+        "error": "Unable to load http://127.0.0.1:61688/exports/nested/city/scene/manifest.json: HTTP 404 Not Found",
+        "links": 0,
+        "css": "",
+        "canvases": 0
+      },
+      "cameraFailure": {
+        "error": "View needs finite position/target and FOV in [5, 140].",
+        "links": 0,
+        "css": "",
+        "canvases": 0
+      },
+      "status": "pass",
+      "disposeRejection": {
+        "fault": "synthetic viewer.dispose rejection after real disposal",
+        "rejection": "synthetic disposal rejection",
+        "links": 0,
+        "css": "",
+        "canvases": 0
+      }
+    }
+  },
+  "notes": [
+    "Reviewer made no tracked source/doc/test edits and created no commit, as requested for a read-only review. Ignored work probes and JSON were written only under work/styles-independent-review/.",
+    "All browsers opened by this reviewer were closed. Functional renderer counters are not GPU performance measurements.",
+    "Independent retest initially had a probe-only CSS URL parsing assertion error; the parser was corrected before the successful complete run. No product change was needed for that harness issue."
+  ]
+}
