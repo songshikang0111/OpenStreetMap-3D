@@ -86,6 +86,8 @@ test('GPU raw samples cover the measured frames plus bounded in-flight queries a
   const duplicate=structuredClone(rendering);duplicate.gpuTime.rawSamples[1]=duplicate.gpuTime.rawSamples[0];assert.equal(assessGpu(duplicate,true).checks.timestamps,false);
   const outside=structuredClone(rendering);outside.gpuTime.rawSamples[1].time+=1000000;assert.equal(assessGpu(outside,true).checks.timestamps,false);
   const wrongAggregate=structuredClone(rendering);wrongAggregate.gpuTime.p95=.0001;assert.equal(assessGpu(wrongAggregate,true).checks.aggregate,false);
+  const raised=structuredClone(rendering),raisedGpu=raised.gpuTime;raisedGpu.rawSamples=raisedGpu.rawSamples.slice(0,1);raisedGpu.samples=1;raisedGpu.pending=raisedGpu.maxPending=raisedGpu.unreleased=raised.frameCount-1;for(const key of ['p50','p95','p99','max'])raisedGpu[key]=raisedGpu.rawSamples[0].ms;assert.equal(assessGpu(raised,true).checks.window,false);
+  const unaccounted=structuredClone(rendering);unaccounted.gpuTime.unreleased=0;assert.equal(assessGpu(unaccounted,true).checks.queries,false);
   const malformed=structuredClone(rendering);malformed.gpuTime.rawSamples={};assert.equal(assessGpu(malformed,true).checks.samples,false);
   const unsupported=assessGpu({gpuTime:{available:false,reason:'Extension unavailable',samples:0,rawSamples:[],p50:null,p95:null,p99:null,max:null}},false);assert.ok(Object.values(unsupported.checks).every(Boolean));assert.equal(unsupported.statistics.p95,null);
 });
