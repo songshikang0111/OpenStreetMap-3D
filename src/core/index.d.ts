@@ -1,14 +1,16 @@
 import type { Group } from 'three';
+import type {LandmarkFeature,LandmarkContext} from '../landmark-registry.js';
 
 export interface Diagnostic { code: string; stage: string; message: string; path?: string; featureId?: string; tileId?: string; hint?: string }
 export interface Area { south: number; west: number; north: number; east: number }
 export interface ProjectConfig {
   schemaVersion: 1; name: string; area: Area; origin?: {lat: number; lon: number}; seed?: number;
-  source: {kind: 'overpass' | 'osm-map' | 'local' | 'sample'; file: string; [key:string]:unknown};
+  source: {kind: 'overpass' | 'osm-map' | 'local' | 'import' | 'sample'; file: string; [key:string]:unknown};
   generation?: {landscapeEnabled?: boolean; inferRoofs?: boolean};
   tiling?: {sizeMeters?: number; /** Fixed-area comparison: N×N cells. */ divisions?: number};
-  quality?: 'draft' | 'balanced' | 'high'; style?: {id: string; parameters?: Record<string,unknown>};
-  landmarks?: {enabled?: boolean; packages?: string[]};
+  quality?: 'draft' | 'low' | 'balanced' | 'high'; style?: {id: string; parameters?: Record<string,unknown>};
+  landmarks?: {enabled?: boolean; packages?: Array<string|{path:string;hash?:string;recipes?:Array<{id:string;version:string}>}>};
+  camera?: {position?:number[];target?:number[];fov?:number;near?:number};
 }
 export interface ValidationResult<T> { valid: boolean; diagnostics: Diagnostic[]; value?: T; config?: T }
 /** [minX,minY,minZ,maxX,maxY,maxZ], meters in the project origin. */
@@ -36,7 +38,7 @@ export interface LandmarkMatch {recipeId:string;recipeVersion:string;generatorId
 export interface CompileOptions {
   signal?:AbortSignal; onProgress?:(progress:{stage:string;progress:number})=>void;
   landmarkRegistry?:{
-    match(features:Record<string,unknown>[],context:{origin:{lat:number;lon:number};bounds:number[];seed:number}):LandmarkMatch[]|Promise<LandmarkMatch[]>;
+    match(features:LandmarkFeature[],context:LandmarkContext):LandmarkMatch[]|Promise<LandmarkMatch[]>;
     generate(match:LandmarkMatch,context:Record<string,unknown>):{group:Group;claimedFeatureIds:string[];provenance?:Record<string,unknown>;diagnostics?:Diagnostic[]}|Promise<{group:Group;claimedFeatureIds:string[];provenance?:Record<string,unknown>;diagnostics?:Diagnostic[]}>;
   };
 }
