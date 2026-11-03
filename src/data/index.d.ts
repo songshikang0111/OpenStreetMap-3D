@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export interface Area { south:number; west:number; north:number; east:number }
 export interface Origin { lat:number; lon:number }
 export interface Diagnostic {code:string;stage:string;message:string;hint:string;featureId?:string;tileId?:string}
