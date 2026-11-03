@@ -2,6 +2,7 @@ import path from 'node:path';
 import { readFile, mkdir } from 'node:fs/promises';
 import { CityError, validateArea, centerOf, relativeFile, safePath, atomicWrite, readJSON, hash } from '../data/common.js';
 import { normalizeOSM } from '../data/normalize.js';
+import {validateProjectConfig} from '../core/config.js';
 
 export const SAMPLE_AREA = { south: 39.908, west: 116.459, north: 39.910, east: 116.462 };
 // A deliberately small synthetic offline sample, explicitly identified as such.
@@ -24,6 +25,8 @@ export function validateConfig(config) {
   if (!config.source.file.startsWith('data/') || !['overpass','import','local','osm-map','sample'].includes(config.source.kind)) throw new CityError('INVALID_CONFIG', 'config', 'Source must use data/ and kind overpass, local, osm-map, import or sample.');
   if (!config.generation || !['landscapeEnabled','inferRoofs'].every(k => typeof config.generation[k] === 'boolean') || !(config.tiling?.sizeMeters >= 25 && config.tiling.sizeMeters <= 10000) || !['low','draft','balanced','high'].includes(config.quality) || typeof config.style?.id !== 'string' || !config.style.id || !config.style.parameters || typeof config.style.parameters !== 'object' || Array.isArray(config.style.parameters) || !config.landmarks || typeof config.landmarks.enabled !== 'boolean' || !Array.isArray(config.landmarks.packages)) throw new CityError('INVALID_CONFIG', 'config', 'Invalid generation, tiling, quality, style or landmark settings.');
   for (const p of config.landmarks.packages) relativeFile(typeof p === 'string' ? p : p.path);
+  const validation=validateProjectConfig(config);
+  if(!validation.valid)throw new CityError('INVALID_CONFIG','config',validation.diagnostics.map(item=>`${item.path}: ${item.message}`).join('; '),'Correct the project configuration before saving.');
   return config;
 }
 export async function readProject(root) { return validateConfig(await readJSON(await safePath(root, 'city.config.json'))); }
