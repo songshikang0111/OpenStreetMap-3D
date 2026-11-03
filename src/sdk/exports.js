@@ -16,8 +16,8 @@ function attributionText(manifest) {
 export async function exportViewerPNG(ctx, { width = ctx.width, height = ctx.height, maxPixels = 16000000 } = {}) {
   check(ctx);
   if (![width, height].every(x => Number.isInteger(x) && x > 0) || width * height > Math.min(maxPixels, 16000000)) throw runtimeError('EXPORT_PIXEL_BUDGET', 'export', 'PNG dimensions exceed the 16 megapixel export budget.');
-  const previous = { width: ctx.width, height: ctx.height, ratio: ctx.renderer.getPixelRatio(), paused: ctx.paused };
-  ctx.paused = true;
+  const previous = { width: ctx.width, height: ctx.height, ratio: ctx.renderer.getPixelRatio() };
+  const resume = ctx.acquirePause();
   try {
     ctx.renderer.setPixelRatio(1); ctx.resize(width, height); ctx.render();
     const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
@@ -29,7 +29,7 @@ export async function exportViewerPNG(ctx, { width = ctx.width, height = ctx.hei
     drawing.fillStyle = '#28352f'; drawing.fillText(credit, Math.max(7, width - text - 10), height - 9, width - 14);
     const blob = await new Promise((resolve, reject) => canvas.toBlob(b => b ? resolve(b) : reject(runtimeError('PNG_ENCODING_FAILED', 'export', 'Browser could not encode PNG.')), 'image/png'));
     return { blob, scope: 'current-view-loaded-lods', width, height, attribution: credit, loadedChunkIds: [...ctx.streamer.current.keys()] };
-  } finally { if (!ctx.isDisposed()) { ctx.renderer.setPixelRatio(previous.ratio); ctx.resize(previous.width, previous.height); ctx.paused = previous.paused; } }
+  } finally { try { if (!ctx.isDisposed()) { ctx.renderer.setPixelRatio(previous.ratio); ctx.resize(previous.width, previous.height); } } finally { resume(); } }
 }
 
 function portableClone(group, ownedMaterials) {

@@ -29,7 +29,7 @@ export class NearDetails {
     try { this.binding = this.bindGroup(this.group); if (this.binding?.then) throw new TypeError('Near attachment style binding must be synchronous.'); }
     finally { this.resources = this.registry.retain(this.group); this.registry.release(original); }
   }
-  update(entries, camera, time, availableTriangles, passMultiplier = 5) {
+  update(entries, camera, time, availableTriangles, passMultiplier = 5, { residentBytes = Infinity, drawCalls = Infinity } = {}) {
     const walls = [], treeMap = new Map();
     for (const entry of entries) if (entry.group.visible) {
       const details = entry.group.userData.city?.nearDetails;
@@ -40,9 +40,14 @@ export class NearDetails {
     const trees = [...treeMap.values()].sort((a, b) => a.featureId.localeCompare(b.featureId));
     const maxAttachments = this.budget.nearDetails;
     const sceneTriangles = Math.max(0, availableTriangles) / Math.max(1, passMultiplier);
+    const baseBytes = 40000, treeInstanceBytes = 18 * 76 + 6 * 64;
+    const availableBytes = Math.max(0, residentBytes - baseBytes), availableCalls = Math.floor(drawCalls / Math.max(1, passMultiplier));
+    if (residentBytes < baseBytes || availableCalls < 1 || this.resources && this.registry.stats().geometryArrayBytes > residentBytes) this.clear();
+    if (residentBytes < baseBytes || availableCalls < 1) return;
     const candidates = camera.position.y < 180 ? walls.map(wall => ({ wall, distance: distanceToFacade(wall, camera.position) })).filter(c => c.distance <= 162).sort((a, b) => a.distance - b.distance || a.wall.key.localeCompare(b.wall.key)) : [];
     // Keep complete pane sets and complete branch profiles when budgets change.
-    const frameLimit = Math.min(18000, maxAttachments, Math.floor(sceneTriangles * .55 / 12));
+    const frameByteLimit = Math.floor(availableBytes * (trees.length ? .65 : 1) / 64);
+    const frameLimit = Math.min(18000, maxAttachments, frameByteLimit, Math.floor(sceneTriangles * .55 / 12));
     const frameData = [];
     for (const { wall } of candidates) {
       const frames = nearbyFacadeFrames([wall], camera.position, frameLimit - frameData.length);
@@ -50,7 +55,8 @@ export class NearDetails {
       if (frameData.length >= frameLimit) break;
     }
     const treeCost = 18 * 640 + 6 * 28;
-    const treeLimit = Math.max(0, Math.min(TREE_LOD.maxTrees, Math.floor((maxAttachments - frameData.length) / 24), Math.floor((sceneTriangles - frameData.length * 12) / treeCost)));
+    const capacity = Math.min(frameLimit, Math.ceil(Math.max(frameData.length, 1) / 256) * 256);
+    const treeLimit = availableCalls - (frameData.length ? 1 : 0) < 2 ? 0 : Math.max(0, Math.min(TREE_LOD.maxTrees, Math.floor((availableBytes - capacity * 64) / treeInstanceBytes), Math.floor((maxAttachments - frameData.length) / 24), Math.floor((sceneTriangles - frameData.length * 12) / treeCost)));
     const selection = treeLODWeights(trees, camera.position, { ...TREE_LOD, maxTrees: treeLimit });
     if (!frameData.length && !selection.active.length) {
       if (this.frames) for (const mesh of [this.frames, this.leaves, this.branches]) mesh.count = 0;
@@ -60,7 +66,6 @@ export class NearDetails {
     }
     this.lastActive = time;
     // A bounded capacity amortizes camera motion without allocating per frame.
-    const capacity = Math.min(frameLimit, Math.ceil(Math.max(frameData.length, 1) / 256) * 256);
     this.ensure(capacity, Math.min(treeLimit, Math.max(selection.active.length, 8)));
     const dummy = new THREE.Object3D(), up = new THREE.Vector3(0, 1, 0), tint = new THREE.Color(), activeKeys = new Set();
     const write = (mesh, i, position, scale, angle, featureId, color) => {

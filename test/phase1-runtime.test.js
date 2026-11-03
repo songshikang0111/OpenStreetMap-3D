@@ -54,6 +54,12 @@ test('registry refcounts shared geometry, material, uniform texture and instance
   const ar = registry.retain(a), br = registry.retain(b); assert.equal(registry.stats().geometries, 1); assert(registry.stats().geometryArrayBytes > 192);
   registry.release(ar); assert.equal(geometryDisposes, 0); registry.release(br); assert.equal(geometryDisposes, 1); assert.equal(materialDisposes, 1); assert.equal(textureDisposes, 1); assert.equal(registry.refs.size, 0);
 });
+test('independent registries protect a shared live style texture during export and keep source bitmap ownership external',()=>{
+  const a=new ResourceRegistry(),b=new ResourceRegistry(),texture=new THREE.Texture(),group=new THREE.Group();let disposed=0,closed=0;
+  texture.userData.cityOwnsImage=true;texture.source.data={width:16,height:16,close(){closed++;}};texture.addEventListener('dispose',()=>disposed++);
+  group.add(new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshStandardMaterial({map:texture})));
+  const ar=a.retain(group),br=b.retain(group);b.release(br);assert.equal(disposed,0);assert.equal(closed,0);a.release(ar);assert.equal(disposed,1);assert.equal(closed,0);
+});
 test('atomic LOD replacements retain coverage, restore near geometry and release old resources', async () => {
   const s = stream(); const c = camera(); await settle(s, c, 2);
   const old = s.current.get('c0').group; assert.equal(s.current.get('c0').index, 2);

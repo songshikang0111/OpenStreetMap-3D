@@ -10,6 +10,7 @@ import { NearDetails } from '../src/runtime/near-details.js';
 import { bindSceneStyle, createStyleShared } from '../src/styles/index.js';
 import { ResourceRegistry } from '../src/runtime/resources.js';
 import { InkRenderer } from '../src/ink-renderer.js';
+import { ChunkStreamer } from '../src/runtime/streamer.js';
 
 test('real CINK low/medium/high bind every official style; numeric level order is preserved and sorted by detail', async () => {
   const {raw,config}=continuityFixture(),result=await compileScene(raw,{...config,tiling:{divisions:2}}),m=normalizeManifest(result.manifest,'https://example.test/city/manifest.json');
@@ -40,4 +41,16 @@ test('streamed classification clones are released on eviction rather than retain
     const group=new THREE.Group(),a=new THREE.Mesh(geometry,material),b=new THREE.Mesh(geometry,material);a.userData.inkClass=1;b.userData.inkClass=2;group.add(a,b);ink.prepareGroup(group);assert(ink._classificationClones.size>0);ink.releaseGroup(group);assert.equal(ink._classificationClones.size,0);
   }
   ink.dispose();geometry.dispose();material.dispose();
+});
+test('tight resident headroom trims near attachments without stationary LOD oscillation',async()=>{
+  const {raw,config}=continuityFixture(),result=await compileScene(raw,{...config,tiling:{divisions:2}});
+  result.manifest.chunks=result.manifest.chunks.filter(c=>c.id==='0_0');const manifest=normalizeManifest(result.manifest,'https://example.test/city/manifest.json');
+  const camera=new THREE.PerspectiveCamera(45,1280/720,.25,30000);camera.position.set(-220,15,-233);camera.lookAt(-220,15,-225);camera.updateMatrixWorld(true);
+  const budget=createBudget({residentBytes:230000,visibleTriangles:1e7,drawCalls:10000,nearDetails:18000,minResidenceMs:100,unloadDelayMs:100});
+  const ink=new InkRenderer({},new THREE.Scene(),camera),shared=createStyleShared(),bindGroup=g=>bindSceneStyle(g,{style:'comic',shared});
+  const streamer=new ChunkStreamer({manifest,budget,readAsset:async url=>{const bytes=result.assets[new URL(url).pathname.split('/city/')[1]];return bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength);},decodeChunk,bindGroup,prepareGroup:g=>ink.prepareGroup(g),releaseGroup:g=>ink.releaseGroup(g)});
+  const near=new NearDetails({budget,bindGroup,releaseGroup:g=>ink.releaseGroup(g)});streamer.passMultiplier=5;
+  for(let time=0;time<5000;time+=40){streamer.update(camera,720,time);const main=streamer.stats();near.update(streamer.current.values(),camera,time,budget.visibleTriangles-main.visibleTriangles*5,5,{residentBytes:budget.residentBytes-streamer.estimatedBytes()+(streamer.extraResidentBytes||0),drawCalls:budget.drawCalls-main.sceneDrawCalls*5-3});ink.prepareGroup(near.group);near.refreshResources();streamer.refreshResources();const n=near.stats();streamer.extraResidentBytes=n.geometryArrayBytes;streamer.extraTriangles=n.triangles;streamer.extraCalls=n.drawCalls;streamer.extraDetails=n.nearDetails;await new Promise(resolve=>setTimeout(resolve,0));}
+  assert(streamer.counters.swaps<=3,`Unexpected stationary swaps ${streamer.counters.swaps}`);assert(streamer.estimatedBytes()<=budget.residentBytes,`Resident estimate ${streamer.estimatedBytes()}`);
+  near.dispose();await streamer.dispose();ink.dispose();assert.equal(streamer.estimatedBytes(),0);
 });

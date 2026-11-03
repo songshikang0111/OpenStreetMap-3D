@@ -1,5 +1,6 @@
 // Object identity refcounts also protect assets shared by an external style pack.
 // Byte figures count CPU arrays / encoded payload estimates, never actual VRAM.
+const globalReferences = new WeakMap();
 export class ResourceRegistry {
   constructor() { this.refs = new Map(); }
   resources(group) {
@@ -17,18 +18,20 @@ export class ResourceRegistry {
   }
   retain(group) {
     const resources = this.resources(group);
-    for (const resource of resources) this.refs.set(resource, (this.refs.get(resource) || 0) + 1);
+    for (const resource of resources) { this.refs.set(resource, (this.refs.get(resource) || 0) + 1); globalReferences.set(resource, (globalReferences.get(resource) || 0) + 1); }
     return resources;
   }
   release(resources) {
     for (const resource of resources) {
       const count = this.refs.get(resource);
-      if (count > 1) this.refs.set(resource, count - 1);
-      else if (count === 1) {
-        this.refs.delete(resource);
-        resource.dispose?.();
-        if (resource.isTexture && resource.userData?.cityOwnsImage) resource.source?.data?.close?.();
-      }
+      if (!count) continue;
+      if (count > 1) this.refs.set(resource, count - 1); else this.refs.delete(resource);
+      const globalCount = globalReferences.get(resource);
+      if (globalCount > 1) globalReferences.set(resource, globalCount - 1);
+      else { globalReferences.delete(resource); resource.dispose?.(); }
+      // Image/bitmap lifetime belongs to the decoder or StylePack.dispose.
+      // A texture can be reused by a live style after every chunk is evicted;
+      // disposing GPU storage must never close externally owned source images.
     }
   }
   stats() {

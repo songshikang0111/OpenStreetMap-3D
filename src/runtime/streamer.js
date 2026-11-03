@@ -90,9 +90,11 @@ export class ChunkStreamer {
       try { group = await this.decodeChunk(payload, { ...lod, chunk, signal: controller.signal }); }
       catch (cause) { throw runtimeError('ASSET_DECODE_FAILED', 'decode', `Cannot decode ${lod.url}: ${cause.message}`, { url: lod.url, tileId: chunk.id, cause }); }
       if (!group?.isObject3D) throw runtimeError('INVALID_DECODE_RESULT', 'decode', `Decoder did not return a Three.js object for ${lod.url}.`, { url: lod.url });
+      if (controller.signal.aborted || this.disposed || task.epoch !== this.epoch) { this.registry.release(this.registry.retain(group)); return; }
       group.matrix.copy(chunk.matrix); group.matrixAutoUpdate = false;
       const original = this.registry.retain(group);
       try { binding = await this.bindGroup(group); }
+      catch (cause) { throw runtimeError('STYLE_BIND_FAILED', 'style', `Cannot bind style for ${lod.url}: ${cause.message}`, { url: lod.url, tileId: chunk.id, cause }); }
       finally {
         // Style binders may replace materials / geometries. Retain the result
         // before releasing original decoder resources to protect shared assets.
@@ -194,6 +196,6 @@ export class ChunkStreamer {
     for (const id of [...this.current.keys()]) this.evict(id);
     await Promise.allSettled([...this.pending.values()].map(p => p.promise));
     for (const entry of this.ready.splice(0)) { this.releaseGroup(entry.group); entry.binding?.dispose?.(); this.registry.release(entry.resources); }
-    this.pending.clear(); this.desired.clear(); this.failures.clear(); this.group.removeFromParent();
+    this.pending.clear(); this.desired.clear(); this.failures.clear(); this.states.clear(); this.extraResidentBytes = this.extraTriangles = this.extraCalls = this.extraDetails = 0; this.group.removeFromParent();
   }
 }

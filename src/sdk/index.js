@@ -40,7 +40,16 @@ export async function createCityViewer(options) {
   const shared = adapters.createShared?.() || { windows: { value: 1 }, provenance: { value: 0 }, facadeDetail: { value: .5 }, glassReflection: { value: .65 }, toneSize: { value: 4.2 }, projectionScale: { value: 1000 } };
   const statistics = new FrameStatistics(); let streamer, manifest, activeUrl, pipeline, style, nearDetails;
   let width = 1, height = 1, animation, disposed = false, loading, loadEpoch = 0, paused = false, renderFailed = false, lodMode = 'auto';
-  let selectionStart, allLoadedMs = null, sceneStarted = 0, activeTransition = Promise.resolve(), activeExport = Promise.resolve();
+  let selectionStart, allLoadedMs = null, sceneStarted = 0, sceneOperations = Promise.resolve(), internalPauses = 0, disposal;
+  const acquirePause = () => { internalPauses++; let released = false; return () => { if (!released) { released = true; internalPauses--; } }; };
+  function queueOperation(operation) {
+    if (disposed) return Promise.reject(runtimeError('VIEWER_DISPOSED', 'lifecycle', 'Viewer is disposed.'));
+    const next = sceneOperations.catch(() => {}).then(async () => {
+      if (disposed) throw runtimeError('VIEWER_DISPOSED', 'lifecycle', 'Viewer is disposed.');
+      return operation();
+    });
+    sceneOperations = next; return next;
+  }
   const diagnostics = [];
   const diagnose = d => { diagnostics.push(d); if (diagnostics.length > 200) diagnostics.shift(); onDiagnostic(d); };
   const resolveStyle = input => typeof input === 'string' ? styleApi?.getStyle?.(input) : input;
@@ -56,10 +65,10 @@ export async function createCityViewer(options) {
   async function applyStyle(input) {
     const resolved = resolveStyle(input || 'comic');
     if (styleApi && !resolved) throw runtimeError('UNKNOWN_STYLE', 'style', `Unknown style ${input}.`);
-    const previous = pipeline, wasPaused = paused;
+    const previous = pipeline;
     const next = styleApi?.createStylePipeline ? await styleApi.createStylePipeline({ renderer, scene, camera, style: resolved, shared, quality: { ...budget } }) : basicPipeline();
     if (!next?.render || !next?.resize || !next?.dispose) { next?.dispose?.(); throw runtimeError('INVALID_STYLE_PIPELINE', 'style', 'Style pipeline requires render/resize/dispose.'); }
-    paused = true;
+    const resume = acquirePause();
     try {
       previous?.dispose(); pipeline = next; style = resolved;
       pipeline.resize(Math.round(width * renderer.getPixelRatio()), Math.round(height * renderer.getPixelRatio()));
@@ -67,7 +76,7 @@ export async function createCityViewer(options) {
       if (streamer) await streamer.rebind(bindGroup, prepareGroup);
       nearDetails?.rebind(bindGroup); renderFailed = false;
     } catch (error) { renderFailed = true; diagnose({ code: 'STYLE_BIND_FAILED', stage: 'style', message: error.message }); throw error; }
-    finally { paused = wasPaused; }
+    finally { resume(); }
   }
   function resize(w = container.clientWidth, h = container.clientHeight) {
     if (disposed) return;
@@ -101,18 +110,26 @@ export async function createCityViewer(options) {
       onProgress({ stage: 'manifest', url: resolved, complete: false });
       let json;
       try { json = await readAsset(resolved, { signal: controller.signal, responseType: 'json' }); }
-      catch (cause) { throw runtimeError('MANIFEST_REQUEST_FAILED', 'manifest', `Unable to load ${resolved}: ${cause.message}`, { url: resolved, cause }); }
+      catch (cause) { if (controller.signal.aborted) throw new DOMException('Load cancelled', 'AbortError'); throw runtimeError('MANIFEST_REQUEST_FAILED', 'manifest', `Unable to load ${resolved}: ${cause.message}`, { url: resolved, cause }); }
       if (controller.signal.aborted || epoch !== loadEpoch || disposed) throw new DOMException('Load cancelled', 'AbortError');
       const next = normalizeManifest(json, resolved);
-      await adapters.validateSceneManifest?.(json);
+      const validity = await adapters.validateSceneManifest?.(json);
+      if (validity?.valid === false) throw runtimeError('INVALID_SCENE_MANIFEST', 'manifest', 'Scene manifest validation failed.', { url: resolved, diagnostics: validity.diagnostics });
       // Preserve the old scene if the next manifest cannot be read / validated.
-      const previous = streamer; nearDetails?.dispose(); nearDetails = null; await previous?.dispose();
-      if (epoch !== loadEpoch || disposed) throw new DOMException('Load cancelled', 'AbortError');
-      manifest = next; activeUrl = resolved; allLoadedMs = null; sceneStarted = performance.now();
-      streamer = new ChunkStreamer({ manifest, readAsset, decodeChunk: adapters.decodeChunk, budget, bindGroup, prepareGroup, releaseGroup, onDiagnostic: diagnose, onProgress });
-      nearDetails = new NearDetails({ budget, bindGroup, releaseGroup }); root.add(nearDetails.group);
-      root.add(streamer.group); fitView(); if (view) setView(view);
-      statistics.reset(); renderer.renderLists.dispose(); renderFailed = false;
+      if (controller.signal.aborted || epoch !== loadEpoch || disposed) throw new DOMException('Load cancelled', 'AbortError');
+      await queueOperation(async () => {
+        if (controller.signal.aborted || epoch !== loadEpoch || disposed) throw new DOMException('Load cancelled', 'AbortError');
+        const resume = acquirePause();
+        try {
+          const previous = streamer; nearDetails?.dispose(); nearDetails = null; await previous?.dispose();
+          if (controller.signal.aborted || epoch !== loadEpoch || disposed) throw new DOMException('Load cancelled', 'AbortError');
+          manifest = next; activeUrl = resolved; allLoadedMs = null; sceneStarted = performance.now();
+          streamer = new ChunkStreamer({ manifest, readAsset, decodeChunk: adapters.decodeChunk, budget, bindGroup, prepareGroup, releaseGroup, onDiagnostic: diagnose, onProgress });
+          nearDetails = new NearDetails({ budget, bindGroup, releaseGroup }); root.add(nearDetails.group);
+          root.add(streamer.group); fitView(); if (view) setView(view);
+          statistics.reset(); renderer.renderLists.dispose(); renderFailed = false;
+        } finally { resume(); }
+      });
       return controllerApi;
     } catch (error) { if (error.name !== 'AbortError') diagnose({ code: error.code || 'MANIFEST_INVALID', stage: error.stage || 'manifest', url: resolved, message: error.message }); throw error; }
     finally { signal?.removeEventListener('abort', abort); }
@@ -120,13 +137,14 @@ export async function createCityViewer(options) {
   function frame(time) {
     if (disposed) return;
     animation = requestAnimationFrame(frame);
-    if (paused || renderFailed) return;
+    if (paused || internalPauses || renderFailed) return;
     controls.update();
     const before = performance.now();
     try {
       streamer?.update(camera, height, time, { forceLod: lodMode === 'auto' ? undefined : lodMode === 'full' ? 0 : manifest.chunks[0].lods.length - 1 });
-      const mainTriangles = streamer?.stats().visibleTriangles || 0;
-      nearDetails?.update(streamer?.current.values() || [], camera, time, budget.visibleTriangles - mainTriangles * (streamer?.passMultiplier || 5), streamer?.passMultiplier || 5);
+      const main = streamer?.stats(), multiplier = streamer?.passMultiplier || 5;
+      const mainResident = (streamer?.estimatedBytes() || 0) - (streamer?.extraResidentBytes || 0);
+      nearDetails?.update(streamer?.current.values() || [], camera, time, budget.visibleTriangles - (main?.visibleTriangles || 0) * multiplier, multiplier, { residentBytes: budget.residentBytes - mainResident, drawCalls: budget.drawCalls - (main?.sceneDrawCalls || 0) * multiplier - 3 });
       renderer.info.reset(); pipeline.render(); streamer?.refreshResources(); nearDetails?.refreshResources();
       if (streamer) {
         const near = nearDetails?.stats(); streamer.extraResidentBytes = near?.geometryArrayBytes || 0; streamer.extraTriangles = near?.triangles || 0; streamer.extraCalls = near?.drawCalls || 0; streamer.extraDetails = near?.nearDetails || 0;
@@ -156,8 +174,8 @@ export async function createCityViewer(options) {
   const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => resize()) : null; observer?.observe(container);
   const controllerApi = {
     load, resize, setView, getView,
-    setStyle(input) { if (disposed) return Promise.reject(runtimeError('VIEWER_DISPOSED', 'style', 'Viewer is disposed.')); activeTransition = activeTransition.catch(() => {}).then(() => applyStyle(input)); return activeTransition; },
-    getStats({ raw = false } = {}) { return { schemaVersion: 1, manifestUrl: activeUrl, quality: options.quality || 'balanced', budget: { ...budget }, viewport: { width, height, pixelRatio: renderer.getPixelRatio(), devicePixelRatio: globalThis.devicePixelRatio || 1 }, runtime: streamer?.stats() || null, nearAttachments: nearDetails?.stats() || null, rendering: statistics.snapshot(raw), allLoadedMs, diagnostics: diagnostics.map(d => ({ ...d })), disposed, paused, lodMode }; },
+    setStyle(input) { return queueOperation(() => applyStyle(input)); },
+    getStats({ raw = false } = {}) { return { schemaVersion: 1, manifestUrl: activeUrl, quality: options.quality || 'balanced', budget: { ...budget }, viewport: { width, height, pixelRatio: renderer.getPixelRatio(), devicePixelRatio: globalThis.devicePixelRatio || 1 }, runtime: streamer?.stats() || null, nearAttachments: nearDetails?.stats() || null, rendering: statistics.snapshot(raw), allLoadedMs, diagnostics: diagnostics.map(d => ({ ...d })), disposed, paused: paused || internalPauses > 0, userPaused: paused, lodMode }; },
     resetStats() { statistics.reset(); },
     setLodMode(mode) { if (!['auto', 'full', 'far'].includes(mode)) throw new TypeError('LOD mode must be auto/full/far.'); lodMode = mode; },
     pause(value = true) { paused = !!value; },
@@ -171,17 +189,20 @@ export async function createCityViewer(options) {
       }
       throw runtimeError(disposed ? 'VIEWER_DISPOSED' : 'LOAD_TIMEOUT', 'stream', 'Visible scene did not settle before the deadline.');
     },
-    exportPNG: opts => { activeExport = activeExport.catch(() => {}).then(() => exportViewerPNG(exportContext(), opts)); return activeExport; },
-    exportGLB: opts => { activeExport = activeExport.catch(() => {}).then(() => exportViewerGLB(exportContext(), opts)); return activeExport; },
-    async dispose() {
-      if (disposed) return;
+    exportPNG: opts => queueOperation(() => exportViewerPNG(exportContext(), opts)),
+    exportGLB: opts => queueOperation(() => exportViewerGLB(exportContext(), opts)),
+    dispose() {
+      if (disposal) return disposal;
       disposed = true; ++loadEpoch; loading?.abort(); cancelAnimationFrame(animation); observer?.disconnect();
       renderer.domElement.removeEventListener('pointerdown', pointerDown); renderer.domElement.removeEventListener('pointerup', pointerUp); controls.dispose();
-      await activeTransition.catch(() => {}); await activeExport.catch(() => {}); nearDetails?.dispose(); await streamer?.dispose(); pipeline?.dispose();
-      sun.shadow.dispose(); scene.clear(); renderer.renderLists.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); statistics.reset();
+      disposal = (async () => {
+        await sceneOperations.catch(() => {}); nearDetails?.dispose(); await streamer?.dispose(); pipeline?.dispose();
+        sun.shadow.dispose(); scene.clear(); renderer.renderLists.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); statistics.reset();
+      })();
+      return disposal;
     },
   };
-  const exportContext = () => ({ renderer, scene, camera, root, manifest, streamer, nearGroup: nearDetails?.group, pipeline, width, height, budget, readAsset, decodeChunk: adapters.decodeChunk, bindGroup, get paused() { return paused; }, set paused(value) { paused = value; }, resize, render: () => { renderer.info.reset(); pipeline.render(); }, isDisposed: () => disposed });
+  const exportContext = () => ({ renderer, scene, camera, root, manifest, streamer, nearGroup: nearDetails?.group, pipeline, width, height, budget, readAsset, decodeChunk: adapters.decodeChunk, bindGroup, acquirePause, resize, render: () => { renderer.info.reset(); pipeline.render(); }, isDisposed: () => disposed });
   try { resize(); await applyStyle(options.style); animation = requestAnimationFrame(frame); if (manifestUrl) await load(manifestUrl); return controllerApi; }
   catch (error) { await controllerApi.dispose(); throw error; }
 }
