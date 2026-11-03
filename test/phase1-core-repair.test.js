@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import {compileScene,validateSceneManifest} from '../src/core/index.js';
 import {decodeChunk,encodeChunk,sceneStats} from '../src/core/scene-codec.js';
 import {farCrownGeometry,trunkGeometry} from '../src/core/lod-batching.js';
-import {surfaceGeometry,farDeckGeometry,mergeRailSegments,stairGeometries} from '../src/core/lod-surfaces.js';
+import {surfaceGeometry,farDeckGeometry,mergeRailSegments,stairGeometries,planarPatches,railGeometry} from '../src/core/lod-surfaces.js';
 import {simplifyClosedRing} from '../src/core/lod-simplify.js';
 import {lowBuilding} from '../src/core/geometry.js';
 import {continuityFixture} from './phase1-core-fixture.js';
@@ -36,6 +36,33 @@ test('repair bridge slabs keep their complete footprint, bottom and exact outer 
 test('repair rails merge source-contiguous runs but never jump gaps, widths or source identities',()=>{
   const source=Array.from({length:50},(_,i)=>({roadId:1,width:.28,walk:false,a:[i*4,0],b:[(i+1)*4,0],yA:7,yB:7}));
   const merged=mergeRailSegments([...source,{...source[0],roadId:2},{...source[0],width:.5},{...source[0],a:[300,0],b:[304,0]}]);assert.equal(merged.length,4);assert.ok(merged.some(r=>r.roadId===1&&r.width===.28&&r.a[0]===0&&r.b[0]===200));
+});
+
+test('repair plane families enforce the 2mm bound, including rejected models and both slab planes',()=>{
+  const items=[0,.0019,.0042].map((offset,i)=>({polygon:[[i*10,0],[(i+1)*10,0],[(i+1)*10,4],[i*10,4]],y:7+offset,thickness:.65}));
+  for(const secondary of [undefined,d=>d.y]){
+    const patches=planarPatches(items,d=>d.y-.65,()=>'',secondary);assert.equal(patches.length,2);
+    for(const patch of patches)for(const ring of patch.rings)for(const [x,z]of ring){
+      const choices=items.filter(d=>x>=d.polygon[0][0]-1e-6&&x<=d.polygon[1][0]+1e-6);
+      assert.ok(choices.some(d=>Math.abs(patch.a*x+patch.b*z+patch.c-(d.y-.65))<=.002001));
+      if(secondary)assert.ok(choices.some(d=>Math.abs(patch.secondary.a*x+patch.secondary.b*z+patch.secondary.c-d.y)<=.002001));
+    }
+  }
+});
+
+test('repair far thin rails keep the complete upper outline with a double-sided triangle',()=>{
+  const rail={roadId:1,width:.28,walk:true,a:[0,0],b:[20,0],yA:3,yB:5},g=railGeometry([rail]);
+  assert.equal(g.attributes.position.count,3);assert.equal(g.userData.lodDoubleSided,true);
+  const points=Array.from({length:3},(_,i)=>new THREE.Vector3().fromBufferAttribute(g.attributes.position,i).toArray());
+  assert.ok(points.some(p=>p[0]===0&&Math.abs(p[1]-4.1125)<1e-6));assert.ok(points.some(p=>p[0]===20&&Math.abs(p[1]-6.1125)<1e-6));
+  assert.equal(railGeometry([{...rail,walk:false}]).attributes.position.count,6);
+});
+
+test('repair slab union removes internal side duplicates within the bounded plane error and retains separated slabs',()=>{
+  const decks=[0,.0038].map((offset,i)=>({polygon:[[i*10,0],[(i+1)*10,0],[(i+1)*10,4],[i*10,4]],y:7+offset,thickness:.65}));
+  const countInterior=g=>{let count=0;const p=g.attributes.position;for(let i=0;i<p.count;i+=3)if([0,1,2].every(k=>Math.abs(p.getX(i+k)-10)<1e-6))count++;return count;};
+  const merged=farDeckGeometry(decks);assert.equal(countInterior(merged),0);assert.ok(Math.abs(area(merged,true)-80)<1e-5);
+  assert.equal(countInterior(farDeckGeometry([decks[0],{...decks[1],y:7.02}])),4);
 });
 
 test('repair stair envelopes preserve both landings, width and connected endpoint heights',()=>{

@@ -27,7 +27,7 @@ const openRing=ring=>{
  * The input fan matches the legacy road writer, including clamped ramp ends.
  * Paint is a near detail; its support is the complete un-inlaid carriageway. */
 export function planarPatches(items, height=roadHeightAt, extraKey=()=> '', secondaryHeight) {
-  const buckets=new Map();
+  const buckets=new Map(),families=new Map();
   for(const item of items){
     const polygon=item.polygon;
     for(let i=1;i<polygon.length-1;i++){
@@ -37,13 +37,16 @@ export function planarPatches(items, height=roadHeightAt, extraKey=()=> '', seco
       const a=((y[1]-y[0])*ez-(y[2]-y[0])*dz)/det,b=(dx*(y[2]-y[0])-ex*(y[1]-y[0]))/det,c=y[0]-a*p[0][0]-b*p[0][1];
       let secondary;
       if(secondaryHeight){const h=p.map(q=>secondaryHeight(item,q)),sa=((h[1]-h[0])*ez-(h[2]-h[0])*dz)/det,sb=(dx*(h[2]-h[0])-ex*(h[1]-h[0]))/det;secondary={a:sa,b:sb,c:h[0]-sa*p[0][0]-sb*p[0][1]};}
-      const key=`${Math.round(a/1e-7)},${Math.round(b/1e-7)},${Math.round(c/1e-4)}:${secondary?[secondary.a,secondary.b,secondary.c].map((v,i)=>Math.round(v/(i===2?1e-4:1e-7))).join(','):''}:${extraKey(item)}`;
-      if(!buckets.has(key))buckets.set(key,{a,b,c,secondary,item,polygons:[]});
-      const bucket=buckets.get(key);
-      // A plane bucket may never move a source vertex by more than 1 mm.
-      if(p.some((q,j)=>Math.abs(bucket.a*q[0]+bucket.b*q[1]+bucket.c-y[j])>.0001||secondaryHeight&&Math.abs(bucket.secondary.a*q[0]+bucket.secondary.b*q[1]+bucket.secondary.c-secondaryHeight(item,q))>.0001)){
-        buckets.set(`${key}:${buckets.size}`,{a,b,c,secondary,item,polygons:[[p]]});
-      }else bucket.polygons.push([p]);
+      const gradient=1e-3,intercept=1,maximumError=.002;
+      const key=`${Math.round(a/gradient)},${Math.round(b/gradient)},${Math.round(c/intercept)}:${secondary?[secondary.a,secondary.b,secondary.c].map((v,i)=>Math.round(v/(i===2?intercept:gradient))).join(','):''}:${extraKey(item)}`;
+      if(!families.has(key))families.set(key,[]);
+      const models=families.get(key),samples=p.map((q,j)=>[q[0],q[1],y[j],secondaryHeight?secondaryHeight(item,q):y[j]]);
+      const fits=(model,s)=>Math.abs(model.a*s[0]+model.b*s[1]+model.c-s[2])<=maximumError&&(!secondaryHeight||Math.abs(model.secondary.a*s[0]+model.secondary.b*s[1]+model.secondary.c-s[3])<=maximumError);
+      let bucket=models.find(model=>samples.every(s=>fits(model,s)));
+      // Every merged triangle is checked at all original vertices; affine error
+      // is bounded throughout the triangle, not just at its outer endpoints.
+      if(!bucket){bucket={a,b,c,secondary,item,polygons:[]};models.push(bucket);buckets.set(`${key}:${models.length}`,bucket);}
+      bucket.polygons.push([p]);
     }
   }
   const patches=[];
@@ -55,7 +58,7 @@ export function planarPatches(items, height=roadHeightAt, extraKey=()=> '', seco
       while(batches.length>1){const next=[];for(let i=0;i<batches.length;i+=32)next.push(clipping.union(...batches.slice(i,i+32)));batches=next;}
       polygons=batches[0];
     }catch{polygons=bucket.polygons;} // Preserve complete geometry on boolean failure.
-    for(const rings of polygons){const original=rings.map(openRing);patches.push({...bucket,rings:preservePolygonTopology(original,original.map(r=>simplifyClosedRing(r,.002))),polygons:undefined});}
+    for(const rings of polygons){const original=rings.map(openRing);patches.push({...bucket,rings:preservePolygonTopology(original,original.map(r=>simplifyClosedRing(r,secondaryHeight ? .002 : .004))),polygons:undefined});}
   }
   return patches;
 }
@@ -72,7 +75,7 @@ export function surfaceGeometry(items,color){
 
 export function deckGeometry(decks){
   const writer=new Writer(),sides=[],vertices=[],grid=new Map(),cellSize=12;
-  const key=v=>v.map(x=>Math.round(x*1e5)).join(',');
+  const key=v=>v.slice(0,2).map(x=>Math.round(x*1e5)).join(',');
   const patches=planarPatches(decks,(d,q)=>Math.max(.18,roadHeightAt(d,q)-d.thickness),()=>'',roadHeightAt);
   for(const p of patches){
     const top=q=>p.secondary.a*q[0]+p.secondary.b*q[1]+p.secondary.c,bottom=q=>p.a*q[0]+p.b*q[1]+p.c;
@@ -85,16 +88,21 @@ export function deckGeometry(decks){
     }
   }
   for(const v of vertices){const k=`${Math.floor(v[0]/cellSize)},${Math.floor(v[1]/cellSize)}`;if(!grid.has(k))grid.set(k,[]);grid.get(k).push(v);}
-  const pieces=[],counts=new Map();
+  // Two fitted source planes may differ by at most 2mm each at their shared
+  // edge. Their duplicate interior skins are not exposed bridge boundaries.
+  // Match only common XZ edges within that combined error, retaining true steps.
+  const pieces=[],counts=new Map(),edgeFamilies=new Map();
   for(const {from:a,to:b}of sides){
     const dx=b[0]-a[0],dz=b[1]-a[1],lengthSq=dx*dx+dz*dz,ts=[0,1];if(lengthSq<1e-16)continue;
     for(let x=Math.floor(Math.min(a[0],b[0])/cellSize);x<=Math.floor(Math.max(a[0],b[0])/cellSize);x++)for(let z=Math.floor(Math.min(a[1],b[1])/cellSize);z<=Math.floor(Math.max(a[1],b[1])/cellSize);z++)for(const v of grid.get(`${x},${z}`)||[]){
       const t=((v[0]-a[0])*dx+(v[1]-a[1])*dz)/lengthSq;if(t<=1e-7||t>=1-1e-7)continue;
-      if(Math.hypot(v[0]-a[0]-t*dx,v[1]-a[1]-t*dz)<1e-5&&Math.abs(v[2]-a[2]-(b[2]-a[2])*t)<.0001&&Math.abs(v[3]-a[3]-(b[3]-a[3])*t)<.0001)ts.push(t);
+      if(Math.hypot(v[0]-a[0]-t*dx,v[1]-a[1]-t*dz)<1e-5&&Math.abs(v[2]-a[2]-(b[2]-a[2])*t)<.00401&&Math.abs(v[3]-a[3]-(b[3]-a[3])*t)<.00401)ts.push(t);
     }
     const sorted=[...new Set(ts)].sort((a,b)=>a-b);
     for(let i=1;i<sorted.length;i++){
-      const u=a.map((v,k)=>v+(b[k]-v)*sorted[i-1]),v=a.map((w,k)=>w+(b[k]-w)*sorted[i]),edge=[key(u),key(v)].sort().join('|');counts.set(edge,(counts.get(edge)||0)+1);pieces.push({edge,u,v});
+      const u=a.map((v,k)=>v+(b[k]-v)*sorted[i-1]),v=a.map((w,k)=>w+(b[k]-w)*sorted[i]),ends=key(u)<key(v)?[u,v]:[v,u],family=ends.map(key).join('|');
+      if(!edgeFamilies.has(family))edgeFamilies.set(family,[]);const models=edgeFamilies.get(family);let match=models.findIndex(model=>ends.every((end,j)=>[2,3].every(k=>Math.abs(end[k]-model[j][k])<=.00401)));
+      if(match<0){match=models.length;models.push(ends);}const edge=family+':'+match;counts.set(edge,(counts.get(edge)||0)+1);pieces.push({edge,u,v});
     }
   }
   for(const {edge,u,v}of pieces)if(counts.get(edge)===1)writer.quad([u[0],u[3],u[1]],[u[0],u[2],u[1]],[v[0],v[2],v[1]],[v[0],v[3],v[1]],'#b8b8ac');
@@ -127,7 +135,7 @@ export function mergeRailSegments(rails) {
 
 function ribbon(writer,a,b,height,color){
   const v=[a.map((x,i)=>x-(i===1?height/2:0)),b.map((x,i)=>x-(i===1?height/2:0)),b.map((x,i)=>x+(i===1?height/2:0)),a.map((x,i)=>x+(i===1?height/2:0))];
-  writer.quad(...v,color);
+  if(height<.1){const bottom=a.map((x,i)=>(x+b[i])/2-(i===1?height/2:0));writer.triangle(v[3],v[2],bottom,color);}else writer.quad(...v,color);
 }
 
 export function railGeometry(rails,medium=false) {

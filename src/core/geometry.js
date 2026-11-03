@@ -95,9 +95,9 @@ export function groundMesh(bounds,spacing=50) {
   const mesh=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:'#d8d4c7',roughness:1}));mesh.name='Shared flat ground / no DEM';mesh.receiveShadow=true;mesh.userData.inkClass=5;return mesh;
 }
 
-/** Keep exact shared surface triangles. Ownership uses a centroid, not a new
- * clipping endpoint or a new independently solved grade. Content bounds include
- * overhang; SDKs must cull/load by contentBounds rather than nominal cells. */
+/** Atomic features keep their complete world geometry. Shared surfaces are
+ * clipped to each physical cell with interpolated attributes and shared grades.
+ * Content bounds include atomic overhang, so SDKs cull by contentBounds. */
 export function partitionMesh(mesh, grid, ownerFor, featureIds) {
   const output=new Map(),g=mesh.geometry;
   if(mesh.isInstancedMesh){
@@ -125,6 +125,13 @@ export function partitionMesh(mesh, grid, ownerFor, featureIds) {
       const ids=indices.map(i=>mesh.userData.city.instanceFeatureIds[i]);copy.userData={...mesh.userData,city:{...mesh.userData.city,featureIds:[...new Set(ids)].sort(),instanceFeatureIds:ids}};
       copy.computeBoundingBox();copy.computeBoundingSphere();return [tile,copy];
     });
+  }
+  // Buildings/landmarks are atomic. Reuse their intact geometry, including
+  // authored material groups and custom attributes, instead of copying vertices.
+  const atomic=mesh.userData.city?.kind==='building'&&ownerFor(mesh.userData.city.featureId);
+  if(atomic){
+    const copy=new THREE.Mesh(g,mesh.material);copy.name=mesh.name;copy.matrix.copy(mesh.matrixWorld);copy.matrixAutoUpdate=false;copy.matrixWorldNeedsUpdate=true;copy.castShadow=mesh.castShadow;copy.receiveShadow=mesh.receiveShadow;
+    copy.userData={...mesh.userData,city:{...mesh.userData.city,featureIds:[mesh.userData.city.featureId]}};return [[atomic,copy]];
   }
   if(grid.cells&&grid.columns)return clipPartition(mesh,grid,ownerFor,featureIds);
   const index=g.index?.array,total=index?.length??g.attributes.position.count,feature=g.attributes.cityFeature;
