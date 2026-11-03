@@ -39,7 +39,7 @@ export interface CompileOptions {
   signal?:AbortSignal; onProgress?:(progress:{stage:string;progress:number})=>void;
   landmarkRegistry?:{
     match(features:LandmarkFeature[],context:LandmarkContext):LandmarkMatch[]|Promise<LandmarkMatch[]>;
-    generate(match:LandmarkMatch,context:Record<string,unknown>):{group:Group;claimedFeatureIds:string[];provenance?:Record<string,unknown>;diagnostics?:Diagnostic[]}|Promise<{group:Group;claimedFeatureIds:string[];provenance?:Record<string,unknown>;diagnostics?:Diagnostic[]}>;
+    generate(match:LandmarkMatch,context:Record<string,unknown>):{group:Group;claimedFeatureIds:string[];provenance?:Record<string,unknown>|null;diagnostics?:Diagnostic[]}|Promise<{group:Group;claimedFeatureIds:string[];provenance?:Record<string,unknown>|null;diagnostics?:Diagnostic[]}>;
   };
 }
 export class CityBuildError extends Error {
