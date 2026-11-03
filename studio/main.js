@@ -18,6 +18,7 @@ function enabled() {
   for(const id of ['png','glb']) $(id).disabled = !state.viewer || busy;
   for(const id of ['sample','create','projects','relative-path']) $(id).disabled=!!busy;
   for(const id of ['seed','tile-size','infer-roofs','landscape','landmarks']) $(id).disabled=!state.project||!!busy;
+  $('open-form').querySelector('button').disabled=!!busy;
 }
 async function listProjects() {
   const projects = unwrap(await api.projects(), 'projects');
