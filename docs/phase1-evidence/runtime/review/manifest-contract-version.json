@@ -1,0 +1,21 @@
+{
+  "coreValidation": {
+    "valid": false,
+    "diagnostics": [
+      {
+        "code": "INVALID_SCENE_MANIFEST",
+        "stage": "manifest",
+        "path": "styleContractVersion",
+        "message": "Unsupported style contract."
+      }
+    ]
+  },
+  "loadedChunks": 4,
+  "diagnostics": [
+    {
+      "code": "LOD_BUDGET_DOWNGRADE",
+      "stage": "runtime",
+      "message": "Detail was reduced to preserve coverage within the configured resource budget."
+    }
+  ]
+}

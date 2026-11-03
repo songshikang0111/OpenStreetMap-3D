@@ -1,0 +1,752 @@
+[
+  {
+    "i": 0,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 331296,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 1,
+    "loads": 2,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 1,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 258344,
+    "near": 0,
+    "frames": 0,
+    "swaps": 2,
+    "loads": 3,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 2,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 4,
+    "loads": 5,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 3,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 6,
+    "loads": 7,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 4,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 266696,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 7,
+    "loads": 8,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 5,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 8,
+    "loads": 9,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 6,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 10,
+    "loads": 11,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 7,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 331296,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 11,
+    "loads": 12,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 8,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 69272,
+    "near": 0,
+    "frames": 0,
+    "swaps": 12,
+    "loads": 13,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 9,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 14,
+    "loads": 15,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 10,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 331296,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 15,
+    "loads": 16,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 11,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 69272,
+    "near": 0,
+    "frames": 0,
+    "swaps": 16,
+    "loads": 17,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 12,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 18,
+    "loads": 19,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 13,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 266696,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 19,
+    "loads": 20,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 14,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 20,
+    "loads": 21,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 15,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 22,
+    "loads": 23,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 16,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 266696,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 23,
+    "loads": 24,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 17,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 24,
+    "loads": 25,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 18,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 26,
+    "loads": 27,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 19,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 266696,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 27,
+    "loads": 28,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 20,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 69272,
+    "near": 0,
+    "frames": 0,
+    "swaps": 28,
+    "loads": 29,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 21,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 30,
+    "loads": 31,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 22,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 266696,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 31,
+    "loads": 32,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 23,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 32,
+    "loads": 33,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 24,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 34,
+    "loads": 35,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 25,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 266696,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 35,
+    "loads": 36,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 26,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 36,
+    "loads": 37,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 27,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 38,
+    "loads": 39,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 28,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 266696,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 39,
+    "loads": 40,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 29,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 40,
+    "loads": 41,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 30,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 42,
+    "loads": 43,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 31,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 266696,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 43,
+    "loads": 44,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 32,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 44,
+    "loads": 45,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 33,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 46,
+    "loads": 47,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 34,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 331296,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 47,
+    "loads": 48,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 35,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 69272,
+    "near": 0,
+    "frames": 0,
+    "swaps": 48,
+    "loads": 49,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 36,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 50,
+    "loads": 51,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 37,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 331296,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 51,
+    "loads": 52,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 38,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 69272,
+    "near": 0,
+    "frames": 0,
+    "swaps": 52,
+    "loads": 53,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 39,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 54,
+    "loads": 55,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 40,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 266696,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 55,
+    "loads": 56,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 41,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 56,
+    "loads": 57,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 42,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 58,
+    "loads": 59,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 43,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 266696,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 59,
+    "loads": 60,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 44,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 60,
+    "loads": 61,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 45,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 62,
+    "loads": 63,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 46,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 266696,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 63,
+    "loads": 64,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 47,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 69272,
+    "near": 0,
+    "frames": 0,
+    "swaps": 64,
+    "loads": 65,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 48,
+    "levels": {
+      "0": 1
+    },
+    "estimated": 135264,
+    "near": 65992,
+    "frames": 0,
+    "swaps": 66,
+    "loads": 67,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  },
+  {
+    "i": 49,
+    "levels": {
+      "2": 1
+    },
+    "estimated": 266696,
+    "near": 65992,
+    "frames": 224,
+    "swaps": 67,
+    "loads": 68,
+    "diagnostics": [
+      "TRANSITION_HEADROOM",
+      "LOD_BUDGET_DOWNGRADE"
+    ]
+  }
+]

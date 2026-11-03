@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-03T09:04:17.163Z",
+  "browser": "153.0.8010.12",
+  "results": {
+    "pngStyle": {
+      "beforePause": false,
+      "statuses": [
+        "fulfilled",
+        "fulfilled"
+      ],
+      "afterPaused": false,
+      "frameAdvance": 38
+    },
+    "loadEpoch": {
+      "fastChunks": 4,
+      "finalChunks": 4,
+      "finalUrl": "http://127.0.0.1:5184/work/runtime-fixtures/core-synthetic-fixed-4/manifest.json?review=fast",
+      "slowResult": {
+        "status": "rejected",
+        "name": "AbortError"
+      }
+    },
+    "sharedTexture": {
+      "textureBefore": 0,
+      "textureAfter": 0,
+      "widthAfter": 16,
+      "widthAfterReload": 16,
+      "widthAfterDispose": 0
+    },
+    "tightResident": {
+      "loads": 2,
+      "swaps": 1,
+      "estimatedResidentBytes": 200704,
+      "peakEstimatedResidentBytes": 258344,
+      "near": {
+        "geometries": 0,
+        "textures": 0,
+        "materials": 0,
+        "geometryArrayBytes": 0,
+        "triangles": 0,
+        "drawCalls": 0,
+        "nearDetails": 0,
+        "frames": 0,
+        "crownClusters": 0,
+        "branches": 0,
+        "profiles": 0
+      },
+      "diagnostics": [
+        {
+          "code": "TRANSITION_HEADROOM",
+          "stage": "runtime",
+          "message": "An atomic LOD swap needs temporary resident headroom; the old representation is retained until replacement is ready.",
+          "tileId": "0_0",
+          "bytes": 189072
+        }
+      ]
+    },
+    "invalid": {
+      "accepted": false,
+      "code": "INVALID_SCENE_MANIFEST",
+      "stage": "manifest"
+    }
+  },
+  "errors": []
+}

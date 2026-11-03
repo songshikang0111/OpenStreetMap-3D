@@ -1,0 +1,43 @@
+{
+  "result": {
+    "pausedOps": [
+      "fulfilled",
+      "fulfilled"
+    ],
+    "staysPaused": true,
+    "resumed": true,
+    "recovery": [
+      {
+        "status": "rejected"
+      },
+      {
+        "status": "fulfilled"
+      }
+    ],
+    "recovered": true,
+    "cancelled": {
+      "status": "rejected",
+      "name": "AbortError"
+    },
+    "retained": 4,
+    "disposal": [
+      {
+        "status": "fulfilled"
+      },
+      {
+        "status": "rejected",
+        "code": "VIEWER_DISPOSED"
+      },
+      {
+        "status": "fulfilled"
+      },
+      {
+        "status": "fulfilled"
+      }
+    ],
+    "sameDisposalPromise": true,
+    "canvasCount": 0,
+    "disposed": true
+  },
+  "errors": []
+}

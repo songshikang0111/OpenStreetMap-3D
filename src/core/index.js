@@ -247,4 +247,3 @@ export async function compileScene(raw, inputConfig, options = {}) {
     return {manifest,assets,report:{schemaVersion:1,status:'succeeded',diagnostics,hashes:manifest.hashes,counts:{inputElements:normalized.elements.length,features:ids.length,buildings:data.buildings.length,trees:trees.length,chunks:chunks.length},road:city.roadStats,landscape:city.landscapeStats,roof:city.roofStats,determinism:{timestampsExcluded:true,uuidExcluded:true,worldHashExcludesTiling:true}}};
   }finally{for(const g of ownedGeometry)g.dispose();for(const m of ownedMaterial)m.dispose();}
 }
-

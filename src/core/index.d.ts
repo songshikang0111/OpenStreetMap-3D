@@ -19,6 +19,8 @@ export interface LODDescriptor {
   id: 'low' | 'medium' | 'high'; level: 0 | 1 | 2; uri: string; hash: string; bytes: number;
   residentBytes: number; triangles: number; drawCalls: number; instances: number; geometries: number; materials: number;
   bounds: Bounds3; geometricError: number; maxScreenSpaceError: number; description: string;
+  /** Conservative per-mesh submission costs for runtime frustum budgets. */
+  drawUnits?: {bounds:Bounds3;triangles:number;drawCalls:number}[];
   selection: {metric:'screen-space-error'; geometricErrorMeters:number; maxScreenSpaceError:number};
 }
 export interface FeatureRecord {

@@ -24,6 +24,7 @@ try {
   await page.goto(url);await page.waitForFunction(()=>globalThis.viewer||globalThis.startError);assert.equal(await page.evaluate(()=>globalThis.startError),undefined);
   await page.evaluate(()=>{viewer.setLodMode('full');viewer.setView({position:[0,20,55],target:[0,20,0],fov:45});});await page.evaluate(()=>viewer.whenIdle());await page.waitForTimeout(250);
   const initial=await page.evaluate(()=>viewer.getStats());assert(initial.nearAttachments.frames>0,'Near facade frame grammar did not return');
+  await page.screenshot({path:path.join(output,'near-frames.png')});
   await page.mouse.click(640,360);const selectionHigh=await page.evaluate(()=>globalThis.lastSelection);assert(selectionHigh?.featureId,'No stable feature selected');
   await page.evaluate(()=>viewer.setLodMode('far'));await page.evaluate(()=>viewer.whenIdle());await page.waitForTimeout(500);await page.mouse.click(640,360);const selectionFar=await page.evaluate(()=>globalThis.lastSelection);assert.equal(selectionFar?.featureId,selectionHigh.featureId);
   const styles=[];

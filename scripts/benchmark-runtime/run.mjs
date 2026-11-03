@@ -15,6 +15,7 @@ const environment={date:new Date().toISOString(),commit,platform:os.platform(),r
 const results=[];
 for(const name of names) {
   const context=await browser.newContext({viewport:{width:1280,height:794},deviceScaleFactor:1});const page=await context.newPage();
+  await context.addInitScript(()=>performance.setResourceTimingBufferSize(10000));
   const errors=[], requests=[]; page.on('pageerror',e=>errors.push(e.message)); page.on('requestfailed',r=>requests.push({url:r.url(),error:r.failure()?.errorText}));
   const started=Date.now();
   try {

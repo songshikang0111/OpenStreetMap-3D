@@ -1,0 +1,1018 @@
+
+> beijing-city-ink@0.8.1 test
+> node --test test/*.test.js
+
+TAP version 13
+# Subtest: podium and taller tower have a single owner for a shared facade and no buried roof
+ok 1 - podium and taller tower have a single owner for a shared facade and no buried roof
+  ---
+  duration_ms: 4.1764
+  ...
+# Subtest: party walls, equal-height duplicates and elevated parts preserve the union boundary
+ok 2 - party walls, equal-height duplicates and elevated parts preserve the union boundary
+  ---
+  duration_ms: 11.0612
+  ...
+# Subtest: courtyard voids and narrow real gaps are not treated as occupied volumes
+ok 3 - courtyard voids and narrow real gaps are not treated as occupied volumes
+  ---
+  duration_ms: 0.989
+  ...
+# Subtest: actual Guomao B snapshot resolves both exactly coincident podium facades
+ok 4 - actual Guomao B snapshot resolves both exactly coincident podium facades
+  ---
+  duration_ms: 38.1747
+  ...
+# Subtest: facade families respond to semantics and remain deterministic
+ok 5 - facade families respond to semantics and remain deterministic
+  ---
+  duration_ms: 1.8462
+  ...
+# Subtest: roof equipment uses footprint and courtyard clearance instead of bounding-box filling
+ok 6 - roof equipment uses footprint and courtyard clearance instead of bounding-box filling
+  ---
+  duration_ms: 6.5459
+  ...
+# Subtest: landmark rules select exact landmarks and preserve separate CCTV height records
+ok 7 - landmark rules select exact landmarks and preserve separate CCTV height records
+  ---
+  duration_ms: 0.4197
+  ...
+# Subtest: landmark mesh heights are finite, outward-facing and retain queryable OSM identity
+ok 8 - landmark mesh heights are finite, outward-facing and retain queryable OSM identity
+  ---
+  duration_ms: 238.6986
+  ...
+# Subtest: needle crowns are closed pointed meshes with reproducible normals and a bounded budget
+ok 9 - needle crowns are closed pointed meshes with reproducible normals and a bounded budget
+  ---
+  duration_ms: 30.2906
+  ...
+# Subtest: conifer envelopes enclose actual far and near vertices across morph weights and seeds
+ok 10 - conifer envelopes enclose actual far and near vertices across morph weights and seeds
+  ---
+  duration_ms: 316.5686
+  ...
+# Subtest: mixed crown batches preserve pointed silhouettes at every distance and reuse the shared near budget
+ok 11 - mixed crown batches preserve pointed silhouettes at every distance and reuse the shared near budget
+  ---
+  duration_ms: 54.8481
+  ...
+# Subtest: near plane improves distant precision but never clips a nearby tall roof
+ok 12 - near plane improves distant precision but never clips a nearby tall roof
+  ---
+  duration_ms: 0.8875
+  ...
+# Subtest: merged rooftop equipment bounds cannot masquerade as geometry in empty air
+ok 13 - merged rooftop equipment bounds cannot masquerade as geometry in empty air
+  ---
+  duration_ms: 2.6725
+  ...
+# Subtest: roof detail follows projected pixel size continuously, including zoom and resolution changes
+ok 14 - roof detail follows projected pixel size continuously, including zoom and resolution changes
+  ---
+  duration_ms: 1.1155
+  ...
+# Subtest: roof geometry collapses to its roof anchor in every render pass and restores exactly near the camera
+ok 15 - roof geometry collapses to its roof anchor in every render pass and restores exactly near the camera
+  ---
+  duration_ms: 3.816
+  ...
+# Subtest: facade reflection and neutral ink bind the actual sun and projection uniforms
+ok 16 - facade reflection and neutral ink bind the actual sun and projection uniforms
+  ---
+  duration_ms: 0.4745
+  ...
+# Subtest: HiDPI uses displayed pixels and the neutral facade receives the new sun after regeneration
+ok 17 - HiDPI uses displayed pixels and the neutral facade receives the new sun after regeneration
+  ---
+  duration_ms: 3.8621
+  ...
+# Subtest: facade grammars are stable and place glass inside wall and floor boundaries
+ok 18 - facade grammars are stable and place glass inside wall and floor boundaries
+  ---
+  duration_ms: 4.3536
+  ...
+# Subtest: solid nearby sills follow GPU layout at arbitrary wall length
+ok 19 - solid nearby sills follow GPU layout at arbitrary wall length
+  ---
+  duration_ms: 58.7618
+  ...
+# Subtest: nearby frames do not depend on extract order or a long wall midpoint, and respect the instance budget
+ok 20 - nearby frames do not depend on extract order or a long wall midpoint, and respect the instance budget
+  ---
+  duration_ms: 14.4799
+  ...
+# Subtest: tapered and expanding loft rings share exact UV seams and stable bay count
+ok 21 - tapered and expanding loft rings share exact UV seams and stable bay count
+  ---
+  duration_ms: 2.1123
+  ...
+# Subtest: explicit facade material wins over height or office guesses; illustrative finishes remain seeded
+ok 22 - explicit facade material wins over height or office guesses; illustrative finishes remain seeded
+  ---
+  duration_ms: 5.5663
+  ...
+# Subtest: curtain grammars are floor-to-ceiling and ordinary walls have contrasting aperture proportions
+ok 23 - curtain grammars are floor-to-ceiling and ordinary walls have contrasting aperture proportions
+  ---
+  duration_ms: 0.2886
+  ...
+# Subtest: curtain frames use fine mullions while masonry retains sills and the same allocation cap
+ok 24 - curtain frames use fine mullions while masonry retains sills and the same allocation cap
+  ---
+  duration_ms: 1.2012
+  ...
+# Subtest: material metadata reaches real mesh attributes and neutral render defaults without extra geometry
+ok 25 - material metadata reaches real mesh attributes and neutral render defaults without extra geometry
+  ---
+  duration_ms: 76.5714
+  ...
+# Canopy silhouette regression: minimum exposed lobes 10
+# Subtest: canopy surfaces have reproducible closed seams, unit normals and a bounded mesh budget
+ok 26 - canopy surfaces have reproducible closed seams, unit normals and a bounded mesh budget
+  ---
+  duration_ms: 29.6171
+  ...
+# Subtest: tree LOD keeps a common opaque crown in every pass and deterministic geometry on return
+ok 27 - tree LOD keeps a common opaque crown in every pass and deterministic geometry on return
+  ---
+  duration_ms: 22.2872
+  ...
+# Subtest: branch-associated canopy profiles are seeded, bounded and lower in triangles than the previous budget
+ok 28 - branch-associated canopy profiles are seeded, bounded and lower in triangles than the previous budget
+  ---
+  duration_ms: 4.8053
+  ...
+# Subtest: broad crowns have a varied horizontal silhouette without repeated vertical tiers
+ok 29 - broad crowns have a varied horizontal silhouette without repeated vertical tiers
+  ---
+  duration_ms: 3.1692
+  ...
+# Subtest: placement envelope encloses actual shared geometry for all crown habits and seed variations
+ok 30 - placement envelope encloses actual shared geometry for all crown habits and seed variations
+  ---
+  duration_ms: 111.5507
+  ...
+# Subtest: distance transitions are continuous at near, former hard cutoff and far boundaries
+ok 31 - distance transitions are continuous at near, former hard cutoff and far boundaries
+  ---
+  duration_ms: 0.38
+  ...
+# Subtest: nearest-tree budget changes at zero weight, without source-order or location dependence
+ok 32 - nearest-tree budget changes at zero weight, without source-order or location dependence
+  ---
+  duration_ms: 0.8446
+  ...
+# Subtest: small camera movement updates geometry continuously, including former 15 m grid boundaries
+ok 33 - small camera movement updates geometry continuously, including former 15 m grid boundaries
+  ---
+  duration_ms: 4.4496
+  ...
+# Subtest: dense groves obey the cap with non-singular opaque instances and retain every base crown
+ok 34 - dense groves obey the cap with non-singular opaque instances and retain every base crown
+  ---
+  duration_ms: 55.1391
+  ...
+# Subtest: middle-distance silhouettes expose several leaf lobes outside the shared base crown
+ok 35 - middle-distance silhouettes expose several leaf lobes outside the shared base crown
+  ---
+  duration_ms: 113.0192
+  ...
+# Subtest: increasing material darkness never turns an existing black dot into a white hole
+ok 36 - increasing material darkness never turns an existing black dot into a white hole
+  ---
+  duration_ms: 45.549
+  ...
+# Subtest: half-density perturbations are continuous and preserve the dot lattice phase
+ok 37 - half-density perturbations are continuous and preserve the dot lattice phase
+  ---
+  duration_ms: 2.9217
+  ...
+# Subtest: shared geometry keeps separate foliage, solid-building and procedural-window classifications
+ok 38 - shared geometry keeps separate foliage, solid-building and procedural-window classifications
+  ---
+  duration_ms: 5.6552
+  ...
+# Subtest: AO resolution follows odd export sizes and renderer restores scene state on failure
+ok 39 - AO resolution follows odd export sizes and renderer restores scene state on failure
+  ---
+  duration_ms: 15.7834
+  ...
+# Subtest: comic pass isolates light, reuses shadows, and tracks a changed camera near plane
+ok 40 - comic pass isolates light, reuses shadows, and tracks a changed camera near plane
+  ---
+  duration_ms: 3.2339
+  ...
+# Subtest: facade controls remain live after seed regeneration without another scene pass
+ok 41 - facade controls remain live after seed regeneration without another scene pass
+  ---
+  duration_ms: 2.8063
+  ...
+# Subtest: edge resolve follows export dimensions while object IDs remain discrete
+ok 42 - edge resolve follows export dimensions while object IDs remain discrete
+  ---
+  duration_ms: 2.0305
+  ...
+# Subtest: crosswalk approaches cut both roadside kerbs while keeping remote sections and input intact
+ok 43 - crosswalk approaches cut both roadside kerbs while keeping remote sections and input intact
+  ---
+  duration_ms: 2.4109
+  ...
+# Subtest: kerb clearance follows rotated crossings and is stable under translated map coordinates
+ok 44 - kerb clearance follows rotated crossings and is stable under translated map coordinates
+  ---
+  duration_ms: 8.2207
+  ...
+# Subtest: landscape overlay merges idempotently and keeps baseline buildings/roads intact
+ok 45 - landscape overlay merges idempotently and keeps baseline buildings/roads intact
+  ---
+  duration_ms: 129.4409
+  ...
+# Subtest: overlapping ground polygons are retained even when their centre falls outside the extract
+ok 46 - overlapping ground polygons are retained even when their centre falls outside the extract
+  ---
+  duration_ms: 0.7423
+  ...
+# Subtest: inferred courts respect buildings, roads, water, observed uses and frame
+ok 47 - inferred courts respect buildings, roads, water, observed uses and frame
+  ---
+  duration_ms: 140.6431
+  ...
+# Subtest: central entry routes stay free of lawns, shrubs, trees and benches
+ok 48 - central entry routes stay free of lawns, shrubs, trees and benches
+  ---
+  duration_ms: 42.0546
+  ...
+# Subtest: known polygon holes remain holes and can contain independent inferred courts
+ok 49 - known polygon holes remain holes and can contain independent inferred courts
+  ---
+  duration_ms: 13.0645
+  ...
+# Subtest: same seed is stable, different seed only varies planting, and inference can be disabled
+ok 50 - same seed is stable, different seed only varies planting, and inference can be disabled
+  ---
+  duration_ms: 127.4051
+  ...
+# Subtest: frontage geometry works after translation and rotation, without geographic IDs
+ok 51 - frontage geometry works after translation and rotation, without geographic IDs
+  ---
+  duration_ms: 4.697
+  ...
+# Subtest: deep residual commons use large non-grid outlines and respect mapped/restricted ground
+ok 52 - deep residual commons use large non-grid outlines and respect mapped/restricted ground
+  ---
+  duration_ms: 41.6717
+  ...
+# Subtest: real CBD plan has bounded geometry, four templates and balanced detail budgets
+ok 53 - real CBD plan has bounded geometry, four templates and balanced detail budgets
+  ---
+  duration_ms: 7622.6473
+  ...
+# Subtest: clipped water with inner holes preserves area and stays inside the extract
+ok 54 - clipped water with inner holes preserves area and stays inside the extract
+  ---
+  duration_ms: 67.0183
+  ...
+# Subtest: inferred trees respect non-green ground uses, water and pedestrian paths
+ok 55 - inferred trees respect non-green ground uses, water and pedestrian paths
+  ---
+  duration_ms: 1.8705
+  ...
+# Subtest: view links retain the landscape opt-out without breaking old links
+ok 56 - view links retain the landscape opt-out without breaking old links
+  ---
+  duration_ms: 0.7109
+  ...
+# Subtest: parking and pitch markings respect omitted holes and never decorate construction
+ok 57 - parking and pitch markings respect omitted holes and never decorate construction
+  ---
+  duration_ms: 13.4022
+  ...
+# Subtest: court paint is inlaid rather than depth-competing with the support surface
+ok 58 - court paint is inlaid rather than depth-competing with the support surface
+  ---
+  duration_ms: 88.0678
+  ...
+# Subtest: surface parking is distinguished from underground, roof and multi-storey facilities
+ok 59 - surface parking is distinguished from underground, roof and multi-storey facilities
+  ---
+  duration_ms: 1.5412
+  ...
+# Subtest: pedestrian polygons are plazas while linear roads and large commercial zones are not
+ok 60 - pedestrian polygons are plazas while linear roads and large commercial zones are not
+  ---
+  duration_ms: 1.0723
+  ...
+# Subtest: landcover remains distinct from sports, water, construction and garden vegetation
+ok 61 - landcover remains distinct from sports, water, construction and garden vegetation
+  ---
+  duration_ms: 0.2542
+  ...
+# Subtest: CBD snapshot recovers actual plazas and facilities without repainting existing parking buildings
+ok 62 - CBD snapshot recovers actual plazas and facilities without repainting existing parking buildings
+  ---
+  duration_ms: 15.6844
+  ...
+# Subtest: new regions load their own extract without Beijing overlays or regional profile
+ok 63 - new regions load their own extract without Beijing overlays or regional profile
+  ---
+  duration_ms: 8.0348
+  ...
+# Subtest: the original region retains its two overlays and landscape profile
+ok 64 - the original region retains its two overlays and landscape profile
+  ---
+  duration_ms: 0.3552
+  ...
+# Subtest: location URLs are allowlisted and coordinate labels support all hemispheres
+ok 65 - location URLs are allowlisted and coordinate labels support all hemispheres
+  ---
+  duration_ms: 0.395
+  ...
+# Subtest: generic camera framing uses district scale and actual building positions
+ok 66 - generic camera framing uses district scale and actual building positions
+  ---
+  duration_ms: 0.3186
+  ...
+# {"buildings":477,"roads":785,"trees":3677,"triangleVertices":272085,"heights":{"estimated":182,"height":28,"levels":267}}
+# Subtest: WGS84 projection preserves coordinates and east/north orientation
+ok 67 - WGS84 projection preserves coordinates and east/north orientation
+  ---
+  duration_ms: 5.5441
+  ...
+# Subtest: explicit height takes priority, feet convert, floors are inferred separately
+ok 68 - explicit height takes priority, feet convert, floors are inferred separately
+  ---
+  duration_ms: 7.8422
+  ...
+# Subtest: road clipping handles crossings, outside parallel segments, and degenerate points
+ok 69 - road clipping handles crossings, outside parallel segments, and degenerate points
+  ---
+  duration_ms: 0.2958
+  ...
+# Subtest: relation rings stitch reversed fragments without closing incomplete rings
+ok 70 - relation rings stitch reversed fragments without closing incomplete rings
+  ---
+  duration_ms: 0.278
+  ...
+# Subtest: multipolygon courtyard survives parsing and tagged member ways are not duplicated
+ok 71 - multipolygon courtyard survives parsing and tagged member ways are not duplicated
+  ---
+  duration_ms: 1.2447
+  ...
+# Subtest: Beijing extract produces finite meshes, preserves real heights and elevated CCTV parts
+ok 72 - Beijing extract produces finite meshes, preserves real heights and elevated CCTV parts
+  ---
+  duration_ms: 7668.6593
+  ...
+# Subtest: Kyoto parking inlay remains a closed partition instead of aborting the city build
+ok 73 - Kyoto parking inlay remains a closed partition instead of aborting the city build
+  ---
+  duration_ms: 67.1151
+  ...
+# Subtest: project config defaults lock one origin without mutating input and rejects unsupported areas
+ok 74 - project config defaults lock one origin without mutating input and rejects unsupported areas
+  ---
+  duration_ms: 3.4757
+  ...
+# Subtest: same locked input produces byte-identical manifest and binary resources, independent of element traversal
+ok 75 - same locked input produces byte-identical manifest and binary resources, independent of element traversal
+  ---
+  duration_ms: 1634.0563
+  ...
+# {"syntheticFixtureLOD":{"low":{"triangles":18694,"bytes":1066044,"drawCalls":14,"residentBytes":988676},"medium":{"triangles":138842,"bytes":4788420,"drawCalls":20,"residentBytes":4697972},"high":{"triangles":144102,"bytes":4972628,"drawCalls":35,"residentBytes":4740764}}}
+# Subtest: fixed coverage 1/4/16 tiles preserves exact world triangles, bridge grades, water and stable object identities
+ok 76 - fixed coverage 1/4/16 tiles preserves exact world triangles, bridge grades, water and stable object identities
+  ---
+  duration_ms: 1019.3809
+  ...
+# Subtest: true far LOD cuts submitted triangles, resident bytes, asset bytes and draw calls; high restores attachments
+ok 77 - true far LOD cuts submitted triangles, resident bytes, asset bytes and draw calls; high restores attachments
+  ---
+  duration_ms: 1.0007
+  ...
+# Subtest: codec roundtrip preserves procedural attributes, multi-material roles, instances, source IDs and selection
+ok 78 - codec roundtrip preserves procedural attributes, multi-material roles, instances, source IDs and selection
+  ---
+  duration_ms: 2.2692
+  ...
+# Subtest: codec and manifest reject corruption, unsupported versions and invalid resource references
+ok 79 - codec and manifest reject corruption, unsupported versions and invalid resource references
+  ---
+  duration_ms: 5.9722
+  ...
+# Subtest: progress cancellation yields an explicit error and no partial success
+ok 80 - progress cancellation yields an explicit error and no partial success
+  ---
+  duration_ms: 209.6184
+  ...
+# Subtest: injected registry claims multipart objects once; failed recipes diagnose fallback; disable uses generic bodies
+ok 81 - injected registry claims multipart objects once; failed recipes diagnose fallback; disable uses generic bodies
+  ---
+  duration_ms: 1322.1401
+  ...
+# Subtest: official npm archives install offline, update/lock/rebuild/rollback and exclude generated/private artifacts
+ok 82 - official npm archives install offline, update/lock/rebuild/rollback and exclude generated/private artifacts
+  ---
+  duration_ms: 8585.7844
+  ...
+# Subtest: exact OSM type/id plus location; names cannot replace unrelated buildings
+ok 83 - exact OSM type/id plus location; names cannot replace unrelated buildings
+  ---
+  duration_ms: 25.1845
+  ...
+# Subtest: independent groups retain source heights, geometry role batches and serialized match generation
+ok 84 - independent groups retain source heights, geometry role batches and serialized match generation
+  ---
+  duration_ms: 221.8202
+  ...
+# Subtest: disabled, missing-part, incompatible and failing recipes fall back without claiming generic buildings
+ok 85 - disabled, missing-part, incompatible and failing recipes fall back without claiming generic buildings
+  ---
+  duration_ms: 430.2869
+  ...
+# Subtest: local package upgrade locks explicit versions, changes geometry and restores exactly on rollback
+ok 86 - local package upgrade locks explicit versions, changes geometry and restores exactly on rollback
+  ---
+  duration_ms: 186.9275
+  ...
+# Subtest: explicit overrides win, duplicate claims diagnose, failed external generation leaves source intact
+ok 87 - explicit overrides win, duplicate claims diagnose, failed external generation leaves source intact
+  ---
+  duration_ms: 62.7753
+  ...
+# Subtest: real CINK low/medium/high bind every official style; numeric level order is preserved and sorted by detail
+ok 88 - real CINK low/medium/high bind every official style; numeric level order is preserved and sorted by detail
+  ---
+  duration_ms: 1027.703
+  ...
+# Subtest: rehydrated near frames and crown clusters obey one global budget and release all buffers when distant
+ok 89 - rehydrated near frames and crown clusters obey one global budget and release all buffers when distant
+  ---
+  duration_ms: 416.0024
+  ...
+# Subtest: streamed classification clones are released on eviction rather than retained until viewer disposal
+ok 90 - streamed classification clones are released on eviction rather than retained until viewer disposal
+  ---
+  duration_ms: 4.5352
+  ...
+# Subtest: tight resident headroom trims near attachments without stationary LOD oscillation
+ok 91 - tight resident headroom trims near attachments without stationary LOD oscillation
+  ---
+  duration_ms: 2254.6134
+  ...
+# Subtest: manifest URI resolution uses the manifest directory, validates corruption/version/identity
+ok 92 - manifest URI resolution uses the manifest directory, validates corruption/version/identity
+  ---
+  duration_ms: 4.6363
+  ...
+# Subtest: CSS screen size responds to distance, FOV, viewport and hysteresis
+ok 93 - CSS screen size responds to distance, FOV, viewport and hysteresis
+  ---
+  duration_ms: 2.7415
+  ...
+# Subtest: view frustum uses content bounds, and budgets downgrade while retaining every visible chunk
+ok 94 - view frustum uses content bounds, and budgets downgrade while retaining every visible chunk
+  ---
+  duration_ms: 1.3448
+  ...
+# Subtest: registry refcounts shared geometry, material, uniform texture and instance buffers
+ok 95 - registry refcounts shared geometry, material, uniform texture and instance buffers
+  ---
+  duration_ms: 2.2738
+  ...
+# Subtest: independent registries protect a shared live style texture during export and keep source bitmap ownership external
+ok 96 - independent registries protect a shared live style texture during export and keep source bitmap ownership external
+  ---
+  duration_ms: 0.6999
+  ...
+# Subtest: atomic LOD replacements retain coverage, restore near geometry and release old resources
+ok 97 - atomic LOD replacements retain coverage, restore near geometry and release old resources
+  ---
+  duration_ms: 44.4804
+  ...
+# Subtest: five round trips and reloads return to a stable resident baseline
+ok 98 - five round trips and reloads return to a stable resident baseline
+  ---
+  duration_ms: 170.6127
+  ...
+# Subtest: stale requests abort and ignored cancellation still respects actual concurrency
+ok 99 - stale requests abort and ignored cancellation still respects actual concurrency
+  ---
+  duration_ms: 15.3864
+  ...
+# Subtest: asset failure diagnostics include resolved URL and bounded retries
+ok 100 - asset failure diagnostics include resolved URL and bounded retries
+  ---
+  duration_ms: 249.1264
+  ...
+# Subtest: corrupt hash and decoder failures preserve diagnostic stages and clean decoded resources
+ok 101 - corrupt hash and decoder failures preserve diagnostic stages and clean decoded resources
+  ---
+  duration_ms: 36.1009
+  ...
+# Subtest: style rebinding and failed style setup release replaced decoder resources
+ok 102 - style rebinding and failed style setup release replaced decoder resources
+  ---
+  duration_ms: 108.2981
+  ...
+# Subtest: fixture binary roundtrip preserves geometry, metadata, instances and attributes
+ok 103 - fixture binary roundtrip preserves geometry, metadata, instances and attributes
+  ---
+  duration_ms: 8.6218
+  ...
+# Subtest: whole-frame counters and percentile definitions include all passes
+ok 104 - whole-frame counters and percentile definitions include all passes
+  ---
+  duration_ms: 0.4448
+  ...
+# Subtest: GLB export requires explicit scope and rejects complete budget overflow before loading
+ok 105 - GLB export requires explicit scope and rejects complete budget overflow before loading
+  ---
+  duration_ms: 0.7672
+  ...
+# Subtest: official styles bind and dispose; decoded procedural panes/glass use the original uniforms and attributes
+ok 106 - official styles bind and dispose; decoded procedural panes/glass use the original uniforms and attributes
+  ---
+  duration_ms: 541.1056
+  ...
+# Subtest: independent external module covers road, water, tree, landmark and all ordinary semantic roles
+ok 107 - independent external module covers road, water, tree, landmark and all ordinary semantic roles
+  ---
+  duration_ms: 143.807
+  ...
+# Subtest: style changes restore original materials and invalid protocols fail clearly
+ok 108 - style changes restore original materials and invalid protocols fail clearly
+  ---
+  duration_ms: 107.0206
+  ...
+# Subtest: repeated ink pipelines isolate shared geometry classifications and release owned clones
+ok 109 - repeated ink pipelines isolate shared geometry classifications and release owned clones
+  ---
+  duration_ms: 8.3329
+  ...
+# Independent full-width clearance audit: {
+#   pairs: 184,
+#   vertices: 5850,
+#   minimum: 2.95,
+#   minimumDrive: 4.97389773041305,
+#   minimumWalk: 2.95
+# }
+# Subtest: actual Guomao shared OSM nodes are continuous and independent of source road order
+ok 110 - actual Guomao shared OSM nodes are continuous and independent of source road order
+  ---
+  duration_ms: 3288.1114
+  ...
+# Subtest: actual vehicle approaches do not introduce extreme slopes while joining bridge ends
+ok 111 - actual vehicle approaches do not introduce extreme slopes while joining bridge ends
+  ---
+  duration_ms: 7.219
+  ...
+# Subtest: actual two-wing stairs reach both ground ends and the shared bridge platform
+ok 112 - actual two-wing stairs reach both ground ends and the shared bridge platform
+  ---
+  duration_ms: 0.3411
+  ...
+# Subtest: independent full-width intersections preserve layer order and actual deck-bottom clearance
+ok 113 - independent full-width intersections preserve layer order and actual deck-bottom clearance
+  ---
+  duration_ms: 6073.8555
+  ...
+# Sydney full-width clearance audit { crossings: 160, vertices: 1841, minimum: 4.265706060231692 }
+# Subtest: real short connected Sydney footbridge retains its crossing clearance without lifting the network indefinitely
+ok 114 - real short connected Sydney footbridge retains its crossing clearance without lifting the network indefinitely
+  ---
+  duration_ms: 67.7579
+  ...
+# Subtest: original wide Sydney extract loads all roads and preserves every full-width crossing and shared node
+ok 115 - original wide Sydney extract loads all roads and preserves every full-width crossing and shared node
+  ---
+  duration_ms: 2662.2017
+  ...
+# Subtest: clipped source segments retain true endpoint node identities without fabricating boundary junctions
+ok 116 - clipped source segments retain true endpoint node identities without fabricating boundary junctions
+  ---
+  duration_ms: 2.0832
+  ...
+# Subtest: shared OSM nodes join across way/layer boundaries, while coincident independent nodes do not connect
+ok 117 - shared OSM nodes join across way/layer boundaries, while coincident independent nodes do not connect
+  ---
+  duration_ms: 76.0446
+  ...
+# Subtest: a short connecting way cannot force a cliff at a nearby branch; all branches share solved height
+ok 118 - a short connecting way cannot force a cliff at a nearby branch; all branches share solved height
+  ---
+  duration_ms: 91.7958
+  ...
+# Subtest: three-node stair ways split at the elevated middle platform regardless of bridge tagging
+ok 119 - three-node stair ways split at the elevated middle platform regardless of bridge tagging
+  ---
+  duration_ms: 2.2804
+  ...
+# Subtest: ramp pavement, paint and rail geometry use the same longitudinal height and tilted normals
+ok 120 - ramp pavement, paint and rail geometry use the same longitudinal height and tilted normals
+  ---
+  duration_ms: 139.364
+  ...
+# Subtest: paint and asphalt partition one graded surface, even when two dashes overlap
+ok 121 - paint and asphalt partition one graded surface, even when two dashes overlap
+  ---
+  duration_ms: 7.1769
+  ...
+# Subtest: a marking on a different deck cannot punch a hole in the ground road
+ok 122 - a marking on a different deck cannot punch a hole in the ground road
+  ---
+  duration_ms: 0.5726
+  ...
+# Subtest: OSM steps generate actual horizontal treads, outward risers/soffits, and exact endpoint landings
+ok 123 - OSM steps generate actual horizontal treads, outward risers/soffits, and exact endpoint landings
+  ---
+  duration_ms: 48.8886
+  ...
+# Subtest: reversing a descending source way gives identical stairs and handrails
+ok 124 - reversing a descending source way gives identical stairs and handrails
+  ---
+  duration_ms: 23.6415
+  ...
+# Subtest: two stair wings meet a shared elevated platform without a railing across their mouths
+ok 125 - two stair wings meet a shared elevated platform without a railing across their mouths
+  ---
+  duration_ms: 62.8638
+  ...
+# Subtest: polyline landings remain inside the source extent and share bend sections
+ok 126 - polyline landings remain inside the source extent and share bend sections
+  ---
+  duration_ms: 5.9799
+  ...
+# Subtest: degenerate flights skip cleanly and excessive inferred rises are explicitly flagged
+ok 127 - degenerate flights skip cleanly and excessive inferred rises are explicitly flagged
+  ---
+  duration_ms: 2.2053
+  ...
+# Bridge structure validation: {
+#   bridgeWays: 183,
+#   bridgeSegments: 2424,
+#   bridgeDecks: 3496,
+#   bridgePiers: 224,
+#   bridgeSupportCandidates: 314,
+#   bridgeGuardrailSegments: 6536,
+#   bridgeRailInteriorSkipped: 1509,
+#   bridgeRejectedSupports: {
+#     'extract-boundary': 2,
+#     'traffic-clearance': 51,
+#     'pedestrian-clearance': 9,
+#     water: 16,
+#     'outside-deck': 7,
+#     'near-existing-support': 3,
+#     'building-clearance': 2
+#   },
+#   unsupportedBridgeWays: 100,
+#   bridgeHeightSource: 'inferred-layer-times-7m',
+#   bridgeGradeConnectionsUnresolved: 0,
+#   bridgeStructureTriangles: 261326
+# }
+# Subtest: bridge soffits meet the sole road-owned top with outward sides and underside
+ok 128 - bridge soffits meet the sole road-owned top with outward sides and underside
+  ---
+  duration_ms: 46.0173
+  ...
+# Subtest: piers avoid lower traffic, pedestrian paths, buildings, water and extraction edges
+ok 129 - piers avoid lower traffic, pedestrian paths, buildings, water and extraction edges
+  ---
+  duration_ms: 6.5711
+  ...
+# Subtest: shared bridge ends gain inferred continuous grades, and ground-only roads have no bridge meshes
+ok 130 - shared bridge ends gain inferred continuous grades, and ground-only roads have no bridge meshes
+  ---
+  duration_ms: 173.51
+  ...
+# Subtest: guardrails leave an opening at same-level bridge branches
+ok 131 - guardrails leave an opening at same-level bridge branches
+  ---
+  duration_ms: 2.1925
+  ...
+# Subtest: Guomao supports pass independent whole-extract clearance checks and structure budgets
+ok 132 - Guomao supports pass independent whole-extract clearance checks and structure budgets
+  ---
+  duration_ms: 8447.5949
+  ...
+# R10 Guomao: {
+#   sourceRoads: 785,
+#   segments: 5383,
+#   driveSegments: 3301,
+#   walkSegments: 2082,
+#   miterJoins: 1622,
+#   bevelJoins: 6,
+#   duplicateSegments: 0,
+#   clippedOverlaps: 12135,
+#   junctions: 374,
+#   crossingExclusions: 85,
+#   dashes: 4327,
+#   stopLines: 13,
+#   drivePolygons: 7225,
+#   walkPolygons: 5140,
+#   pavingPolygons: 6015,
+#   surfaceTriangles: 36437,
+#   roadArea: 594869.1861108252,
+#   pavementArea: 169409.21152926932,
+#   observedSidewalkWays: 126,
+#   observedCrossingWays: 46,
+#   inferredMarginWays: 216,
+#   pavementBuildingBlockers: 1600,
+#   gradeSource: 'OSM connectivity + inferred layer heights',
+#   gradeOriginalDiscontinuities: 78,
+#   gradeResolvedConnections: 78,
+#   gradeChangedWays: 291,
+#   gradeMaxVehicleSlope: 0.10000000000000012,
+#   gradeSteepVehicleRuns: 0,
+#   gradeCrossingConstraints: 184,
+#   gradeRemainingDiscontinuities: 0,
+#   gradeConstraintIterations: 16,
+#   gradeConstraintConflicts: 0,
+#   gradeAmbiguousCrossings: 0,
+#   stairFlights: 28,
+#   gradeSteepWalkingWays: 22,
+#   gradeMaxWalkingSlope: 0.3500000000000049,
+#   discardedMicroTriangles: 829,
+#   renderedTriangles: 64327,
+#   bridgeWays: 183,
+#   bridgeSegments: 2424,
+#   bridgeDecks: 3496,
+#   bridgePiers: 224,
+#   bridgeSupportCandidates: 314,
+#   bridgeGuardrailSegments: 6536,
+#   bridgeRailInteriorSkipped: 1509,
+#   bridgeRejectedSupports: {
+#     'extract-boundary': 2,
+#     'traffic-clearance': 51,
+#     'pedestrian-clearance': 9,
+#     water: 16,
+#     'outside-deck': 7,
+#     'near-existing-support': 3,
+#     'building-clearance': 2
+#   },
+#   unsupportedBridgeWays: 100,
+#   bridgeHeightSource: 'inferred-layer-times-7m',
+#   bridgeGradeConnectionsUnresolved: 0,
+#   bridgeStructureTriangles: 261326,
+#   stairTreads: 1054,
+#   stairPosts: 1598,
+#   stairTriangles: 68764,
+#   stairSkippedFlights: 0,
+#   stairSteepFlights: 0,
+#   stairHeightSource: 'shared-road-grade-inference',
+#   testedPolygonPairs: 45488,
+#   paintedArea: 2681,
+#   totalValidationMs: 7958
+# }
+# Subtest: convex subtraction conserves area, handles containment, identical and touching edges
+ok 133 - convex subtraction conserves area, handles containment, identical and touching edges
+  ---
+  duration_ms: 2.1358
+  ...
+# Subtest: connected strips replace disc endpoints, stay gap-free and retain continuous dash phase
+ok 134 - connected strips replace disc endpoints, stay gap-free and retain continuous dash phase
+  ---
+  duration_ms: 25.3961
+  ...
+# Subtest: sharp bends use bounded bevels; duplicate reversed ways do not duplicate surfaces or paint
+ok 135 - sharp bends use bounded bevels; duplicate reversed ways do not duplicate surfaces or paint
+  ---
+  duration_ms: 10.9784
+  ...
+# Subtest: T/X junctions remove internal overlap, clip footways and suppress paint through crossings
+ok 136 - T/X junctions remove internal overlap, clip footways and suppress paint through crossings
+  ---
+  duration_ms: 25.2571
+  ...
+# Subtest: grade-separated roads never form junctions or erase pavement at the other elevation
+ok 137 - grade-separated roads never form junctions or erase pavement at the other elevation
+  ---
+  duration_ms: 2.8573
+  ...
+# Subtest: sidewalks rise above asphalt, crossings stay flat, and inferred margins respect road access and buildings
+ok 138 - sidewalks rise above asphalt, crossings stay flat, and inferred margins respect road access and buildings
+  ---
+  duration_ms: 5.2945
+  ...
+# Subtest: observed zebra exclusions and inferred controlled stop lines keep a geometric buffer
+ok 139 - observed zebra exclusions and inferred controlled stop lines keep a geometric buffer
+  ---
+  duration_ms: 12.7906
+  ...
+# Subtest: invalid/zero segments are ignored, clipping respects extraction bounds, output is deterministic
+ok 140 - invalid/zero segments are ignored, clipping respects extraction bounds, output is deterministic
+  ---
+  duration_ms: 4.5341
+  ...
+# Subtest: actual Guomao extract: every surface is disjoint, paint avoids all same-level clear zones, mesh winding is up
+ok 141 - actual Guomao extract: every surface is disjoint, paint avoids all same-level clear zones, mesh winding is up
+  ---
+  duration_ms: 8098.9259
+  ...
+# Subtest: roof inference is opt-in, bounded and never overrides explicit flat or unsupported shapes
+ok 142 - roof inference is opt-in, bounded and never overrides explicit flat or unsupported shapes
+  ---
+  duration_ms: 2.2229
+  ...
+# Subtest: four slope types cover the actual concave footprint, retain courtyard holes and preserve the tagged apex
+ok 143 - four slope types cover the actual concave footprint, retain courtyard holes and preserve the tagged apex
+  ---
+  duration_ms: 22.2563
+  ...
+# Subtest: city integration removes flat caps, parapets and roof equipment on pitched houses and preserves total height
+ok 144 - city integration removes flat caps, parapets and roof equipment on pitched houses and preserves total height
+  ---
+  duration_ms: 48.2813
+  ...
+# Subtest: actual Shuhe ridge/footprint coincidences cannot abort a district or lose roof area
+ok 145 - actual Shuhe ridge/footprint coincidences cannot abort a district or lose roof area
+  ---
+  duration_ms: 123.4478
+  ...
+# Subtest: all furnishings sample the actual longitudinal plane and preserve input plans
+ok 146 - all furnishings sample the actual longitudinal plane and preserve input plans
+  ---
+  duration_ms: 3.3927
+  ...
+# Subtest: furnishings retain source-road association and ignore a bridge crossing overhead
+ok 147 - furnishings retain source-road association and ignore a bridge crossing overhead
+  ---
+  duration_ms: 0.4477
+  ...
+# Subtest: only speculative street planting on a raised approach is suppressed and counted
+ok 148 - only speculative street planting on a raised approach is suppressed and counted
+  ---
+  duration_ms: 0.7535
+  ...
+# Subtest: rendered kerbs and zebra paint follow the slope, and all four car wheels touch its plane
+ok 149 - rendered kerbs and zebra paint follow the slope, and all four car wheels touch its plane
+  ---
+  duration_ms: 62.1712
+  ...
+# Subtest: mapped stairs keep speculative tree crowns clear while preserving observed trees
+ok 150 - mapped stairs keep speculative tree crowns clear while preserving observed trees
+  ---
+  duration_ms: 0.3854
+  ...
+# Street life: {
+#   observedTrees: 0,
+#   rejectedObservedTrees: 0,
+#   rowTrees: 0,
+#   streetTrees: 3664,
+#   greenTrees: 584,
+#   landscapeTrees: 0,
+#   junctions: 154,
+#   placementSource: 'OSM observations + constrained inferred furnishings and landscape templates; no image-derived geometry',
+#   treeCandidates: { 'inferred-street': 5794, 'inferred-green': 810 },
+#   treeBudget: 6000,
+#   treeBudgetLimited: false,
+#   trees: 4248,
+#   generatedTrees: 4248,
+#   lamps: 253,
+#   cars: 110,
+#   people: 170,
+#   crosswalks: 85,
+#   signals: 26,
+#   curbs: 5694,
+#   observedCrossings: 85,
+#   observedSignals: 26,
+#   observedLamps: 0,
+#   curbCrossingCuts: 149,
+#   curbCrossingClearanceMetres: 326.61496582646777,
+#   nearTrees: 49,
+#   transitionTrees: 36,
+#   treeDetailRadius: 110,
+#   crownTriangles: 1126368,
+#   treeTriangles: 1253544,
+#   maxCrownTriangles: 1397088
+# }
+# Subtest: generated planting is deterministic, avoids buildings, carriageways and green holes
+ok 151 - generated planting is deterministic, avoids buildings, carriageways and green holes
+  ---
+  duration_ms: 56.8873
+  ...
+# Subtest: parallel duplicate ways do not double tree rows; bridges and narrow paths do not seed street trees
+ok 152 - parallel duplicate ways do not double tree rows; bridges and narrow paths do not seed street trees
+  ---
+  duration_ms: 2.6888
+  ...
+# Subtest: junction-based crossings stay on connected approaches and remain stable
+ok 153 - junction-based crossings stay on connected approaches and remain stable
+  ---
+  duration_ms: 6.0848
+  ...
+# Subtest: kerb segments leave shallow-angle and wide connecting carriageways clear
+ok 154 - kerb segments leave shallow-angle and wide connecting carriageways clear
+  ---
+  duration_ms: 4.5928
+  ...
+# Subtest: OSM crossing observations suppress speculative junction crossings and tree rows remain attributed
+ok 155 - OSM crossing observations suppress speculative junction crossings and tree rows remain attributed
+  ---
+  duration_ms: 4.6302
+  ...
+# Subtest: Beijing furniture has finite instance transforms and foliage-only ink classification
+ok 156 - Beijing furniture has finite instance transforms and foliage-only ink classification
+  ---
+  duration_ms: 781.042
+  ...
+# Subtest: vehicle bridge slabs and parapets exclude crowns, while real OSM trees remain attributed
+ok 157 - vehicle bridge slabs and parapets exclude crowns, while real OSM trees remain attributed
+  ---
+  duration_ms: 43.4714
+  ...
+# Subtest: vertical clearance preserves a high crown beside a low bridge and a short tree below a high bridge
+ok 158 - vertical clearance preserves a high crown beside a low bridge and a short tree below a high bridge
+  ---
+  duration_ms: 0.7919
+  ...
+# Subtest: clearance uses actual joined deck footprint rather than an infinite centreline strip
+ok 159 - clearance uses actual joined deck footprint rather than an infinite centreline strip
+  ---
+  duration_ms: 0.5313
+  ...
+# Subtest: a long rising bridge uses local height across the tree crown instead of the whole bridge height range
+ok 160 - a long rising bridge uses local height across the tree crown instead of the whole bridge height range
+  ---
+  duration_ms: 1.3343
+  ...
+# Subtest: mature avenues have continuous close spacing with controlled height variation
+ok 161 - mature avenues have continuous close spacing with controlled height variation
+  ---
+  duration_ms: 58.799
+  ...
+# Subtest: tight global budgets preserve all planting contexts and more than one site
+ok 162 - tight global budgets preserve all planting contexts and more than one site
+  ---
+  duration_ms: 8.5153
+  ...
+# Subtest: woodland is dense, park edges are connected belts, and grass keeps an open interior
+ok 163 - woodland is dense, park edges are connected belts, and grass keeps an open interior
+  ---
+  duration_ms: 28.6007
+  ...
+# Subtest: confined frontages choose narrower crowns instead of intersecting buildings
+ok 164 - confined frontages choose narrower crowns instead of intersecting buildings
+  ---
+  duration_ms: 6.0908
+  ...
+# Subtest: trees remain clear of blocked ground uses and paths after densification
+ok 165 - trees remain clear of blocked ground uses and paths after densification
+  ---
+  duration_ms: 4.4038
+  ...
+# Subtest: OSM leaf types and known taxa override decorative mixes without treating all evergreen trees as conifers
+ok 166 - OSM leaf types and known taxa override decorative mixes without treating all evergreen trees as conifers
+  ---
+  duration_ms: 3.3313
+  ...
+# Subtest: mixed planting is patch coherent, independent of iteration order, and profile configurable
+ok 167 - mixed planting is patch coherent, independent of iteration order, and profile configurable
+  ---
+  duration_ms: 2.5557
+  ...
+# Subtest: OSM tree point, row and polygon tags reach rendered habits; untagged streets stay broadleaf
+ok 168 - OSM tree point, row and polygon tags reach rendered habits; untagged streets stay broadleaf
+  ---
+  duration_ms: 44.3916
+  ...
+# Subtest: OSM parsing retains tree species metadata for the planting stage
+ok 169 - OSM parsing retains tree species metadata for the planting stage
+  ---
+  duration_ms: 2.2828
+  ...
+# Subtest: saved view round-trips camera, seed, style and visibility
+ok 170 - saved view round-trips camera, seed, style and visibility
+  ---
+  duration_ms: 1.9707
+  ...
+# Subtest: view decoder rejects malformed payloads and strips unsupported or unsafe inputs
+ok 171 - view decoder rejects malformed payloads and strips unsupported or unsafe inputs
+  ---
+  duration_ms: 0.6729
+  ...
+# Subtest: reroll changes estimates while retaining every tagged height, floor and footprint
+ok 172 - reroll changes estimates while retaining every tagged height, floor and footprint
+  ---
+  duration_ms: 135.1005
+  ...
+# Subtest: Sydney harbour is complete, clipped and non-overlapping; Opera House and gardens remain land
+ok 173 - Sydney harbour is complete, clipped and non-overlapping; Opera House and gardens remain land
+  ---
+  duration_ms: 887.3359
+  ...
+# Subtest: partial water relations do not invent an ocean boundary or erase unrepresented islands
+ok 174 - partial water relations do not invent an ocean boundary or erase unrepresented islands
+  ---
+  duration_ms: 0.3758
+  ...
+1..174
+# tests 174
+# suites 0
+# pass 174
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12910.3281
