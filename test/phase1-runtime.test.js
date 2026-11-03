@@ -116,6 +116,14 @@ test('whole-frame counters and percentile definitions include all passes', () =>
   for(const t of [0,16,32,52,112])stats.record(t,r);
   const s=stats.snapshot(true);assert.equal(s.intervalsMs.p50,16);assert.equal(s.intervalsMs.p95,60);assert.equal(s.longFrames50ms,1);assert.equal(s.drawCalls.p50,17);assert.equal(s.frames.length,4);assert.equal(s.gpuTime.available,false);
 });
+test('raw statistics retain the initial physical frame independently of FPS intervals and clear it on reset',()=>{
+  const stats=new FrameStatistics(),renderer={info:{render:{calls:1201,triangles:600001,lines:0,points:0},memory:{geometries:3,textures:0}}};
+  stats.record(100,renderer,{estimatedResidentBytes:8000,bodyNearDetails:2,nearAttachmentDetails:3,totalNearDetails:5,nearGeometryArrayBytes:2000});
+  renderer.info.render.calls=10;renderer.info.render.triangles=100;stats.record(116,renderer);
+  const raw=stats.snapshot(true);assert.equal(raw.initialFrame.drawCalls,1201);assert.equal(raw.initialFrame.triangles,600001);assert.equal(raw.initialFrame.intervalMs,null);assert.equal(raw.initialFrame.totalNearDetails,5);assert.equal(raw.frameCount,raw.frames.length+1);assert.equal(raw.intervalsMs.p95,16);
+  raw.initialFrame.drawCalls=0;assert.equal(stats.snapshot(true).initialFrame.drawCalls,1201);
+  stats.reset();assert.equal(stats.snapshot(true).initialFrame,null);assert.deepEqual(stats.snapshot(true).frames,[]);
+});
 test('GLB export requires explicit scope and rejects complete budget overflow before loading', async () => {
   const ctx={isDisposed:()=>false,manifest:manifest(2),budget:{residentBytes:1},readAsset:()=>{throw new Error('must not fetch');}};
   await assert.rejects(exportViewerGLB(ctx),{code:'EXPORT_SCOPE_REQUIRED'});await assert.rejects(exportViewerGLB(ctx,{scope:'complete'}),{code:'EXPORT_RESOURCE_BUDGET'});
