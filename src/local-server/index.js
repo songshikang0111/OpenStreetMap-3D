@@ -58,7 +58,7 @@ export async function createLocalServer({workspaceRoot,projectRoot,port=4178,hos
     try{
       const allowedHosts=new Set([`127.0.0.1:${server.address().port}`,`localhost:${server.address().port}`,`[::1]:${server.address().port}`]);
       if(!allowedHosts.has(req.headers.host))throw new CityError('HOST_REJECTED','http','Invalid local Host header.');
-      if(req.headers.origin && !allowedHosts.has(new URL(req.headers.origin).host))throw new CityError('ORIGIN_REJECTED','http','Cross-origin requests are not allowed.');
+      if(req.headers.origin && (!allowedHosts.has(new URL(req.headers.origin).host)||new URL(req.headers.origin).protocol!=='http:'))throw new CityError('ORIGIN_REJECTED','http','Cross-origin requests are not allowed.');
       const url=new URL(req.url,'http://127.0.0.1'), route=decodeURIComponent(url.pathname);
       if(route==='/api/search'&&req.method==='GET')return send(res,200,envelope({candidates:await search(url.searchParams.get('q'),{cacheDir:await safePath(workspaceRoot,'.city-service/search',{allowMissing:true}),offline:offline||url.searchParams.get('offline')==='true'})}));
       if(route==='/api/projects'&&req.method==='GET'){
@@ -122,7 +122,8 @@ export async function createLocalServer({workspaceRoot,projectRoot,port=4178,hos
       catch(e){if(e.code!=='ENOENT')throw e;}
       try{await stat(path.join(studioRoot,'index.html'));}
       catch{throw new CityError('STUDIO_UNAVAILABLE','studio','Studio UI has not been integrated.','Integrate studio/ from task E; the real API is available.');}
-      if(!vite){const {createServer}=await import('vite');vite=await createServer({configFile:false,root:path.dirname(studioRoot),server:{middlewareMode:true,host:'127.0.0.1',fs:{allow:[path.dirname(studioRoot)]}},appType:'custom'});}
+      if(route!=='/'&&!/^\/(studio|src|node_modules|@vite|@id)\//.test(route))throw new CityError('NOT_FOUND','http','Resource is outside studio source roots.');
+      if(!vite){const {createServer}=await import('vite');vite=await createServer({configFile:false,publicDir:false,root:path.dirname(studioRoot),server:{middlewareMode:true,host:'127.0.0.1',fs:{allow:[path.dirname(studioRoot)]}},appType:'custom'});}
       if(route==='/'){
         const html=await vite.transformIndexHtml('/studio/index.html',await readFile(path.join(studioRoot,'index.html'),'utf8'));
         res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});res.end(html);return;

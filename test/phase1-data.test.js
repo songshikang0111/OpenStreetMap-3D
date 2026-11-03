@@ -6,7 +6,7 @@ import path from 'node:path';
 import { normalizeOSM } from '../src/data/normalize.js';
 import { fetchArea, areaQuery } from '../src/data/overpass.js';
 import { requestJSON } from '../src/data/http.js';
-import { searchPlaces } from '../src/data/search.js';
+import { searchPlaces, LANDMARK_LOCATIONS } from '../src/data/search.js';
 import { validateArea, atomicWrite, readJSON } from '../src/data/common.js';
 import { createProject, readProject, patchProject, importData, SAMPLE_AREA, OFFLINE_SAMPLE } from '../src/cli/project.js';
 
@@ -72,6 +72,14 @@ test('search preserves ambiguous candidates, empty results, offline coordinates,
   assert.deepEqual(await searchPlaces('missing',{request:async()=>({features:[]})}),[]);
   assert.equal((await searchPlaces('https://openstreetmap.org/way/123',{request:async()=>({elements:[{type:'way',id:123,center:{lat:10,lon:20}}]})}))[0].id,'way/123');
   await assert.rejects(searchPlaces('uncached',{cacheDir,offline:true}),e=>e.code==='OFFLINE_SEARCH_MISS');
+});
+test('official search coordinates are derived from the existing OSM feature footprints',async()=>{
+  const raw=await readJSON(new URL('../public/data/beijing-cbd.json',import.meta.url));
+  for(const [index,ids]of [[0,[599547918]],[1,[547523486,547523487,548126516,548126517]]]){
+    const points=raw.elements.filter(e=>e.type==='way'&&ids.includes(e.id)).flatMap(e=>e.geometry);
+    const lat=(Math.min(...points.map(p=>p.lat))+Math.max(...points.map(p=>p.lat)))/2,lon=(Math.min(...points.map(p=>p.lon))+Math.max(...points.map(p=>p.lon)))/2;
+    assert.ok(Math.abs(lat-LANDMARK_LOCATIONS[index].lat)<1e-8);assert.ok(Math.abs(lon-LANDMARK_LOCATIONS[index].lon)<1e-8);
+  }
 });
 test('project initialization/import fixes origin and rejects XML without overwriting old input',async()=>{
   const root=await temp();const config=await createProject(root,{name:'city',sample:true});assert.equal(config.generation.inferRoofs,false);

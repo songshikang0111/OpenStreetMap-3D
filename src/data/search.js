@@ -4,8 +4,8 @@ import { requestJSON } from './http.js';
 import { OVERPASS_URL } from './overpass.js';
 
 export const LANDMARK_LOCATIONS = [
-  { id: 'china-zun', displayName: '中国尊 / CITIC Tower', lat: 39.9029, lon: 116.4679, source: 'official-landmark-index' },
-  { id: 'cctv', displayName: '央视总部 / CCTV Headquarters', lat: 39.9152, lon: 116.4578, source: 'official-landmark-index' }
+  { id: 'china-zun', displayName: '中国尊 / CITIC Tower', lat: 39.91150105, lon: 116.46023565, source: 'official-landmark-index', bbox:{south:39.9111543,west:116.4597631,north:39.9118478,east:116.4607082} },
+  { id: 'cctv-headquarters', displayName: '央视总部 / CCTV Headquarters', lat: 39.9138124, lon: 116.4579664, source: 'official-landmark-index', bbox:{south:39.9130559,west:116.4570374,north:39.9145689,east:116.4588954} }
 ];
 export async function searchPlaces(query, { cacheDir, offline = false, refresh = false, photonUrl = 'https://photon.komoot.io/api/', overpassUrl = OVERPASS_URL, request = requestJSON, signal, requestOptions = {} } = {}) {
   if (typeof query !== 'string' || !query.trim() || query.length > 300) throw new CityError('INVALID_QUERY', 'search', 'Query must contain 1–300 characters.');
@@ -16,6 +16,7 @@ export async function searchPlaces(query, { cacheDir, offline = false, refresh =
     if (Math.abs(lat) > 80 || Math.abs(lon) > 180) throw new CityError('INVALID_COORDINATES', 'search', 'Coordinates are outside supported WGS84 limits.');
     return [{ id: `coordinate:${lat},${lon}`, displayName: `${lat}, ${lon}`, lat, lon, source: 'coordinate' }];
   }
+  if(['cctv','landmark:cctv'].includes(query.toLowerCase()))query='landmark:cctv-headquarters';
   const landmark = LANDMARK_LOCATIONS.find(p => [p.id, `landmark:${p.id}`, p.displayName, ...p.displayName.split(' / ')].some(s => s.toLowerCase() === query.toLowerCase()));
   if (landmark) return [landmark];
   const osm = query.match(/^(?:https?:\/\/(?:www\.)?openstreetmap\.org\/)?(node|way|relation)[/:](\d+)\/?(?:\?.*)?$/);
