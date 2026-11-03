@@ -24,7 +24,7 @@ if(process.argv[2]==='--case') {
     const raw=JSON.parse(await readFile(path.join(repository,`public/data/${location}.json`),'utf8'));
     const [south,west,north,east]=raw.metadata.bbox,origin={lat:(south+north)/2,lon:(west+east)/2},p=projection(origin.lat,origin.lon);
     const config={schemaVersion:1,name:location,origin,area:{south,west,north,east},seed:1,source:{kind:'overpass',file:'data/source.json'},generation:{landscapeEnabled:false,inferRoofs:false},tiling:{sizeMeters:size},quality:'balanced',style:{id:'comic',parameters:{}},landmarks:{enabled:true,packages:[]}};
-    if(location==='beijing-cbd')for(const divisions of [1,2,4])cases.push({name:`${location}-fixed-${divisions**2}`,source:`public/data/${location}.json`,config:{...config,tiling:{divisions}}});
+    for(const divisions of [1,2,4])cases.push({name:`${location}-fixed-${divisions**2}`,source:`public/data/${location}.json`,config:{...config,tiling:{divisions}}});
     for(const side of [1,2,3]) {
       const half=size*side/2,[s,w]=p.inverse([-half,half]),[n,e]=p.inverse([half,-half]);
       cases.push({name:`${location}-grow-${side**2}`,source:`public/data/${location}.json`,config:{...config,area:{south:s,west:w,north:n,east:e},tiling:{sizeMeters:size}}});

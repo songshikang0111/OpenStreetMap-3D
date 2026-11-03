@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {openLocalBrowser} from '../../src/cli/browser-session.js';
 const root=fileURLToPath(new URL('../../',import.meta.url)),args=process.argv.slice(2),seconds=Number(args.find(a=>a.startsWith('--seconds='))?.split('=')[1]||60);
 const selected=args.filter(a=>!a.startsWith('--')),output=path.join(root,'docs/phase1-evidence/integration/performance');await mkdir(output,{recursive:true});
-const names=selected.length?selected:['beijing-cbd-fixed-1','beijing-cbd-fixed-4','beijing-cbd-fixed-16','beijing-cbd-grow-1','beijing-cbd-grow-4','beijing-cbd-grow-9','kyoto-gion-grow-1','kyoto-gion-grow-4','kyoto-gion-grow-9'];
+const names=selected.length?selected:['beijing-cbd-fixed-1','beijing-cbd-fixed-4','beijing-cbd-fixed-16','beijing-cbd-grow-1','beijing-cbd-grow-4','beijing-cbd-grow-9','kyoto-gion-fixed-1','kyoto-gion-fixed-4','kyoto-gion-fixed-16','kyoto-gion-grow-1','kyoto-gion-grow-4','kyoto-gion-grow-9'];
 const environment={date:new Date().toISOString(),commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),platform:os.platform(),release:os.release(),cpu:os.cpus()[0].model,logicalCpus:os.cpus().length,memoryBytes:os.totalmem(),node:process.version,viewport:{width:1280,height:720,dpr:1},quality:'balanced',seconds,notes:['Integrated production A/C/D bundle and protocol, no fixture decoder.','renderer.info autoReset=false; all scene/shadow/AO/composite passes accumulated.','Resource bytes are CPU arrays / estimates, never actual GPU VRAM.','GPU time not collected; requestAnimationFrame intervals are wall-clock.']};
 const results=[];
 for(const name of names){
