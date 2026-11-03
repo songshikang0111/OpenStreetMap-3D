@@ -17,12 +17,15 @@ async function engineFingerprint() {
   async function visit(dir) {
     for (const item of (await readdir(dir,{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name))) {
       if (item.isSymbolicLink()) continue;
+      if(dir===root&&['cli','data','local-server','runtime','sdk'].includes(item.name))continue;
       const file=path.join(dir,item.name);
       if (item.isDirectory()) await visit(file);
-      else if (/\.(js|json)$/.test(item.name)) entries.push([path.relative(root,file).replaceAll('\\','/'),hash(await readFile(file))]);
+      else if (/\.(js|json)$/.test(item.name)&&item.name!=='main.js') entries.push([path.relative(root,file).replaceAll('\\','/'),hash((await readFile(file,'utf8')).replaceAll('\r\n','\n'))]);
     }
   }
-  await visit(root); return hash(entries);
+  await visit(root);
+  const packageInfo=await readJSON(new URL('../../package.json',import.meta.url));
+  return hash({sources:entries,dependencies:packageInfo.dependencies});
 }
 export async function buildProject(root, { signal, onProgress = () => {}, core, landmarkRegistry } = {}) {
   await recoverBuildPublication(root);
@@ -88,6 +91,7 @@ export async function validateProject(root, {core}={}) {
   if(valid===false||valid?.valid===false) throw new CityError('INVALID_MANIFEST','validate','Invalid scene manifest.');
   const recipes=await projectRecipes(root,config);
   if(lock.inputs?.configHash!==hash(config)||lock.inputs.dataHash!==data.contentHash||lock.inputs.recipeHash!==hash(recipes)||lock.inputs.sourceFileHash!==hash(await readFile(await safePath(root,config.source.file)))) throw new CityError('STALE_BUILD','validate','Project inputs differ from the build lock.','Run city build.');
+  if(lock.inputs.engineHash!==await engineFingerprint())throw new CityError('STALE_ENGINE','validate','Generator or dependency sources differ from the locked build.','Rebuild explicitly with the installed engine.');
   if(lock.manifestHash!==hash(manifest)) throw new CityError('CORRUPT_MANIFEST','validate','Manifest differs from build lock.');
   for(const [file,expected] of Object.entries(lock.assetHashes||{})) if(hash(await readFile(await safePath(root,`dist/${file}`)))!==expected) throw new CityError('CORRUPT_ASSET','validate',`Asset hash mismatch: ${file}.`);
   return {schemaVersion:1,status:'succeeded',artifacts:['dist/manifest.json'],diagnostics:data.diagnostics};

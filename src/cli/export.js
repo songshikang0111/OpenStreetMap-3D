@@ -33,7 +33,7 @@ export async function exportWeb(root,{output='site',signal,onProgress=()=>{}}={}
     await atomicWrite(path.join(source,'viewer.js'),`import { createCityViewer } from ${JSON.stringify(sdk)};\nconst viewer=await createCityViewer({container:document.querySelector('#city'),manifestUrl:new URL('./scene/manifest.json',document.baseURI).href,style:${JSON.stringify(config.style.id)},quality:${JSON.stringify(config.quality)}});\nwindow.cityViewer=viewer;\nawait viewer.whenIdle?.({timeoutMs:60000});\nwindow.cityReady=true;`);
     const {build}=await import('vite');
     onProgress({stage:'bundle',progress:0.2});
-    await build({configFile:false,root:source,base:'./',logLevel:'error',build:{outDir:out,emptyOutDir:true}});
+    await build({configFile:false,root:source,base:'./',logLevel:'error',build:{outDir:out,emptyOutDir:true,target:'es2022'}});
     checkAbort(signal);await cp(await safePath(root,'dist'),path.join(out,'scene'),{recursive:true,filter:file=>!file.endsWith('city.build-lock.json')});
     await atomicWrite(path.join(out,'EXPORT-NOTES.txt'),'Self-contained City Ink viewer. Serve this directory using any static HTTP server. OSM data: © OpenStreetMap contributors, ODbL-1.0. Source JSON and caches are excluded.');
     checkAbort(signal);onProgress({stage:'publish',progress:0.95});
