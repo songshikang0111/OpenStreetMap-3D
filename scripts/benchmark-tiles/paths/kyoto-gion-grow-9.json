@@ -1,0 +1,119 @@
+{
+  "tileset": "kyoto-gion-grow-9",
+  "description": "60 s fixed path over the Kyoto Gion 9-block sample (same shape as the Beijing path; dense low-rise).",
+  "start": {
+    "center": [135.775, 35.00365],
+    "zoom": 14.5,
+    "pitch": 30,
+    "bearing": 0
+  },
+  "keyframes": [
+    {
+      "type": "easeTo",
+      "duration": 6000,
+      "camera": {
+        "zoom": 15.5,
+        "pitch": 45,
+        "bearing": -30
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 8000,
+      "camera": {
+        "center": [135.773, 35.00265],
+        "zoom": 18.2,
+        "pitch": 70,
+        "bearing": 40
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 6000,
+      "camera": {
+        "center": [135.777, 35.00465],
+        "zoom": 18.2,
+        "pitch": 72,
+        "bearing": 120
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 3000,
+      "camera": {
+        "center": [135.7795, 35.00115],
+        "zoom": 17.5,
+        "pitch": 60,
+        "bearing": 160
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 2000,
+      "camera": {
+        "center": [135.7705, 35.00615],
+        "zoom": 17.5,
+        "pitch": 60,
+        "bearing": 200
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 3000,
+      "camera": {
+        "zoom": 14.5,
+        "pitch": 40,
+        "bearing": 220
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 3000,
+      "camera": {
+        "zoom": 17.8,
+        "pitch": 65,
+        "bearing": 260
+      }
+    },
+    {
+      "type": "flyTo",
+      "duration": 8000,
+      "camera": {
+        "center": [135.777, 35.00215],
+        "zoom": 16.5,
+        "pitch": 55,
+        "bearing": 300
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 8000,
+      "camera": {
+        "center": [135.775, 35.00365],
+        "zoom": 15,
+        "pitch": 35,
+        "bearing": 360
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 8000,
+      "camera": {
+        "center": [135.773, 35.00265],
+        "zoom": 18,
+        "pitch": 70,
+        "bearing": 400
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 5000,
+      "camera": {
+        "center": [135.775, 35.00365],
+        "zoom": 14.5,
+        "pitch": 30,
+        "bearing": 360
+      }
+    }
+  ]
+}

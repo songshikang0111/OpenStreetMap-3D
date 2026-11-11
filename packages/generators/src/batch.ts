@@ -13,6 +13,8 @@ export interface MeshBatch {
   /** Optional facade-v6 shader attributes (aFacade 4, aStyle 2, aLayout 4, aSurface 2). */
   facade: { aFacade: Float32Array; aStyle: Float32Array; aLayout: Float32Array; aSurface: Float32Array } | null;
   index: Uint32Array | null;
+  /** Axis-aligned bounds [minX, minY, minZ, maxX, maxY, maxZ], computed in the worker. */
+  bounds: [number, number, number, number, number, number];
 }
 
 /** The subset of the phase-one MeshWriter read by batches. */
@@ -127,7 +129,20 @@ export class BatchBuilder {
         f.aSurface[v * 2 + 1] = w.surfaces[i * 2 + 1]!;
       }
     }
+    const bounds: MeshBatch['bounds'] = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity];
+    for (let i = 0; i < position.length; i += 3) {
+      const x = position[i]!,
+        y = position[i + 1]!,
+        z = position[i + 2]!;
+      if (x < bounds[0]) bounds[0] = x;
+      if (y < bounds[1]) bounds[1] = y;
+      if (z < bounds[2]) bounds[2] = z;
+      if (x > bounds[3]) bounds[3] = x;
+      if (y > bounds[4]) bounds[4] = y;
+      if (z > bounds[5]) bounds[5] = z;
+    }
     return {
+      bounds,
       layer: this.layer,
       role: this.role,
       vertexCount: n,

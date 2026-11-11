@@ -81,6 +81,8 @@ export async function openLocalBrowser({
       '--disable-backgrounding-occluded-windows',
       `--window-size=${width},${height}`,
       ...(headless ? ['--headless=new'] : []),
+      // Opt-in extra flags, e.g. to use the hardware GPU in headless benchmarks (default: none).
+      ...(process.env.CITY_BROWSER_FLAGS ? process.env.CITY_BROWSER_FLAGS.split(/\s+/).filter(Boolean) : []),
       'about:blank',
     ],
     { stdio: 'ignore', windowsHide: true },

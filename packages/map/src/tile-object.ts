@@ -1,5 +1,7 @@
 // Builds Three.js objects for one generated tile. One mesh per material role batch (≤ 12 draw calls per L1 tile).
 import {
+  Box3,
+  Sphere,
   BufferAttribute,
   BufferGeometry,
   Color,
@@ -98,8 +100,10 @@ function geometryOf(batch: MeshBatch): BufferGeometry {
     g.setAttribute('aSurface', new BufferAttribute(batch.facade.aSurface, 2));
   }
   if (batch.index) g.setIndex(new BufferAttribute(batch.index, 1));
-  g.computeBoundingSphere();
-  g.computeBoundingBox();
+  // Bounds come from the worker; recomputing them here would cost milliseconds per tile on the main thread.
+  const [x0, y0, z0, x1, y1, z1] = batch.bounds;
+  g.boundingBox = new Box3(new Vector3(x0, y0, z0), new Vector3(x1, y1, z1));
+  g.boundingSphere = g.boundingBox.getBoundingSphere(new Sphere());
   return g;
 }
 

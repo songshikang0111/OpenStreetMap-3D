@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-11T20:57:01.243Z",
+  "status": "simulated: not a user-designated reference device (decision D5 pending)",
+  "environment": {
+    "browser": "Chrome/150.0.7871.114",
+    "gpu": "ANGLE (AMD, AMD Radeon 780M Graphics (radeonsi phoenix ACO), OpenGL ES 3.2)",
+    "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+    "cores": 16,
+    "platform": "linux 7.2.11-200.fc44.x86_64",
+    "viewport": [
+      1280,
+      720
+    ],
+    "devicePixelRatio": 1,
+    "rendererPixelRatio": 1,
+    "quality": "balanced",
+    "headless": true
+  },
+  "tileset": {
+    "name": "kyoto-gion-grow-9",
+    "reportSha256Prefix": "316f5d5d845ca5ea"
+  },
+  "sdkCommit": "8afe34d210886aaa029432dcb1c972843f19cfd4",
+  "path": "scripts/benchmark-tiles/paths/kyoto-gion-grow-9.json",
+  "durationMs": 60095,
+  "frames": 3599,
+  "frameIntervalMs": {
+    "p50": 16.69999999999709,
+    "p95": 16.700000000004366,
+    "p99": 16.80000000000291,
+    "max": 83.29999999999927
+  },
+  "longFramesOver50ms": 1,
+  "longFramesPerMinute": 1,
+  "firstUsableMs": 166,
+  "maxDrawCalls": 66,
+  "maxTriangles": 485973,
+  "maxResidentBytesEstimate": 96672164,
+  "maxUploadMsPerFrame": 5.699999995529652,
+  "workerDecodeGenerateMs": {
+    "count": 27,
+    "p50": 158.79999999701977,
+    "p95": 462,
+    "max": 491.80000000447035
+  },
+  "requests": {
+    "started": 26,
+    "bytes": 5988260
+  },
+  "gpuTimer": "not available in this run (EXT_disjoint_timer_query not queried); frame intervals are whole-frame wall-clock"
+}

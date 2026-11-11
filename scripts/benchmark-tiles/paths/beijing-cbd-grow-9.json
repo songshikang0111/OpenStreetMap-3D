@@ -1,0 +1,50 @@
+{
+  "tileset": "beijing-cbd-grow-9",
+  "description": "60 s fixed path over the Beijing CBD 9-block sample: overview, street close-up, fast pan, fast zoom, round trip.",
+  "start": { "center": [116.4605, 39.9095], "zoom": 14.5, "pitch": 30, "bearing": 0 },
+  "keyframes": [
+    { "type": "easeTo", "duration": 6000, "camera": { "zoom": 15.5, "pitch": 45, "bearing": -30 } },
+    {
+      "type": "easeTo",
+      "duration": 8000,
+      "camera": { "center": [116.4585, 39.9085], "zoom": 18.2, "pitch": 70, "bearing": 40 }
+    },
+    {
+      "type": "easeTo",
+      "duration": 6000,
+      "camera": { "center": [116.4625, 39.9105], "zoom": 18.2, "pitch": 72, "bearing": 120 }
+    },
+    {
+      "type": "easeTo",
+      "duration": 3000,
+      "camera": { "center": [116.465, 39.907], "zoom": 17.5, "pitch": 60, "bearing": 160 }
+    },
+    {
+      "type": "easeTo",
+      "duration": 2000,
+      "camera": { "center": [116.456, 39.912], "zoom": 17.5, "pitch": 60, "bearing": 200 }
+    },
+    { "type": "easeTo", "duration": 3000, "camera": { "zoom": 14.5, "pitch": 40, "bearing": 220 } },
+    { "type": "easeTo", "duration": 3000, "camera": { "zoom": 17.8, "pitch": 65, "bearing": 260 } },
+    {
+      "type": "flyTo",
+      "duration": 8000,
+      "camera": { "center": [116.4625, 39.908], "zoom": 16.5, "pitch": 55, "bearing": 300 }
+    },
+    {
+      "type": "easeTo",
+      "duration": 8000,
+      "camera": { "center": [116.4605, 39.9095], "zoom": 15, "pitch": 35, "bearing": 360 }
+    },
+    {
+      "type": "easeTo",
+      "duration": 8000,
+      "camera": { "center": [116.4585, 39.9085], "zoom": 18, "pitch": 70, "bearing": 400 }
+    },
+    {
+      "type": "easeTo",
+      "duration": 5000,
+      "camera": { "center": [116.4605, 39.9095], "zoom": 14.5, "pitch": 30, "bearing": 360 }
+    }
+  ]
+}

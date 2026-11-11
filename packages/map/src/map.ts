@@ -135,6 +135,8 @@ interface TileEntry {
   state: TileState;
   object: TileObject | null;
   features: FeatureRecord[] | null;
+  featureIndex?: Map<string, FeatureRecord> | null;
+  renderIndex?: Map<number, FeatureRecord> | null;
   priority: number;
   retries: number;
   retryAt: number;
@@ -205,7 +207,6 @@ export class CityMapImpl implements CityMap {
   private readonly uploads: PendingUpload[] = [];
   private readonly refined = new Set<string>();
   private readonly listeners = new Map<MapEventType, Set<(e: MapEvent) => void>>();
-  private readonly features = new Map<string, { record: FeatureRecord; tile: string }>();
   private readonly featureState = new Map<string, Record<string, unknown>>();
   private readonly markers = new Set<{ element: HTMLElement; lngLat: LngLat; altitude: number; anchor: string }>();
   private readonly customLayers = new Map<string, Group>();
@@ -683,7 +684,8 @@ export class CityMapImpl implements CityMap {
       const renderId = ids.getX(hit.face.a);
       const tileKeyOf = (hit.object.parent?.userData.tile as string) ?? '';
       const entry = this.tiles.get(tileKeyOf);
-      const record = entry?.features?.find((f) => f.renderId === renderId);
+      if (entry?.features) entry.renderIndex ??= new Map(entry.features.map((f) => [f.renderId, f]));
+      const record = entry?.renderIndex?.get(renderId);
       if (record) return this.toFeature(record);
     }
     return null;
@@ -691,8 +693,14 @@ export class CityMapImpl implements CityMap {
 
   getFeature(id: string): Feature | null {
     this.assertAlive();
-    const f = this.features.get(id);
-    return f ? this.toFeature(f.record) : null;
+    // Indexed lazily per tile: building a global id map on every upload costs main-thread time.
+    for (const entry of this.tiles.values()) {
+      if (!entry.features) continue;
+      entry.featureIndex ??= new Map(entry.features.map((f) => [f.id, f]));
+      const f = entry.featureIndex.get(id);
+      if (f) return this.toFeature(f);
+    }
+    return null;
   }
 
   setFeatureState(id: string, state: Record<string, unknown>): void {
@@ -881,8 +889,8 @@ export class CityMapImpl implements CityMap {
       entry.object.dispose();
       entry.object = null;
     }
-    for (const f of entry.features ?? []) if (this.features.get(f.id)?.tile === entry.key) this.features.delete(f.id);
     entry.features = null;
+    entry.featureIndex = null;
     entry.visible = false;
     entry.bytes = 0;
     if (entry.state === 'ready') entry.state = 'queued';
@@ -898,7 +906,6 @@ export class CityMapImpl implements CityMap {
       object.group.userData.tile = entry.key;
       entry.object = object;
       entry.features = response.features;
-      for (const f of response.features) this.features.set(f.id, { record: f, tile: entry.key });
       entry.bytes = object.bytes;
       entry.state = 'ready';
       entry.retries = 0;

@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-11T20:58:12.740Z",
+  "status": "simulated: not a user-designated reference device (decision D5 pending)",
+  "environment": {
+    "browser": "Chrome/150.0.7871.114",
+    "gpu": "ANGLE (AMD, AMD Radeon 780M Graphics (radeonsi phoenix ACO), OpenGL ES 3.2)",
+    "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+    "cores": 16,
+    "platform": "linux 7.2.11-200.fc44.x86_64",
+    "viewport": [
+      1280,
+      720
+    ],
+    "devicePixelRatio": 1,
+    "rendererPixelRatio": 1,
+    "quality": "balanced",
+    "headless": true
+  },
+  "tileset": {
+    "name": "beijing-cbd-grow-9",
+    "reportSha256Prefix": "c53fe8ef81626e31"
+  },
+  "sdkCommit": "8afe34d210886aaa029432dcb1c972843f19cfd4",
+  "path": "scripts/benchmark-tiles/paths/beijing-cbd-grow-9.json",
+  "durationMs": 60145,
+  "frames": 3605,
+  "frameIntervalMs": {
+    "p50": 16.69999999999709,
+    "p95": 16.799999999995634,
+    "p99": 16.80000000000291,
+    "max": 50.100000000000364
+  },
+  "longFramesOver50ms": 1,
+  "longFramesPerMinute": 1,
+  "firstUsableMs": 125,
+  "maxDrawCalls": 143,
+  "maxTriangles": 354261,
+  "maxResidentBytesEstimate": 24832308,
+  "maxUploadMsPerFrame": 8.700000002980232,
+  "workerDecodeGenerateMs": {
+    "count": 79,
+    "p50": 13.400000005960464,
+    "p95": 40.5,
+    "max": 61.29999999701977
+  },
+  "requests": {
+    "started": 75,
+    "bytes": 6829444
+  },
+  "gpuTimer": "not available in this run (EXT_disjoint_timer_query not queried); frame intervals are whole-frame wall-clock"
+}
