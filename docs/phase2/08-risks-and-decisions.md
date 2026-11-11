@@ -64,4 +64,8 @@
 - 影响的规格和工作包：
 ~~~
 
-（暂无）
+### E1 根包依赖整理中 esbuild 与类型包的归属（2026-11-12，WP-A）
+- 问题：A7/AC108 要求根包运行时依赖不含构建工具和类型包。但一期 `src/styles/project-bundle.js` 在运行时按需 `import('esbuild')` 打包项目风格（CLI `export web` 与工作台都用到），一期包检查要求离线安装后能完成该流程；一期 `.d.ts` 引用 `three` 和 Node 类型，消费者在 `--omit=dev` 安装后仍需通过严格类型检查。
+- 选择：`esbuild` 移到 `optionalDependencies`（默认安装，缺失时已有 `STYLE_BUNDLER_MISSING` 诊断）；`@types/three`、`@types/node` 同时列入 `devDependencies` 和 `peerDependencies`（npm 7+ 自动安装非可选 peer）；`typescript`、`vite`、`prettier` 只在开发依赖。`scripts/phase1-package-check.mjs` 相应改为断言 `optionalDependencies.esbuild`。
+- 理由：保持一期 CLI 风格打包与消费者类型检查行为不变，同时让运行时依赖只含运行时代码。
+- 影响的规格和工作包：07 第 7 节；WP-J 发布各包时按同样原则处理类型包。

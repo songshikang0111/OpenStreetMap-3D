@@ -1,0 +1,14 @@
+{
+  "method": "esbuild minify comparison for code; whitespace-insensitive token comparison for .d.ts",
+  "base": "38bcb6a",
+  "head": "9323866",
+  "files": 201,
+  "identical": 201,
+  "skipped": [
+    "scripts/stability-lab.html",
+    "src/style.css",
+    "studio/static-viewer.html",
+    "studio/style.css"
+  ],
+  "different": []
+}

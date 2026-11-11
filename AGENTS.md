@@ -5,7 +5,8 @@
 - 一期冻结接口、所有权与 AC01–AC27：`docs/phase1-plan.md`。
 - 二期计划书与规格集（定位、架构、瓦片、运行时、工作包与 AC）：`docs/phase2/README.md`。
 - 架构和命令：`README.md`、`CONTRIBUTING.md`；扩展：`docs/extensions.md`；支持与诊断：`docs/support.md`。
-- 验证：`npm test`、`npm run build`；按改动补充真实 CLI/SDK/浏览器验证。性能采用整帧统计与资源往返，不能用 Node 时间替代 GPU 性能。
+- 包结构：npm workspaces，二期包位于 `packages/{tiles,generators,builder,map,styles-ink,details}`（TypeScript 严格模式），见 `CONTRIBUTING.md` 的包结构表。
+- 验证：`npm test`、`npm run test:packages`、`npm run test:types`、`npm run format:check`、`npm run build`；按改动补充真实 CLI/SDK/浏览器验证。性能采用整帧统计与资源往返，不能用 Node 时间替代 GPU 性能。
 - 不提交缓存或生成的大模型。保留 OSM 来源和许可。公共接口变更同步类型、Schema、例子与证据。
 
 ## Git 提交

@@ -1,0 +1,5 @@
+# Formatting-only commits. Configure locally with:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# style: format phase-one sources with Prettier (formatting only)
+932386620be6f125168946e07ff55875cff35906

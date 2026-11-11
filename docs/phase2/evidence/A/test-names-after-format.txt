@@ -1,0 +1,344 @@
+✔ actual CINK to GLB preserves per-instance standard color and identity, and cancellation during encoding rejects
+✔ actual compiler drawUnits validate before budget scheduling and reject malformed or underestimated costs
+✔ actual Guomao B snapshot resolves both exactly coincident podium facades
+✔ actual Guomao extract: every surface is disjoint, paint avoids all same-level clear zones, mesh winding is up
+✔ actual Guomao shared OSM nodes are continuous and independent of source road order
+✔ actual Shuhe ridge/footprint coincidences cannot abort a district or lose roof area
+✔ actual Studio module releases stale viewers and CSS when preview creation finishes out of order
+✔ actual two-wing stairs reach both ground ends and the shared bridge platform
+✔ actual vehicle approaches do not introduce extreme slopes while joining bridge ends
+✔ a delayed build preview cannot replace the status of a newer failed export
+✔ a disjoint observation drops all unresolved and active queries before reading results
+✔ a failed offscreen chunk cannot poison idle state after the camera moves to healthy coverage or empty sky
+✔ a feasible coarse standby retains both chunks within near budget while a non-dominating replacement is delayed
+✔ a higher-priority provider replaces lower endpoint/transport in batch and CLI resume
+✔ all four primitive types apply defaults only to omitted keys and validate supplied values
+✔ all furnishings sample the actual longitudinal plane and preserve input plans
+✔ a long rising bridge uses local height across the tree crown instead of the whole bridge height range
+✔ a marking on a different deck cannot punch a hole in the ground road
+✔ an old project CSS failure cannot overwrite the new project status or diagnostics
+✔ another profiler owns its query and is neither nested nor ended by this timer
+✔ AO resolution follows odd export sizes and renderer restores scene state on failure
+✔ area limits reject wide, dateline and polar areas before any request
+✔ a second queue cannot steal a live process and file cancellation reaches the owner
+✔ a short connecting way cannot force a cliff at a nearby branch; all branches share solved height
+✔ asset failure diagnostics include resolved URL and bounded retries
+✔ a stale cancellation marker cannot cancel a resumed failed attempt
+✔ atomic LOD replacements retain coverage, restore near geometry and release old resources
+✔ atomic writes cancelled before commit keep prior JSON intact
+  ✔ available
+✔ batch reports two independent successes and one fault with nonzero exit, resumes only failed item
+  ✔ beginQuery
+✔ Beijing extract produces finite meshes, preserves real heights and elevated CCTV parts
+✔ Beijing furniture has finite instance transforms and foliage-only ink classification
+✔ bounded sample window preserves chronology, nearest-rank percentiles, and detached snapshots
+✔ branch-associated canopy profiles are seeded, bounded and lower in triangles than the previous budget
+✔ bridge soffits meet the sole road-owned top with outward sides and underside
+✔ broad crowns have a varied horizontal silhouette without repeated vertical tiers
+✔ budget upgrades require headroom while hard caps override residence
+✔ build uses the injected compileScene contract, deterministic hashes, validation and cancellation preserve prior output
+✔ cached world-space units remain isolated when chunks reuse one asset URL with different transforms
+✔ canopy surfaces have reproducible closed seams, unit normals and a bounded mesh budget
+✔ CBD snapshot recovers actual plazas and facilities without repainting existing parking buildings
+✔ central entry routes stay free of lawns, shrubs, trees and benches
+✔ CINK partitions and far batches preserve roof/wall/structure roles for external style binding
+✔ city integration removes flat caps, parapets and roof equipment on pitched houses and preserves total height
+✔ classification follows replacement geometry and never restores an obsolete source
+✔ clearance uses actual joined deck footprint rather than an infinite centreline strip
+✔ CLI outputs one JSON envelope, structured worker/argument failure and documented help
+✔ clipped source segments retain true endpoint node identities without fabricating boundary junctions
+✔ clipped water with inner holes preserves area and stays inside the extract
+✔ CLI validate never recovers or mutates a generation while another project task owns it
+✔ codec and manifest reject corruption, unsupported versions and invalid resource references
+✔ codec roundtrip preserves procedural attributes, multi-material roles, instances, source IDs and selection
+✔ comic pass isolates light, reuses shadows, and tracks a changed camera near plane
+✔ compatibility parses every branch and runtime validation agrees with metadata field shapes
+✔ compiled multi-role buildings preserve roof/wall roles through the typed attribute table
+✔ compiler path traversal cannot publish files outside the staging root
+✔ confined frontages choose narrower crowns instead of intersecting buildings
+✔ conifer envelopes enclose actual far and near vertices across morph weights and seeds
+✔ connected strips replace disc endpoints, stay gap-free and retain continuous dash phase
+✔ context loss releases pending queries and explicit reset permits restored-context sampling
+✔ convex subtraction conserves area, handles containment, identical and touching edges
+✔ corrupt hash and decoder failures preserve diagnostic stages and clean decoded resources
+✔ counted coarse standby preserves coverage during immediate camera budget changes and is released
+✔ court paint is inlaid rather than depth-competing with the support surface
+✔ courtyard voids and narrow real gaps are not treated as occupied volumes
+  ✔ createQuery
+✔ crosswalk approaches cut both roadside kerbs while keeping remote sections and input intact
+✔ CSS screen size responds to distance, FOV, viewport and hysteresis
+✔ curtain frames use fine mullions while masonry retains sills and the same allocation cap
+✔ curtain grammars are floor-to-ceiling and ordinary walls have contrasting aperture proportions
+✔ damaged role tables/groups cannot silently omit geometry
+✔ deep residual commons use large non-grid outlines and respect mapped/restricted ground
+✔ degenerate flights skip cleanly and excessive inferred rises are explicitly flagged
+✔ delayed queries are polled once per call and use the complete 64-bit GPU result
+✔ delayed replacement cancellation cannot mount stale geometry or lose standby coverage
+✔ dense groves obey the cap with non-singular opaque instances and retain every base crown
+✔ dependency specifier Schema and runtime agree on dot segments and engine aliases
+✔ disabled, missing-part, incompatible and failing recipes fall back without claiming generic buildings
+✔ dispose cancels active and pending queries exactly once and cannot be reset into life
+✔ distance transitions are continuous at near, former hard cutoff and far boundaries
+✔ edge resolve follows export dimensions while object IDs remain discrete
+✔ editable CCTV lean shifts also update the connecting cantilever
+  ✔ endQuery
+✔ exact OSM type/id plus location; names cannot replace unrelated buildings
+✔ exhausted rate limits retain cooldown for next same-origin request, which is cancellable
+✔ explicit facade material wins over height or office guesses; illustrative finishes remain seeded
+✔ explicit GET source records provenance and has a separate cache from legacy POST
+✔ explicit height takes priority, feet convert, floors are inferred separately
+✔ explicit overrides win, duplicate claims diagnose, failed external generation leaves source intact
+✔ extension probing errors and a null query allocation are explicit unavailable states
+✔ external generator may use an uncoloured mesh with the claimed feature ID
+✔ external pipeline pass observation is independent of geometry and restores renderer after failure
+✔ facade controls remain live after seed regeneration without another scene pass
+✔ facade families respond to semantics and remain deterministic
+✔ facade grammars are stable and place glass inside wall and floor boundaries
+✔ facade reflection and neutral ink bind the actual sun and projection uniforms
+✔ failed final job-state write returns a structured failure and releases waiters
+✔ failed query deletion stops allocations and can be retried by repeated dispose
+✔ fallback never rotates on rate limiting, invalid data or cancellation
+✔ fallback-only overrides validate against the actual project primary, not a missing override default
+✔ fetch completes references, records provenance, prefers cache and preserves it after failed/aborted refresh
+✔ five round trips and reloads return to a stable resident baseline
+✔ fixed coverage 1/4/16 preserves atomic world geometry and stable object identities; shared surfaces are clipped
+✔ fixture binary roundtrip preserves geometry, metadata, instances and attributes
+✔ foliage material service supports a generic material source safely
+✔ formal CLI fetch uses saved source and explicit override; batch applies global source flags to fetch entries
+✔ four slope types cover the actual concave footprint, retain courtyard holes and preserve the tagged apex
+✔ frame costs separate view, offscreen shadow casters, groups, instances and double-sided color
+✔ frontage geometry works after translation and rotation, without geographic IDs
+✔ furnishings retain source-road association and ignore a bridge crossing overhead
+✔ generated planting is deterministic, avoids buildings, carriageways and green holes
+✔ generic camera framing uses district scale and actual building positions
+  ✔ getParameter
+  ✔ getQuery
+✔ GL API exceptions fail closed, clean query ownership, and never escape into rendering
+✔ GLB export requires explicit scope and rejects complete budget overflow before loading
+✔ GPU raw samples cover the measured frames plus bounded in-flight queries and reproduce their own aggregates
+✔ grade-separated roads never form junctions or erase pavement at the other elevation
+✔ guardrails leave an opening at same-level bridge branches
+✔ Guomao supports pass independent whole-extract clearance checks and structure budgets
+✔ half-density perturbations are continuous and preserve the dot lattice phase
+✔ HiDPI uses displayed pixels and the neutral facade receives the new sun after regeneration
+✔ high guardrail exterior area and every source face center survive fixed 1/4/16 cell partitioning
+✔ HTTP cancellation and timeout abort the underlying request
+✔ HTTP retries 429 on the same URL with Retry-After, bounds bytes and rejects malformed JSON
+✔ increasing material darkness never turns an existing black dot into a white hole
+✔ independent external module covers road, water, tree, landmark and all ordinary semantic roles
+✔ independent full-width intersections preserve layer order and actual deck-bottom clearance
+✔ independent groups retain source heights, geometry role batches and serialized match generation
+✔ independent registries protect a shared live style texture during export and keep source bitmap ownership external
+✔ independent repair review: bridge bottom retains shallow interior grade breaks and clamp planes
+✔ independent repair review: caster metadata is optional, bounded independently, and verified against real assets
+✔ independent repair review: collinear simplification falls back and bridge caps share the side boundary
+✔ independent repair review: external material arrays keep authored role/color order in every level
+✔ independent repair review: footprint simplification cannot push a valid courtyard through the exterior
+✔ independent repair review: one atomic mesh keeps every member of a multipart claim
+✔ independent repair review: source self-intersection cannot be introduced by a narrow-ring simplification
+✔ independent review: invisible parent groups stay absent after flattening and roundtrip
+✔ independent review: malformed matches and non-finite generated geometry diagnose fallback
+✔ independent review: matcher errors and empty generated groups retain default bodies with diagnostics
+✔ independent review: multipart generators retain each authored primary feature ID through merged and full levels
+✔ independent review: null chunk metadata returns a structured corruption error
+✔ independent review: partition and budget statistics respect draw ranges and material group intersections
+✔ independent review: partitioning reorders custom per-instance shader attributes with matrix/color/identity
+✔ independent review: registry supports repeated instances for a single claimed building
+✔ independent review: shared primitive geometries cannot overwrite road/structure material roles
+✔ independent review: successful replacement also removes legacy rooftop attachments of claimed features
+✔ independent review: validators reject malformed semantics, false origins and null OSM elements
+✔ inferred courts respect buildings, roads, water, observed uses and frame
+✔ inferred trees respect non-green ground uses, water and pedestrian paths
+✔ injected registry claims multipart objects once; failed recipes diagnose fallback; disable uses generic bodies
+✔ integrated compiler uses official registry once and records grouped rule provenance
+✔ integrated project strict policy rejects unknown generators while degraded retains source bodies
+✔ invalid GPU results are discarded while an actual zero elapsed result remains valid
+✔ invalid/zero segments are ignored, clipping respects extraction bounds, output is deterministic
+✔ job queue persists cancellation and retries interrupted/failed entries without rerunning successes
+✔ JS, CSS and descriptor asset URLs preserve hash/percent filename characters
+✔ junction-based crossings stay on connected approaches and remain stable
+✔ kerb clearance follows rotated crossings and is stable under translated map coordinates
+✔ kerb segments leave shallow-angle and wide connecting carriageways clear
+✔ known polygon holes remain holes and can contain independent inferred courts
+✔ Kyoto parking inlay remains a closed partition instead of aborting the city build
+✔ landcover remains distinct from sports, water, construction and garden vegetation
+✔ landmark mesh heights are finite, outward-facing and retain queryable OSM identity
+✔ landmark rules select exact landmarks and preserve separate CCTV height records
+✔ landscape overlay merges idempotently and keeps baseline buildings/roads intact
+✔ leaving the scene must also release near instances and cached profiles
+✔ legacy missing or underdeclared counts are learned before mount and cannot cause repeat high requests
+✔ loader rejects invalid integer values/defaults before replacing a registered style
+✔ localhost HTTP provides real projects/jobs/resources and rejects origin, escape, arbitrary commands and origin drift
+✔ local package upgrade locks explicit versions, changes geometry and restores exactly on rollback
+✔ location URLs are allowlisted and coordinate labels support all hemispheres
+✔ manifest near counts are optional, validated and superseded by measured costs
+✔ manifest URI resolution uses the manifest directory, validates corruption/version/identity
+✔ mapped stairs keep speculative tree crowns clear while preserving observed trees
+✔ material metadata reaches real mesh attributes and neutral render defaults without extra geometry
+✔ mature avenues have continuous close spacing with controlled height variation
+✔ merged rooftop equipment bounds cannot masquerade as geometry in empty air
+✔ middle-distance silhouettes expose several leaf lobes outside the shared base crown
+✔ missing relation members and way nodes are diagnosed without fabricated closing edges
+✔ mixed crown batches preserve pointed silhouettes at every distance and reuse the shared near budget
+✔ mixed LOD bridge slab side shells: all 53 patterns keep common physical coverage
+✔ mixed LOD ground and water: 53 pure, single-swap, checkerboard and striped patterns preserve complete coverage
+✔ mixed LOD road tops: every cell owns its physical domain for all 53 level patterns
+✔ mixed planting is patch coherent, independent of iteration order, and profile configurable
+✔ multipolygon courtyard survives parsing and tagged member ways are not duplicated
+✔ nearby frames do not depend on extract order or a long wall midpoint, and respect the instance budget
+✔ near detail counts are geometry units, independent of material groups and root standby visibility
+✔ nearest-tree budget changes at zero weight, without source-order or location dependence
+✔ near plane improves distant precision but never clips a nearby tall roof
+✔ needle crowns are closed pointed meshes with reproducible normals and a bounded budget
+✔ nested HTTP provider override has priority over flat endpoint/transport parameters
+✔ new acceptance rejects historical triangle overflow despite its successful old frame-rate gates
+✔ new regions load their own extract without Beijing overlays or regional profile
+✔ nonfinite export limits cannot bypass the PNG or complete GLB resource caps
+✔ observed zebra exclusions and inferred controlled stop lines keep a geometric buffer
+✔ official clones retain borrowed source textures without taking ownership
+✔ official npm archives install offline, update/lock/rebuild/rollback and exclude generated/private artifacts
+✔ official override changes actual high geometry and leaves one source owner
+✔ official recipe package content and version invalidate an existing lock across processes
+✔ official search coordinates are derived from the existing OSM feature footprints
+✔ official styles bind and dispose; decoded procedural panes/glass use the original uniforms and attributes
+✔ one elapsed query encloses all render passes and nested begin/end is harmless
+✔ only speculative street planting on a raised approach is suppressed and counted
+✔ ordinary building batches preserve wall, glass, roof and structure roles for external styles
+✔ original wide Sydney extract loads all roads and preserves every full-width crossing and shared node
+✔ OSM crossing observations suppress speculative junction crossings and tree rows remain attributed
+✔ OSM leaf types and known taxa override decorative mixes without treating all evergreen trees as conifers
+✔ OSM object search shares explicit GET fallback semantics and default legacy search caches remain offline
+✔ OSM parsing retains tree species metadata for the planting stage
+✔ OSM steps generate actual horizontal treads, outward risers/soffits, and exact endpoint landings
+✔ OSM tree point, row and polygon tags reach rendered habits; untagged streets stay broadleaf
+✔ overlapping ground polygons are retained even when their centre falls outside the extract
+✔ paint and asphalt partition one graded surface, even when two dashes overlap
+✔ parallel duplicate ways do not double tree rows; bridges and narrow paths do not seed street trees
+✔ parent transforms, reflections, material arrays and instances have matching world bounds at 1/4/16 cells
+✔ parking and pitch markings respect omitted holes and never decorate construction
+✔ partial water relations do not invent an ocean boundary or erase unrepresented islands
+✔ party walls, equal-height duplicates and elevated parts preserve the union boundary
+✔ pedestrian polygons are plazas while linear roads and large commercial zones are not
+✔ persisted internal job IDs cannot escape the queue before first write
+✔ piers avoid lower traffic, pedestrian paths, buildings, water and extraction edges
+✔ placement envelope encloses actual shared geometry for all crown habits and seed variations
+✔ podium and taller tower have a single owner for a shared facade and no buried roof
+✔ polyline landings remain inside the source extent and share bend sections
+✔ progress cancellation yields an explicit error and no partial success
+✔ project config defaults lock one origin without mutating input and rejects unsupported areas
+✔ project initialization/import fixes origin and rejects XML without overwriting old input
+✔ project loader CSS ownership supports repeated opens and releases a previous project
+✔ project style bundles relative ESM, explicit dependency, CSS and asset; loader preserves saved parameters
+✔ provider presets select URL/transport without manual methods, and explicit fields override defaults
+✔ publication recovery restores old dist after directory move and repairs root lock after successful publication
+✔ published JSON schemas parse and project source/style declarations retain their own constraints
+✔ quality report separates height inference from tagged values and grouped landmarks
+✔ query budget bounds in-flight GPU resources and skipped frames do not become samples
+✔ ramp pavement, paint and rail geometry use the same longitudinal height and tilted normals
+✔ raw statistics retain the initial physical frame independently of FPS intervals and clear it on reset
+✔ real bundle/export rejects illegal saved integer parameters and schema while retaining the old site
+✔ real CBD plan has bounded geometry, four templates and balanced detail budgets
+✔ real CINK facade and complete tree profiles share the remaining global near budget
+✔ real CINK low/medium/high bind every official style; numeric level order is preserved and sorted by detail
+✔ real fetch workers share parent HTTP throttling, and offline batch forces zero requests
+✔ real local API validates project styles and serves their own SDK/CSS/assets inside the cache boundary
+✔ real project keeps geometry valid after camera/material/quality save and rejects changed generation seed
+✔ real short connected Sydney footbridge retains its crossing clearance without lifting the network indefinitely
+✔ registration rejects unsupported schema rules and inconsistent bounds/defaults/enums
+✔ registry refcounts shared geometry, material, uniform texture and instance buffers
+✔ rehydrated near frames and crown clusters obey one global budget and release all buffers when distant
+✔ relation rings stitch reversed fragments without closing incomplete rings
+✔ rendered kerbs and zebra paint follow the slope, and all four car wheels touch its plane
+✔ repair bridge slabs keep their complete footprint, bottom and exact outer grade after grade-sample merging
+✔ repair caster statistics match actual flags; low has full body identities with no caster work
+✔ repair closed-ring simplification bounds every omitted source point without mutating it
+✔ repair far thin rails keep the complete upper outline with a double-sided triangle
+✔ repair far tree prototypes are closed real four-face assets within their source envelopes
+✔ repair grounded silhouettes omit only buried bases; elevated parts retain underside structure
+✔ repair nearDetails is the actual active complete-group count and remains optional for old assets
+✔ repair plane families enforce the 2mm bound, including rejected models and both slab planes
+✔ repair rails merge source-contiguous runs but never jump gaps, widths or source identities
+✔ repair road retriangulation retains union coverage, islands, inner holes and the source height plane
+✔ repair slab union removes internal side duplicates within the bounded plane error and retains separated slabs
+✔ repair stair envelopes preserve both landings, width and connected endpoint heights
+✔ repeated ink pipelines isolate shared geometry classifications and release owned clones
+✔ reroll changes estimates while retaining every tagged height, floor and footprint
+✔ reset deletes active and pending queries, retains lifetime counters, and starts a clean sample window
+  ✔ result
+✔ reused ink renderer releases classification clones when a city is removed
+✔ reversing a descending source way gives identical stairs and handrails
+✔ road clipping handles crossings, outside parallel segments, and degenerate points
+✔ roof detail follows projected pixel size continuously, including zoom and resolution changes
+✔ roof equipment uses footprint and courtyard clearance instead of bounding-box filling
+✔ roof geometry collapses to its roof anchor in every render pass and restores exactly near the camera
+✔ roof inference is opt-in, bounded and never overrides explicit flat or unsupported shapes
+✔ rounded near-boundary cell candidates preserve complete walls, attributes and one owner per surface point
+✔ same locked input produces byte-identical manifest and binary resources, independent of element traversal
+✔ same seed is stable, different seed only varies planting, and inference can be disabled
+✔ saved upward street views survive real OrbitControls updates and previous damping
+✔ saved view round-trips camera, seed, style and visibility
+✔ saving acquisition policies preserves a built external-style project while source identity and actual data remain locked
+✔ SDK quality preserves validated AO strengths and disables only the AO pass
+✔ search preserves ambiguous candidates, empty results, offline coordinates, official IDs and OSM object links
+✔ separate CLI/studio/batch queues cannot run the same project concurrently
+✔ service rejects persisted jobs escaping the registered workspace and releases failed queue ownership
+✔ shared bridge ends gain inferred continuous grades, and ground-only roads have no bridge meshes
+✔ shared geometry keeps separate foliage, solid-building and procedural-window classifications
+✔ shared OSM nodes join across way/layer boundaries, while coincident independent nodes do not connect
+✔ shared project contract accepts CLI import, runtime low and locked recipe objects
+✔ sharp bends use bounded bevels; duplicate reversed ways do not duplicate surfaces or paint
+✔ sidewalks rise above asphalt, crossings stay flat, and inferred margins respect road access and buildings
+✔ simultaneous stale project-lock recovery never grants two owners
+✔ small camera movement updates geometry continuously, including former 15 m grid boundaries
+✔ solid nearby sills follow GPU layout at arbitrary wall length
+✔ source studio serves its real package module graph and denies unrelated project files
+✔ source validation is shared by project/core, allows self-hosted HTTP and rejects unsafe/duplicate endpoints
+✔ stale requests abort and ignored cancellation still respects actual concurrency
+✔ standard Overpass, Map JSON and legacy input normalize without requiring project metadata
+✔ standby admission cannot alternate targets at a narrow resident limit
+✔ static helper serves non-root deployment with correct module MIME and bounds
+✔ stationary evidence requires a complete real-time window and both saved camera identities
+✔ stationary gate rejects repeated transitions, cancellation and repeated asset URLs
+✔ streamed classification clones are released on eviction rather than retained until viewer disposal
+✔ studio API preserves failed/cancelled jobs instead of fabricating success or dropping status
+✔ studio camera presets follow content bounds away from the locked origin
+✔ Studio client sends explicit project source context and preview declarations
+✔ Studio controls restore all external fields and retain drafts across official switches
+✔ studio displays structured service errors and rejects HTML fallback pages
+✔ studio explicitly preserves source identity while saving GET/self-host/fallback settings
+✔ studio preset label follows the saved actual street camera and user movement
+✔ studio preview uses the real declared style bundle and immutable local assets
+✔ studio retains named range precision and rejects reversed/invalid boundaries
+✔ studio round-trips declared external entry, dependencies, assets and AO parameters
+✔ studio source catalog/defaults/project PATCH and per-job overrides use the same contract
+✔ Studio source controls use effective defaults and label regional providers explicitly
+✔ style changes restore original materials and invalid protocols fail clearly
+✔ style configuration paths and import graph are explicit and cannot escape the project
+✔ style rebinding and failed style setup release replaced decoder resources
+✔ surface parking is distinguished from underground, roof and multi-storey facilities
+✔ Sydney harbour is complete, clipped and non-overlapping; Opera House and gardens remain land
+✔ symlink/junction project paths cannot escape the workspace
+✔ tapered and expanding loft rings share exact UV seams and stable bay count
+✔ the original region retains its two overlays and landscape profile
+✔ three-node stair ways split at the elevated middle platform regardless of bridge tagging
+✔ tight global budgets preserve all planting contexts and more than one site
+✔ tight resident headroom trims near attachments without stationary LOD oscillation
+✔ tree LOD keeps a common opaque crown in every pass and deterministic geometry on return
+✔ trees remain clear of blocked ground uses and paths after densification
+✔ true far LOD cuts submitted triangles, resident bytes, asset bytes and draw calls; high restores attachments
+✔ two local declarative recipe versions lock and rollback; incompatible versions fail
+✔ two stair wings meet a shared elevated platform without a railing across their mouths
+✔ T/X junctions remove internal overlap, clip footways and suppress paint through crossings
+✔ unavailable fallback is explicit, finite, cache preferred, and refresh failure cannot overwrite old cache
+✔ unavailable WebGL2 timer reports its reason and never fabricates zero timings
+✔ unexpected replacement of an active query disables collection without ending the replacement
+✔ unknown or broken project styles fail before replacing an existing standard site
+✔ vehicle bridge slabs and parapets exclude crowns, while real OSM trees remain attributed
+✔ vertical clearance preserves a high crown beside a low bridge and a short tree below a high bridge
+✔ view decoder rejects malformed payloads and strips unsupported or unsafe inputs
+✔ view frustum uses content bounds, and budgets downgrade while retaining every visible chunk
+✔ view links retain the landscape opt-out without breaking old links
+✔ WGS84 projection preserves coordinates and east/north orientation
+✔ whole-frame counters and percentile definitions include all passes
+✔ whole-frame draw maximum cannot be hidden by a passing p95
+✔ woodland is dense, park edges are connected belts, and grass keeps an open interior
