@@ -85,7 +85,10 @@
     "test:all": "npm test && npm run test:packages",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "tsc -b packages/tiles packages/generators packages/builder packages/map packages/styles-ink packages/details --noEmit"
+    "lint": "tsc -b packages/tiles packages/generators packages/builder packages/map packages/styles-ink packages/details --noEmit",
+    "demo:tiles": "npm run build:packages && node apps/demo/build-tiles.mjs",
+    "demo": "vite --config apps/demo/vite.config.js",
+    "build:demo": "vite build --config apps/demo/vite.config.js"
   },
   "dependencies": {
     "polygon-clipping": "0.15.7",

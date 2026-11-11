@@ -11,3 +11,5 @@ dist-sdk/
 .city-cache/
 *.tgz
 packages/*/dist/
+apps/demo/public/tiles/
+apps/demo/dist/
