@@ -14,6 +14,7 @@ import type { G, Rect } from './clip.js';
 import { fromGrid, gridToTile, tileGridRect, toGrid, toLocal } from './geo.js';
 import type { HeightFunction, PlanRecord } from './plan.js';
 import { hash52 } from './plan.js';
+import { mergeFlatGround } from './ground.js';
 
 export interface LevelSpec {
   id: string;
@@ -344,6 +345,10 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
       }
     }
   }
+
+  // Flat ground fragments of the same kind and elevation are unioned per tile (phase-one road planning emits one
+  // fragment per segment; tens of thousands per tile otherwise dominate the tile size).
+  for (const t of tiles.values()) mergeFlatGround(t);
 
   // Building context: neighbours owned by other tiles whose bounds touch a tile building (full profile only).
   addBuildingContext(tiles, records, options);

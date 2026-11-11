@@ -224,6 +224,15 @@ export async function buildTiles(
   // partition
   progress('partition', 0);
   const areaBounds: Bounds = [input.area.west, input.area.south, input.area.east, input.area.north];
+  const coarsest = Math.min(...levels.map((l) => l.zoom));
+  if (cellZoom > coarsest)
+    throw Object.assign(
+      new Error(`Planning cells (zoom ${cellZoom}) must not be finer than the coarsest level (zoom ${coarsest}).`),
+      {
+        code: 'TILES_CELL_ZOOM',
+        hint: 'Every tile must lie inside one planning cell; use --cell-zoom <= the L0 zoom.',
+      },
+    );
   const cells: (TileId | null)[] = cellZoom >= 0 ? tilesInBounds(areaBounds, cellZoom) : [null];
   step('partition');
 

@@ -115,6 +115,7 @@ export class PlanContext {
   readonly buildings: Indexed<Phase1Building>[];
   readonly polygons: Indexed<Phase1Polygon>[];
   readonly water: Indexed<Phase1Polygon>[];
+  readonly greens: Indexed<Phase1Polygon>[];
   readonly roads: Indexed<Phase1Data['roads'][number]>[];
   constructor(readonly data: Phase1Data) {
     const p = data.project;
@@ -122,6 +123,7 @@ export class PlanContext {
     this.buildings = data.buildings.map((item) => ({ item, bounds: polyBounds(item.outer) }));
     this.polygons = data.landscapes.map((item) => ({ item, bounds: polyBounds(item.outer) }));
     this.water = data.water.map((item) => ({ item, bounds: polyBounds(item.outer) }));
+    this.greens = data.greens.map((item) => ({ item, bounds: polyBounds(item.outer) }));
     this.roads = data.roads.map((item) => ({
       item,
       bounds: ringBounds(item.segments.flat().map((q) => toLngLat(p, q))),
@@ -134,14 +136,19 @@ export class PlanContext {
     const p = this.data.project;
     const inside = (q: Point2) => boundsContains(bounds, toLngLat(p, q));
     const landscapes = pick(this.polygons);
-    const greens = new Set(this.data.greens);
+    // Street planting draws one random stream per road name (phase-one `avenue:<name>`), consumed across every way
+    // sharing that name. Read the whole name group so the stream, and therefore every tree, is independent of the
+    // cell boundaries (03 section 4.2: enlarge the read range instead of truncating).
+    const roads = new Set(pick(this.roads));
+    const names = new Set([...roads].map((r) => r.name).filter(Boolean));
+    for (const r of this.data.roads) if (r.name && names.has(r.name)) roads.add(r);
     return {
       ...this.data,
       buildings: pick(this.buildings),
-      roads: pick(this.roads),
+      roads: this.data.roads.filter((r) => roads.has(r)),
       water: pick(this.water),
       landscapes,
-      greens: landscapes.filter((l) => greens.has(l)),
+      greens: pick(this.greens),
       landscapeContexts: this.data.landscapeContexts.filter((l) => l.outer.some(inside)),
       trees: this.data.trees.filter((t) => inside(t.point)),
       streetNodes: this.data.streetNodes.filter((n) => inside(n.point)),

@@ -25,6 +25,7 @@ Usage: city <command> [options]
   landmarks check <package-dir>
   landmarks update <package-dir> --project path [--rollback]
   jobs status|cancel|resume <JOB_ID> --project path
+  tiles build|validate|inspect|serve … (phase-two static tiles; run city tiles --help)
 Common: --json (one structured stdout result), --help, --offline, --project path
 Data source options (init/search/data fetch/batch/studio): --endpoint URL --transport post|get
   --provider overpass-main|private-coffee|vk-maps|dresel-europe (presets set URL + transport)
@@ -171,6 +172,35 @@ export async function runCLI(
     );
     return value;
   };
+  if (args[0] === 'tiles') {
+    options.json = args.includes('--json');
+    let tiles;
+    try {
+      tiles = await import('../../packages/builder/dist/cli.js');
+    } catch {
+      return emit(
+        result({
+          status: 'failed',
+          diagnostics: [
+            {
+              code: 'TILES_UNAVAILABLE',
+              stage: 'tiles',
+              message: 'The tile builder is not built.',
+              hint: 'Run npm run build:packages in the repository.',
+            },
+          ],
+        }),
+      );
+    }
+    const output = await tiles.runTilesCLI(args.slice(1), { cwd, stderr, signal });
+    const { server, ...value } = output;
+    if (server) signal?.addEventListener('abort', () => server.close(), { once: true });
+    if (value.help && !options.json) {
+      stdout.write(`${value.help}\n`);
+      return value;
+    }
+    return emit(value);
+  }
   try {
     const parsed = parse(args);
     options = parsed.options;

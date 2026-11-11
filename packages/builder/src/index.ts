@@ -6,3 +6,7 @@ export * from './clip.js';
 export * from './plan.js';
 export * from './cut.js';
 export * from './pipeline.js';
+
+export * from './validate.js';
+export * from './serve.js';
+export * from './cli.js';
