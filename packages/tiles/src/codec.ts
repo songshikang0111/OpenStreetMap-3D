@@ -1291,7 +1291,8 @@ function toArrayBuffer(input: ArrayBuffer | Uint8Array): ArrayBuffer {
       input.byteLength === input.buffer.byteLength
     )
       return input.buffer;
-    return input.slice().buffer as ArrayBuffer;
+    // Uint8Array.prototype.slice always copies (Node's Buffer#slice would return a view into a shared pool).
+    return Uint8Array.prototype.slice.call(input).buffer as ArrayBuffer;
   }
   if (input instanceof ArrayBuffer) return input;
   throw new TileError('TILE_INPUT_INVALID', 'decodeTile expects an ArrayBuffer or Uint8Array.', { stage: 'decode' });

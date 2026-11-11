@@ -1,0 +1,32 @@
+import type { Phase1Building, Ring } from './phase1-types.js';
+import type { MeshWriter } from './generators/mesh-tools.js';
+import type { RoofPlan } from './roofs.js';
+import type { EnvelopePlan } from './building-envelope.js';
+
+export interface BuildingCounts {
+  familyCounts?: Record<string, number>;
+  surfaceCounts?: Record<string, number>;
+  grammarCounts?: Record<string, number>;
+  roofStats?: { tagged: number; inferred: number; unsupported: number };
+  nearWalls?: unknown[];
+  roofDetails?: { start: number; end: number; anchor: number[]; size: number; weight: number }[];
+}
+
+export function writeBuildingBody(
+  building: Phase1Building,
+  options: {
+    renderId: number;
+    seed?: number;
+    roofPlan: RoofPlan;
+    envelopePlan: EnvelopePlan;
+    roofWriter?: MeshWriter;
+    counts?: BuildingCounts;
+  },
+): {
+  writer: MeshWriter;
+  style: { family: string; code: number; surfaceName: string; grammar?: string };
+  profile: unknown;
+  roofWriter: MeshWriter;
+};
+
+export type { Ring };
