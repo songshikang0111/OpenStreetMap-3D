@@ -1,0 +1,35 @@
+{
+  "name": "@city-ink/builder",
+  "version": "0.0.0",
+  "description": "Node build pipeline and CLI that turns OSM data into static 3D city tiles",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "!dist/.tsbuildinfo",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "test": "node --test \"test/**/*.test.js\""
+  },
+  "engines": {
+    "node": ">=22.11"
+  },
+  "dependencies": {
+    "@city-ink/tiles": "0.0.0",
+    "@city-ink/generators": "0.0.0",
+    "@city-ink/landmarks": "1.0.0"
+  }
+}

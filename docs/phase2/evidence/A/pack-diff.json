@@ -1,0 +1,18 @@
+{
+  "method": "npm pack --ignore-scripts --dry-run --json; baseline from an export of commit 9ac7c48 (unbuilt), candidate from the worktree after npm run build",
+  "baseline": {
+    "commit": "9ac7c48",
+    "entries": 136
+  },
+  "candidate": {
+    "entries": 140
+  },
+  "added": [
+    "dist-sdk/city-ink.js",
+    "studio/dist/assets/index-Cv6U9Mg_.css",
+    "studio/dist/assets/index-DHnQN-zn.js",
+    "studio/dist/index.html"
+  ],
+  "removed": [],
+  "note": "Added entries are build outputs absent from the unbuilt baseline export; no source entries changed."
+}

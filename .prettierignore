@@ -1,0 +1,26 @@
+# Generated output
+node_modules/
+dist/
+dist-sdk/
+studio/dist/
+packages/*/dist/
+work/
+.city-*/
+*.tgz
+
+# Recorded evidence, plans and data are kept byte-for-byte
+docs/
+public/
+schemas/
+*.md
+package-lock.json
+
+# Third-party or fixture data
+test/fixtures/
+examples/**/*.json
+
+# Outside the phase-one formatting scope; phase-one checks match their literal text
+examples/
+packages/styles/
+packages/landmarks/
+index.html

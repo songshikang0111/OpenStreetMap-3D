@@ -8,6 +8,9 @@
   "engines": {
     "node": ">=22.11"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "bin": {
     "city": "./bin/city.js"
   },
@@ -49,7 +52,8 @@
     "bin",
     "src",
     "schemas",
-    "packages",
+    "packages/styles",
+    "packages/landmarks",
     "studio",
     "studio/dist",
     "dist-sdk",
@@ -65,7 +69,7 @@
   ],
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5178 --strictPort",
-    "build": "vite build && vite build --config vite.studio.config.js && vite build --config vite.sdk.config.js",
+    "build": "npm run build:packages && vite build && vite build --config vite.studio.config.js && vite build --config vite.sdk.config.js",
     "build:sdk": "vite build --config vite.sdk.config.js",
     "studio": "node bin/city.js studio",
     "city": "node bin/city.js",
@@ -74,16 +78,29 @@
     "test": "node --test test/*.test.js",
     "test:types": "tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 examples/quickstart/typecheck.ts",
     "check:package": "node scripts/phase1-package-check.mjs",
-    "data:fetch": "python scripts/fetch_osm.py"
+    "data:fetch": "python scripts/fetch_osm.py",
+    "build:packages": "tsc -b packages/tiles packages/generators packages/builder packages/map packages/styles-ink packages/details",
+    "test:packages": "npm run build:packages && npm test --workspaces --if-present",
+    "test:all": "npm test && npm run test:packages",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "tsc -b packages/tiles packages/generators packages/builder packages/map packages/styles-ink packages/details --noEmit"
   },
   "dependencies": {
-    "@types/node": "22.20.5",
-    "@types/three": "0.187.0",
-    "esbuild": "0.25.12",
     "polygon-clipping": "0.15.7",
     "three": "0.186.1"
   },
+  "optionalDependencies": {
+    "esbuild": "0.25.12"
+  },
+  "peerDependencies": {
+    "@types/node": ">=22",
+    "@types/three": "0.187.0"
+  },
   "devDependencies": {
+    "@types/node": "22.20.5",
+    "@types/three": "0.187.0",
+    "prettier": "3.6.2",
     "typescript": "7.0.2",
     "vite": "6.4.5"
   }

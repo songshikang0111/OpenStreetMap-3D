@@ -1,0 +1,33 @@
+{
+  "name": "@city-ink/generators",
+  "version": "0.0.0",
+  "description": "Deterministic geometry generators that turn planned tile features into typed arrays",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "!dist/.tsbuildinfo",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "test": "node --test \"test/**/*.test.js\""
+  },
+  "engines": {
+    "node": ">=22.11"
+  },
+  "dependencies": {
+    "@city-ink/tiles": "0.0.0"
+  }
+}

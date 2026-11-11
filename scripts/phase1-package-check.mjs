@@ -27,7 +27,7 @@ try{
     const result=await command([bin,...args],consumer),json=JSON.parse(result.stdout);assert.equal(json.status,'succeeded',JSON.stringify(json));cli.push({args,result:json,progressOnStderr:result.stderr.length>0});
   }
   const installedPackage=JSON.parse(await readFile(path.join(installed,'package.json'),'utf8'));
-  assert.equal(installedPackage.dependencies.esbuild,'0.25.12');
+  assert.equal(installedPackage.optionalDependencies.esbuild,'0.25.12');
   await mkdir(path.join(project,'styles'));
   const externalSource=(await readFile(path.join(installed,'examples/quickstart/sepia-style.js'),'utf8')).replace("wall:'#c0a77a'",'wall:accent').replace('properties:{}',"properties:{aoStrength:{type:'number',minimum:0,maximum:1,default:.12}}").replace('mode:2,parameters:{}','mode:2,parameters:context.parameters');
   await writeFile(path.join(project,'styles/sepia.js'),"import {accent} from 'project-palette';\nimport './theme.css';\n"+externalSource);
@@ -58,7 +58,7 @@ try{
   assert.equal((await fetch(service.url+'/src/cli/project.js')).status,404);
   const report={date:new Date().toISOString(),status:'pass',archive:{filename:packed.filename,size:packed.size,unpackedSize:packed.unpackedSize,integrity:packed.integrity,shasum:packed.shasum,files:packed.files},consumer:{offlineInstall:true,strictTypes:true,cli,builtStudio:true,staticSdk:true,projectChunks:manifest.chunks.length},notes:['Temporary package installed offline from local npm cache.','No npm publish, push or external deployment.','Browser rendering is validated separately; this check verifies installed entry points, worker compiler and local server.']};
   report.commit=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
-  Object.assign(report.consumer,{productionDependenciesOnly:true,esbuildVersion:installedPackage.dependencies.esbuild,externalStyle:{standardCli:true,nonRootOutput:'exports/nonroot/city',style:published.style,module:published.styleModule,build:styleBuild,invalidEntryPreservesOldSite:true}});
+  Object.assign(report.consumer,{productionDependenciesOnly:true,esbuildVersion:installedPackage.optionalDependencies.esbuild,externalStyle:{standardCli:true,nonRootOutput:'exports/nonroot/city',style:published.style,module:published.styleModule,build:styleBuild,invalidEntryPreservesOldSite:true}});
   await mkdir(path.dirname(output),{recursive:true});await writeFile(output,JSON.stringify(report,null,2));
   console.log(JSON.stringify({status:report.status,files:files.length,archiveBytes:packed.size,unpackedBytes:packed.unpackedSize,offlineInstall:true,strictTypes:true,builtStudio:true}));
 }finally{await service?.close();await rm(temporary,{recursive:true,force:true});}

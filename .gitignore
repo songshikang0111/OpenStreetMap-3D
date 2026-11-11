@@ -10,3 +10,4 @@ dist-sdk/
 .city-studio/
 .city-cache/
 *.tgz
+packages/*/dist/

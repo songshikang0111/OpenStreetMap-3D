@@ -1,0 +1,36 @@
+{
+  "name": "@city-ink/styles-ink",
+  "version": "0.0.0",
+  "description": "Optional comic, line and cel style packs for City Ink",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "!dist/.tsbuildinfo",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "test": "node --test \"test/**/*.test.js\""
+  },
+  "engines": {
+    "node": ">=22.11"
+  },
+  "dependencies": {
+    "@city-ink/styles": "1.0.0"
+  },
+  "peerDependencies": {
+    "three": ">=0.186.0 <0.187.0"
+  }
+}
