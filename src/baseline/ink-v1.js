@@ -67,46 +67,91 @@ void main(){
 }`;
 
 export class InkRenderer {
-  constructor(renderer,scene,camera){
-    this.renderer=renderer;this.scene=scene;this.camera=camera;
-    const makeTarget=()=>new THREE.WebGLRenderTarget(1,1,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,type:THREE.HalfFloatType});
-    this.color=makeTarget();this.normal=makeTarget();this.ids=makeTarget();
-    this.normal.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
-    this.normalMaterial=new THREE.MeshNormalMaterial();
-    this.idMaterial=new THREE.ShaderMaterial({
-      vertexShader:`attribute vec3 objectId; varying vec3 vId;
+  constructor(renderer, scene, camera) {
+    this.renderer = renderer;
+    this.scene = scene;
+    this.camera = camera;
+    const makeTarget = () =>
+      new THREE.WebGLRenderTarget(1, 1, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        type: THREE.HalfFloatType,
+      });
+    this.color = makeTarget();
+    this.normal = makeTarget();
+    this.ids = makeTarget();
+    this.normal.depthTexture = new THREE.DepthTexture(1, 1, THREE.UnsignedIntType);
+    this.normalMaterial = new THREE.MeshNormalMaterial();
+    this.idMaterial = new THREE.ShaderMaterial({
+      vertexShader: `attribute vec3 objectId; varying vec3 vId;
       void main(){vec4 p=vec4(position,1.);vId=objectId;
       #ifdef USE_INSTANCING
       p=instanceMatrix*p;
       vId=fract(abs(instanceMatrix[3].xyz)*vec3(.037,.11,.017));
       #endif
       gl_Position=projectionMatrix*modelViewMatrix*p;}`,
-      fragmentShader:`varying vec3 vId;void main(){gl_FragColor=vec4(vId,1.);}`,
-      defaultAttributeValues:{color:[1,1,1],uv:[0,0],objectId:[0,0,0]},
+      fragmentShader: `varying vec3 vId;void main(){gl_FragColor=vec4(vId,1.);}`,
+      defaultAttributeValues: { color: [1, 1, 1], uv: [0, 0], objectId: [0, 0, 0] },
     });
-    this.material=new THREE.ShaderMaterial({vertexShader,fragmentShader,depthTest:false,depthWrite:false,uniforms:{
-      tColor:{value:this.color.texture},tNormal:{value:this.normal.texture},tDepth:{value:this.normal.depthTexture},tId:{value:this.ids.texture},
-      resolution:{value:new THREE.Vector2(1,1)},nearPlane:{value:camera.near},farPlane:{value:camera.far},
-      lineWidth:{value:1.05},toneSize:{value:4.2},inkDensity:{value:.85},blackPoint:{value:.095},mode:{value:0},
-      paper:{value:new THREE.Color('#f7f5ed')},ink:{value:new THREE.Color('#242a2b')},
-    }});
-    this.screen=new THREE.Scene();this.screen.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2),this.material));
-    this.screenCamera=new THREE.Camera();
-    this.clayMaterial=new THREE.MeshStandardMaterial({color:'#dddcd5',roughness:1});
+    this.material = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      depthTest: false,
+      depthWrite: false,
+      uniforms: {
+        tColor: { value: this.color.texture },
+        tNormal: { value: this.normal.texture },
+        tDepth: { value: this.normal.depthTexture },
+        tId: { value: this.ids.texture },
+        resolution: { value: new THREE.Vector2(1, 1) },
+        nearPlane: { value: camera.near },
+        farPlane: { value: camera.far },
+        lineWidth: { value: 1.05 },
+        toneSize: { value: 4.2 },
+        inkDensity: { value: 0.85 },
+        blackPoint: { value: 0.095 },
+        mode: { value: 0 },
+        paper: { value: new THREE.Color('#f7f5ed') },
+        ink: { value: new THREE.Color('#242a2b') },
+      },
+    });
+    this.screen = new THREE.Scene();
+    this.screen.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.material));
+    this.screenCamera = new THREE.Camera();
+    this.clayMaterial = new THREE.MeshStandardMaterial({ color: '#dddcd5', roughness: 1 });
   }
-  resize(width,height){
-    for(const target of [this.color,this.normal,this.ids])target.setSize(width,height);
-    this.material.uniforms.resolution.value.set(width,height);
+  resize(width, height) {
+    for (const target of [this.color, this.normal, this.ids]) target.setSize(width, height);
+    this.material.uniforms.resolution.value.set(width, height);
   }
-  render(){
-    const r=this.renderer,s=this.scene,background=s.background,autoUpdate=r.shadowMap.autoUpdate;
-    s.overrideMaterial=this.material.uniforms.mode.value===3?this.clayMaterial:null;
-    r.setRenderTarget(this.color);r.clear();r.render(s,this.camera);
-    r.shadowMap.autoUpdate=false;s.background=null;
-    s.overrideMaterial=this.normalMaterial;r.setRenderTarget(this.normal);r.setClearColor(0x000000,0);r.clear();r.render(s,this.camera);
-    s.overrideMaterial=this.idMaterial;r.setRenderTarget(this.ids);r.clear();r.render(s,this.camera);
-    s.overrideMaterial=null;s.background=background;r.shadowMap.autoUpdate=autoUpdate;
-    r.setRenderTarget(null);r.render(this.screen,this.screenCamera);
+  render() {
+    const r = this.renderer,
+      s = this.scene,
+      background = s.background,
+      autoUpdate = r.shadowMap.autoUpdate;
+    s.overrideMaterial = this.material.uniforms.mode.value === 3 ? this.clayMaterial : null;
+    r.setRenderTarget(this.color);
+    r.clear();
+    r.render(s, this.camera);
+    r.shadowMap.autoUpdate = false;
+    s.background = null;
+    s.overrideMaterial = this.normalMaterial;
+    r.setRenderTarget(this.normal);
+    r.setClearColor(0x000000, 0);
+    r.clear();
+    r.render(s, this.camera);
+    s.overrideMaterial = this.idMaterial;
+    r.setRenderTarget(this.ids);
+    r.clear();
+    r.render(s, this.camera);
+    s.overrideMaterial = null;
+    s.background = background;
+    r.shadowMap.autoUpdate = autoUpdate;
+    r.setRenderTarget(null);
+    r.render(this.screen, this.screenCamera);
   }
-  dispose(){for(const target of [this.color,this.normal,this.ids])target.dispose();for(const m of [this.normalMaterial,this.idMaterial,this.material,this.clayMaterial])m.dispose();}
+  dispose() {
+    for (const target of [this.color, this.normal, this.ids]) target.dispose();
+    for (const m of [this.normalMaterial, this.idMaterial, this.material, this.clayMaterial]) m.dispose();
+  }
 }

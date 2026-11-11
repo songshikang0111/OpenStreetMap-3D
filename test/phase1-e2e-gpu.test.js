@@ -6,8 +6,16 @@ import { GpuFrameTimer } from '../src/runtime/gpu-timer.js';
 // becomes ready only when the test simulates a later GPU/browser completion.
 function webglFixture({ supported = true, counterBits = 64 } = {}) {
   const extension = { TIME_ELAPSED_EXT: 0x88bf, GPU_DISJOINT_EXT: 0x8fbb, QUERY_COUNTER_BITS_EXT: 0x8864 };
-  const state = { queries: [], current: null, disjoint: false, lost: false,
-    availableReads: 0, resultReads: 0, calls: [], failures: new Map() };
+  const state = {
+    queries: [],
+    current: null,
+    disjoint: false,
+    lost: false,
+    availableReads: 0,
+    resultReads: 0,
+    calls: [],
+    failures: new Map(),
+  };
   function fail(name) {
     const count = state.failures.get(name) || 0;
     if (count) {
@@ -16,9 +24,17 @@ function webglFixture({ supported = true, counterBits = 64 } = {}) {
     }
   }
   const gl = {
-    CURRENT_QUERY: 0x8865, QUERY_RESULT_AVAILABLE: 0x8867, QUERY_RESULT: 0x8866,
-    getExtension(name) { fail('getExtension'); assert.equal(name, 'EXT_disjoint_timer_query_webgl2'); return supported ? extension : null; },
-    isContextLost() { return state.lost; },
+    CURRENT_QUERY: 0x8865,
+    QUERY_RESULT_AVAILABLE: 0x8867,
+    QUERY_RESULT: 0x8866,
+    getExtension(name) {
+      fail('getExtension');
+      assert.equal(name, 'EXT_disjoint_timer_query_webgl2');
+      return supported ? extension : null;
+    },
+    isContextLost() {
+      return state.lost;
+    },
     getQuery(target, parameter) {
       fail('getQuery');
       assert.equal(target, extension.TIME_ELAPSED_EXT);
@@ -26,7 +42,11 @@ function webglFixture({ supported = true, counterBits = 64 } = {}) {
       assert.equal(parameter, gl.CURRENT_QUERY);
       return state.current;
     },
-    getParameter(parameter) { fail('getParameter'); assert.equal(parameter, extension.GPU_DISJOINT_EXT); return state.disjoint; },
+    getParameter(parameter) {
+      fail('getParameter');
+      assert.equal(parameter, extension.GPU_DISJOINT_EXT);
+      return state.disjoint;
+    },
     createQuery() {
       fail('createQuery');
       const query = { id: state.queries.length, available: false, deleted: false, ended: false };
@@ -71,10 +91,21 @@ function webglFixture({ supported = true, counterBits = 64 } = {}) {
       query.deleted = true;
       state.calls.push(['delete', query.id]);
     },
-    finish() { assert.fail('GPU collection must not synchronously wait for completion'); },
-    flush() { assert.fail('GPU collection must not force a GPU flush'); },
+    finish() {
+      assert.fail('GPU collection must not synchronously wait for completion');
+    },
+    flush() {
+      assert.fail('GPU collection must not force a GPU flush');
+    },
   };
-  return { gl, state, ready(query, nanoseconds) { query.available = true; query.nanoseconds = nanoseconds; } };
+  return {
+    gl,
+    state,
+    ready(query, nanoseconds) {
+      query.available = true;
+      query.nanoseconds = nanoseconds;
+    },
+  };
 }
 
 function frame(timer, time) {
@@ -102,7 +133,8 @@ test('unavailable WebGL2 timer reports its reason and never fabricates zero timi
 });
 
 test('delayed queries are polled once per call and use the complete 64-bit GPU result', () => {
-  const fixture = webglFixture(), timer = new GpuFrameTimer(fixture.gl);
+  const fixture = webglFixture(),
+    timer = new GpuFrameTimer(fixture.gl);
   frame(timer, 100);
   const query = fixture.state.queries[0];
   for (let i = 0; i < 4; i++) assert.equal(timer.poll(), 0);
@@ -128,7 +160,8 @@ test('delayed queries are polled once per call and use the complete 64-bit GPU r
 });
 
 test('one elapsed query encloses all render passes and nested begin/end is harmless', () => {
-  const fixture = webglFixture(), timer = new GpuFrameTimer(fixture.gl);
+  const fixture = webglFixture(),
+    timer = new GpuFrameTimer(fixture.gl);
   assert.equal(timer.end(), false);
   assert.equal(timer.begin(10), true);
   fixture.state.calls.push(['draw', 'depth']);
@@ -136,14 +169,23 @@ test('one elapsed query encloses all render passes and nested begin/end is harml
   fixture.state.calls.push(['draw', 'light'], ['draw', 'AO'], ['draw', 'final']);
   assert.equal(timer.end(), true);
   assert.equal(timer.end(), false);
-  assert.deepEqual(fixture.state.calls, [['create', 0], ['begin', 0], ['draw', 'depth'], ['draw', 'light'], ['draw', 'AO'], ['draw', 'final'], ['end', 0]]);
+  assert.deepEqual(fixture.state.calls, [
+    ['create', 0],
+    ['begin', 0],
+    ['draw', 'depth'],
+    ['draw', 'light'],
+    ['draw', 'AO'],
+    ['draw', 'final'],
+    ['end', 0],
+  ]);
   assert.equal(timer.snapshot().skippedActive, 1);
   timer.dispose();
   assert.equal(timer.snapshot().unreleased, 0);
 });
 
 test('query budget bounds in-flight GPU resources and skipped frames do not become samples', () => {
-  const fixture = webglFixture(), timer = new GpuFrameTimer(fixture.gl, { maxPending: 2 });
+  const fixture = webglFixture(),
+    timer = new GpuFrameTimer(fixture.gl, { maxPending: 2 });
   frame(timer, 1);
   assert.equal(timer.begin(2), true);
   let stats = timer.snapshot();
@@ -171,7 +213,8 @@ test('query budget bounds in-flight GPU resources and skipped frames do not beco
 });
 
 test('a disjoint observation drops all unresolved and active queries before reading results', () => {
-  const fixture = webglFixture(), timer = new GpuFrameTimer(fixture.gl);
+  const fixture = webglFixture(),
+    timer = new GpuFrameTimer(fixture.gl);
   frame(timer, 1);
   frame(timer, 2);
   assert.equal(timer.begin(3), true);
@@ -200,8 +243,17 @@ test('a disjoint observation drops all unresolved and active queries before read
 });
 
 test('bounded sample window preserves chronology, nearest-rank percentiles, and detached snapshots', () => {
-  const fixture = webglFixture(), timer = new GpuFrameTimer(fixture.gl, { maxSamples: 3 });
-  for (const [time, milliseconds] of [[1, 9], [2, 1], [3, 8], [4, 3], [5, 5], [6, 2], [7, 7]]) {
+  const fixture = webglFixture(),
+    timer = new GpuFrameTimer(fixture.gl, { maxSamples: 3 });
+  for (const [time, milliseconds] of [
+    [1, 9],
+    [2, 1],
+    [3, 8],
+    [4, 3],
+    [5, 5],
+    [6, 2],
+    [7, 7],
+  ]) {
     frame(timer, time);
     fixture.ready(fixture.state.queries.at(-1), milliseconds * 1e6);
     assert.equal(timer.poll(), 1);
@@ -210,7 +262,11 @@ test('bounded sample window preserves chronology, nearest-rank percentiles, and 
   assert.equal(stats.samples, 3);
   assert.equal(stats.collected, 7);
   assert.equal(stats.evictedSamples, 4);
-  assert.deepEqual(stats.rawSamples, [{ time: 5, ms: 5 }, { time: 6, ms: 2 }, { time: 7, ms: 7 }]);
+  assert.deepEqual(stats.rawSamples, [
+    { time: 5, ms: 5 },
+    { time: 6, ms: 2 },
+    { time: 7, ms: 7 },
+  ]);
   assert.equal(stats.p50, 5);
   assert.equal(stats.p95, 7);
   assert.equal(stats.p99, 7);
@@ -222,7 +278,8 @@ test('bounded sample window preserves chronology, nearest-rank percentiles, and 
 });
 
 test('reset deletes active and pending queries, retains lifetime counters, and starts a clean sample window', () => {
-  const fixture = webglFixture(), timer = new GpuFrameTimer(fixture.gl);
+  const fixture = webglFixture(),
+    timer = new GpuFrameTimer(fixture.gl);
   frame(timer, 1);
   fixture.ready(fixture.state.queries[0], 1e6);
   timer.poll();
@@ -248,7 +305,8 @@ test('reset deletes active and pending queries, retains lifetime counters, and s
 });
 
 test('dispose cancels active and pending queries exactly once and cannot be reset into life', () => {
-  const fixture = webglFixture(), timer = new GpuFrameTimer(fixture.gl);
+  const fixture = webglFixture(),
+    timer = new GpuFrameTimer(fixture.gl);
   frame(timer, 1);
   timer.begin(2);
   timer.dispose();
@@ -271,7 +329,8 @@ test('dispose cancels active and pending queries exactly once and cannot be rese
 });
 
 test('another profiler owns its query and is neither nested nor ended by this timer', () => {
-  const fixture = webglFixture(), timer = new GpuFrameTimer(fixture.gl);
+  const fixture = webglFixture(),
+    timer = new GpuFrameTimer(fixture.gl);
   const other = fixture.gl.createQuery();
   fixture.gl.beginQuery(0x88bf, other);
   assert.equal(timer.begin(1), false);
@@ -287,7 +346,8 @@ test('another profiler owns its query and is neither nested nor ended by this ti
 });
 
 test('unexpected replacement of an active query disables collection without ending the replacement', () => {
-  const fixture = webglFixture(), timer = new GpuFrameTimer(fixture.gl);
+  const fixture = webglFixture(),
+    timer = new GpuFrameTimer(fixture.gl);
   timer.begin(1);
   fixture.gl.endQuery(0x88bf);
   const other = fixture.gl.createQuery();
@@ -304,7 +364,8 @@ test('unexpected replacement of an active query disables collection without endi
 });
 
 test('invalid GPU results are discarded while an actual zero elapsed result remains valid', () => {
-  const fixture = webglFixture(), timer = new GpuFrameTimer(fixture.gl);
+  const fixture = webglFixture(),
+    timer = new GpuFrameTimer(fixture.gl);
   for (const nanoseconds of [NaN, Infinity, -1, null, '2000000', undefined, 0]) {
     frame(timer, NaN);
     fixture.ready(fixture.state.queries.at(-1), nanoseconds);
@@ -321,7 +382,8 @@ test('invalid GPU results are discarded while an actual zero elapsed result rema
 });
 
 test('context loss releases pending queries and explicit reset permits restored-context sampling', () => {
-  const fixture = webglFixture(), timer = new GpuFrameTimer(fixture.gl);
+  const fixture = webglFixture(),
+    timer = new GpuFrameTimer(fixture.gl);
   frame(timer, 1);
   fixture.state.lost = true;
   assert.equal(timer.poll(), 0);
@@ -342,10 +404,11 @@ test('context loss releases pending queries and explicit reset permits restored-
   timer.dispose();
 });
 
-test('GL API exceptions fail closed, clean query ownership, and never escape into rendering', async t => {
+test('GL API exceptions fail closed, clean query ownership, and never escape into rendering', async (t) => {
   for (const method of ['getParameter', 'getQuery', 'createQuery', 'beginQuery', 'endQuery', 'available', 'result']) {
     await t.test(method, () => {
-      const fixture = webglFixture(), timer = new GpuFrameTimer(fixture.gl);
+      const fixture = webglFixture(),
+        timer = new GpuFrameTimer(fixture.gl);
       if (method === 'endQuery') timer.begin(1);
       else if (method === 'available' || method === 'result') {
         frame(timer, 1);
@@ -375,7 +438,9 @@ test('extension probing errors and a null query allocation are explicit unavaila
   const initialization = webglFixture();
   initialization.state.failures.set('getExtension', 1);
   let timer;
-  assert.doesNotThrow(() => { timer = new GpuFrameTimer(initialization.gl); });
+  assert.doesNotThrow(() => {
+    timer = new GpuFrameTimer(initialization.gl);
+  });
   assert.equal(timer.snapshot().available, false);
   assert.match(timer.snapshot().reason, /initialization failed/);
   assert.equal(timer.snapshot().errors, 1);
@@ -394,7 +459,8 @@ test('extension probing errors and a null query allocation are explicit unavaila
 });
 
 test('failed query deletion stops allocations and can be retried by repeated dispose', () => {
-  const fixture = webglFixture(), timer = new GpuFrameTimer(fixture.gl);
+  const fixture = webglFixture(),
+    timer = new GpuFrameTimer(fixture.gl);
   frame(timer, 1);
   fixture.ready(fixture.state.queries[0], 1e6);
   fixture.state.failures.set('deleteQuery', 2);

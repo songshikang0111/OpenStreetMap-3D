@@ -5,301 +5,794 @@ import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { parseOSM, mergeOSMOverlay } from './osm.js';
 import { buildCity as buildEnhancedCity } from './city.js';
 import { InkRenderer as EnhancedInkRenderer } from './ink-renderer.js';
-import { decodeView,encodeView,parameterRanges } from './view-state.js';
-import {collectDepthBounds,stableNearPlane} from './depth-policy.js';
-import { LOCATIONS,resolveLocation,loadLocationData,coordinateLabel,genericViews } from './locations.js';
+import { decodeView, encodeView, parameterRanges } from './view-state.js';
+import { collectDepthBounds, stableNearPlane } from './depth-policy.js';
+import { LOCATIONS, resolveLocation, loadLocationData, coordinateLabel, genericViews } from './locations.js';
 
-const $=id=>document.getElementById(id);
-const viewport=$('viewport');
-let renderer,scene,camera,controls,ink,city,data,sun,needsRender=true,mode=0,inspect=false,toastTimer;
-let mapState=null,depthBounds=[];
-const initialView=decodeView(location.hash);
-for(const id of ['landscape-toggle','roof-inference-toggle'])if(typeof initialView?.toggles?.[id]==='boolean')$(id).checked=initialView.toggles[id];
-let rawData,seed=initialView?.seed||1,currentView='overview';
-let activeLocation=LOCATIONS[0];
-let buildCity=data=>buildEnhancedCity(data,{landscapeEnabled:$('landscape-toggle').checked,inferRoofs:$('roof-inference-toggle').checked}),InkRenderer=EnhancedInkRenderer;
-const baselineMode=new URLSearchParams(location.search).get('baseline')==='1';
-const rangeBindings=[
-  ['line-width','line-output','lineWidth',1,1],['tone-size','tone-output','toneSize',1,1],['density','density-output','inkDensity',100,0],
-  ['outline-width','outline-output','outlineWidth',1,2],['tone-threshold','threshold-output','toneThreshold',100,0],
-  ['ao-strength','ao-output','aoStrength',100,0],['shadow-strength','shadow-output','shadowStrength',100,0],
-  ['black-point','black-output','blackPoint',100,0],['haze','haze-output','haze',100,0],['tree-ink','tree-output','treeInk',100,0],
+const $ = (id) => document.getElementById(id);
+const viewport = $('viewport');
+let renderer,
+  scene,
+  camera,
+  controls,
+  ink,
+  city,
+  data,
+  sun,
+  needsRender = true,
+  mode = 0,
+  inspect = false,
+  toastTimer;
+let mapState = null,
+  depthBounds = [];
+const initialView = decodeView(location.hash);
+for (const id of ['landscape-toggle', 'roof-inference-toggle'])
+  if (typeof initialView?.toggles?.[id] === 'boolean') $(id).checked = initialView.toggles[id];
+let rawData,
+  seed = initialView?.seed || 1,
+  currentView = 'overview';
+let activeLocation = LOCATIONS[0];
+let buildCity = (data) =>
+    buildEnhancedCity(data, {
+      landscapeEnabled: $('landscape-toggle').checked,
+      inferRoofs: $('roof-inference-toggle').checked,
+    }),
+  InkRenderer = EnhancedInkRenderer;
+const baselineMode = new URLSearchParams(location.search).get('baseline') === '1';
+const rangeBindings = [
+  ['line-width', 'line-output', 'lineWidth', 1, 1],
+  ['tone-size', 'tone-output', 'toneSize', 1, 1],
+  ['density', 'density-output', 'inkDensity', 100, 0],
+  ['outline-width', 'outline-output', 'outlineWidth', 1, 2],
+  ['tone-threshold', 'threshold-output', 'toneThreshold', 100, 0],
+  ['ao-strength', 'ao-output', 'aoStrength', 100, 0],
+  ['shadow-strength', 'shadow-output', 'shadowStrength', 100, 0],
+  ['black-point', 'black-output', 'blackPoint', 100, 0],
+  ['haze', 'haze-output', 'haze', 100, 0],
+  ['tree-ink', 'tree-output', 'treeInk', 100, 0],
 ];
-const modeNames=['城市的另一种笔触。','让建筑，留下线条。','光与城市的色温。','先看空间，再看细节。'];
-const sourceNames={height:'OSM 标注高度',levels:'由 OSM 层数换算',estimated:'程序估算'};
+const modeNames = ['城市的另一种笔触。', '让建筑，留下线条。', '光与城市的色温。', '先看空间，再看细节。'];
+const sourceNames = { height: 'OSM 标注高度', levels: '由 OSM 层数换算', estimated: '程序估算' };
 
-function toast(text){$('toast').textContent=text;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,4200);}
-function invalidate(){needsRender=true;}
-function setMode(next){
-  mode=next;
-  ink.material.uniforms.mode.value=inspect?4:mode;
-  $('view-name').textContent=inspect?'看见数据的边界。':modeNames[mode];
-  for(const button of document.querySelectorAll('[data-mode]')){const on=Number(button.dataset.mode)===mode;button.classList.toggle('active',on);button.setAttribute('aria-pressed',String(on));}
+function toast(text) {
+  $('toast').textContent = text;
+  $('toast').hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => ($('toast').hidden = true), 4200);
+}
+function invalidate() {
+  needsRender = true;
+}
+function setMode(next) {
+  mode = next;
+  ink.material.uniforms.mode.value = inspect ? 4 : mode;
+  $('view-name').textContent = inspect ? '看见数据的边界。' : modeNames[mode];
+  for (const button of document.querySelectorAll('[data-mode]')) {
+    const on = Number(button.dataset.mode) === mode;
+    button.classList.toggle('active', on);
+    button.setAttribute('aria-pressed', String(on));
+  }
   invalidate();
 }
 
-function updateLight(){
-  const angle=Number($('sun-angle').value)*Math.PI/180;
-  const elevation=Number($('sun-height').value)*Math.PI/180;
-  sun.position.set(Math.sin(angle)*1100,Math.tan(elevation)*1100,Math.cos(angle)*1100);
-  if(city?.shared.sunDirection)city.shared.sunDirection.value.copy(sun.position).sub(sun.target.position).normalize();
-  sun.shadow.camera.far=Math.max(3600,sun.position.length()+1800);
+function updateLight() {
+  const angle = (Number($('sun-angle').value) * Math.PI) / 180;
+  const elevation = (Number($('sun-height').value) * Math.PI) / 180;
+  sun.position.set(Math.sin(angle) * 1100, Math.tan(elevation) * 1100, Math.cos(angle) * 1100);
+  if (city?.shared.sunDirection) city.shared.sunDirection.value.copy(sun.position).sub(sun.target.position).normalize();
+  sun.shadow.camera.far = Math.max(3600, sun.position.length() + 1800);
   sun.shadow.camera.updateProjectionMatrix();
-  sun.shadow.needsUpdate=true;invalidate();
+  sun.shadow.needsUpdate = true;
+  invalidate();
 }
 
-function preset(name){
+function preset(name) {
   // Clear any orbit inertia before assigning an exact, reproducible camera.
-  controls.autoRotate=false;controls.enableDamping=false;controls.update();
-  currentView=name;
-  document.querySelector('.stage').classList.toggle('street-view',!['overview','skyline','top'].includes(name));
-  const [x0,z0,x1,z1]=data.bounds,width=x1-x0,depth=z1-z0;
-  controls.autoRotate=false;$('rotate-toggle').checked=false;
-  const positions={overview:[width*.78,Math.max(width,depth)*.72,depth*.94],skyline:[-width*.08,125,depth*.9],street:[-110,12,depth*.33],top:[0,Math.max(width,depth)*1.3,.01]};
-  const targets={overview:[0,60,0],skyline:[70,110,-140],street:[200,80,-250],top:[0,0,0]};
-  if(name==='street'){
-    const candidates=data.roads.filter(r=>!r.bridge&&/primary|secondary|tertiary/.test(r.type)).flatMap(r=>r.segments.map(([a,b])=>({a,b,width:r.width,center:[(a[0]+b[0])/2,(a[1]+b[1])/2]})));
-    candidates.sort((a,b)=>Math.hypot(...a.center)-Math.hypot(...b.center));
-    const road=candidates[0];
-    if(road){const dx=road.b[0]-road.a[0],dz=road.b[1]-road.a[1],length=Math.hypot(dx,dz)||1;
-      positions.street=[road.center[0]-dz/length*road.width*.2,2.1,road.center[1]+dx/length*road.width*.2];
-      targets.street=[positions.street[0]+dx/length*180,34,positions.street[2]+dz/length*180];
+  controls.autoRotate = false;
+  controls.enableDamping = false;
+  controls.update();
+  currentView = name;
+  document.querySelector('.stage').classList.toggle('street-view', !['overview', 'skyline', 'top'].includes(name));
+  const [x0, z0, x1, z1] = data.bounds,
+    width = x1 - x0,
+    depth = z1 - z0;
+  controls.autoRotate = false;
+  $('rotate-toggle').checked = false;
+  const positions = {
+    overview: [width * 0.78, Math.max(width, depth) * 0.72, depth * 0.94],
+    skyline: [-width * 0.08, 125, depth * 0.9],
+    street: [-110, 12, depth * 0.33],
+    top: [0, Math.max(width, depth) * 1.3, 0.01],
+  };
+  const targets = { overview: [0, 60, 0], skyline: [70, 110, -140], street: [200, 80, -250], top: [0, 0, 0] };
+  if (name === 'street') {
+    const candidates = data.roads
+      .filter((r) => !r.bridge && /primary|secondary|tertiary/.test(r.type))
+      .flatMap((r) =>
+        r.segments.map(([a, b]) => ({ a, b, width: r.width, center: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] })),
+      );
+    candidates.sort((a, b) => Math.hypot(...a.center) - Math.hypot(...b.center));
+    const road = candidates[0];
+    if (road) {
+      const dx = road.b[0] - road.a[0],
+        dz = road.b[1] - road.a[1],
+        length = Math.hypot(dx, dz) || 1;
+      positions.street = [
+        road.center[0] - (dz / length) * road.width * 0.2,
+        2.1,
+        road.center[1] + (dx / length) * road.width * 0.2,
+      ];
+      targets.street = [positions.street[0] + (dx / length) * 180, 34, positions.street[2] + (dz / length) * 180];
     }
   }
-  const citic=data.buildings.find(b=>b.osmId===599547918),cctv=data.buildings.find(b=>b.osmId===547523487),facade=data.buildings.find(b=>/正大集团/.test(b.tags.name||''));
-  const centerFor=b=>b?.center||[0,0],cz=centerFor(citic),cv=centerFor(cctv),fc=centerFor(facade);
-  positions.citic=[cz[0]+390,270,cz[1]+660];targets.citic=[cz[0],265,cz[1]];
-  positions.cctv=[cv[0]-320,150,cv[1]+400];targets.cctv=[cv[0],130,cv[1]];
-  positions.roof=[-230,160,220];targets.roof=[-30,10,-80];
-  positions.facade=[fc[0]+120,18,fc[1]+135];targets.facade=[fc[0],45,fc[1]];
+  const citic = data.buildings.find((b) => b.osmId === 599547918),
+    cctv = data.buildings.find((b) => b.osmId === 547523487),
+    facade = data.buildings.find((b) => /正大集团/.test(b.tags.name || ''));
+  const centerFor = (b) => b?.center || [0, 0],
+    cz = centerFor(citic),
+    cv = centerFor(cctv),
+    fc = centerFor(facade);
+  positions.citic = [cz[0] + 390, 270, cz[1] + 660];
+  targets.citic = [cz[0], 265, cz[1]];
+  positions.cctv = [cv[0] - 320, 150, cv[1] + 400];
+  targets.cctv = [cv[0], 130, cv[1]];
+  positions.roof = [-230, 160, 220];
+  targets.roof = [-30, 10, -80];
+  positions.facade = [fc[0] + 120, 18, fc[1] + 135];
+  targets.facade = [fc[0], 45, fc[1]];
   // Face a documented OSM crossing rather than an empty point in a city block.
-  const roadPoint=data.streetNodes.find(n=>n.id===11322670965)?.point||[46.584,309.363];
-  positions.crossing=[roadPoint[0]+1.5,2.1,roadPoint[1]+20];targets.crossing=[roadPoint[0],4,roadPoint[1]-65];
-  if(activeLocation.id!=='beijing') {
-    for(const [key,value]of Object.entries(genericViews(data))){positions[key]=value.position;targets[key]=value.target;}
-    const crossing=data.streetNodes.filter(n=>n.kind==='crossing').sort((a,b)=>Math.hypot(...a.point)-Math.hypot(...b.point))[0];
-    positions.crossing=crossing?[crossing.point[0]+12,8,crossing.point[1]+18]:positions.street;
-    targets.crossing=crossing?[crossing.point[0],2,crossing.point[1]]:targets.street;
-    if(name==='citic'||name==='cctv')name='overview';
+  const roadPoint = data.streetNodes.find((n) => n.id === 11322670965)?.point || [46.584, 309.363];
+  positions.crossing = [roadPoint[0] + 1.5, 2.1, roadPoint[1] + 20];
+  targets.crossing = [roadPoint[0], 4, roadPoint[1] - 65];
+  if (activeLocation.id !== 'beijing') {
+    for (const [key, value] of Object.entries(genericViews(data))) {
+      positions[key] = value.position;
+      targets[key] = value.target;
+    }
+    const crossing = data.streetNodes
+      .filter((n) => n.kind === 'crossing')
+      .sort((a, b) => Math.hypot(...a.point) - Math.hypot(...b.point))[0];
+    positions.crossing = crossing ? [crossing.point[0] + 12, 8, crossing.point[1] + 18] : positions.street;
+    targets.crossing = crossing ? [crossing.point[0], 2, crossing.point[1]] : targets.street;
+    if (name === 'citic' || name === 'cctv') name = 'overview';
   }
-  if(!positions[name])name='overview';
-  camera.position.set(...positions[name]);controls.target.set(...targets[name]);
-  camera.fov=['street','crossing'].includes(name)?65:name==='top'?43:name==='facade'?55:42;camera.updateProjectionMatrix();
-  $('lens').value=camera.fov;$('lens-output').value=`${camera.fov}°`;
-  $('detail-view').value=['citic','cctv','roof','crossing','facade'].includes(name)?name:'';
-  controls.maxPolarAngle=['street','crossing','facade','citic','cctv'].includes(name)?Math.PI*.75:Math.PI*.495;
+  if (!positions[name]) name = 'overview';
+  camera.position.set(...positions[name]);
+  controls.target.set(...targets[name]);
+  camera.fov = ['street', 'crossing'].includes(name) ? 65 : name === 'top' ? 43 : name === 'facade' ? 55 : 42;
+  camera.updateProjectionMatrix();
+  $('lens').value = camera.fov;
+  $('lens-output').value = `${camera.fov}°`;
+  $('detail-view').value = ['citic', 'cctv', 'roof', 'crossing', 'facade'].includes(name) ? name : '';
+  controls.maxPolarAngle = ['street', 'crossing', 'facade', 'citic', 'cctv'].includes(name)
+    ? Math.PI * 0.75
+    : Math.PI * 0.495;
   controls.update();
-  controls.enableDamping=true;
-  for(const button of document.querySelectorAll('[data-camera]'))button.classList.toggle('active',button.dataset.camera===name);
+  controls.enableDamping = true;
+  for (const button of document.querySelectorAll('[data-camera]'))
+    button.classList.toggle('active', button.dataset.camera === name);
   invalidate();
 }
 
-function resize(){
-  const w=viewport.clientWidth,h=viewport.clientHeight;
-  renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();
-  const resolution=renderer.getDrawingBufferSize(new THREE.Vector2());ink.resize(resolution.x,resolution.y);invalidate();
+function resize() {
+  const w = viewport.clientWidth,
+    h = viewport.clientHeight;
+  renderer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  const resolution = renderer.getDrawingBufferSize(new THREE.Vector2());
+  ink.resize(resolution.x, resolution.y);
+  invalidate();
 }
 
-function drawMap(){
-  const canvas=$('map'),ctx=canvas.getContext('2d');
-  const [x0,z0,x1,z1]=data.bounds,pad=15;
-  const scale=Math.min((canvas.width-pad*2)/(x1-x0),(canvas.height-pad*2)/(z1-z0));
-  const offsetX=(canvas.width-(x1-x0)*scale)/2,offsetY=(canvas.height-(z1-z0)*scale)/2;
-  const point=p=>[(p[0]-x0)*scale+offsetX,(p[1]-z0)*scale+offsetY];
-  mapState={scale,offsetX,offsetY,x0,z0};
-  ctx.fillStyle='#eceee4';ctx.fillRect(0,0,canvas.width,canvas.height);
-  const fillArea=(b,color)=>{ctx.fillStyle=color;ctx.beginPath();for(const ring of [b.outer,...(b.holes||[])]){ring.forEach((p,i)=>ctx[i?'lineTo':'moveTo'](...point(p)));ctx.closePath();}ctx.fill('evenodd');};
-  const groundColors={wood:'#6f9b72',park:'#c4d7ac',garden:'#abc58f',lawn:'#c7dbaf',parking:'#b4b7b4',plaza:'#ded4bf',sport:'#b7cbb7',soil:'#cdbfa6',construction:'#c8b99f'};
-  for(const b of data.landscapes)fillArea(b,groundColors[b.kind]||'#d9d2bf');
-  for(const b of data.water)fillArea(b,'#83b5d6');
-  ctx.fillStyle='#428257';for(const tree of data.trees){const p=point(tree.point);ctx.beginPath();ctx.arc(...p,Math.max(.8,scale*2),0,Math.PI*2);ctx.fill();}
-  for(const road of data.roads){ctx.strokeStyle='#faf9f1';ctx.lineWidth=Math.max(1.5,road.width*scale);ctx.lineCap='round';for(const [a,b]of road.segments){ctx.beginPath();ctx.moveTo(...point(a));ctx.lineTo(...point(b));ctx.stroke();}}
-  for(const b of data.buildings){ctx.fillStyle=inspect?city.sourceColors[b.source]:b.height>130?'#899b91':'#b4beb0';ctx.beginPath();for(const ring of [b.outer,...b.holes]){ring.forEach((p,i)=>ctx[i?'lineTo':'moveTo'](...point(p)));ctx.closePath();}ctx.fill('evenodd');}
-  const p=point([camera.position.x,camera.position.z]),target=point([controls.target.x,controls.target.z]);
-  const angle=Math.atan2(target[1]-p[1],target[0]-p[0]);
-  const px=Math.max(9,Math.min(canvas.width-9,p[0])),py=Math.max(9,Math.min(canvas.height-9,p[1]));
-  ctx.fillStyle='#b98251';ctx.beginPath();ctx.moveTo(px+Math.cos(angle)*10,py+Math.sin(angle)*10);ctx.lineTo(px+Math.cos(angle+2.4)*6,py+Math.sin(angle+2.4)*6);ctx.lineTo(px+Math.cos(angle-2.4)*6,py+Math.sin(angle-2.4)*6);ctx.closePath();ctx.fill();
+function drawMap() {
+  const canvas = $('map'),
+    ctx = canvas.getContext('2d');
+  const [x0, z0, x1, z1] = data.bounds,
+    pad = 15;
+  const scale = Math.min((canvas.width - pad * 2) / (x1 - x0), (canvas.height - pad * 2) / (z1 - z0));
+  const offsetX = (canvas.width - (x1 - x0) * scale) / 2,
+    offsetY = (canvas.height - (z1 - z0) * scale) / 2;
+  const point = (p) => [(p[0] - x0) * scale + offsetX, (p[1] - z0) * scale + offsetY];
+  mapState = { scale, offsetX, offsetY, x0, z0 };
+  ctx.fillStyle = '#eceee4';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const fillArea = (b, color) => {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    for (const ring of [b.outer, ...(b.holes || [])]) {
+      ring.forEach((p, i) => ctx[i ? 'lineTo' : 'moveTo'](...point(p)));
+      ctx.closePath();
+    }
+    ctx.fill('evenodd');
+  };
+  const groundColors = {
+    wood: '#6f9b72',
+    park: '#c4d7ac',
+    garden: '#abc58f',
+    lawn: '#c7dbaf',
+    parking: '#b4b7b4',
+    plaza: '#ded4bf',
+    sport: '#b7cbb7',
+    soil: '#cdbfa6',
+    construction: '#c8b99f',
+  };
+  for (const b of data.landscapes) fillArea(b, groundColors[b.kind] || '#d9d2bf');
+  for (const b of data.water) fillArea(b, '#83b5d6');
+  ctx.fillStyle = '#428257';
+  for (const tree of data.trees) {
+    const p = point(tree.point);
+    ctx.beginPath();
+    ctx.arc(...p, Math.max(0.8, scale * 2), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  for (const road of data.roads) {
+    ctx.strokeStyle = '#faf9f1';
+    ctx.lineWidth = Math.max(1.5, road.width * scale);
+    ctx.lineCap = 'round';
+    for (const [a, b] of road.segments) {
+      ctx.beginPath();
+      ctx.moveTo(...point(a));
+      ctx.lineTo(...point(b));
+      ctx.stroke();
+    }
+  }
+  for (const b of data.buildings) {
+    ctx.fillStyle = inspect ? city.sourceColors[b.source] : b.height > 130 ? '#899b91' : '#b4beb0';
+    ctx.beginPath();
+    for (const ring of [b.outer, ...b.holes]) {
+      ring.forEach((p, i) => ctx[i ? 'lineTo' : 'moveTo'](...point(p)));
+      ctx.closePath();
+    }
+    ctx.fill('evenodd');
+  }
+  const p = point([camera.position.x, camera.position.z]),
+    target = point([controls.target.x, controls.target.z]);
+  const angle = Math.atan2(target[1] - p[1], target[0] - p[0]);
+  const px = Math.max(9, Math.min(canvas.width - 9, p[0])),
+    py = Math.max(9, Math.min(canvas.height - 9, p[1]));
+  ctx.fillStyle = '#b98251';
+  ctx.beginPath();
+  ctx.moveTo(px + Math.cos(angle) * 10, py + Math.sin(angle) * 10);
+  ctx.lineTo(px + Math.cos(angle + 2.4) * 6, py + Math.sin(angle + 2.4) * 6);
+  ctx.lineTo(px + Math.cos(angle - 2.4) * 6, py + Math.sin(angle - 2.4) * 6);
+  ctx.closePath();
+  ctx.fill();
 }
 
-function showBuilding(b){
-  $('building-name').textContent=b.tags.name||b.tags['name:en']||'未命名建筑';
-  const details=$('building-details');details.replaceChildren();
-  const list=document.createElement('dl');
-  for(const [key,value] of [['高度',`${b.height.toFixed(1)} m`],['高度来源',sourceNames[b.source]],['底部离地',`${b.minHeight.toFixed(1)} m`],['占地面积',`${Math.round(b.area).toLocaleString()} m²`],['地图编号',`${b.osmType} ${b.osmId}`]]){
-    const term=document.createElement('dt'),description=document.createElement('dd');term.textContent=key;description.textContent=value;list.append(term,description);
+function showBuilding(b) {
+  $('building-name').textContent = b.tags.name || b.tags['name:en'] || '未命名建筑';
+  const details = $('building-details');
+  details.replaceChildren();
+  const list = document.createElement('dl');
+  for (const [key, value] of [
+    ['高度', `${b.height.toFixed(1)} m`],
+    ['高度来源', sourceNames[b.source]],
+    ['底部离地', `${b.minHeight.toFixed(1)} m`],
+    ['占地面积', `${Math.round(b.area).toLocaleString()} m²`],
+    ['地图编号', `${b.osmType} ${b.osmId}`],
+  ]) {
+    const term = document.createElement('dt'),
+      description = document.createElement('dd');
+    term.textContent = key;
+    description.textContent = value;
+    list.append(term, description);
   }
   details.append(list);
-  const skin=city.buildings.find(m=>m.userData.feature===b)?.userData, family=skin?.facadeFamily;
-  if(b.generatedShape||family){const p=document.createElement('p');p.className='notice';p.textContent=b.generatedShape?`${b.generatedShape}：${b.generatedShapeNote||'地标形体为参数化近似，曲面不是 OSM 实测三维数据。'}`:`立面类型：${family}；门窗与设备由规则生成。`;details.append(p);}
-  const finishes={'reflective-glass':'反射玻璃','smooth-render':'浅色抹灰','cut-stone':'石材分缝','warm-brick':'暖色砌砖','precast-panels':'预制板墙','vertical-piers':'竖向壁柱','ceramic-tile':'面砖饰面'};
-  if(skin?.facadeSurface){const p=document.createElement('p');p.className='notice';p.textContent=`示意饰面：${finishes[skin.facadeSurface]||skin.facadeSurface}。材质标签优先；缺失时按种子生成，玻璃反射为程序化环境。`;details.append(p);}
-  if(b.source!=='height'){const p=document.createElement('p');p.className='notice';p.textContent=b.source==='estimated'?'地图缺少高度和层数，当前高度由用途与面积估算。':'高度由楼层数与假定层高换算，非实测高度。';details.append(p);}
-  if(b.roofModel){const p=document.createElement('p');p.className='notice';const roof=b.roofModel;p.textContent=roof.source==='inferred'?'坡屋顶为低层小房屋的形态推测，地图未标注真实屋顶。':roof.supported?`屋顶形状来自 OSM：${roof.shape}。${roof.dimensionsInferred?'坡高与朝向缺失时使用几何近似。':''}`:roof.source==='osm'&&roof.shape!=='flat'?`OSM 屋顶 ${roof.shape} 尚未实现，当前保留简化体块。`:'地图未提供可用屋顶形状，当前按平顶显示。';details.append(p);}
-  $('osm-link').href=`https://www.openstreetmap.org/${b.osmType}/${b.osmId}`;$('building-info').hidden=false;
+  const skin = city.buildings.find((m) => m.userData.feature === b)?.userData,
+    family = skin?.facadeFamily;
+  if (b.generatedShape || family) {
+    const p = document.createElement('p');
+    p.className = 'notice';
+    p.textContent = b.generatedShape
+      ? `${b.generatedShape}：${b.generatedShapeNote || '地标形体为参数化近似，曲面不是 OSM 实测三维数据。'}`
+      : `立面类型：${family}；门窗与设备由规则生成。`;
+    details.append(p);
+  }
+  const finishes = {
+    'reflective-glass': '反射玻璃',
+    'smooth-render': '浅色抹灰',
+    'cut-stone': '石材分缝',
+    'warm-brick': '暖色砌砖',
+    'precast-panels': '预制板墙',
+    'vertical-piers': '竖向壁柱',
+    'ceramic-tile': '面砖饰面',
+  };
+  if (skin?.facadeSurface) {
+    const p = document.createElement('p');
+    p.className = 'notice';
+    p.textContent = `示意饰面：${finishes[skin.facadeSurface] || skin.facadeSurface}。材质标签优先；缺失时按种子生成，玻璃反射为程序化环境。`;
+    details.append(p);
+  }
+  if (b.source !== 'height') {
+    const p = document.createElement('p');
+    p.className = 'notice';
+    p.textContent =
+      b.source === 'estimated'
+        ? '地图缺少高度和层数，当前高度由用途与面积估算。'
+        : '高度由楼层数与假定层高换算，非实测高度。';
+    details.append(p);
+  }
+  if (b.roofModel) {
+    const p = document.createElement('p');
+    p.className = 'notice';
+    const roof = b.roofModel;
+    p.textContent =
+      roof.source === 'inferred'
+        ? '坡屋顶为低层小房屋的形态推测，地图未标注真实屋顶。'
+        : roof.supported
+          ? `屋顶形状来自 OSM：${roof.shape}。${roof.dimensionsInferred ? '坡高与朝向缺失时使用几何近似。' : ''}`
+          : roof.source === 'osm' && roof.shape !== 'flat'
+            ? `OSM 屋顶 ${roof.shape} 尚未实现，当前保留简化体块。`
+            : '地图未提供可用屋顶形状，当前按平顶显示。';
+    details.append(p);
+  }
+  $('osm-link').href = `https://www.openstreetmap.org/${b.osmType}/${b.osmId}`;
+  $('building-info').hidden = false;
 }
 
-function download(blob,name){const link=document.createElement('a');const url=URL.createObjectURL(blob);link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}
+function download(blob, name) {
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.href = url;
+  link.download = name;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
 
-function captureState(){
-  const rounded=v=>v.toArray().map(x=>Math.round(x*1000)/1000);
-  return {version:2,view:currentView,seed,mode,position:rounded(camera.position),target:rounded(controls.target),parameters:Object.fromEntries(Object.keys(parameterRanges).map(id=>[id,Number($(id).value)])),toggles:Object.fromEntries(['windows-toggle','trees-toggle','props-toggle','shadows-toggle','landscape-toggle','roof-inference-toggle'].map(id=>[id,$(id).checked]))};
+function captureState() {
+  const rounded = (v) => v.toArray().map((x) => Math.round(x * 1000) / 1000);
+  return {
+    version: 2,
+    view: currentView,
+    seed,
+    mode,
+    position: rounded(camera.position),
+    target: rounded(controls.target),
+    parameters: Object.fromEntries(Object.keys(parameterRanges).map((id) => [id, Number($(id).value)])),
+    toggles: Object.fromEntries(
+      [
+        'windows-toggle',
+        'trees-toggle',
+        'props-toggle',
+        'shadows-toggle',
+        'landscape-toggle',
+        'roof-inference-toggle',
+      ].map((id) => [id, $(id).checked]),
+    ),
+  };
 }
-function applyParameters(){
-  for(const [id,output,uniform,divisor,precision]of rangeBindings){const value=Number($(id).value);$(output).value=divisor===100?`${value}%`:value.toFixed(precision);if(ink.material.uniforms[uniform])ink.material.uniforms[uniform].value=value/divisor;}
-  $('sun-output').value=`${$('sun-angle').value}°`;$('sun-height-output').value=`${$('sun-height').value}°`;updateLight();
-  camera.fov=Number($('lens').value);camera.updateProjectionMatrix();$('lens-output').value=`${camera.fov}°`;
-  city.shared.windows.value=$('windows-toggle').checked?1:0;city.detailGroup.visible=$('windows-toggle').checked;
-  if(city.shared.facadeDetail)city.shared.facadeDetail.value=Number($('facade-detail').value)/100;
-  $('facade-output').value=`${$('facade-detail').value}%`;
-  if(city.shared.glassReflection)city.shared.glassReflection.value=Number($('glass-reflection').value)/100;
-  if(city.shared.toneSize)city.shared.toneSize.value=Number($('tone-size').value);
-  $('glass-output').value=`${$('glass-reflection').value}%`;
-  city.treeGroup.visible=$('trees-toggle').checked;if(city.streetGroup)city.streetGroup.visible=$('props-toggle').checked;
-  sun.castShadow=$('shadows-toggle').checked;sun.shadow.needsUpdate=true;invalidate();
+function applyParameters() {
+  for (const [id, output, uniform, divisor, precision] of rangeBindings) {
+    const value = Number($(id).value);
+    $(output).value = divisor === 100 ? `${value}%` : value.toFixed(precision);
+    if (ink.material.uniforms[uniform]) ink.material.uniforms[uniform].value = value / divisor;
+  }
+  $('sun-output').value = `${$('sun-angle').value}°`;
+  $('sun-height-output').value = `${$('sun-height').value}°`;
+  updateLight();
+  camera.fov = Number($('lens').value);
+  camera.updateProjectionMatrix();
+  $('lens-output').value = `${camera.fov}°`;
+  city.shared.windows.value = $('windows-toggle').checked ? 1 : 0;
+  city.detailGroup.visible = $('windows-toggle').checked;
+  if (city.shared.facadeDetail) city.shared.facadeDetail.value = Number($('facade-detail').value) / 100;
+  $('facade-output').value = `${$('facade-detail').value}%`;
+  if (city.shared.glassReflection) city.shared.glassReflection.value = Number($('glass-reflection').value) / 100;
+  if (city.shared.toneSize) city.shared.toneSize.value = Number($('tone-size').value);
+  $('glass-output').value = `${$('glass-reflection').value}%`;
+  city.treeGroup.visible = $('trees-toggle').checked;
+  if (city.streetGroup) city.streetGroup.visible = $('props-toggle').checked;
+  sun.castShadow = $('shadows-toggle').checked;
+  sun.shadow.needsUpdate = true;
+  invalidate();
 }
-function updateGenerationStats(){
-  $('seed-label').textContent=`种子 ${seed}`;
-  const stats=city.streetStats||city.stats||{};
-  const land=city.landscapeStats;
-  $('generation-stats').textContent=`树木 ${city.treeCount}（规则补充 ${city.generatedTrees}） · 街道标注 ${data.streetNodes.length} 个。${land?`场地：OSM ${data.landscapes.length} 处，试验补全 ${land.inferredSites} 处。`:''}${city.roofStats?` 坡屋顶：标注 ${city.roofStats.tagged}，推测 ${city.roofStats.inferred}。`:''} 缺失信息保持留白；推测形态不代表实测。`;
-  $('render-status').textContent=`${data.buildings.length} 个体块 · ${city.treeCount} 棵树 · 规则生成细节`;
+function updateGenerationStats() {
+  $('seed-label').textContent = `种子 ${seed}`;
+  const stats = city.streetStats || city.stats || {};
+  const land = city.landscapeStats;
+  $('generation-stats').textContent =
+    `树木 ${city.treeCount}（规则补充 ${city.generatedTrees}） · 街道标注 ${data.streetNodes.length} 个。${land ? `场地：OSM ${data.landscapes.length} 处，试验补全 ${land.inferredSites} 处。` : ''}${city.roofStats ? ` 坡屋顶：标注 ${city.roofStats.tagged}，推测 ${city.roofStats.inferred}。` : ''} 缺失信息保持留白；推测形态不代表实测。`;
+  $('render-status').textContent = `${data.buildings.length} 个体块 · ${city.treeCount} 棵树 · 规则生成细节`;
 }
-function regenerate(nextSeed){
-  const old=city;seed=nextSeed;data=parseOSM(rawData,seed);city=buildCity(data);depthBounds=collectDepthBounds(city.group);scene.remove(old.group);scene.add(city.group);
+function regenerate(nextSeed) {
+  const old = city;
+  seed = nextSeed;
+  data = parseOSM(rawData, seed);
+  city = buildCity(data);
+  depthBounds = collectDepthBounds(city.group);
+  scene.remove(old.group);
+  scene.add(city.group);
   ink.setFacadeShared?.(city.shared);
-  const geometries=new Set(),materials=new Set();old.group.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);});
-  for(const g of geometries)g.dispose();for(const m of materials)m.dispose();
-  city.setProvenance(inspect);applyParameters();updateGenerationStats();$('building-info').hidden=true;drawMap();
+  const geometries = new Set(),
+    materials = new Set();
+  old.group.traverse((o) => {
+    if (o.geometry) geometries.add(o.geometry);
+    if (o.material) for (const m of Array.isArray(o.material) ? o.material : [o.material]) materials.add(m);
+  });
+  for (const g of geometries) g.dispose();
+  for (const m of materials) m.dispose();
+  city.setProvenance(inspect);
+  applyParameters();
+  updateGenerationStats();
+  $('building-info').hidden = true;
+  drawMap();
 }
 
-async function exportPNG(){
-  const button=$('export-png');button.disabled=true;toast('正在生成高分辨率画面…');
-  const size=renderer.getSize(new THREE.Vector2()),ratio=renderer.getPixelRatio();
-  try{
-    const scale=2400/Math.max(size.x,size.y),w=Math.round(size.x*scale),h=Math.round(size.y*scale);
-    renderer.setPixelRatio(1);renderer.setSize(w,h,false);ink.resize(w,h);city.updateLOD(camera,h);ink.render();
-    const output=document.createElement('canvas');output.width=w;output.height=h;const context=output.getContext('2d');context.drawImage(renderer.domElement,0,0);
-    const font=Math.max(13,Math.round(w/140));context.font=`${font}px sans-serif`;const credit='© OpenStreetMap contributors · openstreetmap.org/copyright | Beijing City Ink';
-    const textWidth=context.measureText(credit).width;context.fillStyle='rgba(247,245,237,.92)';context.fillRect(w-textWidth-28,h-font-24,textWidth+24,font+17);context.fillStyle='#52614d';context.fillText(credit,w-textWidth-16,h-13);
-    const blob=await new Promise(resolve=>output.toBlob(resolve,'image/png'));if(!blob)throw new Error('浏览器无法编码 PNG');download(blob,'beijing-city-ink.png');toast(`已导出 ${w} × ${h} PNG，含地图来源标注。`);
-  }catch(error){toast(`导出失败：${error.message}`);console.error(error);}
-  finally{renderer.setPixelRatio(ratio);renderer.setSize(size.x,size.y,false);const buffer=renderer.getDrawingBufferSize(new THREE.Vector2());ink.resize(buffer.x,buffer.y);city.updateLOD(camera,viewport.clientHeight);button.disabled=false;invalidate();}
+async function exportPNG() {
+  const button = $('export-png');
+  button.disabled = true;
+  toast('正在生成高分辨率画面…');
+  const size = renderer.getSize(new THREE.Vector2()),
+    ratio = renderer.getPixelRatio();
+  try {
+    const scale = 2400 / Math.max(size.x, size.y),
+      w = Math.round(size.x * scale),
+      h = Math.round(size.y * scale);
+    renderer.setPixelRatio(1);
+    renderer.setSize(w, h, false);
+    ink.resize(w, h);
+    city.updateLOD(camera, h);
+    ink.render();
+    const output = document.createElement('canvas');
+    output.width = w;
+    output.height = h;
+    const context = output.getContext('2d');
+    context.drawImage(renderer.domElement, 0, 0);
+    const font = Math.max(13, Math.round(w / 140));
+    context.font = `${font}px sans-serif`;
+    const credit = '© OpenStreetMap contributors · openstreetmap.org/copyright | Beijing City Ink';
+    const textWidth = context.measureText(credit).width;
+    context.fillStyle = 'rgba(247,245,237,.92)';
+    context.fillRect(w - textWidth - 28, h - font - 24, textWidth + 24, font + 17);
+    context.fillStyle = '#52614d';
+    context.fillText(credit, w - textWidth - 16, h - 13);
+    const blob = await new Promise((resolve) => output.toBlob(resolve, 'image/png'));
+    if (!blob) throw new Error('浏览器无法编码 PNG');
+    download(blob, 'beijing-city-ink.png');
+    toast(`已导出 ${w} × ${h} PNG，含地图来源标注。`);
+  } catch (error) {
+    toast(`导出失败：${error.message}`);
+    console.error(error);
+  } finally {
+    renderer.setPixelRatio(ratio);
+    renderer.setSize(size.x, size.y, false);
+    const buffer = renderer.getDrawingBufferSize(new THREE.Vector2());
+    ink.resize(buffer.x, buffer.y);
+    city.updateLOD(camera, viewport.clientHeight);
+    button.disabled = false;
+    invalidate();
+  }
 }
 
-async function exportGLB(){
-  const button=$('export-glb');button.disabled=true;toast('正在打包建筑、道路与树木几何…');
-  const wasInspect=inspect;
-  try{
-    if(wasInspect)city.setProvenance(false);
-    const clone=city.group.clone(true);
+async function exportGLB() {
+  const button = $('export-glb');
+  button.disabled = true;
+  toast('正在打包建筑、道路与树木几何…');
+  const wasInspect = inspect;
+  try {
+    if (wasInspect) city.setProvenance(false);
+    const clone = city.group.clone(true);
     // Keep provenance, without serializing per-vertex source-color backups.
-    clone.traverse(o=>{const b=o.userData.feature;o.userData=b?{osmId:b.osmId,osmType:b.osmType,heightSource:b.source,generatedShape:b.generatedShape||null}:{};});
-    clone.userData={attribution:'© OpenStreetMap contributors',license:'ODbL-1.0',licenseUrl:'https://www.openstreetmap.org/copyright',center:data.metadata.center,description:'OSM geometry plus inferred procedural details. Screen-space ink and shader windows are not included.'};
+    clone.traverse((o) => {
+      const b = o.userData.feature;
+      o.userData = b
+        ? { osmId: b.osmId, osmType: b.osmType, heightSource: b.source, generatedShape: b.generatedShape || null }
+        : {};
+    });
+    clone.userData = {
+      attribution: '© OpenStreetMap contributors',
+      license: 'ODbL-1.0',
+      licenseUrl: 'https://www.openstreetmap.org/copyright',
+      center: data.metadata.center,
+      description:
+        'OSM geometry plus inferred procedural details. Screen-space ink and shader windows are not included.',
+    };
     // GLTFExporter supports ordinary meshes; expand instances for portable geometry.
-    const instances=[];clone.traverse(o=>{if(o.isInstancedMesh)instances.push(o);});
-    for(const inst of instances){
-      const replacement=new THREE.Group();replacement.name=inst.name;replacement.matrix.copy(inst.matrix);replacement.matrixAutoUpdate=false;
-      for(let i=0;i<inst.count;i++){const mesh=new THREE.Mesh(inst.geometry,inst.material);inst.getMatrixAt(i,mesh.matrix);mesh.matrixAutoUpdate=false;replacement.add(mesh);}
-      inst.parent.add(replacement);inst.removeFromParent();
+    const instances = [];
+    clone.traverse((o) => {
+      if (o.isInstancedMesh) instances.push(o);
+    });
+    for (const inst of instances) {
+      const replacement = new THREE.Group();
+      replacement.name = inst.name;
+      replacement.matrix.copy(inst.matrix);
+      replacement.matrixAutoUpdate = false;
+      for (let i = 0; i < inst.count; i++) {
+        const mesh = new THREE.Mesh(inst.geometry, inst.material);
+        inst.getMatrixAt(i, mesh.matrix);
+        mesh.matrixAutoUpdate = false;
+        replacement.add(mesh);
+      }
+      inst.parent.add(replacement);
+      inst.removeFromParent();
     }
-    const result=await new GLTFExporter().parseAsync(clone,{binary:true,onlyVisible:true});
-    download(new Blob([result],{type:'model/gltf-binary'}),'beijing-city-ink.glb');
+    const result = await new GLTFExporter().parseAsync(clone, { binary: true, onlyVisible: true });
+    download(new Blob([result], { type: 'model/gltf-binary' }), 'beijing-city-ink.glb');
     toast('GLB 已导出几何；网点、程序窗格、玻璃反射与墙面纹理仅保留在本渲染器中。');
-  }catch(error){toast(`导出失败：${error.message}`);console.error(error);}
-  finally{if(wasInspect)city.setProvenance(true);button.disabled=false;invalidate();}
+  } catch (error) {
+    toast(`导出失败：${error.message}`);
+    console.error(error);
+  } finally {
+    if (wasInspect) city.setProvenance(true);
+    button.disabled = false;
+    invalidate();
+  }
 }
 
-function connectUI(){
-  for(const button of document.querySelectorAll('[data-mode]'))button.addEventListener('click',()=>setMode(Number(button.dataset.mode)));
-  for(const button of document.querySelectorAll('[data-camera]'))button.addEventListener('click',()=>preset(button.dataset.camera));
-  $('reset-view').onclick=()=>preset('overview');
-  for(const id of Object.keys(parameterRanges))$(id).addEventListener('input',applyParameters);
-  $('detail-view').onchange=()=>{if($('detail-view').value)preset($('detail-view').value);};
-  $('props-toggle').onchange=applyParameters;
-  $('landscape-toggle').onchange=()=>{regenerate(seed);sun.shadow.needsUpdate=true;invalidate();};
-  $('roof-inference-toggle').onchange=()=>{regenerate(seed);sun.shadow.needsUpdate=true;invalidate();};
-  $('reset-look').onclick=()=>{for(const id of Object.keys(parameterRanges))if(id!=='lens')$(id).value=$(id).defaultValue;applyParameters();};
-  $('save-view').onclick=async()=>{const hash=encodeView(captureState());history.replaceState(null,'',hash);$('view-link').value=location.href;try{await navigator.clipboard.writeText(location.href);toast('视角链接已复制，包含机位、参数与种子。');}catch{toast('视角已写入地址栏，也可在侧栏复制链接。');}};
-  $('export-state').onclick=()=>download(new Blob([JSON.stringify(captureState(),null,2)],{type:'application/json'}),'beijing-city-ink-view.json');
-  $('reroll').onclick=()=>{regenerate(seed%100000+1);toast('只重估缺失高度；已标注高度与真实轮廓保持原值。');};
-  $('windows-toggle').onchange=()=>{city.shared.windows.value=$('windows-toggle').checked?1:0;city.detailGroup.visible=$('windows-toggle').checked;invalidate();};
-  $('trees-toggle').onchange=()=>{city.treeGroup.visible=$('trees-toggle').checked;sun.shadow.needsUpdate=true;invalidate();};
-  $('shadows-toggle').onchange=()=>{sun.castShadow=$('shadows-toggle').checked;sun.shadow.needsUpdate=true;invalidate();};
-  $('rotate-toggle').onchange=()=>{controls.autoRotate=$('rotate-toggle').checked;invalidate();};
-  $('provenance').onclick=()=>{inspect=!inspect;document.body.classList.toggle('inspect',inspect);$('provenance').setAttribute('aria-pressed',String(inspect));city.setProvenance(inspect);setMode(mode);drawMap();$('view-subtitle').textContent=inspect?'绿：标注高度 · 蓝：楼层换算 · 橙：规则估算':'真实街区，程序构建。';};
-  $('close-info').onclick=()=>{$('building-info').hidden=true;};
-  $('export-png').onclick=exportPNG;$('export-glb').onclick=exportGLB;
-  $('map').addEventListener('click',event=>{
-    const rect=$('map').getBoundingClientRect(),px=(event.clientX-rect.left)*$('map').width/rect.width,py=(event.clientY-rect.top)*$('map').height/rect.height;
-    const x=(px-mapState.offsetX)/mapState.scale+mapState.x0,z=(py-mapState.offsetY)/mapState.scale+mapState.z0;
-    const offset=camera.position.clone().sub(controls.target);controls.target.set(x,15,z);camera.position.copy(controls.target).add(offset.multiplyScalar(.6));controls.update();invalidate();
+function connectUI() {
+  for (const button of document.querySelectorAll('[data-mode]'))
+    button.addEventListener('click', () => setMode(Number(button.dataset.mode)));
+  for (const button of document.querySelectorAll('[data-camera]'))
+    button.addEventListener('click', () => preset(button.dataset.camera));
+  $('reset-view').onclick = () => preset('overview');
+  for (const id of Object.keys(parameterRanges)) $(id).addEventListener('input', applyParameters);
+  $('detail-view').onchange = () => {
+    if ($('detail-view').value) preset($('detail-view').value);
+  };
+  $('props-toggle').onchange = applyParameters;
+  $('landscape-toggle').onchange = () => {
+    regenerate(seed);
+    sun.shadow.needsUpdate = true;
+    invalidate();
+  };
+  $('roof-inference-toggle').onchange = () => {
+    regenerate(seed);
+    sun.shadow.needsUpdate = true;
+    invalidate();
+  };
+  $('reset-look').onclick = () => {
+    for (const id of Object.keys(parameterRanges)) if (id !== 'lens') $(id).value = $(id).defaultValue;
+    applyParameters();
+  };
+  $('save-view').onclick = async () => {
+    const hash = encodeView(captureState());
+    history.replaceState(null, '', hash);
+    $('view-link').value = location.href;
+    try {
+      await navigator.clipboard.writeText(location.href);
+      toast('视角链接已复制，包含机位、参数与种子。');
+    } catch {
+      toast('视角已写入地址栏，也可在侧栏复制链接。');
+    }
+  };
+  $('export-state').onclick = () =>
+    download(
+      new Blob([JSON.stringify(captureState(), null, 2)], { type: 'application/json' }),
+      'beijing-city-ink-view.json',
+    );
+  $('reroll').onclick = () => {
+    regenerate((seed % 100000) + 1);
+    toast('只重估缺失高度；已标注高度与真实轮廓保持原值。');
+  };
+  $('windows-toggle').onchange = () => {
+    city.shared.windows.value = $('windows-toggle').checked ? 1 : 0;
+    city.detailGroup.visible = $('windows-toggle').checked;
+    invalidate();
+  };
+  $('trees-toggle').onchange = () => {
+    city.treeGroup.visible = $('trees-toggle').checked;
+    sun.shadow.needsUpdate = true;
+    invalidate();
+  };
+  $('shadows-toggle').onchange = () => {
+    sun.castShadow = $('shadows-toggle').checked;
+    sun.shadow.needsUpdate = true;
+    invalidate();
+  };
+  $('rotate-toggle').onchange = () => {
+    controls.autoRotate = $('rotate-toggle').checked;
+    invalidate();
+  };
+  $('provenance').onclick = () => {
+    inspect = !inspect;
+    document.body.classList.toggle('inspect', inspect);
+    $('provenance').setAttribute('aria-pressed', String(inspect));
+    city.setProvenance(inspect);
+    setMode(mode);
+    drawMap();
+    $('view-subtitle').textContent = inspect ? '绿：标注高度 · 蓝：楼层换算 · 橙：规则估算' : '真实街区，程序构建。';
+  };
+  $('close-info').onclick = () => {
+    $('building-info').hidden = true;
+  };
+  $('export-png').onclick = exportPNG;
+  $('export-glb').onclick = exportGLB;
+  $('map').addEventListener('click', (event) => {
+    const rect = $('map').getBoundingClientRect(),
+      px = ((event.clientX - rect.left) * $('map').width) / rect.width,
+      py = ((event.clientY - rect.top) * $('map').height) / rect.height;
+    const x = (px - mapState.offsetX) / mapState.scale + mapState.x0,
+      z = (py - mapState.offsetY) / mapState.scale + mapState.z0;
+    const offset = camera.position.clone().sub(controls.target);
+    controls.target.set(x, 15, z);
+    camera.position.copy(controls.target).add(offset.multiplyScalar(0.6));
+    controls.update();
+    invalidate();
   });
-  let pointer=null;
-  const raycaster=new THREE.Raycaster();
-  renderer.domElement.addEventListener('pointerdown',event=>{pointer=[event.clientX,event.clientY,event.button];});
-  renderer.domElement.addEventListener('pointerup',event=>{
-    if(!pointer||pointer[2]!==0||Math.hypot(event.clientX-pointer[0],event.clientY-pointer[1])>5)return;
-    const rect=renderer.domElement.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1),camera);
-    const hit=raycaster.intersectObjects(city.buildings,false)[0];if(hit)showBuilding(hit.object.userData.feature);
+  let pointer = null;
+  const raycaster = new THREE.Raycaster();
+  renderer.domElement.addEventListener('pointerdown', (event) => {
+    pointer = [event.clientX, event.clientY, event.button];
   });
-  window.addEventListener('keydown',event=>{if(event.key==='Escape'){$('building-info').hidden=true;$('toast').hidden=true;}});
+  renderer.domElement.addEventListener('pointerup', (event) => {
+    if (!pointer || pointer[2] !== 0 || Math.hypot(event.clientX - pointer[0], event.clientY - pointer[1]) > 5) return;
+    const rect = renderer.domElement.getBoundingClientRect();
+    raycaster.setFromCamera(
+      new THREE.Vector2(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        (-(event.clientY - rect.top) / rect.height) * 2 + 1,
+      ),
+      camera,
+    );
+    const hit = raycaster.intersectObjects(city.buildings, false)[0];
+    if (hit) showBuilding(hit.object.userData.feature);
+  });
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      $('building-info').hidden = true;
+      $('toast').hidden = true;
+    }
+  });
 }
 
-async function initialize(){
-  try{
-    activeLocation=resolveLocation(location.search);
-    for(const item of LOCATIONS){const option=document.createElement('option');option.value=item.id;option.textContent=item.name;$('location-select').append(option);}
-    $('location-select').value=activeLocation.id;
-    $('location-select').onchange=()=>{const url=new URL(location.href);url.searchParams.set('site',$('location-select').value);url.hash='';location.assign(url);};
-    $('location-name').textContent=activeLocation.name;$('location-subtitle').textContent=activeLocation.subtitle;
-    $('location-label').textContent=activeLocation.label;
-    $('loading').querySelector('strong').textContent=`正在构建${activeLocation.name}…`;
-    $('map').setAttribute('aria-label',`${activeLocation.name}俯视地图，可点击移动相机`);
-    document.title=`${activeLocation.name} · 城市线境`;
-    for(const value of ['citic','cctv']){const option=$('detail-view').querySelector(`option[value="${value}"]`);option.hidden=activeLocation.id!=='beijing';option.disabled=option.hidden;}
-    if(baselineMode){({buildCity}=await import('./baseline/city-v1.js'));({InkRenderer}=await import('./baseline/ink-v1.js'));document.querySelector('.local-badge').textContent='v0.1 几何 / 渲染对照';document.querySelector('.advanced').hidden=true;}
-    const raw=await loadLocationData(activeLocation,async name=>{
-      const response=await fetch(`${import.meta.env.BASE_URL}data/${name}.json`);
-      if(!response.ok)throw new Error(`地图数据 ${name} 读取失败 (${response.status})。`);
-      return response.json();
-    },mergeOSMOverlay);
-    rawData=raw;data=parseOSM(raw,seed);city=buildCity(data);depthBounds=collectDepthBounds(city.group);
-    scene=new THREE.Scene();scene.background=new THREE.Color('#f7f5ed');scene.add(city.group);
-    renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:false,powerPreference:'high-performance'});
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
-    renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.NoToneMapping;
-    viewport.append(renderer.domElement);renderer.domElement.setAttribute('aria-label',`${activeLocation.name}三维城市视图`);
-    camera=new THREE.PerspectiveCamera(42,1,.8,7000);
-    controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.085;controls.minDistance=6;controls.maxDistance=4800;controls.autoRotateSpeed=.35;controls.screenSpacePanning=true;controls.addEventListener('change',invalidate);
-    scene.add(new THREE.HemisphereLight('#f4f3e8','#a8b4a2',1.7));
-    sun=new THREE.DirectionalLight('#fff8e8',2.3);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
-    Object.assign(sun.shadow.camera,{left:-1400,right:1400,top:1400,bottom:-1400,near:10,far:3600});sun.shadow.bias=-.00025;sun.shadow.normalBias=.5;sun.shadow.radius=2;scene.add(sun);scene.add(sun.target);updateLight();
-    ink=new InkRenderer(renderer,scene,camera,city.shared);preset('overview');resize();
-    const counts={height:0,levels:0,estimated:0};for(const b of data.buildings)counts[b.source]++;
-    $('stat-buildings').textContent=data.buildings.length;$('stat-roads').textContent=data.roads.length;$('stat-known').textContent=data.buildings.length?`${Math.round((counts.height+counts.levels)/data.buildings.length*100)}%`:'—';
-    $('coordinate').textContent=coordinateLabel(data.metadata.center);
-    for(const [source,count]of Object.entries(counts))$(`count-${source}`).textContent=count;
-    $('render-status').textContent=`${data.buildings.length} 个体块 · ${city.treeCount} 棵树 · 数据已缓存于项目`;
-    $('scale-label').textContent=`${((data.bounds[2]-data.bounds[0])/1000).toFixed(1)} × ${((data.bounds[3]-data.bounds[1])/1000).toFixed(1)} km`;
+async function initialize() {
+  try {
+    activeLocation = resolveLocation(location.search);
+    for (const item of LOCATIONS) {
+      const option = document.createElement('option');
+      option.value = item.id;
+      option.textContent = item.name;
+      $('location-select').append(option);
+    }
+    $('location-select').value = activeLocation.id;
+    $('location-select').onchange = () => {
+      const url = new URL(location.href);
+      url.searchParams.set('site', $('location-select').value);
+      url.hash = '';
+      location.assign(url);
+    };
+    $('location-name').textContent = activeLocation.name;
+    $('location-subtitle').textContent = activeLocation.subtitle;
+    $('location-label').textContent = activeLocation.label;
+    $('loading').querySelector('strong').textContent = `正在构建${activeLocation.name}…`;
+    $('map').setAttribute('aria-label', `${activeLocation.name}俯视地图，可点击移动相机`);
+    document.title = `${activeLocation.name} · 城市线境`;
+    for (const value of ['citic', 'cctv']) {
+      const option = $('detail-view').querySelector(`option[value="${value}"]`);
+      option.hidden = activeLocation.id !== 'beijing';
+      option.disabled = option.hidden;
+    }
+    if (baselineMode) {
+      ({ buildCity } = await import('./baseline/city-v1.js'));
+      ({ InkRenderer } = await import('./baseline/ink-v1.js'));
+      document.querySelector('.local-badge').textContent = 'v0.1 几何 / 渲染对照';
+      document.querySelector('.advanced').hidden = true;
+    }
+    const raw = await loadLocationData(
+      activeLocation,
+      async (name) => {
+        const response = await fetch(`${import.meta.env.BASE_URL}data/${name}.json`);
+        if (!response.ok) throw new Error(`地图数据 ${name} 读取失败 (${response.status})。`);
+        return response.json();
+      },
+      mergeOSMOverlay,
+    );
+    rawData = raw;
+    data = parseOSM(raw, seed);
+    city = buildCity(data);
+    depthBounds = collectDepthBounds(city.group);
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color('#f7f5ed');
+    scene.add(city.group);
+    renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      preserveDrawingBuffer: false,
+      powerPreference: 'high-performance',
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.NoToneMapping;
+    viewport.append(renderer.domElement);
+    renderer.domElement.setAttribute('aria-label', `${activeLocation.name}三维城市视图`);
+    camera = new THREE.PerspectiveCamera(42, 1, 0.8, 7000);
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.085;
+    controls.minDistance = 6;
+    controls.maxDistance = 4800;
+    controls.autoRotateSpeed = 0.35;
+    controls.screenSpacePanning = true;
+    controls.addEventListener('change', invalidate);
+    scene.add(new THREE.HemisphereLight('#f4f3e8', '#a8b4a2', 1.7));
+    sun = new THREE.DirectionalLight('#fff8e8', 2.3);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    Object.assign(sun.shadow.camera, { left: -1400, right: 1400, top: 1400, bottom: -1400, near: 10, far: 3600 });
+    sun.shadow.bias = -0.00025;
+    sun.shadow.normalBias = 0.5;
+    sun.shadow.radius = 2;
+    scene.add(sun);
+    scene.add(sun.target);
+    updateLight();
+    ink = new InkRenderer(renderer, scene, camera, city.shared);
+    preset('overview');
+    resize();
+    const counts = { height: 0, levels: 0, estimated: 0 };
+    for (const b of data.buildings) counts[b.source]++;
+    $('stat-buildings').textContent = data.buildings.length;
+    $('stat-roads').textContent = data.roads.length;
+    $('stat-known').textContent = data.buildings.length
+      ? `${Math.round(((counts.height + counts.levels) / data.buildings.length) * 100)}%`
+      : '—';
+    $('coordinate').textContent = coordinateLabel(data.metadata.center);
+    for (const [source, count] of Object.entries(counts)) $(`count-${source}`).textContent = count;
+    $('render-status').textContent = `${data.buildings.length} 个体块 · ${city.treeCount} 棵树 · 数据已缓存于项目`;
+    $('scale-label').textContent =
+      `${((data.bounds[2] - data.bounds[0]) / 1000).toFixed(1)} × ${((data.bounds[3] - data.bounds[1]) / 1000).toFixed(1)} km`;
     connectUI();
-    if(initialView){preset(initialView.view||'overview');for(const[id,value]of Object.entries(initialView.parameters))$(id).value=value;for(const[id,value]of Object.entries(initialView.toggles))$(id).checked=value;controls.maxPolarAngle=Math.PI*.9;if(initialView.position)camera.position.fromArray(initialView.position);if(initialView.target)controls.target.fromArray(initialView.target);controls.update();setMode(initialView.mode);}
-    applyParameters();updateGenerationStats();drawMap();$('view-link').value=location.href;$('loading').hidden=true;
+    if (initialView) {
+      preset(initialView.view || 'overview');
+      for (const [id, value] of Object.entries(initialView.parameters)) $(id).value = value;
+      for (const [id, value] of Object.entries(initialView.toggles)) $(id).checked = value;
+      controls.maxPolarAngle = Math.PI * 0.9;
+      if (initialView.position) camera.position.fromArray(initialView.position);
+      if (initialView.target) controls.target.fromArray(initialView.target);
+      controls.update();
+      setMode(initialView.mode);
+    }
+    applyParameters();
+    updateGenerationStats();
+    drawMap();
+    $('view-link').value = location.href;
+    $('loading').hidden = true;
     new ResizeObserver(resize).observe(viewport);
-    let previous=performance.now();
-    function animate(now){
-      requestAnimationFrame(animate);const delta=Math.min(.05,(now-previous)/1000);previous=now;controls.update(delta);
-      if(needsRender||controls.autoRotate){
+    let previous = performance.now();
+    function animate(now) {
+      requestAnimationFrame(animate);
+      const delta = Math.min(0.05, (now - previous) / 1000);
+      previous = now;
+      controls.update(delta);
+      if (needsRender || controls.autoRotate) {
         // A tiny near plane wastes depth precision in district-wide views and
         // makes metre-scale facade trims fight their backing walls.
-        const near=stableNearPlane(camera.position,depthBounds);
-        if(Math.abs(camera.near-near)>.01){camera.near=near;camera.updateProjectionMatrix();}
-        city.updateLOD(camera,viewport.clientHeight);ink.render();drawMap();
-        $('camera-readout').textContent=`机位 ${camera.position.toArray().map(n=>n.toFixed(1)).join(', ')} m · FOV ${camera.fov.toFixed(1)}°`;
-        const d=camera.position.clone().sub(controls.target);$('compass-arrow').setAttribute('transform',`rotate(${-Math.atan2(d.x,d.z)*180/Math.PI} 25 25)`);needsRender=false;
+        const near = stableNearPlane(camera.position, depthBounds);
+        if (Math.abs(camera.near - near) > 0.01) {
+          camera.near = near;
+          camera.updateProjectionMatrix();
+        }
+        city.updateLOD(camera, viewport.clientHeight);
+        ink.render();
+        drawMap();
+        $('camera-readout').textContent = `机位 ${camera.position
+          .toArray()
+          .map((n) => n.toFixed(1))
+          .join(', ')} m · FOV ${camera.fov.toFixed(1)}°`;
+        const d = camera.position.clone().sub(controls.target);
+        $('compass-arrow').setAttribute('transform', `rotate(${(-Math.atan2(d.x, d.z) * 180) / Math.PI} 25 25)`);
+        needsRender = false;
       }
     }
     requestAnimationFrame(animate);
-    console.info('City ready', {buildings:data.buildings.length,roads:data.roads.length,heights:counts,osmTrees:data.trees.length,generatedTrees:city.generatedTrees,...data.stats});
-  }catch(error){console.error(error);$('loading').replaceChildren();const message=document.createElement('strong');message.textContent=error.message;$('loading').append(message);const detail=document.createElement('small');detail.textContent='请使用支持 WebGL 2 的浏览器，并通过本地服务器打开。';$('loading').append(detail);}
+    console.info('City ready', {
+      buildings: data.buildings.length,
+      roads: data.roads.length,
+      heights: counts,
+      osmTrees: data.trees.length,
+      generatedTrees: city.generatedTrees,
+      ...data.stats,
+    });
+  } catch (error) {
+    console.error(error);
+    $('loading').replaceChildren();
+    const message = document.createElement('strong');
+    message.textContent = error.message;
+    $('loading').append(message);
+    const detail = document.createElement('small');
+    detail.textContent = '请使用支持 WebGL 2 的浏览器，并通过本地服务器打开。';
+    $('loading').append(detail);
+  }
 }
 initialize();

@@ -7,10 +7,20 @@ test('surface parking is distinguished from underground, roof and multi-storey f
   assert.equal(classifyLandscape({ amenity: 'parking' }), 'parking');
   assert.equal(classifyLandscape({ amenity: 'parking', parking: 'surface', access: 'private' }), 'parking');
   for (const detail of [
-    { parking: 'underground' }, { parking: 'multi-storey' }, { parking: 'rooftop' },
-    { location: 'underground' }, { building: 'yes' }, { 'building:part': 'yes' },
-    { level: '-1' }, { level: '2' }, { level: '0;1' }, { level: '0-3' }, { layer: '-1' },
-    { indoor: 'yes' }, { min_height: '4' }, { bridge: 'yes' },
+    { parking: 'underground' },
+    { parking: 'multi-storey' },
+    { parking: 'rooftop' },
+    { location: 'underground' },
+    { building: 'yes' },
+    { 'building:part': 'yes' },
+    { level: '-1' },
+    { level: '2' },
+    { level: '0;1' },
+    { level: '0-3' },
+    { layer: '-1' },
+    { indoor: 'yes' },
+    { min_height: '4' },
+    { bridge: 'yes' },
   ]) {
     assert.equal(isSurfaceLandscape({ amenity: 'parking', ...detail }), false, JSON.stringify(detail));
     assert.equal(classifyLandscape({ amenity: 'parking', ...detail }), null);
@@ -47,9 +57,10 @@ test('landcover remains distinct from sports, water, construction and garden veg
 });
 
 test('CBD snapshot recovers actual plazas and facilities without repainting existing parking buildings', () => {
-  const read = file => JSON.parse(fs.readFileSync(new URL(`../public/data/${file}`, import.meta.url), 'utf8'));
-  const base = read('beijing-cbd.json'), overlay = read('landscape-details.json');
-  const find = id => [...base.elements, ...overlay.elements].find(e => e.id === id)?.tags;
+  const read = (file) => JSON.parse(fs.readFileSync(new URL(`../public/data/${file}`, import.meta.url), 'utf8'));
+  const base = read('beijing-cbd.json'),
+    overlay = read('landscape-details.json');
+  const find = (id) => [...base.elements, ...overlay.elements].find((e) => e.id === id)?.tags;
   assert.equal(classifyLandscape(find(169560965)), null); // Actual multi-storey building.
   assert.equal(classifyLandscape(find(1022407217)), null);
   assert.equal(classifyLandscape(find(1466401953)), 'plaza');
@@ -60,7 +71,7 @@ test('CBD snapshot recovers actual plazas and facilities without repainting exis
   assert.equal(classifyLandscape(find(948916945)), 'wood');
   assert.equal(classifyLandscape(find(1197842042)), null); // Whole CBD commercial boundary.
   assert.equal(classifyLandscapeContext(find(1197842042)), 'commercial');
-  const baseIds = new Set(base.elements.map(e => `${e.type}:${e.id}`));
-  assert.ok(overlay.elements.every(e => !baseIds.has(`${e.type}:${e.id}`)));
-  assert.equal(overlay.elements.filter(e => classifyLandscape(e.tags) === 'sport').length, 8);
+  const baseIds = new Set(base.elements.map((e) => `${e.type}:${e.id}`));
+  assert.ok(overlay.elements.every((e) => !baseIds.has(`${e.type}:${e.id}`)));
+  assert.equal(overlay.elements.filter((e) => classifyLandscape(e.tags) === 'sport').length, 8);
 });

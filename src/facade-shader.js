@@ -3,24 +3,34 @@
 // The latter is consumed only on procedural facades, never as a cast shadow.
 export function installFacadeShader(shader, shared, lightOnly = false) {
   Object.assign(shader.uniforms, {
-    uWindows: shared.windows, uProvenance: shared.provenance,
-    uFacadeDetail: shared.facadeDetail, uGlassReflection: shared.glassReflection,
-    uFacadeToneSize: shared.toneSize || {value:4.2},
-    uFacadeSunDirection: shared.sunDirection || {value:{x:.5,y:.707,z:-.5}},
-    uFacadeProjection: shared.projectionScale || {value:1000},
+    uWindows: shared.windows,
+    uProvenance: shared.provenance,
+    uFacadeDetail: shared.facadeDetail,
+    uGlassReflection: shared.glassReflection,
+    uFacadeToneSize: shared.toneSize || { value: 4.2 },
+    uFacadeSunDirection: shared.sunDirection || { value: { x: 0.5, y: 0.707, z: -0.5 } },
+    uFacadeProjection: shared.projectionScale || { value: 1000 },
   });
   shader.vertexShader = shader.vertexShader
-    .replace('#include <common>', `#include <common>
+    .replace(
+      '#include <common>',
+      `#include <common>
       attribute vec4 aFacade; varying vec4 vFacade;
       attribute vec2 aStyle; varying vec2 vStyle;
       attribute vec4 aLayout; varying vec4 vLayout;
       attribute vec2 aSurface; varying vec2 vSurface;
-      varying vec3 vGlassWorld; varying vec3 vGlassNormal;`)
-    .replace('#include <begin_vertex>', `#include <begin_vertex>
+      varying vec3 vGlassWorld; varying vec3 vGlassNormal;`,
+    )
+    .replace(
+      '#include <begin_vertex>',
+      `#include <begin_vertex>
       vFacade=aFacade; vStyle=aStyle; vLayout=aLayout;vSurface=aSurface;
       vGlassWorld=(modelMatrix*vec4(position,1.)).xyz;
-      vGlassNormal=normalize(mat3(modelMatrix)*normal);`);
-  shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
+      vGlassNormal=normalize(mat3(modelMatrix)*normal);`,
+    );
+  shader.fragmentShader = shader.fragmentShader.replace(
+    '#include <common>',
+    `#include <common>
     varying vec4 vFacade; varying vec2 vStyle; varying vec4 vLayout; varying vec2 vSurface;
     varying vec3 vGlassWorld; varying vec3 vGlassNormal;
     uniform float uWindows,uProvenance,uFacadeDetail,uGlassReflection,uFacadeToneSize,uFacadeProjection;
@@ -31,8 +41,11 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
     float stripeIntegral(float p,float width){return floor(p)*2.*width+clamp(fract(p)-(.5-width),0.,2.*width);}
     float stripe(float p,float width){float w=max(fwidth(p),.001);return clamp((stripeIntegral(p+w*.5,width)-stripeIntegral(p-w*.5,width))/w,0.,1.);}
     float finishIs(float code){return 1.-step(.2,abs(vSurface.x-code));}
-  `);
-  shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+  `,
+  );
+  shader.fragmentShader = shader.fragmentShader.replace(
+    '#include <color_fragment>',
+    `#include <color_fragment>
     if(vFacade.z>.5 && uWindows>.5 && uProvenance<.5){
       float family=vStyle.x;
       float curtain=1.-step(.2,abs(family-1.)),ribbon=1.-step(.2,abs(family-3.));
@@ -142,7 +155,10 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
       float diagonalFade=1.-smoothstep(.22,.85,max(fwidth(d1),fwidth(d2)));
       float diagonals=max(stripe(d1,.035),stripe(d2,.035))*diagonalFade*diagrid;
       inkWindow=max(inkWindow*mix(1.,.65,diagrid),diagonals*.94);
-      ${lightOnly ? '' : `
+      ${
+        lightOnly
+          ? ''
+          : `
       float cell=fract(sin(dot(floor(vec2(u,v)),vec2(17.21,59.17)))*12345.31);
       vec3 glass=mix(vec3(.17,.24,.28),vec3(.31,.39,.44),cell*.06*resolved+vStyle.y*.4);
       glass=mix(glass,vec3(.21,.31,.37),zun*.55);
@@ -157,21 +173,43 @@ export function installFacadeShader(shader, shared, lightOnly = false) {
       diffuseColor.rgb*=1.-finishInk*.65;
       glassCoverage=mask*isGlass;
       diffuseColor.rgb*=1.-stripe(v+.47,.025)*mix(.12,.26,ribbon)*keepV;
-      diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.49,.55,.57),diagonals*.85);`}
+      diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.49,.55,.57),diagonals*.85);`
+      }
     }
-  `);
-  if(!lightOnly){
-    shader.fragmentShader=shader.fragmentShader
-      .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,.22,glassCoverage);')
-      .replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor=mix(metalnessFactor,.18,glassCoverage);');
+  `,
+  );
+  if (!lightOnly) {
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        '#include <roughnessmap_fragment>',
+        '#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,.22,glassCoverage);',
+      )
+      .replace(
+        '#include <metalnessmap_fragment>',
+        '#include <metalnessmap_fragment>\nmetalnessFactor=mix(metalnessFactor,.18,glassCoverage);',
+      );
   }
-  shader.fragmentShader = shader.fragmentShader.replace('#include <opaque_fragment>', `${lightOnly?'':`outgoingLight=mix(outgoingLight,glassEnvironment,glassCoverage*.48*clamp(uGlassReflection,0.,1.));`}
+  shader.fragmentShader = shader.fragmentShader.replace(
+    '#include <opaque_fragment>',
+    `${lightOnly ? '' : `outgoingLight=mix(outgoingLight,glassEnvironment,glassCoverage*.48*clamp(uGlassReflection,0.,1.));`}
     #include <opaque_fragment>
-    gl_FragColor.a=${lightOnly ? '(abs(vFacadeClass-1.25)<.1 ? inkTone : 1.-getShadowMask())' : 'inkWindow'};`);
-  if(lightOnly){
-    shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nattribute float inkClass; varying float vFacadeClass;').replace('#include <begin_vertex>','#include <begin_vertex>\nvFacadeClass=inkClass;');
-    shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying float vFacadeClass;');
+    gl_FragColor.a=${lightOnly ? '(abs(vFacadeClass-1.25)<.1 ? inkTone : 1.-getShadowMask())' : 'inkWindow'};`,
+  );
+  if (lightOnly) {
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nattribute float inkClass; varying float vFacadeClass;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvFacadeClass=inkClass;');
+    shader.fragmentShader = shader.fragmentShader.replace(
+      '#include <common>',
+      '#include <common>\nvarying float vFacadeClass;',
+    );
   }
 }
 
-export const facadeAttributeDefaults = { aFacade:[0,0,0,0],aStyle:[0,0],aLayout:[0,0,0,0],aSurface:[0,1],inkClass:[4] };
+export const facadeAttributeDefaults = {
+  aFacade: [0, 0, 0, 0],
+  aStyle: [0, 0],
+  aLayout: [0, 0, 0, 0],
+  aSurface: [0, 1],
+  inkClass: [4],
+};

@@ -6,9 +6,16 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
 // Independent screen-space illustration renderer. Render targets remain linear.
 export const INK_DEFAULTS = Object.freeze({
-  lineWidth: 1, outlineWidth: 1.35, toneSize: 4.2, inkDensity: .85,
-  blackPoint: .095, toneThreshold: .52, shadowStrength: 1,
-  aoStrength: .65, haze: .3, treeInk: .8,
+  lineWidth: 1,
+  outlineWidth: 1.35,
+  toneSize: 4.2,
+  inkDensity: 0.85,
+  blackPoint: 0.095,
+  toneThreshold: 0.52,
+  shadowStrength: 1,
+  aoStrength: 0.65,
+  haze: 0.3,
+  treeInk: 0.8,
 });
 
 const vertexShader = `varying vec2 vUv;
@@ -242,65 +249,142 @@ function inferredClass(object) {
 }
 
 export class InkRenderer {
-  constructor(renderer,scene,camera,facadeShared={windows:{value:1},provenance:{value:0},facadeDetail:{value:.5},glassReflection:{value:.65}}){
-    this.renderer=renderer;this.scene=scene;this.camera=camera;
-    this.facadeSource=facadeShared;
-    this.facadeUniforms=Object.fromEntries(Object.entries(facadeShared).map(([key,u])=>[key,{value:u.value}]));
-    const makeTarget=(filter=THREE.LinearFilter)=>new THREE.WebGLRenderTarget(1,1,{minFilter:filter,magFilter:filter,type:THREE.HalfFloatType,depthBuffer:true});
-    this.color=makeTarget();this.light=makeTarget();this.normal=makeTarget(THREE.NearestFilter);this.ids=makeTarget(THREE.NearestFilter);this.ao=makeTarget();this.composite=makeTarget();
+  constructor(
+    renderer,
+    scene,
+    camera,
+    facadeShared = {
+      windows: { value: 1 },
+      provenance: { value: 0 },
+      facadeDetail: { value: 0.5 },
+      glassReflection: { value: 0.65 },
+    },
+  ) {
+    this.renderer = renderer;
+    this.scene = scene;
+    this.camera = camera;
+    this.facadeSource = facadeShared;
+    this.facadeUniforms = Object.fromEntries(Object.entries(facadeShared).map(([key, u]) => [key, { value: u.value }]));
+    const makeTarget = (filter = THREE.LinearFilter) =>
+      new THREE.WebGLRenderTarget(1, 1, {
+        minFilter: filter,
+        magFilter: filter,
+        type: THREE.HalfFloatType,
+        depthBuffer: true,
+      });
+    this.color = makeTarget();
+    this.light = makeTarget();
+    this.normal = makeTarget(THREE.NearestFilter);
+    this.ids = makeTarget(THREE.NearestFilter);
+    this.ao = makeTarget();
+    this.composite = makeTarget();
     // The renderer's canvas antialias flag does not cover offscreen targets.
     // Resolve subpixel facade ribs before the color buffer reaches post effects.
-    this.color.samples=4;
-    this.light.samples=4;
-    this.normal.samples=4;
+    this.color.samples = 4;
+    this.light.samples = 4;
+    this.normal.samples = 4;
     // ID values are discrete labels. Never average IDs with MSAA: mixtures
     // would fabricate building/road identities at an otherwise smooth edge.
     // A neutral reflectance pass separates lighting/cast shadows from glass,
     // asphalt and paint. These dark materials must not all become black ink.
-    this.lightMaterial=new THREE.MeshStandardMaterial({color:new THREE.Color(.6,.6,.6),roughness:1,side:THREE.DoubleSide});
-    this.lightMaterial.defaultAttributeValues={...this.lightMaterial.defaultAttributeValues,...facadeAttributeDefaults};
-    this.lightMaterial.onBeforeCompile=shader=>{
-      shader.fragmentShader=shader.fragmentShader
-        .replace('#include <shadowmap_pars_fragment>','#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>');
-      installFacadeShader(shader,this.facadeUniforms,true);
-      shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','');
+    this.lightMaterial = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(0.6, 0.6, 0.6),
+      roughness: 1,
+      side: THREE.DoubleSide,
+    });
+    this.lightMaterial.defaultAttributeValues = {
+      ...this.lightMaterial.defaultAttributeValues,
+      ...facadeAttributeDefaults,
     };
-    this.lightMaterial.customProgramCacheKey=()=> 'neutral-light-facade-tone-v3';
-    this.normal.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
-    this.normalMaterial=new THREE.MeshNormalMaterial();this.normalMaterial.side=THREE.DoubleSide;
-    this.idMaterial=new THREE.ShaderMaterial({
-      vertexShader:`attribute vec3 objectId; attribute float inkClass; varying vec3 vId; varying float vClass;
+    this.lightMaterial.onBeforeCompile = (shader) => {
+      shader.fragmentShader = shader.fragmentShader.replace(
+        '#include <shadowmap_pars_fragment>',
+        '#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>',
+      );
+      installFacadeShader(shader, this.facadeUniforms, true);
+      shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', '');
+    };
+    this.lightMaterial.customProgramCacheKey = () => 'neutral-light-facade-tone-v3';
+    this.normal.depthTexture = new THREE.DepthTexture(1, 1, THREE.UnsignedIntType);
+    this.normalMaterial = new THREE.MeshNormalMaterial();
+    this.normalMaterial.side = THREE.DoubleSide;
+    this.idMaterial = new THREE.ShaderMaterial({
+      vertexShader: `attribute vec3 objectId; attribute float inkClass; varying vec3 vId; varying float vClass;
       void main(){vec4 p=vec4(position,1.);vId=objectId;vClass=inkClass;
       #ifdef USE_INSTANCING
       p=instanceMatrix*p;
       #endif
       gl_Position=projectionMatrix*modelViewMatrix*p;}`,
-      fragmentShader:`varying vec3 vId;varying float vClass;void main(){gl_FragColor=vec4(vId,vClass);}`,
-      defaultAttributeValues:{color:[1,1,1],uv:[0,0],objectId:[0,0,0],inkClass:[4]},side:THREE.DoubleSide,
+      fragmentShader: `varying vec3 vId;varying float vClass;void main(){gl_FragColor=vec4(vId,vClass);}`,
+      defaultAttributeValues: { color: [1, 1, 1], uv: [0, 0], objectId: [0, 0, 0], inkClass: [4] },
+      side: THREE.DoubleSide,
     });
-    this.inverseProjection=new THREE.Matrix4();this.inverseView=new THREE.Matrix4();
-    const common={tNormal:{value:this.normal.texture},tDepth:{value:this.normal.depthTexture},nearPlane:{value:camera.near},farPlane:{value:camera.far},inverseProjection:{value:this.inverseProjection}};
-    this.material=new THREE.ShaderMaterial({vertexShader,fragmentShader,depthTest:false,depthWrite:false,uniforms:{
-      ...common,tColor:{value:this.color.texture},tLight:{value:this.light.texture},tId:{value:this.ids.texture},tAO:{value:this.ao.texture},
-      resolution:{value:new THREE.Vector2(1,1)},aoResolution:{value:new THREE.Vector2(1,1)},inverseView:{value:this.inverseView},projectionScale:{value:1000},
-      ...Object.fromEntries(Object.entries(INK_DEFAULTS).map(([key,value])=>[key,{value}])),mode:{value:0},
-      paper:{value:new THREE.Color('#ffffff')},ink:{value:new THREE.Color('#17191b')},
-    }});
-    this.aoMaterial=new THREE.ShaderMaterial({vertexShader,fragmentShader:aoShader,depthTest:false,depthWrite:false,uniforms:{
-      ...common,resolution:{value:new THREE.Vector2(1,1)},projectionScale:{value:1},
-    }});
-    this.screenGeometry=new THREE.PlaneGeometry(2,2);this.screenMesh=new THREE.Mesh(this.screenGeometry,this.material);
-    this.screen=new THREE.Scene();this.screen.add(this.screenMesh);this.screenCamera=new THREE.Camera();
-    this.resolveMaterial=new THREE.ShaderMaterial({
-      depthTest:false,depthWrite:false,vertexShader,
-      uniforms:{tDiffuse:{value:this.composite.texture},resolution:{value:new THREE.Vector2(1,1)}},
-      fragmentShader:FXAAShader.fragmentShader
-      .replace('texture( tex2D, uv )','textureLod( tex2D, uv, 0. )')
-      // A single return avoids ANGLE's false uninitialized return warning on
-      // the vendor shader's early-return branch; the algorithm is unchanged.
-      .replace(/if \( ShouldSkipPixel\( luminance \) \) \{[\s\S]*?\n\s*\}/,'vec4 resolved=Sample(tex2D,uv);\n if (!ShouldSkipPixel(luminance)) {')
-      .replace('return Sample( tex2D, uv );\n\n\t\t}\n\n\t\tvoid main()', 'resolved=Sample(tex2D,uv);\n }\n return resolved;\n }\n void main()')
-      .replace('gl_FragColor = ApplyFXAA( tDiffuse, resolution.xy, vUv );',`
+    this.inverseProjection = new THREE.Matrix4();
+    this.inverseView = new THREE.Matrix4();
+    const common = {
+      tNormal: { value: this.normal.texture },
+      tDepth: { value: this.normal.depthTexture },
+      nearPlane: { value: camera.near },
+      farPlane: { value: camera.far },
+      inverseProjection: { value: this.inverseProjection },
+    };
+    this.material = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      depthTest: false,
+      depthWrite: false,
+      uniforms: {
+        ...common,
+        tColor: { value: this.color.texture },
+        tLight: { value: this.light.texture },
+        tId: { value: this.ids.texture },
+        tAO: { value: this.ao.texture },
+        resolution: { value: new THREE.Vector2(1, 1) },
+        aoResolution: { value: new THREE.Vector2(1, 1) },
+        inverseView: { value: this.inverseView },
+        projectionScale: { value: 1000 },
+        ...Object.fromEntries(Object.entries(INK_DEFAULTS).map(([key, value]) => [key, { value }])),
+        mode: { value: 0 },
+        paper: { value: new THREE.Color('#ffffff') },
+        ink: { value: new THREE.Color('#17191b') },
+      },
+    });
+    this.aoMaterial = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader: aoShader,
+      depthTest: false,
+      depthWrite: false,
+      uniforms: {
+        ...common,
+        resolution: { value: new THREE.Vector2(1, 1) },
+        projectionScale: { value: 1 },
+      },
+    });
+    this.screenGeometry = new THREE.PlaneGeometry(2, 2);
+    this.screenMesh = new THREE.Mesh(this.screenGeometry, this.material);
+    this.screen = new THREE.Scene();
+    this.screen.add(this.screenMesh);
+    this.screenCamera = new THREE.Camera();
+    this.resolveMaterial = new THREE.ShaderMaterial({
+      depthTest: false,
+      depthWrite: false,
+      vertexShader,
+      uniforms: { tDiffuse: { value: this.composite.texture }, resolution: { value: new THREE.Vector2(1, 1) } },
+      fragmentShader: FXAAShader.fragmentShader
+        .replace('texture( tex2D, uv )', 'textureLod( tex2D, uv, 0. )')
+        // A single return avoids ANGLE's false uninitialized return warning on
+        // the vendor shader's early-return branch; the algorithm is unchanged.
+        .replace(
+          /if \( ShouldSkipPixel\( luminance \) \) \{[\s\S]*?\n\s*\}/,
+          'vec4 resolved=Sample(tex2D,uv);\n if (!ShouldSkipPixel(luminance)) {',
+        )
+        .replace(
+          'return Sample( tex2D, uv );\n\n\t\t}\n\n\t\tvoid main()',
+          'resolved=Sample(tex2D,uv);\n }\n return resolved;\n }\n void main()',
+        )
+        .replace(
+          'gl_FragColor = ApplyFXAA( tDiffuse, resolution.xy, vUv );',
+          `
         vec4 original=texture2D(tDiffuse,vUv);
         float edge=original.a;
         edge=max(edge,texture2D(tDiffuse,vUv+vec2(resolution.x,0.)).a);
@@ -309,105 +393,185 @@ export class InkRenderer {
         edge=max(edge,texture2D(tDiffuse,vUv-vec2(0.,resolution.y)).a);
         gl_FragColor=vec4(mix(original.rgb,ApplyFXAA(tDiffuse,resolution,vUv).rgb,smoothstep(.08,.7,edge)),1.);
         #include <colorspace_fragment>
-      `),
+      `,
+        ),
     });
-    this.clayMaterial=new THREE.MeshStandardMaterial({color:'#e5e5df',roughness:1});
-    this.clayMaterial.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','');};
-    this.clayMaterial.customProgramCacheKey=()=> 'neutral-clay-no-instance-color-v1';
-    this._classification=new WeakMap();this._classificationClones=new Map();this._disposed=false;this.prepareScene();
+    this.clayMaterial = new THREE.MeshStandardMaterial({ color: '#e5e5df', roughness: 1 });
+    this.clayMaterial.onBeforeCompile = (shader) => {
+      shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', '');
+    };
+    this.clayMaterial.customProgramCacheKey = () => 'neutral-clay-no-instance-color-v1';
+    this._classification = new WeakMap();
+    this._classificationClones = new Map();
+    this._disposed = false;
+    this.prepareScene();
   }
 
-  prepareScene(){
-    const active=new Set();
-    this.scene.traverse(object=>{
-      if(!object.isMesh||!object.geometry?.attributes.position)return;
+  prepareScene() {
+    const active = new Set();
+    this.scene.traverse((object) => {
+      if (!object.isMesh || !object.geometry?.attributes.position) return;
       active.add(object);
-      const kind=inferredClass(object)+(object.userData.generatedFacade ? .25 : 0);
-      const priorClone=this._classificationClones.get(object);
-      if(priorClone&&object.geometry!==priorClone.clone){priorClone.clone.dispose();this._classificationClones.delete(object);}
-      const cached=this._classification.get(object);
-      if(cached?.kind===kind&&cached.geometry===object.geometry)return;
-      if(object.geometry.userData.inkClass!==undefined && object.geometry.userData.inkClass!==kind){
-        const original=object.geometry,clone=original.clone();
+      const kind = inferredClass(object) + (object.userData.generatedFacade ? 0.25 : 0);
+      const priorClone = this._classificationClones.get(object);
+      if (priorClone && object.geometry !== priorClone.clone) {
+        priorClone.clone.dispose();
+        this._classificationClones.delete(object);
+      }
+      const cached = this._classification.get(object);
+      if (cached?.kind === kind && cached.geometry === object.geometry) return;
+      if (object.geometry.userData.inkClass !== undefined && object.geometry.userData.inkClass !== kind) {
+        const original = object.geometry,
+          clone = original.clone();
         // BufferGeometry.copy shares userData. Isolate classification metadata;
         // otherwise a clone changes its source and every later style switch clones again.
-        clone.userData=JSON.parse(JSON.stringify(original.userData));
-        const prior=this._classificationClones.get(object);
-        if(prior)prior.clone.dispose();
-        this._classificationClones.set(object,{original:prior?.original||original,clone});
-        object.geometry=clone;
+        clone.userData = JSON.parse(JSON.stringify(original.userData));
+        const prior = this._classificationClones.get(object);
+        if (prior) prior.clone.dispose();
+        this._classificationClones.set(object, { original: prior?.original || original, clone });
+        object.geometry = clone;
       }
-      const geometry=object.geometry,count=geometry.attributes.position.count;
-      geometry.userData.inkClass=kind;
-      geometry.setAttribute('inkClass',new THREE.Float32BufferAttribute(new Float32Array(count).fill(kind),1));
-      this._classification.set(object,{kind,geometry});
+      const geometry = object.geometry,
+        count = geometry.attributes.position.count;
+      geometry.userData.inkClass = kind;
+      geometry.setAttribute('inkClass', new THREE.Float32BufferAttribute(new Float32Array(count).fill(kind), 1));
+      this._classification.set(object, { kind, geometry });
     });
     // The legacy app reuses the renderer when regenerating the city. Do not
     // retain removed meshes or their classification clones until final dispose.
-    for(const [object,{original,clone}] of this._classificationClones)if(!active.has(object)||object.geometry!==clone){
-      if(object.geometry===clone)object.geometry=original;
-      clone.dispose();this._classificationClones.delete(object);
+    for (const [object, { original, clone }] of this._classificationClones)
+      if (!active.has(object) || object.geometry !== clone) {
+        if (object.geometry === clone) object.geometry = original;
+        clone.dispose();
+        this._classificationClones.delete(object);
+      }
+  }
+
+  resize(width, height) {
+    for (const target of [this.color, this.light, this.normal, this.ids, this.composite]) target.setSize(width, height);
+    this.resolveMaterial.uniforms.resolution.value.set(1 / width, 1 / height);
+    const aw = Math.max(1, Math.ceil(width / 2)),
+      ah = Math.max(1, Math.ceil(height / 2));
+    this.ao.setSize(aw, ah);
+    this.material.uniforms.resolution.value.set(width, height);
+    this.material.uniforms.aoResolution.value.set(aw, ah);
+    this.aoMaterial.uniforms.resolution.value.set(width, height);
+  }
+
+  setFacadeShared(shared) {
+    this.facadeSource = shared;
+  }
+
+  prepareGroup(group) {
+    group.traverse((object) => this._classification.delete(object));
+    const previous = this.scene;
+    try {
+      this.scene = group;
+      this.prepareScene();
+    } finally {
+      this.scene = previous;
     }
   }
 
-  resize(width,height){
-    for(const target of [this.color,this.light,this.normal,this.ids,this.composite])target.setSize(width,height);
-    this.resolveMaterial.uniforms.resolution.value.set(1/width,1/height);
-    const aw=Math.max(1,Math.ceil(width/2)),ah=Math.max(1,Math.ceil(height/2));this.ao.setSize(aw,ah);
-    this.material.uniforms.resolution.value.set(width,height);this.material.uniforms.aoResolution.value.set(aw,ah);
-    this.aoMaterial.uniforms.resolution.value.set(width,height);
-  }
-
-  setFacadeShared(shared){this.facadeSource=shared;}
-
-  prepareGroup(group){
-    group.traverse(object=>this._classification.delete(object));
-    const previous=this.scene;try{this.scene=group;this.prepareScene();}finally{this.scene=previous;}
-  }
-
-  releaseGroup(group){
-    group.traverse(object=>{
-      const owned=this._classificationClones.get(object);
-      if(owned){if(object.geometry===owned.clone)object.geometry=owned.original;owned.clone.dispose();this._classificationClones.delete(object);}
+  releaseGroup(group) {
+    group.traverse((object) => {
+      const owned = this._classificationClones.get(object);
+      if (owned) {
+        if (object.geometry === owned.clone) object.geometry = owned.original;
+        owned.clone.dispose();
+        this._classificationClones.delete(object);
+      }
       this._classification.delete(object);
     });
   }
 
-  render(){
+  render() {
     // Use displayed pixels for the illustration LOD: devicePixelRatio must
     // not turn a distant facade back into a dense dot texture on a HiDPI screen.
-    const scale=this.color.height*this.camera.projectionMatrix.elements[5]*.5/(this.renderer.getPixelRatio?.()||1);
-    if(this.facadeSource.projectionScale)this.facadeSource.projectionScale.value=scale;
-    this.material.uniforms.projectionScale.value=scale;
-    for(const [key,u] of Object.entries(this.facadeUniforms))u.value=this.facadeSource[key].value;
-    const r=this.renderer,s=this.scene,c=this.camera,background=s.background,override=s.overrideMaterial,autoUpdate=r.shadowMap.autoUpdate;
-    const clear=r.getClearColor(new THREE.Color()),alpha=r.getClearAlpha();
-    this.prepareScene();c.updateMatrixWorld();this.inverseProjection.copy(c.projectionMatrixInverse);this.inverseView.copy(c.matrixWorld);
-    this.material.uniforms.nearPlane.value=c.near;this.material.uniforms.farPlane.value=c.far;
-    this.aoMaterial.uniforms.nearPlane.value=c.near;this.aoMaterial.uniforms.farPlane.value=c.far;
-    this.aoMaterial.uniforms.projectionScale.value=this.color.height*c.projectionMatrix.elements[5]*.5;
-    try{
-      s.overrideMaterial=this.material.uniforms.mode.value===3?this.clayMaterial:null;
-      r.setRenderTarget(this.color);r.clear();r.render(s,c);
-      r.shadowMap.autoUpdate=false;s.background=null;r.setClearColor(0x000000,0);
-      if(this.material.uniforms.mode.value===0){s.overrideMaterial=this.lightMaterial;r.setRenderTarget(this.light);r.clear();r.render(s,c);}
-      s.overrideMaterial=this.normalMaterial;r.setRenderTarget(this.normal);r.clear();r.render(s,c);
-      s.overrideMaterial=this.idMaterial;r.setRenderTarget(this.ids);r.clear();r.render(s,c);
-      this.screenMesh.material=this.aoMaterial;r.setRenderTarget(this.ao);r.clear();
-      if(this.aoEnabled!==false)r.render(this.screen,this.screenCamera);
-      this.screenMesh.material=this.material;r.setRenderTarget(this.composite);r.clear();r.render(this.screen,this.screenCamera);
-      this.screenMesh.material=this.resolveMaterial;r.setRenderTarget(null);r.render(this.screen,this.screenCamera);
-    }finally{
-      s.overrideMaterial=override;s.background=background;r.shadowMap.autoUpdate=autoUpdate;r.setClearColor(clear,alpha);r.setRenderTarget(null);this.screenMesh.material=this.material;
+    const scale =
+      (this.color.height * this.camera.projectionMatrix.elements[5] * 0.5) / (this.renderer.getPixelRatio?.() || 1);
+    if (this.facadeSource.projectionScale) this.facadeSource.projectionScale.value = scale;
+    this.material.uniforms.projectionScale.value = scale;
+    for (const [key, u] of Object.entries(this.facadeUniforms)) u.value = this.facadeSource[key].value;
+    const r = this.renderer,
+      s = this.scene,
+      c = this.camera,
+      background = s.background,
+      override = s.overrideMaterial,
+      autoUpdate = r.shadowMap.autoUpdate;
+    const clear = r.getClearColor(new THREE.Color()),
+      alpha = r.getClearAlpha();
+    this.prepareScene();
+    c.updateMatrixWorld();
+    this.inverseProjection.copy(c.projectionMatrixInverse);
+    this.inverseView.copy(c.matrixWorld);
+    this.material.uniforms.nearPlane.value = c.near;
+    this.material.uniforms.farPlane.value = c.far;
+    this.aoMaterial.uniforms.nearPlane.value = c.near;
+    this.aoMaterial.uniforms.farPlane.value = c.far;
+    this.aoMaterial.uniforms.projectionScale.value = this.color.height * c.projectionMatrix.elements[5] * 0.5;
+    try {
+      s.overrideMaterial = this.material.uniforms.mode.value === 3 ? this.clayMaterial : null;
+      r.setRenderTarget(this.color);
+      r.clear();
+      r.render(s, c);
+      r.shadowMap.autoUpdate = false;
+      s.background = null;
+      r.setClearColor(0x000000, 0);
+      if (this.material.uniforms.mode.value === 0) {
+        s.overrideMaterial = this.lightMaterial;
+        r.setRenderTarget(this.light);
+        r.clear();
+        r.render(s, c);
+      }
+      s.overrideMaterial = this.normalMaterial;
+      r.setRenderTarget(this.normal);
+      r.clear();
+      r.render(s, c);
+      s.overrideMaterial = this.idMaterial;
+      r.setRenderTarget(this.ids);
+      r.clear();
+      r.render(s, c);
+      this.screenMesh.material = this.aoMaterial;
+      r.setRenderTarget(this.ao);
+      r.clear();
+      if (this.aoEnabled !== false) r.render(this.screen, this.screenCamera);
+      this.screenMesh.material = this.material;
+      r.setRenderTarget(this.composite);
+      r.clear();
+      r.render(this.screen, this.screenCamera);
+      this.screenMesh.material = this.resolveMaterial;
+      r.setRenderTarget(null);
+      r.render(this.screen, this.screenCamera);
+    } finally {
+      s.overrideMaterial = override;
+      s.background = background;
+      r.shadowMap.autoUpdate = autoUpdate;
+      r.setClearColor(clear, alpha);
+      r.setRenderTarget(null);
+      this.screenMesh.material = this.material;
     }
   }
 
-  dispose(){
-    if(this._disposed)return;this._disposed=true;
-    for(const [object,{original,clone}] of this._classificationClones){if(object.geometry===clone)object.geometry=original;clone.dispose();}
+  dispose() {
+    if (this._disposed) return;
+    this._disposed = true;
+    for (const [object, { original, clone }] of this._classificationClones) {
+      if (object.geometry === clone) object.geometry = original;
+      clone.dispose();
+    }
     this._classificationClones.clear();
-    for(const target of [this.color,this.light,this.normal,this.ids,this.ao,this.composite])target.dispose();
-    for(const m of [this.normalMaterial,this.idMaterial,this.material,this.aoMaterial,this.clayMaterial,this.lightMaterial,this.resolveMaterial])m.dispose();
+    for (const target of [this.color, this.light, this.normal, this.ids, this.ao, this.composite]) target.dispose();
+    for (const m of [
+      this.normalMaterial,
+      this.idMaterial,
+      this.material,
+      this.aoMaterial,
+      this.clayMaterial,
+      this.lightMaterial,
+      this.resolveMaterial,
+    ])
+      m.dispose();
     this.screenGeometry.dispose();
   }
 }

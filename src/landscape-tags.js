@@ -1,6 +1,9 @@
 // Semantic ground-use classification, independent of scene meshes and geography.
 // Source rules: OSM Wiki landcover, landuse, leisure, parking, location and level.
-const value = (tags, key) => String(tags?.[key] ?? '').trim().toLowerCase();
+const value = (tags, key) =>
+  String(tags?.[key] ?? '')
+    .trim()
+    .toLowerCase();
 const present = (tags, key) => !['', 'no', 'false', '0'].includes(value(tags, key));
 const oneOf = (candidate, values) => values.includes(candidate);
 
@@ -8,7 +11,7 @@ function hasNonGroundLevel(input) {
   if (input == null || String(input).trim() === '') return false;
   // Includes semicolon lists and ranges: a multi-level area is not one ground plane.
   const levels = String(input).match(/[+-]?\d+(?:\.\d+)?/g);
-  return levels?.some(level => Number(level) !== 0) ?? false;
+  return levels?.some((level) => Number(level) !== 0) ?? false;
 }
 
 /** Whether a tagged feature can occupy the engine's flat ground surface.
@@ -18,7 +21,10 @@ function hasNonGroundLevel(input) {
 export function isSurfaceLandscape(tags = {}) {
   if (present(tags, 'building') || present(tags, 'building:part')) return false;
   if (present(tags, 'indoor') || present(tags, 'bridge') || present(tags, 'tunnel')) return false;
-  if (oneOf(value(tags, 'location'), ['underground', 'underwater', 'roof', 'rooftop', 'indoor', 'overground', 'elevated'])) return false;
+  if (
+    oneOf(value(tags, 'location'), ['underground', 'underwater', 'roof', 'rooftop', 'indoor', 'overground', 'elevated'])
+  )
+    return false;
   if (oneOf(value(tags, 'parking'), ['underground', 'multi-storey', 'rooftop'])) return false;
   if (hasNonGroundLevel(tags?.level) || hasNonGroundLevel(tags?.layer)) return false;
   if (Number.parseFloat(tags?.min_height) > 0 || Number.parseFloat(tags?.['building:min_level']) > 0) return false;
@@ -32,27 +38,43 @@ export function isSurfaceLandscape(tags = {}) {
  */
 export function classifyLandscape(tags = {}) {
   if (!isSurfaceLandscape(tags)) return null;
-  const landuse = value(tags, 'landuse'), landcover = value(tags, 'landcover');
-  const leisure = value(tags, 'leisure'), natural = value(tags, 'natural');
-  const amenity = value(tags, 'amenity'), highway = value(tags, 'highway');
+  const landuse = value(tags, 'landuse'),
+    landcover = value(tags, 'landcover');
+  const leisure = value(tags, 'leisure'),
+    natural = value(tags, 'natural');
+  const amenity = value(tags, 'amenity'),
+    highway = value(tags, 'highway');
   // These need water-specific rendering; a containing park/grass tag must not win.
-  if (natural === 'water' || amenity === 'fountain' || leisure === 'swimming_pool'
-      || value(tags, 'waterway') === 'riverbank' || natural === 'wetland') return null;
+  if (
+    natural === 'water' ||
+    amenity === 'fountain' ||
+    leisure === 'swimming_pool' ||
+    value(tags, 'waterway') === 'riverbank' ||
+    natural === 'wetland'
+  )
+    return null;
   if (landuse === 'construction') return 'construction';
   if (amenity === 'parking') return 'parking';
   if (leisure === 'pitch' || leisure === 'track') return 'sport';
-  if (value(tags, 'place') === 'square'
-      || (value(tags, 'area') === 'yes' && oneOf(highway, ['pedestrian', 'footway', 'path']))
-      || oneOf(value(tags, 'area:highway'), ['pedestrian', 'footway'])) return 'plaza';
+  if (
+    value(tags, 'place') === 'square' ||
+    (value(tags, 'area') === 'yes' && oneOf(highway, ['pedestrian', 'footway', 'path'])) ||
+    oneOf(value(tags, 'area:highway'), ['pedestrian', 'footway'])
+  )
+    return 'plaza';
   if (amenity === 'marketplace') return 'plaza';
   if (landuse === 'forest' || natural === 'wood' || landcover === 'trees') return 'wood';
-  if (oneOf(landuse, ['flowerbed', 'shrubbery']) || leisure === 'garden'
-      || oneOf(natural, ['scrub', 'heath']) || oneOf(landcover, ['scrub', 'shrubs', 'shrubbery'])) return 'garden';
-  if (oneOf(landuse, ['grass', 'meadow', 'village_green']) || natural === 'grassland'
-      || landcover === 'grass') return 'lawn';
+  if (
+    oneOf(landuse, ['flowerbed', 'shrubbery']) ||
+    leisure === 'garden' ||
+    oneOf(natural, ['scrub', 'heath']) ||
+    oneOf(landcover, ['scrub', 'shrubs', 'shrubbery'])
+  )
+    return 'garden';
+  if (oneOf(landuse, ['grass', 'meadow', 'village_green']) || natural === 'grassland' || landcover === 'grass')
+    return 'lawn';
   if (leisure === 'park' || landuse === 'recreation_ground') return 'park';
-  if (oneOf(natural, ['sand', 'bare_rock', 'mud'])
-      || oneOf(landcover, ['bare_ground', 'sand', 'rock'])) return 'soil';
+  if (oneOf(natural, ['sand', 'bare_rock', 'mud']) || oneOf(landcover, ['bare_ground', 'sand', 'rock'])) return 'soil';
   // A bare surface area may be mapped without landuse. Do not convert a tagged
   // carriageway or parking area into a pedestrian plaza based on its surface.
   if (value(tags, 'area') === 'yes' && !highway && !value(tags, 'area:highway')) {

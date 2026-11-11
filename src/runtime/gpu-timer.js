@@ -39,10 +39,23 @@ export class GpuFrameTimer {
     this._lastDisjoint = false;
     this._lastError = null;
     this._counts = {
-      created: 0, deleted: 0, collected: 0, dropped: 0, budgetDropped: 0,
-      disjoint: 0, disjointDropped: 0, invalidResults: 0, occupiedDropped: 0,
-      skippedActive: 0, evictedSamples: 0, errors: 0, deleteErrors: 0,
-      resetDropped: 0, disposeDropped: 0, errorDropped: 0, resets: 0,
+      created: 0,
+      deleted: 0,
+      collected: 0,
+      dropped: 0,
+      budgetDropped: 0,
+      disjoint: 0,
+      disjointDropped: 0,
+      invalidResults: 0,
+      occupiedDropped: 0,
+      skippedActive: 0,
+      evictedSamples: 0,
+      errors: 0,
+      deleteErrors: 0,
+      resetDropped: 0,
+      disposeDropped: 0,
+      errorDropped: 0,
+      resets: 0,
     };
     this._initialize();
   }
@@ -52,9 +65,17 @@ export class GpuFrameTimer {
     this._lastDisjoint = false;
     try {
       const gl = this._gl;
-      const methods = ['getExtension', 'createQuery', 'beginQuery', 'endQuery',
-        'getQuery', 'getQueryParameter', 'getParameter', 'deleteQuery'];
-      if (!gl || methods.some(name => typeof gl[name] !== 'function')) {
+      const methods = [
+        'getExtension',
+        'createQuery',
+        'beginQuery',
+        'endQuery',
+        'getQuery',
+        'getQueryParameter',
+        'getParameter',
+        'deleteQuery',
+      ];
+      if (!gl || methods.some((name) => typeof gl[name] !== 'function')) {
         this._reason = 'A WebGL2 context with query support is required';
         return;
       }
@@ -262,21 +283,28 @@ export class GpuFrameTimer {
     const samples = this._sampleCursor
       ? [...this._samples.slice(this._sampleCursor), ...this._samples.slice(0, this._sampleCursor)]
       : this._samples;
-    const sorted = samples.map(sample => sample.ms).sort((a, b) => a - b);
+    const sorted = samples.map((sample) => sample.ms).sort((a, b) => a - b);
     const snapshot = {
       available: this._available && !this._disposed,
       reason: this._reason,
-      measurement: 'gpu-elapsed', unit: 'ms', samples: sorted.length,
-      p50: percentile(sorted, 0.5), p95: percentile(sorted, 0.95),
-      p99: percentile(sorted, 0.99), max: sorted.length ? sorted[sorted.length - 1] : null,
-      pending: this._pending.length, active: Boolean(this._active),
-      maxPending: this._maxPending, maxSamples: this._maxSamples,
-      disposed: this._disposed, lastDisjoint: this._lastDisjoint,
+      measurement: 'gpu-elapsed',
+      unit: 'ms',
+      samples: sorted.length,
+      p50: percentile(sorted, 0.5),
+      p95: percentile(sorted, 0.95),
+      p99: percentile(sorted, 0.99),
+      max: sorted.length ? sorted[sorted.length - 1] : null,
+      pending: this._pending.length,
+      active: Boolean(this._active),
+      maxPending: this._maxPending,
+      maxSamples: this._maxSamples,
+      disposed: this._disposed,
+      lastDisjoint: this._lastDisjoint,
       unreleased: this._counts.created - this._counts.deleted,
       lastError: this._lastError,
       ...this._counts,
     };
-    if (raw) snapshot.rawSamples = samples.map(sample => ({ ...sample }));
+    if (raw) snapshot.rawSamples = samples.map((sample) => ({ ...sample }));
     return snapshot;
   }
 

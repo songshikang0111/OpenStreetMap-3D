@@ -14,10 +14,12 @@ float screentone(float density){
 // CPU reference for threshold/monotonicity checks, taking coordinates within
 // the already rotated unit cell. High-density circles meet across cell edges
 // naturally; no discrete inversion or screen-phase change is needed.
-export function halftoneCoverage(density, cellX, cellY, toneSize=4.2){
-  density=Math.max(0,Math.min(.88,density));
-  if(density<.025)return 0;
-  const radius=Math.sqrt(density/Math.PI),aa=Math.max(.018,Math.min(.2,.45/Math.max(toneSize,1.7)));
-  const distance=Math.hypot(cellX,cellY),t=Math.max(0,Math.min(1,(distance-radius+aa)/(2*aa)));
-  return 1-t*t*(3-2*t);
+export function halftoneCoverage(density, cellX, cellY, toneSize = 4.2) {
+  density = Math.max(0, Math.min(0.88, density));
+  if (density < 0.025) return 0;
+  const radius = Math.sqrt(density / Math.PI),
+    aa = Math.max(0.018, Math.min(0.2, 0.45 / Math.max(toneSize, 1.7)));
+  const distance = Math.hypot(cellX, cellY),
+    t = Math.max(0, Math.min(1, (distance - radius + aa) / (2 * aa)));
+  return 1 - t * t * (3 - 2 * t);
 }
