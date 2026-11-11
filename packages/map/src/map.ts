@@ -239,6 +239,8 @@ export class CityMapImpl implements CityMap {
   private filter: ProvenanceFilter = {};
   private styleId = 'light';
   private generationOptions: { seed?: number; inferRoofs?: boolean } = {};
+  private lastDesired: DesiredTile[] = [];
+  private lastUpdate = 0;
 
   constructor(private readonly options: MapOptions) {
     const quality = options.quality ?? 'balanced';
@@ -901,6 +903,7 @@ export class CityMapImpl implements CityMap {
       entry.state = 'ready';
       entry.retries = 0;
       this.placeTile(entry);
+      this.dirty = true;
       this.fire({ type: 'tileload', tile: entry.key });
       spent = performance.now() - start;
     }
@@ -913,7 +916,7 @@ export class CityMapImpl implements CityMap {
   private updateTiles(now: number) {
     const finest = this.tileset.levels[this.tileset.levels.length - 1]!;
     const maxDistance = Math.max(2000, this.transform.cameraToCenterDistance * this.transform.unitsPerPixel * 8);
-    const desired = selectTiles(
+    const desired = (this.lastDesired = selectTiles(
       this.transform,
       this.tileset,
       this.coverage,
@@ -924,13 +927,32 @@ export class CityMapImpl implements CityMap {
         maxDistance,
       },
       this.refined,
-    );
+    ));
     const wanted = new Set<string>();
     for (const d of desired) {
       const e = this.entry(d);
       e.lastWanted = now;
       wanted.add(d.key);
     }
+    this.lastUpdate = now;
+    // Ancestors of every desired tile are wanted too: they load first (as fallback cover) and are never evicted
+    // while a descendant is wanted, so no region is left without a parent or complete children (04 section 5.2).
+    const levelZoomsAll = this.tileset.levels.map((l) => l.zoom);
+    const ancestors: DesiredTile[] = [];
+    for (const d of desired)
+      for (let l = d.level - 1; l >= 0; l--) {
+        const id = parentTile(d.id, levelZoomsAll[l]!);
+        const key = tileKey(id);
+        if (wanted.has(key) || (this.coverage && !this.coverage.has(id))) continue;
+        wanted.add(key);
+        ancestors.push({ key, id, level: l, priority: d.priority * 0.5, sse: 0 });
+      }
+    for (const a of ancestors) {
+      const e = this.entry(a);
+      e.lastWanted = now;
+    }
+    this.lastDesired = desired.slice();
+    desired.unshift(...ancestors.filter((a, i, list) => list.findIndex((b) => b.key === a.key) === i));
     // Fog follows the visible distance limit.
     if (this.scene.fog instanceof Fog) {
       this.scene.fog.near = maxDistance * 0.55;
@@ -971,10 +993,8 @@ export class CityMapImpl implements CityMap {
     // Minimum residence: keep recently shown tiles a little longer to avoid flicker on small moves.
     for (const e of this.tiles.values())
       if (e.visible && !show.has(e.key) && now - e.shownAt < this.budget.minResidenceMs && e.state === 'ready') {
-        const covered = [...show].some((k) => {
-          const o = this.tiles.get(k)!;
-          return o.level !== e.level && (k.startsWith(`${o.id.z}/`) ? true : false) && overlaps(o.id, e.id);
-        });
+        // Keep it only if nothing else now covers the same ground (never stack two levels).
+        const covered = [...show].some((k) => overlaps(this.tiles.get(k)!.id, e.id));
         if (!covered) show.add(e.key);
       }
     for (const e of this.tiles.values()) {
@@ -1004,11 +1024,16 @@ export class CityMapImpl implements CityMap {
     // Unload tiles that are neither wanted nor shown, after a delay; then enforce the resident budget (LRU).
     let resident = 0;
     for (const e of this.tiles.values()) resident += e.bytes;
+    // Ancestors of visible tiles stay resident so zooming out never shows a region without a parent (AC406).
+    const pinned = new Set<string>();
+    for (const e of this.tiles.values())
+      if (e.visible) for (let l = e.level - 1; l >= 0; l--) pinned.add(tileKey(parentTile(e.id, levelZooms[l]!)));
     const evictable = [...this.tiles.values()]
-      .filter((e) => !wanted.has(e.key) && !e.visible)
+      .filter((e) => !wanted.has(e.key) && !e.visible && !(pinned.has(e.key) && e.state === 'ready'))
       .sort((a, b) => a.lastWanted - b.lastWanted);
     for (const e of evictable) {
-      if (now - e.lastWanted > this.budget.unloadDelayMs || resident > this.budget.residentBytes) {
+      const keepRoot = e.level === 0 && e.state === 'ready' && resident < this.budget.residentBytes * 0.5;
+      if ((now - e.lastWanted > this.budget.unloadDelayMs && !keepRoot) || resident > this.budget.residentBytes) {
         resident -= e.bytes;
         this.unload(e);
         this.tiles.delete(e.key);
@@ -1047,12 +1072,16 @@ export class CityMapImpl implements CityMap {
   }
 
   private busy(): boolean {
-    for (const e of this.tiles.values()) if (e.state === 'loading' || e.state === 'generating') return true;
+    for (const e of this.tiles.values()) {
+      if (e.state === 'loading' || e.state === 'generating') return true;
+      // A wanted tile waiting for its retry backoff keeps the loop running.
+      if (e.state === 'queued' && e.retries > 0 && e.lastWanted >= this.lastUpdate) return true;
+    }
     return this.uploads.length > 0 || this.animation !== null || this.moving;
   }
 
   private pendingWanted(now: number): boolean {
-    for (const e of this.tiles.values()) if (e.lastWanted === now && e.state === 'queued') return true;
+    for (const e of this.tiles.values()) if (e.lastWanted >= this.lastUpdate && e.state === 'queued') return true;
     return false;
   }
 
@@ -1179,6 +1208,7 @@ export class CityMapImpl implements CityMap {
       stats.raw = {
         frameIntervals: [...this.frameIntervals],
         generateMs: [...this.pool.timings],
+        desired: this.lastDesired.map((d) => d.key),
         tiles: [...this.tiles.values()].map((e) => ({
           key: e.key,
           state: e.state,

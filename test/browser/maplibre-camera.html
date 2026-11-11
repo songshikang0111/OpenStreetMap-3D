@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/node_modules/maplibre-gl/dist/maplibre-gl.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
+      #ml {
+        width: 1280px;
+        height: 720px;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/node_modules/three/build/three.module.js",
+          "@city-ink/tiles": "/packages/tiles/dist/index.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="ml"></div>
+    <script type="module">
+      // AC404: same camera parameters in MapLibre and in @city-ink/map's Transform; ground points must land on the
+      // same pixels (within 2 px).
+      import * as maplibregl from '/node_modules/maplibre-gl/dist/maplibre-gl.mjs';
+      import { Transform } from '/packages/map/dist/transform.js';
+
+      const map = new maplibregl.Map({
+        container: 'ml',
+        style: {
+          version: 8,
+          sources: {},
+          layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#fff' } }],
+        },
+        center: [116.4605, 39.9095],
+        zoom: 16,
+        maxPitch: 85,
+        minZoom: 0,
+        maxZoom: 22,
+        attributionControl: false,
+        fadeDuration: 0,
+      });
+      await new Promise((r) => map.on('load', r));
+      let seed = 404;
+      const rand = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+      const t = new Transform();
+      t.limits = { minZoom: 0, maxZoom: 22, maxPitch: 85 };
+      t.resize(1280, 720);
+      const results = [];
+      for (let i = 0; i < 200; i++) {
+        const cam = {
+          center: [116.3 + rand() * 0.3, 39.8 + rand() * 0.2],
+          zoom: 13 + rand() * 6,
+          pitch: rand() * 75,
+          bearing: rand() * 360 - 180,
+        };
+        map.jumpTo(cam);
+        t.anchor = [cam.center[0] + (rand() - 0.5) * 0.05, cam.center[1] + (rand() - 0.5) * 0.05];
+        t.set(cam);
+        let worst = 0;
+        let points = 0;
+        for (let k = 0; k < 12; k++) {
+          const sp = {
+            x: 40 + rand() * 1200,
+            y: 360 * (cam.pitch > 60 ? 0.6 : 0.1) + rand() * 360 * (cam.pitch > 60 ? 0.9 : 1.8),
+          };
+          const ll = t.unproject(sp);
+          if (!ll) continue;
+          const ours = t.project(ll);
+          const theirs = map.project(ll);
+          if (!ours || ours.y < 0 || ours.y > 720 || ours.x < 0 || ours.x > 1280) continue;
+          worst = Math.max(worst, Math.hypot(ours.x - theirs.x, ours.y - theirs.y));
+          points++;
+        }
+        results.push({ ...cam, points, worst });
+      }
+      globalThis.ac404 = { maplibre: maplibregl.getVersion?.() ?? 'unknown', results };
+    </script>
+  </body>
+</html>

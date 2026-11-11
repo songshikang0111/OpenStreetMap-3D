@@ -45,6 +45,7 @@ export async function openLocalBrowser({
   const mime = {
     '.html': 'text/html',
     '.js': 'text/javascript',
+    '.mjs': 'text/javascript',
     '.json': 'application/json',
     '.css': 'text/css',
     '.png': 'image/png',

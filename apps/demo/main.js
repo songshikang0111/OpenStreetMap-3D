@@ -26,6 +26,7 @@ map.on('tileerror', (e) => console.warn('tile error', e.tile, e.error));
 
 // Exposed for automated checks and for experimenting in the console.
 globalThis.cityMap = map;
+globalThis.createCityMap = createMap;
 
 function updateHud() {
   const s = map.getStats();
