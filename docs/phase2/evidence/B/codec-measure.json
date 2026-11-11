@@ -1,0 +1,206 @@
+{
+  "date": "2026-11-11T19:39:17.168Z",
+  "machine": {
+    "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+    "cores": 16,
+    "memoryGB": 13,
+    "node": "v24.18.0",
+    "platform": "linux 7.2.11-200.fc44.x86_64"
+  },
+  "method": "encodeTile on synthetic tiles; gzip level 6; decodeTile timed over 200 warm runs on fresh buffer copies (Node, single thread). materializeObjectsMs is the optional readFeatures() object conversion, not needed by the runtime.",
+  "budgets": {
+    "L1": {
+      "medianKB": 60,
+      "p95KB": 250,
+      "maxKB": 1024
+    },
+    "L0": {
+      "medianKB": 40,
+      "p95KB": 150,
+      "maxKB": 500
+    },
+    "decodeMsAC207": 5
+  },
+  "results": [
+    {
+      "scenario": "L1 dense low-rise (Kyoto-like, ~430 buildings)",
+      "profile": "full",
+      "rawBytes": 112524,
+      "gzipBytes": 49215,
+      "layers": {
+        "building": {
+          "raw": 60416,
+          "gzip": 25541
+        },
+        "road": {
+          "raw": 20220,
+          "gzip": 8961
+        },
+        "ground": {
+          "raw": 12944,
+          "gzip": 7586
+        },
+        "tree": {
+          "raw": 16244,
+          "gzip": 5564
+        },
+        "green": {
+          "raw": 2400,
+          "gzip": 2031
+        },
+        "water": {
+          "raw": 616,
+          "gzip": 515
+        }
+      },
+      "decodeMs": {
+        "p50": 0.083,
+        "p95": 0.214
+      },
+      "materializeObjectsMs": {
+        "p50": 0.86,
+        "p95": 2.109
+      }
+    },
+    {
+      "scenario": "L1 very dense old town (~900 buildings)",
+      "profile": "full",
+      "rawBytes": 175132,
+      "gzipBytes": 71593,
+      "layers": {
+        "building": {
+          "raw": 115228,
+          "gzip": 44245
+        },
+        "road": {
+          "raw": 33808,
+          "gzip": 14903
+        },
+        "ground": {
+          "raw": 17992,
+          "gzip": 10430
+        },
+        "tree": {
+          "raw": 8296,
+          "gzip": 2907
+        }
+      },
+      "decodeMs": {
+        "p50": 0.094,
+        "p95": 0.179
+      },
+      "materializeObjectsMs": {
+        "p50": 1.285,
+        "p95": 2.782
+      }
+    },
+    {
+      "scenario": "L1 high-rise CBD (Beijing-like, 40 towers x 3 parts + landmark)",
+      "profile": "full",
+      "rawBytes": 364516,
+      "gzipBytes": 238696,
+      "layers": {
+        "building": {
+          "raw": 25048,
+          "gzip": 15375
+        },
+        "road": {
+          "raw": 25624,
+          "gzip": 11434
+        },
+        "ground": {
+          "raw": 15260,
+          "gzip": 8822
+        },
+        "tree": {
+          "raw": 32144,
+          "gzip": 10923
+        },
+        "green": {
+          "raw": 2472,
+          "gzip": 2083
+        },
+        "landmark": {
+          "raw": 264280,
+          "gzip": 190094
+        }
+      },
+      "decodeMs": {
+        "p50": 0.642,
+        "p95": 0.987
+      },
+      "materializeObjectsMs": {
+        "p50": 0.799,
+        "p95": 2.164
+      }
+    },
+    {
+      "scenario": "L1 interchange (elevated roads, ground with elevation)",
+      "profile": "full",
+      "rawBytes": 125564,
+      "gzipBytes": 70811,
+      "layers": {
+        "building": {
+          "raw": 9024,
+          "gzip": 4071
+        },
+        "road": {
+          "raw": 43172,
+          "gzip": 20916
+        },
+        "structure": {
+          "raw": 23636,
+          "gzip": 13018
+        },
+        "ground": {
+          "raw": 39572,
+          "gzip": 30085
+        },
+        "tree": {
+          "raw": 10944,
+          "gzip": 3810
+        }
+      },
+      "decodeMs": {
+        "p50": 0.049,
+        "p95": 0.062
+      },
+      "materializeObjectsMs": {
+        "p50": 1.2,
+        "p95": 3.214
+      }
+    },
+    {
+      "scenario": "L0 massing (16 child tiles of mixed density, simplified)",
+      "profile": "massing",
+      "rawBytes": 360952,
+      "gzipBytes": 138154,
+      "layers": {
+        "building": {
+          "raw": 302424,
+          "gzip": 108964
+        },
+        "road": {
+          "raw": 48972,
+          "gzip": 21140
+        },
+        "green": {
+          "raw": 8192,
+          "gzip": 6877
+        },
+        "water": {
+          "raw": 1556,
+          "gzip": 1348
+        }
+      },
+      "decodeMs": {
+        "p50": 0.172,
+        "p95": 0.47
+      },
+      "materializeObjectsMs": {
+        "p50": 2.448,
+        "p95": 5.764
+      }
+    }
+  ]
+}

@@ -195,4 +195,142 @@ export function metersPerMercatorUnit(lat: number): number;
 
 ## 9. 字节布局
 
-由 WP-B 在实现时补充并冻结。补充前本节为空，不构成契约。
+格式版本 1.0，由 WP-B 于 2026-11-12 冻结。参考实现：`packages/tiles/src/codec.ts`；不依赖本项目的最小参考解码器：`packages/tiles/examples/reference-decode.mjs`。本节足以独立实现解码器，不需要阅读源码。
+
+### 9.1 通用约定
+
+- 全部整数和浮点数为**小端**。`u8/u16/u32` 为无符号整数，`i8/i16/i32` 为有符号整数，`f32` 为 IEEE-754 单精度。
+- 所有偏移都是相对文件开头的字节偏移。文件头、层目录、字符串表、每个层、每个分节的数据都从 4 字节对齐的位置开始；不足 4 字节的末尾用 0 填充，填充字节不计入声明的长度。
+- 未知层（编码类型不认识）、未知分节代码、更高的次版本号：读者必须跳过，不得报错。主版本号不等于 1：读者必须拒绝。
+- "缺失值"约定：`f32` 用 NaN，`i32` 用 `-2147483648`，`u32` 与字符串引用用 `0xFFFFFFFF`。
+
+### 9.2 文件头（44 字节，偏移 0）
+
+| 偏移 | 类型 | 字段 | 说明 |
+| --- | --- | --- | --- |
+| 0 | u8×4 | magic | `43 33 54 01`（ASCII `C3T` 加 0x01） |
+| 4 | u16 | major | 主版本，当前 1 |
+| 6 | u16 | minor | 次版本，当前 0 |
+| 8 | u16 | headerBytes | 文件头长度，当前 44；读者以此跳过未来新增的头字段 |
+| 10 | u8 | profile | 0 = `massing`，1 = `full` |
+| 11 | u8 | extentLog2 | 量化网格：每块瓦片边长 = 2^extentLog2 个网格单位（见 9.6） |
+| 12 | u8 | z | 缩放级别 |
+| 13 | u8 | reserved | 0 |
+| 14 | u16 | layerCount | 层数 |
+| 16 | u32 | x | 瓦片列号 |
+| 20 | u32 | y | 瓦片行号（XYZ，y 向南增大） |
+| 24 | u32 | directoryOffset | 层目录起点 |
+| 28 | u32 | stringsOffset | 字符串表起点 |
+| 32 | u32 | stringsLength | 字符串表总长（含填充） |
+| 36 | u32 | totalLength | 整个文件的长度；实际收到的字节少于它即为截断 |
+| 40 | u16 | directoryEntryBytes | 每个目录项的长度，当前 20 |
+| 42 | u16 | reserved | 0 |
+
+### 9.3 层目录（layerCount × directoryEntryBytes 字节）
+
+层按名称的 UTF-16 码元顺序排列。
+
+| 偏移 | 类型 | 字段 | 说明 |
+| --- | --- | --- | --- |
+| 0 | u32 | name | 层名在字符串表中的序号 |
+| 4 | u8 | encoding | 1 = 规划要素层（`features`），2 = 烘焙网格层（`mesh`），其他值跳过 |
+| 5 | u8 | geometry | 要素层：1 多边形，2 折线，3 点；网格层为 0 |
+| 6 | u16 | reserved | 0 |
+| 8 | u32 | offset | 层数据起点（4 字节对齐） |
+| 12 | u32 | length | 层数据长度 |
+| 16 | u32 | featureCount | 层内要素数 |
+
+只读文件头和层目录即可知道每层的位置和大小，可以只取需要的层。
+
+### 9.4 字符串表
+
+| 内容 | 类型 |
+| --- | --- |
+| count | u32 |
+| offsets | u32 × (count + 1)，第一个为 0，单调不减；相对字符串数据起点 |
+| data | UTF-8 字节，字符串 i 占 `[offsets[i], offsets[i+1])` |
+
+字符串按 UTF-16 码元顺序排列并去重。层名、属性名、字符串属性值、标签键值、来源等级键、材质角色、顶点属性名都通过序号引用这里。
+
+### 9.5 层
+
+层数据以 16 字节的层头开始：
+
+| 偏移 | 类型 | 字段 | 说明 |
+| --- | --- | --- | --- |
+| 0 | u32 | featureCount | 与目录一致 |
+| 4 | u8 | encoding | 与目录一致 |
+| 5 | u8 | geometry | 与目录一致 |
+| 6 | u8 | flags | 网格层：bit0 = 1 表示位置为 f32 |
+| 7 | u8 | reserved | 0 |
+| 8 | f32 | baseElevation | 高程基准（米），是 1/16 m 的整数倍 |
+| 12 | u32 | sectionCount | 分节数 |
+
+层目录的 `offset` 指向这个层头；第一个分节紧接在层头之后（层起点 + 16）。随后是 `sectionCount` 个分节，每个分节为 8 字节的分节头加数据；下一个分节从 `数据起点 + byteLength 向上取整到 4 的倍数` 处开始。分节顺序不作约定，读者按代码识别。同一代码只出现一次，ATTRIBUTE（12）与 VERTEX_ATTRIBUTE（27）除外，每个属性一个分节。
+
+| 偏移 | 类型 | 字段 |
+| --- | --- | --- |
+| 0 | u16 | code（分节代码） |
+| 2 | u16 | reserved |
+| 4 | u32 | byteLength（数据长度，不含填充） |
+| 8 | … | 数据，之后填充到 4 字节对齐 |
+
+下表中 n 为要素数，P 为部分数，R 为环数，V 为顶点数，T 为标签数。
+
+| 代码 | 名称 | 内容 | 层 |
+| --- | --- | --- | --- |
+| 1 | ID_TYPE | u8 × n：0 node，1 way，2 relation，3 generated | 两种 |
+| 2 | ID_LO | u32 × n：64 位 ID 的低 32 位 | 两种 |
+| 3 | ID_HI | u32 × n：64 位 ID 的高 32 位 | 两种 |
+| 4 | ID_SEQ | u32 × n：0 表示无序号；k > 0 表示生成对象，身份写作 `type/id#(k-1)` | 两种 |
+| 5 | RENDER_ID | u32 × n：瓦片内唯一的拾取 ID | 两种 |
+| 6 | PART_START | u32 × (n+1)：要素 i 的部分为 `[PART_START[i], PART_START[i+1])` | 要素层 |
+| 7 | RING_START | u32 × (P+1)：部分 p 的环为 `[RING_START[p], RING_START[p+1])` | 要素层 |
+| 8 | VERTEX_START | u32 × (R+1)：环 r 的顶点为 `[VERTEX_START[r], VERTEX_START[r+1])` | 要素层 |
+| 9 | POSITIONS | i16 × 2V：网格坐标 (x, y)，交错存放 | 要素层 |
+| 10 | ELEVATION | u16 × V：高程 = baseElevation + 值 / 16 米（只在带高程的层出现） | 要素层 |
+| 11 | PROVENANCE | u32 × n：第 k 个来源键占 bit 2k..2k+1；0 未记录，1 observed，2 derived，3 inferred | 两种 |
+| 12 | ATTRIBUTE | u32 属性名序号，u32 类型（0 f32，1 i32，2 u32，3 字符串序号），随后 n 个 4 字节值；每个属性一个分节 | 两种 |
+| 13 | TAG_START | u32 × (n+1)：要素 i 的标签为 `[TAG_START[i], TAG_START[i+1])` | 两种 |
+| 14 | TAG_KEYS | u32 × T：字符串序号 | 两种 |
+| 15 | TAG_VALUES | u32 × T：字符串序号 | 两种 |
+| 16 | PROVENANCE_KEYS | u32 × k（k ≤ 16）：来源键名的字符串序号，顺序即 PROVENANCE 的槽位 | 两种 |
+| 20 | MESH_POSITION_Q | i16 × 2V：(x, z) 网格坐标 | 网格层 |
+| 21 | MESH_HEIGHT_Q | u16 × V：y = baseElevation + 值 / 16 米 | 网格层 |
+| 22 | MESH_POSITION_F32 | f32 × 3V：(x, y, z) 瓦片局部米 | 网格层（flags bit0） |
+| 23 | MESH_NORMAL_OCT | i8 × 2V：八面体编码法线，分量 / 127 | 网格层 |
+| 24 | MESH_INDEX16 | u16 × I：三角形索引 | 网格层 |
+| 25 | MESH_INDEX32 | u32 × I：三角形索引（顶点数超过 65,535 时） | 网格层 |
+| 26 | SUBMESHES | 每个子网格 4 个 u32：材质角色序号、要素序号、索引起点、索引数 | 网格层 |
+| 27 | VERTEX_ATTRIBUTE | u32 名称序号、u32 分量数，随后 f32 × 分量数 × V（如 `facade-v6` 属性） | 网格层 |
+| 28 | VERTEX_FEATURE16 | u16 × V：每个顶点所属要素序号 | 网格层 |
+| 29 | VERTEX_FEATURE32 | u32 × V：同上（要素数超过 65,535 时） | 网格层 |
+
+PART_START、RING_START、VERTEX_START 中的值都是层内全局序号：要素 i 的第一个部分的第一个环是 `RING_START[PART_START[i]]`，其顶点为 `[VERTEX_START[r], VERTEX_START[r+1])`。
+
+要素层中，多边形的每个部分为"外环 + 若干内环"；折线的每个部分只有一个环；点要素一个部分、一个环、一个顶点。外环和内环的方向不作约定；环不重复首点（闭合是隐含的）。ID 以十进制书写，即 `hi × 2^32 + lo`。同一瓦片内层名唯一。f32 属性值按存储原样读出，不做额外舍入。
+
+### 9.6 坐标
+
+**水平。** 设瓦片 (z, x, y)，`E = 2^extentLog2`（L1 默认 2^14，L0 默认 2^15）。网格坐标 (qx, qy) 对应的归一化墨卡托坐标（0 到 1，原点西北角，y 向南）为：
+
+~~~text
+mx = (qx + x·E + E/2) / 2^(z + extentLog2)
+my = (qy + y·E + E/2) / 2^(z + extentLog2)
+~~~
+
+即网格原点在瓦片中心。经纬度：`lng = mx·360 − 180`，`lat = atan(sinh(π·(1 − 2·my)))·180/π`。
+
+瓦片局部米（x 向东、z 向南）：`x = qx · s`，`z = qy · s`，其中 `s = 40075016.686 · cos(瓦片中心纬度) / 2^(z + extentLog2)`。L1 在北纬 40° 处 s ≈ 2.9 cm，量化误差不超过 s/2。
+
+由于网格是全局对齐的，同一点在相邻两块瓦片中量化后换算回墨卡托坐标完全相同（AC203）。int16 的表示范围为 ±32,767 个网格单位，即 L1 约 ±2 块瓦片宽、L0 约 ±1 块瓦片宽；超出时必须改用网格层的 f32 编码（决策 E2）。
+
+**垂直。** 高度以 1/16 m 为单位存为 u16，加上层头的 baseElevation，范围为基准以上约 4,096 m。
+
+### 9.7 读取建筑轮廓与高度的最小步骤
+
+1. 校验 magic 与 major；读 z、x、y、extentLog2。
+2. 读字符串表。
+3. 在层目录中找到名称为 `building` 的层。
+4. 遍历该层的分节，取 PART_START、RING_START、VERTEX_START、POSITIONS，以及名称为 `height` 和 `minHeight` 的 ATTRIBUTE 分节（f32）。
+5. 对要素 i：部分 `PART_START[i]` 的第一个环是外轮廓；按 9.6 把每个 (qx, qy) 换成经纬度；高度为 `height[i]`（NaN 表示缺失）。
