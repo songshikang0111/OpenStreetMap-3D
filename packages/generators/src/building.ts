@@ -81,29 +81,7 @@ function appendWriter(
   let triangles = 0;
   for (const run of writer.materialRuns) {
     const role = roleOverride ?? run.role;
-    const b = batches.get(layerName, role);
-    b.hasFacade = true;
-    for (let v = run.start; v < run.start + run.count; v++) {
-      const p = v * 3;
-      b.position.push(writer.positions[p]!, writer.positions[p + 1]! - PHASE1_GROUND_OFFSET, writer.positions[p + 2]!);
-      b.normal.push(writer.normals[p]!, writer.normals[p + 1]!, writer.normals[p + 2]!);
-      b.color.push(writer.colors[p]!, writer.colors[p + 1]!, writer.colors[p + 2]!);
-      b.renderId.push(renderId);
-      b.aFacade.push(
-        writer.facades[v * 4]!,
-        writer.facades[v * 4 + 1]!,
-        writer.facades[v * 4 + 2]!,
-        writer.facades[v * 4 + 3]!,
-      );
-      b.aStyle.push(writer.styles[v * 2]!, writer.styles[v * 2 + 1]!);
-      b.aLayout.push(
-        writer.layouts[v * 4]!,
-        writer.layouts[v * 4 + 1]!,
-        writer.layouts[v * 4 + 2]!,
-        writer.layouts[v * 4 + 3]!,
-      );
-      b.aSurface.push(writer.surfaces[v * 2]!, writer.surfaces[v * 2 + 1]!);
-    }
+    batches.get(layerName, role).addWriterRun(writer, run.start, run.count, renderId, PHASE1_GROUND_OFFSET);
     triangles += run.count / 3;
   }
   return triangles;

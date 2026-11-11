@@ -1,0 +1,688 @@
+{
+  "date": "2026-11-11T20:16:51.909Z",
+  "machine": {
+    "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+    "cores": 16,
+    "node": "v24.18.0",
+    "platform": "linux 7.2.11-200.fc44.x86_64"
+  },
+  "commit": "1cff49dd96fbe165b6641e3b60c5715c74163b87",
+  "rows": [
+    {
+      "name": "amsterdam-canals",
+      "build": "succeeded",
+      "buildMs": 1782,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 13,
+      "gzipBytes": 528077,
+      "rawBytes": 1259668,
+      "counts": {
+        "building": 1950,
+        "green": 45,
+        "ground": 17739,
+        "road": 503,
+        "structure": 41,
+        "tree": 536,
+        "water": 13
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 1,
+          "totalBytes": 272136,
+          "totalGzipBytes": 91065,
+          "medianGzipBytes": 91065,
+          "p95GzipBytes": 91065,
+          "maxGzipBytes": 91065,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 12,
+          "totalBytes": 987532,
+          "totalGzipBytes": 437012,
+          "medianGzipBytes": 24721,
+          "p95GzipBytes": 98890,
+          "maxGzipBytes": 98890,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": []
+    },
+    {
+      "name": "beijing-cbd",
+      "build": "succeeded",
+      "buildMs": 7653,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 28,
+      "gzipBytes": 697482,
+      "rawBytes": 2196924,
+      "counts": {
+        "building": 477,
+        "green": 45,
+        "ground": 22714,
+        "road": 785,
+        "structure": 82,
+        "tree": 3680,
+        "water": 3,
+        "landmark": 2
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 4,
+          "totalBytes": 151956,
+          "totalGzipBytes": 53347,
+          "medianGzipBytes": 18004,
+          "p95GzipBytes": 19702,
+          "maxGzipBytes": 19702,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 24,
+          "totalBytes": 2044968,
+          "totalGzipBytes": 644135,
+          "medianGzipBytes": 19574,
+          "p95GzipBytes": 56739,
+          "maxGzipBytes": 150650,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": []
+    },
+    {
+      "name": "beijing-lingxiu-d",
+      "build": "succeeded",
+      "buildMs": 1481,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 14,
+      "gzipBytes": 214217,
+      "rawBytes": 470716,
+      "counts": {
+        "building": 263,
+        "green": 20,
+        "ground": 14139,
+        "road": 272,
+        "structure": 21,
+        "tree": 906,
+        "water": 1
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 2,
+          "totalBytes": 54800,
+          "totalGzipBytes": 19449,
+          "medianGzipBytes": 14163,
+          "p95GzipBytes": 14163,
+          "maxGzipBytes": 14163,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 12,
+          "totalBytes": 415916,
+          "totalGzipBytes": 194768,
+          "medianGzipBytes": 13129,
+          "p95GzipBytes": 43982,
+          "maxGzipBytes": 43982,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": []
+    },
+    {
+      "name": "bibury-village",
+      "build": "succeeded",
+      "buildMs": 691,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 14,
+      "gzipBytes": 134181,
+      "rawBytes": 301636,
+      "counts": {
+        "building": 148,
+        "green": 39,
+        "ground": 4574,
+        "road": 120,
+        "structure": 7,
+        "tree": 1737,
+        "water": 15
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 2,
+          "totalBytes": 33408,
+          "totalGzipBytes": 12906,
+          "medianGzipBytes": 12406,
+          "p95GzipBytes": 12406,
+          "maxGzipBytes": 12406,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 12,
+          "totalBytes": 268228,
+          "totalGzipBytes": 121275,
+          "medianGzipBytes": 4744,
+          "p95GzipBytes": 40081,
+          "maxGzipBytes": 40081,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": []
+    },
+    {
+      "name": "kyoto-gion",
+      "build": "succeeded",
+      "buildMs": 3159,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 14,
+      "gzipBytes": 903381,
+      "rawBytes": 2299236,
+      "counts": {
+        "building": 4460,
+        "green": 339,
+        "ground": 34198,
+        "road": 1016,
+        "structure": 58,
+        "tree": 1467,
+        "water": 15
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 2,
+          "totalBytes": 584344,
+          "totalGzipBytes": 188174,
+          "medianGzipBytes": 184202,
+          "p95GzipBytes": 184202,
+          "maxGzipBytes": 184202,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 12,
+          "totalBytes": 1714892,
+          "totalGzipBytes": 715207,
+          "medianGzipBytes": 17092,
+          "p95GzipBytes": 203119,
+          "maxGzipBytes": 203119,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": []
+    },
+    {
+      "name": "landscape-details",
+      "build": "succeeded",
+      "buildMs": 210,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 18,
+      "gzipBytes": 17535,
+      "rawBytes": 36716,
+      "counts": {
+        "green": 24,
+        "tree": 398,
+        "water": 1
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 4,
+          "totalBytes": 5624,
+          "totalGzipBytes": 3129,
+          "medianGzipBytes": 929,
+          "p95GzipBytes": 1184,
+          "maxGzipBytes": 1184,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 14,
+          "totalBytes": 31092,
+          "totalGzipBytes": 14406,
+          "medianGzipBytes": 331,
+          "p95GzipBytes": 5068,
+          "maxGzipBytes": 5068,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": []
+    },
+    {
+      "name": "lijiang-shuhe",
+      "build": "succeeded",
+      "buildMs": 734,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 8,
+      "gzipBytes": 142680,
+      "rawBytes": 390528,
+      "counts": {
+        "building": 868,
+        "green": 11,
+        "ground": 5600,
+        "road": 182,
+        "structure": 5,
+        "tree": 330,
+        "water": 4
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 2,
+          "totalBytes": 110608,
+          "totalGzipBytes": 32674,
+          "medianGzipBytes": 20455,
+          "p95GzipBytes": 20455,
+          "maxGzipBytes": 20455,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 6,
+          "totalBytes": 279920,
+          "totalGzipBytes": 110006,
+          "medianGzipBytes": 19995,
+          "p95GzipBytes": 50791,
+          "maxGzipBytes": 50791,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": []
+    },
+    {
+      "name": "manhattan-financial",
+      "build": "succeeded",
+      "buildMs": 5343,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 7,
+      "gzipBytes": 693311,
+      "rawBytes": 1577032,
+      "counts": {
+        "building": 1319,
+        "green": 535,
+        "ground": 65006,
+        "road": 2050,
+        "structure": 16,
+        "tree": 1045,
+        "water": 8
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 1,
+          "totalBytes": 284652,
+          "totalGzipBytes": 105485,
+          "medianGzipBytes": 105485,
+          "p95GzipBytes": 105485,
+          "maxGzipBytes": 105485,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 6,
+          "totalBytes": 1292380,
+          "totalGzipBytes": 587826,
+          "medianGzipBytes": 99850,
+          "p95GzipBytes": 178727,
+          "maxGzipBytes": 178727,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": [
+        "INCOMPLETE_RELATIONS"
+      ]
+    },
+    {
+      "name": "marrakech-medina",
+      "build": "succeeded",
+      "buildMs": 2299,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 10,
+      "gzipBytes": 530706,
+      "rawBytes": 1372820,
+      "counts": {
+        "building": 3137,
+        "green": 124,
+        "ground": 24383,
+        "road": 809,
+        "tree": 1223,
+        "water": 12
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 1,
+          "totalBytes": 406592,
+          "totalGzipBytes": 133022,
+          "medianGzipBytes": 133022,
+          "p95GzipBytes": 133022,
+          "maxGzipBytes": 133022,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 9,
+          "totalBytes": 966228,
+          "totalGzipBytes": 397684,
+          "medianGzipBytes": 36667,
+          "p95GzipBytes": 94280,
+          "maxGzipBytes": 94280,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": [
+        "INCOMPLETE_RELATIONS"
+      ]
+    },
+    {
+      "name": "shanghai-lujiazui",
+      "build": "succeeded",
+      "buildMs": 3831,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 29,
+      "gzipBytes": 778768,
+      "rawBytes": 1693700,
+      "counts": {
+        "building": 719,
+        "green": 186,
+        "ground": 42962,
+        "road": 1202,
+        "structure": 39,
+        "tree": 5579,
+        "water": 23
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 4,
+          "totalBytes": 186648,
+          "totalGzipBytes": 70855,
+          "medianGzipBytes": 17517,
+          "p95GzipBytes": 38615,
+          "maxGzipBytes": 38615,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 25,
+          "totalBytes": 1507052,
+          "totalGzipBytes": 707913,
+          "medianGzipBytes": 19197,
+          "p95GzipBytes": 77563,
+          "maxGzipBytes": 84491,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": []
+    },
+    {
+      "name": "street-details",
+      "build": "succeeded",
+      "buildMs": 129,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 0,
+      "gzipBytes": 0,
+      "rawBytes": 0,
+      "counts": {},
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 0,
+          "totalBytes": 0,
+          "totalGzipBytes": 0,
+          "medianGzipBytes": 0,
+          "p95GzipBytes": 0,
+          "maxGzipBytes": 0,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 0,
+          "totalBytes": 0,
+          "totalGzipBytes": 0,
+          "medianGzipBytes": 0,
+          "p95GzipBytes": 0,
+          "maxGzipBytes": 0,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": []
+    },
+    {
+      "name": "sydney-circular-quay",
+      "build": "succeeded",
+      "buildMs": 4228,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 11,
+      "gzipBytes": 561604,
+      "rawBytes": 1264804,
+      "counts": {
+        "building": 584,
+        "green": 239,
+        "ground": 33837,
+        "road": 1656,
+        "structure": 104,
+        "tree": 1701,
+        "water": 13
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 2,
+          "totalBytes": 148980,
+          "totalGzipBytes": 55035,
+          "medianGzipBytes": 52555,
+          "p95GzipBytes": 52555,
+          "maxGzipBytes": 52555,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 9,
+          "totalBytes": 1115824,
+          "totalGzipBytes": 506569,
+          "medianGzipBytes": 54887,
+          "p95GzipBytes": 174572,
+          "maxGzipBytes": 174572,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": [
+        "INCOMPLETE_RELATIONS"
+      ]
+    },
+    {
+      "name": "sydney-harbour",
+      "build": "succeeded",
+      "buildMs": 778,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 6,
+      "gzipBytes": 61912,
+      "rawBytes": 152248,
+      "counts": {
+        "building": 126,
+        "green": 67,
+        "ground": 2336,
+        "road": 178,
+        "structure": 4,
+        "tree": 356,
+        "water": 4
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 2,
+          "totalBytes": 26000,
+          "totalGzipBytes": 9205,
+          "medianGzipBytes": 7905,
+          "p95GzipBytes": 7905,
+          "maxGzipBytes": 7905,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 4,
+          "totalBytes": 126248,
+          "totalGzipBytes": 52707,
+          "medianGzipBytes": 7519,
+          "p95GzipBytes": 38848,
+          "maxGzipBytes": 38848,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": [
+        "INCOMPLETE_RELATIONS"
+      ]
+    },
+    {
+      "name": "beijing-cbd-grow-9",
+      "build": "succeeded",
+      "buildMs": 5014,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 20,
+      "gzipBytes": 477450,
+      "rawBytes": 1683024,
+      "counts": {
+        "building": 286,
+        "green": 36,
+        "ground": 13036,
+        "road": 460,
+        "structure": 58,
+        "tree": 2518,
+        "landmark": 2,
+        "water": 1
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 4,
+          "totalBytes": 100324,
+          "totalGzipBytes": 35820,
+          "medianGzipBytes": 11456,
+          "p95GzipBytes": 15113,
+          "maxGzipBytes": 15113,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 16,
+          "totalBytes": 1582700,
+          "totalGzipBytes": 441630,
+          "medianGzipBytes": 16926,
+          "p95GzipBytes": 150554,
+          "maxGzipBytes": 150554,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": [],
+      "phase1PackageBytes": 110613462,
+      "bbox": "116.45172874350537,39.9027453102474,116.46927125649462,39.91625468975259"
+    },
+    {
+      "name": "kyoto-gion-grow-9",
+      "build": "succeeded",
+      "buildMs": 2658,
+      "validate": "succeeded",
+      "validateDiagnostics": [],
+      "tiles": 7,
+      "gzipBytes": 730150,
+      "rawBytes": 1876112,
+      "counts": {
+        "building": 3912,
+        "green": 240,
+        "ground": 28574,
+        "road": 819,
+        "structure": 47,
+        "tree": 993,
+        "water": 9
+      },
+      "levels": [
+        {
+          "level": "L0",
+          "zoom": 14,
+          "count": 1,
+          "totalBytes": 501236,
+          "totalGzipBytes": 158978,
+          "medianGzipBytes": 158978,
+          "p95GzipBytes": 158978,
+          "maxGzipBytes": 158978,
+          "overBudget": []
+        },
+        {
+          "level": "L1",
+          "zoom": 16,
+          "count": 6,
+          "totalBytes": 1374876,
+          "totalGzipBytes": 571172,
+          "medianGzipBytes": 96228,
+          "p95GzipBytes": 199251,
+          "maxGzipBytes": 199251,
+          "overBudget": []
+        }
+      ],
+      "fallbacks": 0,
+      "buildDiagnostics": [],
+      "phase1PackageBytes": 296927307,
+      "bbox": "135.77007034083243,34.99959380885612,135.77992965916758,35.00770619114388"
+    }
+  ]
+}

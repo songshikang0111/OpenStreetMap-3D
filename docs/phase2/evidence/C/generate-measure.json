@@ -1,0 +1,334 @@
+{
+  "date": "2026-11-11T20:21:09.715Z",
+  "machine": {
+    "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+    "cores": 16,
+    "node": "v24.18.0",
+    "platform": "linux 7.2.11-200.fc44.x86_64"
+  },
+  "method": "decodeTile + generateTile per L1 tile, Node single thread, warm-up pass then median of 3 runs per tile",
+  "overall": {
+    "tiles": 167,
+    "p50": 5.8,
+    "p95": 132.2,
+    "max": 188.8
+  },
+  "layerShareMs": {
+    "building": 3244,
+    "ground": 249,
+    "road": 0,
+    "structure": 9,
+    "water": 1,
+    "green": 14,
+    "tree": 3,
+    "landmark": 22
+  },
+  "rows": [
+    {
+      "name": "amsterdam-canals",
+      "tiles": 12,
+      "p50": 24.8,
+      "p95": 134.3,
+      "max": 134.3,
+      "slowest": {
+        "tile": "16/33658/21537.c3t",
+        "ms": 134.3,
+        "triangles": 76218,
+        "buildings": 356,
+        "msByLayer": {
+          "building": 119,
+          "green": 0.1,
+          "ground": 5.6,
+          "road": 0,
+          "structure": 0,
+          "tree": 0,
+          "water": 0
+        }
+      }
+    },
+    {
+      "name": "beijing-cbd",
+      "tiles": 24,
+      "p50": 5.8,
+      "p95": 16.2,
+      "max": 18.5,
+      "slowest": {
+        "tile": "16/53968/24831.c3t",
+        "ms": 18.5,
+        "triangles": 17090,
+        "buildings": 6,
+        "msByLayer": {
+          "building": 1.6,
+          "green": 0,
+          "ground": 0.8,
+          "landmark": 11.1,
+          "road": 0,
+          "structure": 0.3,
+          "tree": 0
+        }
+      }
+    },
+    {
+      "name": "beijing-cbd-grow-9",
+      "tiles": 16,
+      "p50": 4.6,
+      "p95": 16.9,
+      "max": 16.9,
+      "slowest": {
+        "tile": "16/53968/24831.c3t",
+        "ms": 16.9,
+        "triangles": 17082,
+        "buildings": 6,
+        "msByLayer": {
+          "building": 4.2,
+          "green": 0,
+          "ground": 0.8,
+          "landmark": 10.6,
+          "road": 0,
+          "structure": 0.3,
+          "tree": 0
+        }
+      }
+    },
+    {
+      "name": "beijing-lingxiu-d",
+      "tiles": 12,
+      "p50": 4.2,
+      "p95": 22,
+      "max": 22,
+      "slowest": {
+        "tile": "16/53940/24797.c3t",
+        "ms": 22,
+        "triangles": 26022,
+        "buildings": 107,
+        "msByLayer": {
+          "building": 18.6,
+          "ground": 1.9,
+          "road": 0,
+          "tree": 0
+        }
+      }
+    },
+    {
+      "name": "bibury-village",
+      "tiles": 12,
+      "p50": 0.2,
+      "p95": 9.7,
+      "max": 9.7,
+      "slowest": {
+        "tile": "16/32433/21718.c3t",
+        "ms": 9.7,
+        "triangles": 11881,
+        "buildings": 63,
+        "msByLayer": {
+          "building": 7.1,
+          "green": 0.1,
+          "ground": 1.3,
+          "road": 0,
+          "structure": 0,
+          "tree": 0,
+          "water": 0
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion",
+      "tiles": 12,
+      "p50": 7.3,
+      "p95": 166.9,
+      "max": 166.9,
+      "slowest": {
+        "tile": "16/57484/25957.c3t",
+        "ms": 166.9,
+        "triangles": 133966,
+        "buildings": 1283,
+        "msByLayer": {
+          "building": 133.9,
+          "green": 0.1,
+          "ground": 10.1,
+          "road": 0,
+          "structure": 0.2,
+          "tree": 0,
+          "water": 0
+        }
+      }
+    },
+    {
+      "name": "kyoto-gion-grow-9",
+      "tiles": 6,
+      "p50": 135.1,
+      "p95": 146.6,
+      "max": 146.6,
+      "slowest": {
+        "tile": "16/57485/25957.c3t",
+        "ms": 146.6,
+        "triangles": 110162,
+        "buildings": 1097,
+        "msByLayer": {
+          "building": 127.9,
+          "green": 0.2,
+          "ground": 7.1,
+          "road": 0,
+          "structure": 0.1,
+          "tree": 0,
+          "water": 0
+        }
+      }
+    },
+    {
+      "name": "landscape-details",
+      "tiles": 14,
+      "p50": 0,
+      "p95": 0,
+      "max": 0,
+      "slowest": {
+        "tile": "16/53971/24833.c3t",
+        "ms": 0,
+        "triangles": 2,
+        "buildings": 0,
+        "msByLayer": {
+          "green": 0,
+          "tree": 0
+        }
+      }
+    },
+    {
+      "name": "lijiang-shuhe",
+      "tiles": 6,
+      "p50": 3.9,
+      "p95": 73.8,
+      "max": 73.8,
+      "slowest": {
+        "tile": "16/51009/27676.c3t",
+        "ms": 73.8,
+        "triangles": 53929,
+        "buildings": 488,
+        "msByLayer": {
+          "building": 66.2,
+          "green": 0,
+          "ground": 1.6,
+          "road": 0,
+          "structure": 0,
+          "tree": 0,
+          "water": 0
+        }
+      }
+    },
+    {
+      "name": "manhattan-financial",
+      "tiles": 6,
+      "p50": 71.6,
+      "p95": 188.8,
+      "max": 188.8,
+      "slowest": {
+        "tile": "16/19295/24641.c3t",
+        "ms": 188.8,
+        "triangles": 90797,
+        "buildings": 463,
+        "msByLayer": {
+          "building": 164.4,
+          "green": 1.2,
+          "ground": 11.3,
+          "road": 0,
+          "tree": 0,
+          "water": 0
+        }
+      }
+    },
+    {
+      "name": "marrakech-medina",
+      "tiles": 9,
+      "p50": 48.3,
+      "p95": 115.9,
+      "max": 115.9,
+      "slowest": {
+        "tile": "16/31313/26693.c3t",
+        "ms": 115.9,
+        "triangles": 72302,
+        "buildings": 721,
+        "msByLayer": {
+          "building": 98.5,
+          "green": 0.1,
+          "ground": 1.9,
+          "road": 0,
+          "tree": 0,
+          "water": 0
+        }
+      }
+    },
+    {
+      "name": "shanghai-lujiazui",
+      "tiles": 25,
+      "p50": 6.4,
+      "p95": 31.8,
+      "max": 47.5,
+      "slowest": {
+        "tile": "16/54885/26775.c3t",
+        "ms": 47.5,
+        "triangles": 22147,
+        "buildings": 78,
+        "msByLayer": {
+          "building": 44.1,
+          "green": 0.1,
+          "ground": 1.6,
+          "road": 0,
+          "structure": 0,
+          "tree": 0,
+          "water": 0
+        }
+      }
+    },
+    {
+      "name": "street-details",
+      "tiles": 0,
+      "p50": 0,
+      "p95": 0,
+      "max": 0,
+      "slowest": null
+    },
+    {
+      "name": "sydney-circular-quay",
+      "tiles": 9,
+      "p50": 17.8,
+      "p95": 58.2,
+      "max": 58.2,
+      "slowest": {
+        "tile": "16/60295/39325.c3t",
+        "ms": 58.2,
+        "triangles": 18293,
+        "buildings": 123,
+        "msByLayer": {
+          "building": 55.1,
+          "green": 0.3,
+          "ground": 4.3,
+          "road": 0,
+          "structure": 0.1,
+          "tree": 0,
+          "water": 0.1
+        }
+      }
+    },
+    {
+      "name": "sydney-harbour",
+      "tiles": 4,
+      "p50": 19.7,
+      "p95": 52.8,
+      "max": 52.8,
+      "slowest": {
+        "tile": "16/60295/39325.c3t",
+        "ms": 52.8,
+        "triangles": 13908,
+        "buildings": 103,
+        "msByLayer": {
+          "building": 54.7,
+          "green": 0.2,
+          "ground": 1.2,
+          "road": 0,
+          "structure": 0,
+          "tree": 0,
+          "water": 0
+        }
+      }
+    }
+  ]
+}

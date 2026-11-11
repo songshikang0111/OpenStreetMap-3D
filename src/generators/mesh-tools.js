@@ -1,5 +1,16 @@
 import * as THREE from 'three';
 
+// Parsed colours by CSS string or hex number; THREE.Color parsing is deterministic, so caching keeps values identical.
+const colorCache = new Map();
+function parsedColor(value) {
+  let color = colorCache.get(value);
+  if (!color) {
+    color = new THREE.Color(value);
+    if (colorCache.size < 4096) colorCache.set(value, color);
+  }
+  return color;
+}
+
 export class MeshWriter {
   constructor() {
     this.materialRuns = [];
@@ -17,9 +28,17 @@ export class MeshWriter {
     this.surface = [0, 1];
   }
   triangle(a, b, c, normal, color, id = 0, uv = null) {
-    const ab = new THREE.Vector3().subVectors(new THREE.Vector3(...b), new THREE.Vector3(...a));
-    const ac = new THREE.Vector3().subVectors(new THREE.Vector3(...c), new THREE.Vector3(...a));
-    if (ab.cross(ac).dot(new THREE.Vector3(...normal)) < 0) {
+    // Same arithmetic as Vector3.subVectors/cross/dot, without per-triangle allocations.
+    const abx = b[0] - a[0],
+      aby = b[1] - a[1],
+      abz = b[2] - a[2],
+      acx = c[0] - a[0],
+      acy = c[1] - a[1],
+      acz = c[2] - a[2];
+    const cx = aby * acz - abz * acy,
+      cy = abz * acx - abx * acz,
+      cz = abx * acy - aby * acx;
+    if (cx * normal[0] + cy * normal[1] + cz * normal[2] < 0) {
       [b, c] = [c, b];
       if (uv) uv = [uv[0], uv[2], uv[1]];
     }
@@ -29,18 +48,24 @@ export class MeshWriter {
     const run = this.materialRuns.at(-1);
     if (run?.role === role) run.count += 3;
     else this.materialRuns.push({ start: this.positions.length / 3, count: 3, role });
-    const col = color.isColor ? color : new THREE.Color(color);
-    const code = [(id & 255) / 255, ((id >> 8) & 255) / 255, ((id >> 16) & 255) / 255];
-    [a, b, c].forEach((p, i) => {
-      this.positions.push(...p);
-      this.normals.push(...normal);
+    const col = color.isColor ? color : parsedColor(color);
+    const c0 = (id & 255) / 255,
+      c1 = ((id >> 8) & 255) / 255,
+      c2 = ((id >> 16) & 255) / 255;
+    const layout = this.layout,
+      surface = this.surface;
+    for (let i = 0; i < 3; i++) {
+      const p = i === 0 ? a : i === 1 ? b : c;
+      this.positions.push(p[0], p[1], p[2]);
+      this.normals.push(normal[0], normal[1], normal[2]);
       this.colors.push(col.r, col.g, col.b);
-      this.ids.push(...code);
-      this.facades.push(...(uv ? uv[i] : [0, 0, 0, 0]));
+      this.ids.push(c0, c1, c2);
+      if (uv) this.facades.push(uv[i][0], uv[i][1], uv[i][2], uv[i][3]);
+      else this.facades.push(0, 0, 0, 0);
       this.styles.push(this.style, this.variant);
-      this.layouts.push(...this.layout);
-      this.surfaces.push(...this.surface);
-    });
+      this.layouts.push(layout[0], layout[1], layout[2], layout[3]);
+      this.surfaces.push(surface[0], surface[1]);
+    }
   }
   quad(points, normal, color, id = 0, uv = null) {
     for (const ix of [

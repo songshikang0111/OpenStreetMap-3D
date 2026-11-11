@@ -15,6 +15,17 @@ export interface MeshBatch {
   index: Uint32Array | null;
 }
 
+/** The subset of the phase-one MeshWriter read by batches. */
+export interface WriterLike {
+  positions: number[];
+  normals: number[];
+  colors: number[];
+  facades: number[];
+  styles: number[];
+  layouts: number[];
+  surfaces: number[];
+}
+
 export class BatchBuilder {
   readonly position: number[] = [];
   readonly normal: number[] = [];
@@ -32,8 +43,19 @@ export class BatchBuilder {
     readonly indexed = false,
   ) {}
 
+  /** Vertex ranges of phase-one MeshWriters, copied once into the final typed arrays (non-indexed batches only). */
+  readonly runs: { writer: WriterLike; start: number; count: number; renderId: number; yOffset: number }[] = [];
+  private runVertices = 0;
+
   get vertexCount(): number {
-    return this.position.length / 3;
+    return this.position.length / 3 + this.runVertices;
+  }
+
+  addWriterRun(writer: WriterLike, start: number, count: number, renderId: number, yOffset: number) {
+    if (this.indexed) throw new Error('Writer runs require a non-indexed batch.');
+    this.hasFacade = true;
+    this.runs.push({ writer, start, count, renderId, yOffset });
+    this.runVertices += count;
   }
 
   vertex(p: ArrayLike<number>, n: ArrayLike<number>, c: ArrayLike<number>, renderId: number): number {
@@ -55,22 +77,64 @@ export class BatchBuilder {
   }
 
   build(): MeshBatch {
+    const n = this.vertexCount;
+    const position = new Float32Array(n * 3);
+    const normal = new Float32Array(n * 3);
+    const color = new Float32Array(n * 3);
+    const renderId = new Float32Array(n);
+    position.set(this.position);
+    normal.set(this.normal);
+    color.set(this.color);
+    renderId.set(this.renderId);
     const facade = this.hasFacade
       ? {
-          aFacade: new Float32Array(this.aFacade),
-          aStyle: new Float32Array(this.aStyle),
-          aLayout: new Float32Array(this.aLayout),
-          aSurface: new Float32Array(this.aSurface),
+          aFacade: new Float32Array(n * 4),
+          aStyle: new Float32Array(n * 2),
+          aLayout: new Float32Array(n * 4),
+          aSurface: new Float32Array(n * 2),
         }
       : null;
+    if (facade) {
+      facade.aFacade.set(this.aFacade);
+      facade.aStyle.set(this.aStyle);
+      facade.aLayout.set(this.aLayout);
+      facade.aSurface.set(this.aSurface);
+    }
+    let v = this.position.length / 3;
+    for (const run of this.runs) {
+      const w = run.writer;
+      for (let i = run.start, end = run.start + run.count; i < end; i++, v++) {
+        const s3 = i * 3,
+          d3 = v * 3;
+        position[d3] = w.positions[s3]!;
+        position[d3 + 1] = w.positions[s3 + 1]! - run.yOffset;
+        position[d3 + 2] = w.positions[s3 + 2]!;
+        normal[d3] = w.normals[s3]!;
+        normal[d3 + 1] = w.normals[s3 + 1]!;
+        normal[d3 + 2] = w.normals[s3 + 2]!;
+        color[d3] = w.colors[s3]!;
+        color[d3 + 1] = w.colors[s3 + 1]!;
+        color[d3 + 2] = w.colors[s3 + 2]!;
+        renderId[v] = run.renderId;
+        const f = facade!;
+        for (let k = 0; k < 4; k++) {
+          f.aFacade[v * 4 + k] = w.facades[i * 4 + k]!;
+          f.aLayout[v * 4 + k] = w.layouts[i * 4 + k]!;
+        }
+        f.aStyle[v * 2] = w.styles[i * 2]!;
+        f.aStyle[v * 2 + 1] = w.styles[i * 2 + 1]!;
+        f.aSurface[v * 2] = w.surfaces[i * 2]!;
+        f.aSurface[v * 2 + 1] = w.surfaces[i * 2 + 1]!;
+      }
+    }
     return {
       layer: this.layer,
       role: this.role,
-      vertexCount: this.vertexCount,
-      position: new Float32Array(this.position),
-      normal: new Float32Array(this.normal),
-      color: new Float32Array(this.color),
-      renderId: new Float32Array(this.renderId),
+      vertexCount: n,
+      position,
+      normal,
+      color,
+      renderId,
       facade,
       index: this.indexed ? new Uint32Array(this.index) : null,
     };
