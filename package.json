@@ -68,6 +68,7 @@
     "docs/support.md"
   ],
   "scripts": {
+    "pretest": "npm run build:packages",
     "dev": "vite --host 127.0.0.1 --port 5178 --strictPort",
     "build": "npm run build:packages && vite build && vite build --config vite.studio.config.js && vite build --config vite.sdk.config.js",
     "build:sdk": "vite build --config vite.sdk.config.js",

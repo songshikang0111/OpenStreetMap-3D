@@ -88,7 +88,9 @@ export function writeBuildingBody(
               [len * span.t0, high - baseY, len, floorHeight],
             ],
           );
-          if (!ringIndex && span.lo === 0 && (!longest || spanLen > longest.len))
+          // Near-ties (within 10 cm) keep the first wall, so centimetre-level coordinate quantisation in tiles
+          // cannot move the entrance to another facade.
+          if (!ringIndex && span.lo === 0 && (!longest || spanLen > longest.len + 0.1))
             longest = { a: sa, b: sb, len: spanLen, normal, angle, mid: sm, dx: sb[0] - sa[0], dz: sb[1] - sa[1] };
           // Trim follows the exposed wall, never a buried podium/tower seam.
           if (spanLen > 2 && building.height > 6) {
