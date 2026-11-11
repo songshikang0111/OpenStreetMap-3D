@@ -6,7 +6,13 @@ import { normalizeRaw } from '../../src/core/contract.js';
 import { planRoof } from '../../src/roofs.js';
 import { planBuildingEnvelopes } from '../../src/building-envelope.js';
 import { writeBuildingBody } from '../../src/building-mesh.js';
-import { decodeTile, gridStepMeters, tileMetersToLngLat, featureIdAt } from '../../packages/tiles/dist/index.js';
+import {
+  decodeTile,
+  gridStepMeters,
+  tileMetersToLngLat,
+  featureIdAt,
+  readFeatureMeta,
+} from '../../packages/tiles/dist/index.js';
 import { BatchSet, generateBuildings, phase1IdToFeatureId } from '../../packages/generators/dist/index.js';
 
 const OFFSET = 0.45;
@@ -28,7 +34,7 @@ function boundsOf(writers) {
 }
 
 /** Phase-one direct generation, exactly as buildCity does it (all buildings, envelope over the whole area). */
-export async function phase1Buildings(inputFile, bbox) {
+export async function phase1Buildings(inputFile, bbox, claimed = new Set()) {
   const raw = JSON.parse(await readFile(inputFile, 'utf8'));
   const [south, west, north, east] = bbox ? [bbox[1], bbox[0], bbox[3], bbox[2]] : raw.metadata.bbox;
   const origin = bbox
@@ -40,9 +46,12 @@ export async function phase1Buildings(inputFile, bbox) {
     data.buildings.map((b) =>
       roofPlans.get(b.id).supported ? { ...b, height: roofPlans.get(b.id).eave - OFFSET } : b,
     ),
+    // Landmark claims leave the envelope planning, as buildCity does with landmarks enabled.
+    { exclude: (b) => claimed.has(phase1IdToFeatureId(b.id)) },
   );
   const out = new Map();
   data.buildings.forEach((b, i) => {
+    if (claimed.has(phase1IdToFeatureId(b.id))) return;
     const { writer, roofWriter } = writeBuildingBody(b, {
       renderId: i + 1,
       seed: 1,
@@ -57,8 +66,11 @@ export async function phase1Buildings(inputFile, bbox) {
 /** Tile path: per-building bounds converted into the phase-one project frame. */
 export async function tileBuildings(dir, report, project) {
   const out = new Map();
+  const landmarks = new Set();
+  out.landmarks = landmarks;
   for (const key of Object.keys(report.hashes).filter((k) => k.startsWith('16/'))) {
     const tile = decodeTile(await readFile(path.join(dir, key)));
+    if (tile.layers.landmark) for (const f of readFeatureMeta(tile.layers.landmark.features)) landmarks.add(f.id);
     const layer = tile.layers.building;
     if (!layer) continue;
     const step = gridStepMeters(tile.id, tile.extentLog2);
@@ -92,6 +104,7 @@ export function compareBuildings(direct, tiles) {
   const rows = [];
   for (const [id, a] of direct) {
     const b = tiles.get(id);
+    if (!b && tiles.landmarks?.has(id)) continue; // replaced by a landmark recipe, as in the phase-one scene
     if (!b) {
       rows.push({ id, missing: true });
       continue;

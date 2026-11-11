@@ -45,6 +45,8 @@ export interface BuildOptions {
   seed?: number;
   inferRoofs?: boolean;
   ruleTrees?: boolean;
+  /** Use official landmark recipes (03 section 6, default on). */
+  landmarks?: boolean;
   /** Planning-cell zoom (03 section 3 default 12). Larger values give smaller cells. */
   cellZoom?: number;
   bufferMeters?: number;
@@ -200,6 +202,7 @@ export async function buildTiles(
     seed: input.seed,
     inferRoofs: input.inferRoofs,
     ruleTrees: options.ruleTrees ?? true,
+    landmarks: options.landmarks ?? true,
     bufferMeters: options.bufferMeters ?? 800,
   };
   const cellZoom = options.cellZoom ?? 12;
@@ -244,7 +247,7 @@ export async function buildTiles(
     const file = path.join(cache, 'plan', `${key.replace(/\//g, '-')}.json`);
     let plan = await readJSONIf<CellPlan & { inputHash: string }>(file);
     if (!plan || plan.inputHash !== inputHash) {
-      plan = { ...planCell(ctx, cell, planOptions), inputHash };
+      plan = { ...(await planCell(ctx, cell, planOptions)), inputHash };
       await writeAtomic(file, JSON.stringify(plan));
     }
     records.push(...plan.records);
@@ -336,7 +339,7 @@ export async function buildTiles(
         inferRoofs: planOptions.inferRoofs,
         ruleTrees: planOptions.ruleTrees,
         landscape: false,
-        landmarks: false,
+        landmarks: planOptions.landmarks,
       },
       configHash,
     },

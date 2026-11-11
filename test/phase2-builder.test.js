@@ -7,7 +7,13 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildTiles, BuildInterrupted } from '../packages/builder/dist/index.js';
-import { decodeTile, readFeatures, parseTileKey, defaultExtentLog2 } from '../packages/tiles/dist/index.js';
+import {
+  decodeTile,
+  readFeatures,
+  readFeatureMeta,
+  parseTileKey,
+  defaultExtentLog2,
+} from '../packages/tiles/dist/index.js';
 import { parseOSM } from '../src/osm.js';
 import { normalizeRaw } from '../src/core/contract.js';
 
@@ -92,7 +98,7 @@ test('AC309: interrupting any stage and resuming gives the uninterrupted bytes',
 test('AC305: tile buildings equal the phase-one building set and each appears in exactly one L1 tile', async () => {
   const base = await tmp();
   try {
-    for (const name of ['beijing-lingxiu-d', 'bibury-village', 'amsterdam-canals']) {
+    for (const name of ['beijing-lingxiu-d', 'bibury-village', 'amsterdam-canals', 'beijing-cbd']) {
       const raw = JSON.parse(await readFile(sample(name), 'utf8'));
       const [south, west, north, east] = raw.metadata.bbox;
       const data = parseOSM(
@@ -112,9 +118,12 @@ test('AC305: tile buildings equal the phase-one building set and each appears in
       const seen = new Map();
       for (const key of Object.keys(report.hashes).filter((k) => k.startsWith('16/'))) {
         const tile = decodeTile(await readFile(path.join(out, key)));
-        const layer = tile.layers.building;
-        if (!layer) continue;
-        for (const f of readFeatures(layer)) {
+        const landmark = tile.layers.landmark;
+        const features = [
+          ...(tile.layers.building ? readFeatures(tile.layers.building) : []),
+          ...(landmark ? readFeatureMeta(landmark.features) : []),
+        ];
+        for (const f of features) {
           assert.ok(!seen.has(f.id), `${f.id} appears in ${seen.get(f.id)} and ${key}`);
           seen.set(f.id, key);
         }

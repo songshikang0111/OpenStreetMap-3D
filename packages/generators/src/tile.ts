@@ -64,7 +64,8 @@ function generateTrees(layer: FeatureLayer, step: number): TreeInstances {
 
 function meshBatches(layer: MeshLayer, name: string, batches: BatchSet): number {
   let triangles = 0;
-  const color = [0.86, 0.85, 0.82];
+  const fallback = [0.86, 0.85, 0.82];
+  const colors = layer.vertexAttributes.color?.itemSize === 3 ? layer.vertexAttributes.color.array : null;
   for (const sub of layer.submeshes) {
     const b = batches.get(name, sub.materialRole, true);
     const renderId = layer.features.renderId[sub.featureIndex] ?? 0;
@@ -75,7 +76,12 @@ function meshBatches(layer: MeshLayer, name: string, batches: BatchSet): number 
       if (out === undefined) {
         const n = layer.normal ? layer.normal.subarray(v * 3, v * 3 + 3) : [0, 1, 0];
         const rid = layer.vertexFeature ? (layer.features.renderId[layer.vertexFeature[v]!] ?? renderId) : renderId;
-        out = b.vertex(layer.position.subarray(v * 3, v * 3 + 3), n, color, rid);
+        out = b.vertex(
+          layer.position.subarray(v * 3, v * 3 + 3),
+          n,
+          colors ? colors.subarray(v * 3, v * 3 + 3) : fallback,
+          rid,
+        );
         remap.set(v, out);
       }
       b.index.push(out);

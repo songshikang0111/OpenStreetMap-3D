@@ -22,8 +22,9 @@ test('AC306: tile-generated buildings match phase-one direct generation', async 
     for (const name of ['bibury-village', 'beijing-cbd', 'beijing-lingxiu-d']) {
       const out = path.join(base, name);
       const { report } = await buildTiles({ input: sample(name), output: out });
-      const { data, buildings } = await phase1Buildings(sample(name));
-      const tiles = await tileBuildings(out, report, data.project);
+      const probe = await phase1Buildings(sample(name));
+      const tiles = await tileBuildings(out, report, probe.data.project);
+      const { buildings } = await phase1Buildings(sample(name), undefined, tiles.landmarks);
       const rows = compareBuildings(buildings, tiles);
       assert.ok(
         rows.every((r) => !r.missing),

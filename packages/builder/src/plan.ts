@@ -9,6 +9,8 @@ import type { Phase1Building, Phase1Data, Phase1Polygon, Point2 } from '../../..
 import { phase1IdToFeatureId } from '@city-ink/generators';
 import { tileToLngLatBounds, DEFAULT_KEPT_TAGS } from '@city-ink/tiles';
 import type { Bounds, LngLat, Provenance, TileId } from '@city-ink/tiles';
+import { planLandmarks } from './landmarks.js';
+import type { LandmarkBake } from './landmarks.js';
 import { boundsContains, boundsIntersect, expandBounds, ringBounds, toLngLat } from './geo.js';
 
 /** Tags read by the phase-one building, roof and facade rules; kept so generators reproduce the same geometry. */
@@ -35,6 +37,7 @@ export interface PlanOptions {
   seed: number;
   inferRoofs: boolean;
   ruleTrees: boolean;
+  landmarks: boolean;
   bufferMeters: number;
 }
 
@@ -49,12 +52,14 @@ export interface HeightFunction {
 }
 
 export interface PlanRecord {
-  layer: 'building' | 'road' | 'structure' | 'water' | 'green' | 'ground' | 'tree';
+  layer: 'building' | 'landmark' | 'road' | 'structure' | 'water' | 'green' | 'ground' | 'tree';
   id: string;
   /** Owner planning cell key (z/x/y), or "all" for a single global cell. */
   cell: string;
   /** Polygons: parts → rings → [lng, lat]. Lines: parts → [ring] → [lng, lat]. Points: [[[lng, lat]]]. */
   geometry: LngLat[][][];
+  /** Baked landmark geometry (layer `landmark`). */
+  mesh?: LandmarkBake;
   /** Per-vertex elevation for lines (same nesting as geometry). */
   elevation?: number[][][];
   /** Elevation function for graded polygons, evaluated after clipping. */
@@ -162,7 +167,7 @@ export function cellKey(cell: TileId | null): string {
 }
 
 /** Plans one cell. `cell = null` plans the whole input as one cell. */
-export function planCell(ctx: PlanContext, cell: TileId | null, options: PlanOptions): CellPlan {
+export async function planCell(ctx: PlanContext, cell: TileId | null, options: PlanOptions): Promise<CellPlan> {
   const key = cellKey(cell);
   const project = ctx.data.project;
   const ll = (q: Point2) => toLngLat(project, q);
@@ -173,6 +178,24 @@ export function planCell(ctx: PlanContext, cell: TileId | null, options: PlanOpt
   const records: PlanRecord[] = [];
   const stats: Record<string, number> = {};
   const count = (k: string) => (stats[k] = (stats[k] ?? 0) + 1);
+
+  // Landmarks: official recipes claim buildings and bake trusted geometry; the group is owned by its first claim.
+  const landmarks = options.landmarks ? await planLandmarks(data, options.seed) : null;
+  for (const { anchor, bake } of landmarks?.bakes ?? []) {
+    if (!owns(anchor)) continue;
+    records.push({
+      layer: 'landmark',
+      id: bake.featureIds[0]!,
+      cell: key,
+      geometry: [],
+      mesh: bake,
+      anchor,
+      properties: { recipe: bake.recipeId, recipeVersion: bake.recipeVersion },
+      provenance: {},
+      tags: {},
+    });
+    count('landmarks');
+  }
 
   // Buildings: owned by the cell containing the centre of their outline bounds.
   for (const b of data.buildings) {
@@ -202,6 +225,8 @@ export function planCell(ctx: PlanContext, cell: TileId | null, options: PlanOpt
         colour: b.tags['building:colour'] ?? null,
         roofColour: b.tags['roof:colour'] ?? b.tags['roof:color'] ?? null,
         area: b.area,
+        // Claimed by a landmark recipe: replaced by the landmark mesh at full detail, kept as massing at L0.
+        landmark: landmarks?.claimed.has(b.id) ? 'claimed' : null,
       },
       provenance: buildingProvenance(b, roof.supported ? roof.source : null),
       tags: keptTags(b.tags, ['height', 'min_height', 'building:levels', 'building:min_level']),

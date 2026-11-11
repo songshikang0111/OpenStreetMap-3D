@@ -7,7 +7,16 @@ import {
   tileToLngLatBounds,
   fitsInt16,
 } from '@city-ink/tiles';
-import type { Diagnostic, FeatureLayerInput, LngLat, TileFeature, TileId, TileInput } from '@city-ink/tiles';
+import type {
+  Diagnostic,
+  FeatureLayerInput,
+  LngLat,
+  MeshLayerInput,
+  TileFeature,
+  TileId,
+  TileInput,
+} from '@city-ink/tiles';
+import { lngLatToTileMeters } from '@city-ink/tiles';
 import type { Phase1Data, Point2 } from '../../../src/phase1-types.js';
 import { clipRing, clipSegment, ringArea, simplifyRing } from './clip.js';
 import type { G, Rect } from './clip.js';
@@ -123,6 +132,14 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
         tags: r.tags,
       };
 
+      if (r.layer === 'landmark') {
+        if (!full || !r.mesh) continue;
+        const id = lngLatToTile(r.anchor[0], r.anchor[1], z);
+        if (!wanted(id)) continue;
+        appendLandmark(tileOf(id, level.profile), r, project);
+        continue;
+      }
+      if (full && r.layer === 'building' && r.properties.landmark === 'claimed') continue;
       if (r.layer === 'building' || r.layer === 'tree') {
         const id = lngLatToTile(r.anchor[0], r.anchor[1], z);
         if (!wanted(id)) continue;
@@ -358,6 +375,10 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
     let renderId = 1;
     for (const name of Object.keys(t.layers).sort()) {
       const layer = t.layers[name] as FeatureLayerInput;
+      if ((t.layers[name] as { type: string }).type === 'mesh') {
+        for (const f of (t.layers[name] as MeshLayerInput).features) f.renderId = renderId++;
+        continue;
+      }
       layer.features.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
       mergeDuplicateIds(layer);
       for (const f of layer.features) f.renderId = renderId++;
@@ -385,7 +406,7 @@ function addBuildingContext(tiles: Map<string, TileInput>, records: PlanRecord[]
   if (!full) return;
   const z = full.zoom;
   const e = defaultExtentLog2(z);
-  const buildings = records.filter((r) => r.layer === 'building');
+  const buildings = records.filter((r) => r.layer === 'building' && r.properties.landmark !== 'claimed');
   const boxes = buildings.map((r) => {
     const g = r.geometry[0]![0]!.map((p) => toGrid(p, z, e));
     const xs = g.map((p) => p[0]),
@@ -449,3 +470,53 @@ export function levelTileKeys(tiles: Map<string, TileInput>): string[] {
 
 export { tileToLngLatBounds };
 export type { LngLat };
+
+/** Appends a baked landmark group to the tile's `landmark` mesh layer, converting project metres to tile metres. */
+function appendLandmark(t: TileInput, r: PlanRecord, project: Phase1Data['project']) {
+  const bake = r.mesh!;
+  let layer = t.layers.landmark as MeshLayerInput | undefined;
+  if (!layer) {
+    layer = {
+      type: 'mesh',
+      position: [],
+      normal: [],
+      index: [],
+      vertexFeature: [],
+      submeshes: [],
+      vertexAttributes: { color: { itemSize: 3, array: [] } },
+      attributes: [
+        { name: 'recipe', type: 'string' },
+        { name: 'recipeVersion', type: 'string' },
+      ],
+      features: [],
+    };
+    t.layers.landmark = layer;
+  }
+  const position = layer.position as number[];
+  const normal = layer.normal as number[];
+  const index = layer.index as number[];
+  const vertexFeature = layer.vertexFeature as number[];
+  const color = layer.vertexAttributes!.color!.array as number[];
+  const featureBase = layer.features.length;
+  for (const id of bake.featureIds)
+    layer.features.push({ id, renderId: 0, properties: { recipe: bake.recipeId, recipeVersion: bake.recipeVersion } });
+  for (const m of bake.meshes) {
+    const vertexBase = position.length / 3;
+    for (let v = 0; v < m.position.length; v += 3) {
+      const [lat, lon] = project.inverse([m.position[v]!, m.position[v + 2]!]);
+      const [x, z] = lngLatToTileMeters(t.id, [lon, lat]);
+      position.push(x, m.position[v + 1]!, z);
+      normal.push(m.normal[v]!, m.normal[v + 1]!, m.normal[v + 2]!);
+      color.push(m.color[v]!, m.color[v + 1]!, m.color[v + 2]!);
+      vertexFeature.push(featureBase + m.featureIndex);
+    }
+    const indexStart = index.length;
+    for (const i of m.index) index.push(vertexBase + i);
+    layer.submeshes.push({
+      materialRole: 'landmark',
+      featureIndex: featureBase + m.featureIndex,
+      indexStart,
+      indexCount: m.index.length,
+    });
+  }
+}
