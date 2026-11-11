@@ -77,7 +77,7 @@
     "prepack": "npm run build",
     "preview": "vite preview --host 127.0.0.1 --port 5178 --strictPort",
     "test": "node --test test/*.test.js",
-    "test:types": "tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 examples/quickstart/typecheck.ts",
+    "test:types": "tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 examples/quickstart/typecheck.ts && tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 --lib ES2022,DOM,DOM.Iterable --skipLibCheck examples/phase2/map-usage.ts",
     "check:package": "node scripts/phase1-package-check.mjs",
     "data:fetch": "python scripts/fetch_osm.py",
     "build:packages": "tsc -b packages/tiles packages/generators packages/builder packages/map packages/styles-ink packages/details",

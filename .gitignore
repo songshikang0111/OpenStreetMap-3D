@@ -13,3 +13,4 @@ dist-sdk/
 packages/*/dist/
 apps/demo/public/tiles/
 apps/demo/dist/
+packages/map/bundle/

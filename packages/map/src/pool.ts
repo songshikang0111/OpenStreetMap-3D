@@ -96,13 +96,34 @@ export class WorkerPool {
     this.pump();
   }
 
+  /** A worker that raised an error (for example a module that failed to load) is retired, never reused. */
   private failed(w: WorkerLike, error: Error) {
     const job = this.busy.get(w);
     this.busy.delete(w);
-    this.idle.push(w);
-    job?.reject(error);
+    const i = this.idle.indexOf(w);
+    if (i >= 0) this.idle.splice(i, 1);
+    w.terminate();
+    this.dead++;
+    job?.reject(Object.assign(error, { permanent: false }));
+    if (this.dead >= this.size) {
+      // No worker left: fail everything still queued with a clear diagnostic instead of waiting forever.
+      for (const queued of this.queue.splice(0))
+        queued.reject(
+          Object.assign(new Error('All tile workers failed to start or crashed.'), {
+            diagnostic: {
+              code: 'WORKER_FAILED',
+              stage: 'generate',
+              message: `All tile workers failed: ${error.message}`,
+              hint: 'Check that the worker chunk is served next to the SDK and allowed by the Content-Security-Policy.',
+            },
+            permanent: true,
+          }),
+        );
+    }
     this.pump();
   }
+
+  private dead = 0;
 
   terminate() {
     this.terminated = true;

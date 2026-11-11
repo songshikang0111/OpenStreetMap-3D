@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      html,
+      body,
+      #map {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <!-- AC414: the single-file ESM build used directly from a page, with three.js mapped by an import map. -->
+    <script type="importmap">
+      { "imports": { "three": "/node_modules/three/build/three.module.js" } }
+    </script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script type="module">
+      import { createMap } from '/packages/map/bundle/city-map.js';
+      const map = await createMap({
+        container: document.getElementById('map'),
+        tiles: '/apps/demo/public/tiles/beijing-cbd-grow-9/tileset.json',
+        pitch: 55,
+      });
+      await map.whenIdle({ timeoutMs: 60000 });
+      globalThis.bundleCheck = map.getStats();
+    </script>
+  </body>
+</html>

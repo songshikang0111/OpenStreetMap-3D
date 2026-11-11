@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-11T20:47:27.419Z",
+  "main": {
+    "file": "city-map.js",
+    "minifiedBytes": 67183,
+    "gzipBytes": 20940,
+    "threeExternal": true
+  },
+  "worker": {
+    "file": "worker-O1_eX8zl.js",
+    "bytes": 443349,
+    "gzipBytes": 100485,
+    "note": "separate chunk, loaded on demand; contains three.js math, generators and the shared phase-one building code"
+  },
+  "limitBytes": 184320,
+  "scriptTypeModule": {
+    "visibleTiles": 10,
+    "drawCalls": 70
+  },
+  "pass": true
+}
