@@ -7,11 +7,10 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const args = process.argv.slice(2);
 if (args.some((arg) => !arg.startsWith('--output='))) throw new Error('Expected --output=path.');
-const output = path.resolve(
-  root,
-  args.find((arg) => arg.startsWith('--output='))?.slice(9) ||
-    'docs/phase1-evidence/remediation/integration/package-results.json',
-);
+// Results go outside the repository unless --output names a file: the archived phase-one evidence
+// (docs/phase1-evidence/remediation/integration/package-results.json) must not be rewritten by routine checks.
+const explicit = args.find((arg) => arg.startsWith('--output='))?.slice(9);
+const output = explicit ? path.resolve(root, explicit) : path.join(os.tmpdir(), 'city-ink-package-results.json');
 const npm = process.env.npm_execpath;
 if (!npm) throw new Error('Run this check through npm run check:package.');
 const temporary = await mkdtemp(path.join(os.tmpdir(), 'city-package-'));
