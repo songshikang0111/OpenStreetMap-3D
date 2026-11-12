@@ -71,6 +71,25 @@ export const LAYER_SCHEMAS: Record<string, LayerSchema> = {
     provenance: ['position', 'height', 'shape'],
   },
   ground: { name: 'ground', geometry: 'polygon', elevation: true, attributes: [s('kind')], provenance: [] },
+  /**
+   * Optional street details (lamps, signals, crossings, kerbs, parked cars, pedestrians, benches) planned at build
+   * time with the phase-one rules; meshes are generated at runtime (decision E10). Minor extension of format 1.0.
+   */
+  detail: {
+    name: 'detail',
+    geometry: 'point',
+    elevation: false,
+    attributes: [s('kind'), f('angle'), f('size'), f('y'), f('gradeX'), f('gradeZ'), s('color')],
+    provenance: ['position'],
+  },
+  /** Optional inferred landscape surfaces (courts, verges, planting beds) from the phase-one landscape planner. */
+  landscape: {
+    name: 'landscape',
+    geometry: 'polygon',
+    elevation: false,
+    attributes: [s('kind'), s('source')],
+    provenance: ['kind'],
+  },
   /** L0 only: tree cover density on a 100 m grid, stored as points at cell centres. */
   treeDensity: {
     name: 'treeDensity',

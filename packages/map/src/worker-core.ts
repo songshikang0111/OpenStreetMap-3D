@@ -10,6 +10,7 @@ import {
 import type { DecodedTile, Diagnostic, FeatureLayer, LngLat, Provenance } from '@city-ink/tiles';
 import { generateTile, batchTransferables } from '@city-ink/generators';
 import type { GeneratedTile } from '@city-ink/generators';
+import { DETAIL_GENERATORS } from '@city-ink/details';
 
 export interface WorkerRequest {
   type: 'generate';
@@ -99,7 +100,7 @@ export function handleRequest(request: WorkerRequest): { response: WorkerRespons
     const t0 = performance.now();
     const tile = decodeTile(request.buffer);
     const t1 = performance.now();
-    const generated = generateTile(tile, request.options);
+    const generated = generateTile(tile, { ...request.options, layerGenerators: DETAIL_GENERATORS });
     const features = featureRecords(tile);
     const t2 = performance.now();
     const transfer = batchTransferables(generated.batches);

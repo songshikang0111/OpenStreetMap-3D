@@ -47,6 +47,11 @@ if (picker) {
   });
 }
 globalThis.styleFor = styleFor;
+const filter = {};
+document.getElementById('details')?.addEventListener('change', (e) => {
+  filter.details = e.target.checked;
+  map.setFilter({ ...filter });
+});
 
 // Exposed for automated checks and for experimenting in the console.
 globalThis.cityMap = map;

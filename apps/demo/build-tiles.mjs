@@ -33,6 +33,10 @@ for (const name of names) {
     // The demo shows the explicit, conservative roof inference (pitched roofs on small houses; 05 section 5). The
     // builder default stays off, and the runtime ProvenanceFilter `roofs.inferred: false` turns it back off.
     inferRoofs: true,
+    // Optional decorations (street furniture, parked cars, pedestrians, inferred landscape) are off by default in the
+    // builder; the demo turns them on and offers a switch (ProvenanceFilter `details`).
+    details: true,
+    landscape: true,
     ...(s.bbox ? { bbox: s.bbox } : {}),
   });
   console.log(name, JSON.stringify(report.counts));

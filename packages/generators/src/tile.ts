@@ -36,6 +36,8 @@ export interface GeneratedTile {
 export interface GenerateOptions extends BuildingOptions {
   /** Restrict to these layers (default: all known layers). */
   layers?: string[];
+  /** Generators of optional layers (e.g. @city-ink/details for `detail` and `landscape`). Unknown layers are skipped. */
+  layerGenerators?: Record<string, (layer: FeatureLayer, step: number, batches: BatchSet) => number>;
 }
 
 function generateTrees(layer: FeatureLayer, step: number): TreeInstances {
@@ -105,7 +107,12 @@ export function generateTile(tile: DecodedTile, options: GenerateOptions = {}): 
     if (!wanted(name) || name === 'buildingContext') continue;
     const layer = tile.layers[name]!;
     const t0 = now();
-    if (layer.type === 'mesh') meshBatches(layer, name, batches);
+    const extension = options.layerGenerators?.[name];
+    if (extension) {
+      if (layer.type === 'features') extension(layer, step, batches);
+    } else if (name === 'detail' || name === 'landscape') {
+      // optional layers without a registered generator are not drawn
+    } else if (layer.type === 'mesh') meshBatches(layer, name, batches);
     else if (name === 'building' && tile.profile === 'full') {
       const context = tile.layers.buildingContext;
       buildings += generateBuildings(

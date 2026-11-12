@@ -68,7 +68,7 @@ import type {
 export const RUNTIME_VERSION = '2.0.0';
 
 /** Layers MapLibre draws itself in `ground: 'host'` mode (04 section 8). */
-const HOST_GROUND_LAYERS = new Set(['ground', 'water', 'green', 'road']);
+const HOST_GROUND_LAYERS = new Set(['ground', 'water', 'green', 'road', 'landscape']);
 
 /** Internal options used by the MapLibre layer adapter. */
 export interface HostedOptions extends MapOptions {
@@ -993,7 +993,20 @@ export class CityMapImpl implements CityMap {
   setFilter(filter: ProvenanceFilter): void {
     this.assertAlive();
     this.filter = { ...filter };
+    for (const e of this.tiles.values()) this.applyFilter(e);
     this.dirty = true;
+  }
+
+  /** Applies the ProvenanceFilter to one loaded tile without refetching or regenerating it (05 section 5). */
+  private applyFilter(entry: TileEntry) {
+    if (!entry.object) return;
+    const details = this.filter.details !== false;
+    const hostGround = this.hosted?.ground === 'host';
+    for (const mesh of entry.object.meshes) {
+      const layer = String(mesh.userData.layer);
+      if (hostGround && HOST_GROUND_LAYERS.has(layer)) continue;
+      if (layer === 'detail' || layer === 'landscape') mesh.visible = details;
+    }
   }
 
   // ------------------------------------------------------------------------------------------- loading
@@ -1138,6 +1151,7 @@ export class CityMapImpl implements CityMap {
       entry.object = object;
       entry.features = response.features;
       this.applyStates(entry);
+      this.applyFilter(entry);
       entry.bytes = object.bytes;
       entry.state = 'ready';
       entry.retries = 0;

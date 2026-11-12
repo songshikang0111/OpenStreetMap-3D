@@ -6,6 +6,7 @@ import { planRoadSurface } from '../../../src/road-surface.js';
 import type { RoadSurfacePiece } from '../../../src/road-surface.js';
 import { planStreetLife } from '../../../src/streetlife.js';
 import { planRoadStructures } from '../../../src/road-structures.js';
+import { planLandscape } from '../../../src/landscape-plan.js';
 import type { StairFlight } from '../../../src/road-stairs.js';
 import type { Phase1Building, Phase1Data, Phase1Polygon, Point2 } from '../../../src/phase1-types.js';
 import { phase1IdToFeatureId } from '@city-ink/generators';
@@ -39,6 +40,8 @@ export interface PlanOptions {
   seed: number;
   inferRoofs: boolean;
   ruleTrees: boolean;
+  details?: boolean;
+  landscape?: boolean;
   landmarks: boolean;
   bufferMeters: number;
 }
@@ -54,7 +57,17 @@ export interface HeightFunction {
 }
 
 export interface PlanRecord {
-  layer: 'building' | 'landmark' | 'road' | 'structure' | 'water' | 'green' | 'ground' | 'tree';
+  layer:
+    | 'building'
+    | 'landmark'
+    | 'road'
+    | 'structure'
+    | 'water'
+    | 'green'
+    | 'ground'
+    | 'tree'
+    | 'detail'
+    | 'landscape';
   id: string;
   /** Owner planning cell key (z/x/y), or "all" for a single global cell. */
   cell: string;
@@ -427,9 +440,113 @@ export async function planCell(ctx: PlanContext, cell: TileId | null, options: P
   }
 
   // Trees: observed nodes and rule-planted trees, owned by their position.
-  if (options.ruleTrees || data.trees.length) {
-    const life = planStreetLife(data, { seed: options.seed, maxTrees: 1e9, roadPlan: road });
-    for (const t of life.trees) {
+  // Landscape completion (optional, 03 section 6): inferred surfaces and benches; observed polygons stay in `green`.
+  if (options.landscape) {
+    const land = planLandscape(data, { roadPlan: road, seed: options.seed }) as unknown as {
+      surfaces: { id?: string; kind: string; source: string; outer: Point2[]; holes?: Point2[][] }[];
+      props: { point: Point2; angle: number; kind: string; length: number; source: string }[];
+    };
+    for (const surface of land.surfaces) {
+      if (String(surface.source).startsWith('osm')) continue;
+      const rings = [surface.outer.map(ll), ...(surface.holes ?? []).map((h) => h.map(ll))];
+      if (rings[0]!.length < 3 || !intersects(ringBounds(rings[0]!))) continue;
+      const shape = `${surface.kind}:${surface.outer.map((q) => q.map((v) => v.toFixed(2)).join(',')).join(';')}`;
+      records.push({
+        layer: 'landscape',
+        id: `generated/${hash52(`landscape:${shape}`)}`,
+        cell: key,
+        geometry: [rings],
+        anchor: rings[0]![0]!,
+        properties: { kind: surface.kind, source: surface.source },
+        provenance: { kind: 'inferred' },
+        tags: {},
+      });
+      count('landscapeSurfaces');
+    }
+    for (const prop of land.props) {
+      const anchor = ll(prop.point);
+      if (!owns(anchor)) continue;
+      records.push(detailRecord(key, anchor, prop.kind, prop.angle, prop.length, 0, [0, 0], null, 'inferred'));
+      count('details');
+    }
+  }
+
+  if (options.ruleTrees || options.details || data.trees.length) {
+    const life = planStreetLife(data, { seed: options.seed, maxTrees: 1e9, roadPlan: road }) as ReturnType<
+      typeof planStreetLife
+    > & {
+      lamps?: DetailItem[];
+      signals?: DetailItem[];
+      crosswalks?: DetailItem[];
+      curbs?: DetailItem[];
+      cars?: DetailItem[];
+      people?: DetailItem[];
+    };
+    if (options.details) {
+      const observed = (d: DetailItem) => (/^osm/.test(String(d.source ?? '')) ? 'observed' : 'inferred');
+      const emit = (
+        list: DetailItem[] | undefined,
+        kind: string,
+        size: (d: DetailItem) => number,
+        angle: (d: DetailItem) => number,
+      ) => {
+        for (const d of list ?? []) {
+          const anchor = ll(d.point);
+          if (!owns(anchor)) continue;
+          records.push(
+            detailRecord(
+              key,
+              anchor,
+              kind,
+              angle(d),
+              size(d),
+              (d.baseY ?? GROUND) - GROUND,
+              d.grade ?? [0, 0],
+              d.color ?? null,
+              observed(d),
+            ),
+          );
+          count('details');
+        }
+      };
+      emit(
+        life.lamps,
+        'lamp',
+        (d) => d.h ?? 6,
+        (d) => Math.atan2(d.direction?.[0] ?? 0, d.direction?.[1] ?? 1),
+      );
+      emit(
+        life.signals,
+        'signal',
+        () => 3.2,
+        (d) => d.angle ?? 0,
+      );
+      emit(
+        life.crosswalks,
+        'crosswalk',
+        (d) => d.width ?? 4,
+        (d) => d.angle ?? 0,
+      );
+      emit(
+        life.curbs,
+        'curb',
+        (d) => d.length ?? 1,
+        (d) => d.angle ?? 0,
+      );
+      emit(
+        life.cars,
+        'car',
+        () => 4.2,
+        (d) => d.angle ?? 0,
+      );
+      emit(
+        life.people,
+        'person',
+        (d) => d.h ?? 1.7,
+        (d) => d.angle ?? 0,
+      );
+    }
+    for (const t of options.ruleTrees || data.trees.length ? life.trees : []) {
       if (!options.ruleTrees && t.source !== 'osm') continue;
       const anchor = ll([t.x, t.z]);
       if (!owns(anchor)) continue;
@@ -459,4 +576,41 @@ export async function planCell(ctx: PlanContext, cell: TileId | null, options: P
   }
   records.sort((a, b) => (a.layer + a.id < b.layer + b.id ? -1 : a.layer + a.id > b.layer + b.id ? 1 : 0));
   return { cell: key, records, stats };
+}
+
+interface DetailItem {
+  point: Point2;
+  angle?: number;
+  direction?: Point2;
+  h?: number;
+  width?: number;
+  length?: number;
+  baseY?: number;
+  grade?: [number, number];
+  color?: string;
+  source?: string;
+}
+
+/** A street-detail point record (layer `detail`). Ids are derived from kind and position only. */
+function detailRecord(
+  cell: string,
+  anchor: LngLat,
+  kind: string,
+  angle: number,
+  size: number,
+  y: number,
+  grade: [number, number],
+  color: string | null,
+  provenance: Provenance,
+): PlanRecord {
+  return {
+    layer: 'detail',
+    id: `generated/${hash52(`${kind}:${anchor[0].toFixed(7)},${anchor[1].toFixed(7)}:${angle.toFixed(3)}`)}`,
+    cell,
+    geometry: [[[anchor]]],
+    anchor,
+    properties: { kind, angle, size, y, gradeX: grade[0], gradeZ: grade[1], color },
+    provenance: { position: provenance },
+    tags: {},
+  };
 }

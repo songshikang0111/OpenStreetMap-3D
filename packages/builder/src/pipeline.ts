@@ -45,6 +45,10 @@ export interface BuildOptions {
   seed?: number;
   inferRoofs?: boolean;
   ruleTrees?: boolean;
+  /** Street details: lamps, signals, crossings, kerbs, parked cars, pedestrians (default off, decision E10). */
+  details?: boolean;
+  /** Inferred landscape completion (03 section 6, default off). */
+  landscape?: boolean;
   /** Use official landmark recipes (03 section 6, default on). */
   landmarks?: boolean;
   /** Planning-cell zoom (03 section 3 default 12). Larger values give smaller cells. */
@@ -202,6 +206,8 @@ export async function buildTiles(
     seed: input.seed,
     inferRoofs: input.inferRoofs,
     ruleTrees: options.ruleTrees ?? true,
+    ...(options.details ? { details: true } : {}),
+    ...(options.landscape ? { landscape: true } : {}),
     landmarks: options.landmarks ?? true,
     bufferMeters: options.bufferMeters ?? 800,
   };
@@ -338,7 +344,8 @@ export async function buildTiles(
       options: {
         inferRoofs: planOptions.inferRoofs,
         ruleTrees: planOptions.ruleTrees,
-        landscape: false,
+        landscape: Boolean(planOptions.landscape),
+        details: Boolean(planOptions.details),
         landmarks: planOptions.landmarks,
       },
       configHash,

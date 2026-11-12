@@ -68,7 +68,7 @@ function heightAt(h: HeightFunction, p: Point2): number {
 function emptyLayers(profile: 'massing' | 'full'): Record<string, FeatureLayerInput> {
   const names =
     profile === 'full'
-      ? ['building', 'buildingContext', 'road', 'structure', 'water', 'green', 'ground', 'tree']
+      ? ['building', 'buildingContext', 'road', 'structure', 'water', 'green', 'ground', 'tree', 'detail', 'landscape']
       : ['building', 'road', 'water', 'green', 'treeDensity'];
   const out: Record<string, FeatureLayerInput> = {};
   for (const name of names) {
@@ -122,7 +122,8 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
     const smallBlocks = new Map<string, { tile: TileId; rings: G[][]; height: number; ids: string[] }>();
 
     for (const r of records) {
-      if (!full && (r.layer === 'ground' || r.layer === 'structure')) continue;
+      if (!full && (r.layer === 'ground' || r.layer === 'structure' || r.layer === 'detail' || r.layer === 'landscape'))
+        continue;
       if (!full && r.layer === 'road' && !MASSING_ROADS.test(String(r.properties.class))) continue;
       const base: Omit<TileFeature, 'geometry'> = {
         id: r.id,
@@ -140,6 +141,12 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
         continue;
       }
       if (full && r.layer === 'building' && r.properties.landmark === 'claimed') continue;
+      if (r.layer === 'detail') {
+        const id = lngLatToTile(r.anchor[0], r.anchor[1], z);
+        if (!wanted(id)) continue;
+        push(tileOf(id, level.profile), 'detail', { ...base, geometry: [[gridToTile(toGrid(r.anchor, z, e), id, e)]] });
+        continue;
+      }
       if (r.layer === 'building' || r.layer === 'tree') {
         const id = lngLatToTile(r.anchor[0], r.anchor[1], z);
         if (!wanted(id)) continue;

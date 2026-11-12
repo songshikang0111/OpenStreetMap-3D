@@ -16,7 +16,7 @@ export const TILES_HELP = `city tiles — build and check static 3D city tiles
   city tiles serve <dir> [--port 4181] [--json]
 
 Input: OSM JSON (Overpass / OSM Map) or a phase-one project. PBF input and \`pack\` arrive in M3.
-Options file (--config): {"inferRoofs": false, "ruleTrees": true}. Output is ODbL data; keep the attribution.`;
+Options file (--config): {"inferRoofs": false, "ruleTrees": true, "details": false, "landscape": false}. Output is ODbL data; keep the attribution.`;
 
 export interface TilesCLIResult {
   schemaVersion: 1;
@@ -118,6 +118,8 @@ export async function runTilesCLI(
         ...(o['cell-zoom'] !== undefined ? { cellZoom: Number(o['cell-zoom']) } : {}),
         ...(config.inferRoofs !== undefined ? { inferRoofs: Boolean(config.inferRoofs) } : {}),
         ...(config.ruleTrees !== undefined ? { ruleTrees: Boolean(config.ruleTrees) } : {}),
+        ...(config.details !== undefined ? { details: Boolean(config.details) } : {}),
+        ...(config.landscape !== undefined ? { landscape: Boolean(config.landscape) } : {}),
         resume: Boolean(o.resume),
         concurrency,
         ...(signal ? { signal } : {}),

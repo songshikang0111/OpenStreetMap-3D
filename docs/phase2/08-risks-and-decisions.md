@@ -136,3 +136,14 @@
 - 选择：风格描述符（每个角色的材质选择）仍在 `@city-ink/styles`（根包已携带，一期原 ID 不变，AC707）；`@city-ink/styles-ink` 是瓦片模式的公开入口，导出 `comic`、`line`、`color`、`white`、`cel`，为前四者补上瓦片管线：直接使用一期 `src/ink-renderer.js`（描边、网点、实黑、AO、FXAA），ID 通道改读瓦片的 `renderId`。`createMap` 新增对 `supportsTiles: true` 风格包的 `createPipeline` 支持（整帧替代 `renderer.render`）和 `onTileLoad/onTileUnload` 钩子；`createMap` 本身不引用 `styles-ink`（AC708）。前四者声明 `hostCompatible: false`，在 MapLibre 图层中设置会抛出 `STYLE_NOT_HOST_COMPATIBLE`；`cel` 只换材质，可用于图层模式。
 - 限制：墨线各通道使用覆盖材质，`setFeatureState` 的隐藏和压平只作用于颜色通道；开启管线后 `getStats().drawCalls` 只反映最后一个全屏通道。
 - 影响的规格和工作包：05 第 7 节（物理位置与原文不同，接口一致）；WP-J 发布 `styles-ink` 时同样需要处理对 `src/` 的相对引用（同 E4）。
+
+### E10 装饰包 `@city-ink/details` 与 `detail`、`landscape` 两个新要素层（2026-11-13，追加任务）
+- 问题：R9 把街道小品、车辆行人、场地补全移到可选包，但 `packages/details` 只是空壳，这些一期细节在瓦片模式中完全缺失；09 没有为它排期。
+- 选择：
+  1. 格式：新增 `detail`（点；`kind` 取 `lamp`、`signal`、`crosswalk`、`curb`、`car`、`person`、`bench`，属性 `angle`、`size`、`y`、`gradeX`、`gradeZ`、`color`，来源等级 `position`）与 `landscape`（多边形；`kind`、`source`，来源等级 `kind` 恒为 `inferred`），均为格式 1.0 的次要扩展，旧运行时忽略。只写 L1。
+  2. 规划在构建期：一期 `planStreetLife` 的路灯、信号灯、斑马线、路缘石、停放车辆、行人，和一期 `planLandscape` 的推断场地面与长椅（来自 OSM 的场地多边形已在 `green` 层，不重复写入）。点状对象按位置归属瓦片，场地面按规划格与瓦片裁切；不同规划格划分下瓦片哈希一致（测试覆盖）。
+  3. 构建选项 `details`、`landscape` 默认关闭（03 第 6 节 `landscape` 默认关；街道小品按 R9 同样默认关）。demo 样本显式开启，demo 提供开关。
+  4. 网格在运行时由 `@city-ink/details` 的 `generateDetails`、`generateLandscape` 生成；生成器包通过 `generateTile` 的 `layerGenerators` 选项接入，地图 Worker 默认注册它们（代码进 Worker 块，不进主包）。未注册时这两层不绘制。
+  5. `ProvenanceFilter.details = false` 在运行时隐藏这两层（不重新取瓦片、不重新生成）。来自 OSM 节点的路灯、信号灯、人行横道来源等级为 `observed`，其余为 `inferred`。
+- 未做：一期场地规划中的补种树、停车位与球场标线、长椅以外的场地小品；一期近景树冠细化。
+- 影响的规格和工作包：02 第 5.3 节（两层扩展）、03 第 6 节（`details` 选项）、05 第 5 节（`details` 开关已生效）。
