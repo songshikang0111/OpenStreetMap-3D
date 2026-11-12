@@ -1,3 +1,4 @@
+import { ingestPbf } from './ingest/index.js';
 // Build pipeline: ingest → partition → plan → cut → encode → finalize (03 section 3), with per-stage caches,
 // atomic writes and resume. Same input, options and versions give byte-identical outputs.
 import { createHash } from 'node:crypto';
@@ -133,13 +134,20 @@ export async function loadInput(options: BuildOptions): Promise<LoadedInput> {
   }
   if (!file)
     throw Object.assign(new Error('Provide --input <file.json> or --project <dir>.'), { code: 'TILES_INPUT_MISSING' });
-  if (/\.pbf$/i.test(file))
-    throw Object.assign(new Error('PBF input is not supported yet (WP-F, M3).'), {
-      code: 'TILES_PBF_UNSUPPORTED',
-      hint: 'Use an OSM JSON extract or a phase-one project.',
+  let text = '';
+  let raw: Record<string, any>;
+  let pbfHash: string | null = null;
+  if (/\.pbf$/i.test(file)) {
+    const ingested = await ingestPbf(file, {
+      ...(options.bbox ? { bbox: options.bbox } : {}),
+      onProgress: (stage) => options.onProgress?.({ stage: 'ingest', progress: 0, detail: `pbf ${stage}` }),
     });
-  const text = await readFile(file, 'utf8');
-  const raw = JSON.parse(text);
+    raw = ingested.raw;
+    pbfHash = ingested.sha256;
+  } else {
+    text = await readFile(file, 'utf8');
+    raw = JSON.parse(text);
+  }
   const meta = raw.metadata ?? {};
   const bbox = options.bbox
     ? [options.bbox[1], options.bbox[0], options.bbox[3], options.bbox[2]]
@@ -168,9 +176,9 @@ export async function loadInput(options: BuildOptions): Promise<LoadedInput> {
     name:
       options.name ??
       config.name?.replace(/[^A-Za-z0-9._-]+/g, '-').slice(0, 64) ??
-      path.basename(file).replace(/\.json$/i, ''),
+      path.basename(file).replace(/\.(json|osm\.pbf|pbf)$/i, ''),
     file,
-    sourceSha256: sha256(text),
+    sourceSha256: pbfHash ?? sha256(text),
     timestamp,
     inferRoofs: options.inferRoofs ?? config.generation?.inferRoofs ?? false,
   };
@@ -329,7 +337,7 @@ export async function buildTiles(
       building: ['height', 'minHeight', 'levels', 'roofShape', 'roofHeight', 'facade', 'usage', 'provenance'],
     },
     source: {
-      kind: options.project ? 'project' : 'osm-json',
+      kind: options.project ? 'project' : /\.pbf$/i.test(input.file) ? 'osm-pbf' : 'osm-json',
       file: path.basename(input.file),
       sha256: input.sourceSha256,
       ...(input.timestamp ? { timestamp: input.timestamp } : {}),
