@@ -10,6 +10,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./maplibre": {
+      "types": "./dist/maplibre/index.d.ts",
+      "import": "./dist/maplibre/index.js"
+    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.js",
@@ -33,7 +37,7 @@
   },
   "peerDependencies": {
     "three": ">=0.186.0 <0.187.0",
-    "maplibre-gl": ">=4.0.0"
+    "maplibre-gl": ">=6.16.0 <7.0.0"
   },
   "peerDependenciesMeta": {
     "maplibre-gl": {

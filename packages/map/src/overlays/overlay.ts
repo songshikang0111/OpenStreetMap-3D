@@ -182,22 +182,28 @@ function buildLine(features: GeoFeature[], local: Local, altitude: number) {
       for (let i = 0; i + 1 < pts.length; i++) {
         const [ax, az] = pts[i]!;
         const [bx, bz] = pts[i + 1]!;
-        const quad: [number, number, number, number, number, number, number, number][] = [
-          [ax, az, bx, bz, -1, 1, 0, 0],
-          [ax, az, bx, bz, 1, 1, 0, 0],
-          [bx, bz, ax, az, -1, -1, 0, 0],
-          [bx, bz, ax, az, 1, -1, 0, 0],
-        ];
-        for (const [px, pz, ox, oz, s, d] of quad) {
-          position.set([px, altitude, pz], v * 3);
-          other.set([ox, altitude, oz], v * 3);
-          side[v] = s;
-          dirSign[v] = d;
+        // four vertices per segment written in place (no temporary arrays: 100k-vertex layers stay < 100 ms)
+        for (let q = 0; q < 4; q++) {
+          const atB = q >= 2;
+          const o = v * 3;
+          position[o] = atB ? bx : ax;
+          position[o + 1] = altitude;
+          position[o + 2] = atB ? bz : az;
+          other[o] = atB ? ax : bx;
+          other[o + 1] = altitude;
+          other[o + 2] = atB ? az : bz;
+          side[v] = q % 2 ? 1 : -1;
+          dirSign[v] = atB ? -1 : 1;
           renderId[v] = fi + 1;
           v++;
         }
-        const b = v - 4;
-        index.set([b, b + 1, b + 2, b + 1, b + 3, b + 2], k);
+        const base = v - 4;
+        index[k] = base;
+        index[k + 1] = base + 1;
+        index[k + 2] = base + 2;
+        index[k + 3] = base + 1;
+        index[k + 4] = base + 3;
+        index[k + 5] = base + 2;
         k += 6;
       }
     }

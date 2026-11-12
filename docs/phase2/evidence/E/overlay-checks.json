@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-12T04:05:59.578Z",
+  "date": "2026-11-12T04:20:21.958Z",
   "browser": "Chrome/150.0.7871.114",
   "gpu": "ANGLE (AMD, AMD Radeon 780M Graphics (radeonsi phoenix ACO), OpenGL ES 3.2)",
   "machine": {
@@ -38,7 +38,7 @@
       "pass": true,
       "pickMainThreadMs": {
         "p50": 0.6000000014901161,
-        "p95": 0.8000000044703484
+        "p95": 1
       },
       "note": "measured on the machine in the summary, not the high-end reference device"
     },
@@ -112,8 +112,8 @@
     "AC507": {
       "pass": true,
       "vertices": 100000,
-      "addMs": 89.80000000447035,
-      "untilNextFrameMs": 111.70000000298023
+      "addMs": 62.100000001490116,
+      "untilNextFrameMs": 86.39999999850988
     }
   },
   "consoleErrors": []

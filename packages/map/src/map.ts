@@ -63,6 +63,29 @@ import type {
 
 export const RUNTIME_VERSION = '2.0.0';
 
+/** Layers MapLibre draws itself in `ground: 'host'` mode (04 section 8). */
+const HOST_GROUND_LAYERS = new Set(['ground', 'water', 'green', 'road']);
+
+/** Internal options used by the MapLibre layer adapter. */
+export interface HostedOptions extends MapOptions {
+  hosted?: {
+    canvas: HTMLCanvasElement;
+    gl: WebGL2RenderingContext;
+    ground: 'host' | 'self';
+    /** Current host camera in MapLibre terms (CSS pixels for the viewport). */
+    camera(): {
+      center: LngLat;
+      zoom: number;
+      pitch: number;
+      bearing: number;
+      fov: number;
+      width: number;
+      height: number;
+    };
+    repaint(): void;
+  };
+}
+
 export const QUALITY_BUDGETS: Record<Quality, Budget> = {
   low: {
     residentBytes: 96 * 2 ** 20,
@@ -150,6 +173,8 @@ interface TileEntry {
   shownAt: number;
   visible: boolean;
   bytes: number;
+  /** Incremented per load; completions of an older (cancelled) load are ignored. */
+  loadToken?: number;
 }
 
 interface PendingUpload {
@@ -245,6 +270,7 @@ export class CityMapImpl implements CityMap {
   private filter: ProvenanceFilter = {};
   private styleId = 'light';
   private generationOptions: { seed?: number; inferRoofs?: boolean } = {};
+  private readonly hosted: HostedOptions['hosted'] | null;
   private lastDesired: DesiredTile[] = [];
   private lastUpdate = 0;
 
@@ -253,16 +279,25 @@ export class CityMapImpl implements CityMap {
     this.budget =
       typeof quality === 'string' ? { ...QUALITY_BUDGETS[quality] } : { ...QUALITY_BUDGETS.balanced, ...quality };
     const container = options.container;
+    this.hosted = (options as HostedOptions).hosted ?? null;
     if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
-    this.canvas = document.createElement('canvas');
-    this.canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;outline:none';
-    this.canvas.tabIndex = 0;
-    container.appendChild(this.canvas);
+    if (this.hosted) {
+      // MapLibre layer mode: share the host's canvas and WebGL context; the host owns size, clearing and the loop.
+      this.canvas = this.hosted.canvas;
+      this.renderer = new WebGLRenderer({ canvas: this.canvas, context: this.hosted.gl });
+      this.renderer.autoClear = false;
+      this.renderer.setPixelRatio(globalThis.devicePixelRatio || 1);
+    } else {
+      this.canvas = document.createElement('canvas');
+      this.canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;outline:none';
+      this.canvas.tabIndex = 0;
+      container.appendChild(this.canvas);
+      this.renderer = new WebGLRenderer({ canvas: this.canvas, antialias: true, powerPreference: 'high-performance' });
+      this.renderer.setPixelRatio(Math.min(globalThis.devicePixelRatio || 1, this.budget.pixelRatio));
+    }
     this.overlay = document.createElement('div');
     this.overlay.style.cssText = 'position:absolute;inset:0;pointer-events:none;overflow:hidden';
     container.appendChild(this.overlay);
-    this.renderer = new WebGLRenderer({ canvas: this.canvas, antialias: true, powerPreference: 'high-performance' });
-    this.renderer.setPixelRatio(Math.min(globalThis.devicePixelRatio || 1, this.budget.pixelRatio));
     this.transform.limits = {
       minZoom: options.minZoom ?? 12,
       maxZoom: options.maxZoom ?? 20,
@@ -280,8 +315,10 @@ export class CityMapImpl implements CityMap {
     const hw = (globalThis.navigator?.hardwareConcurrency ?? 4) - 1;
     const size = Math.max(1, Math.floor(options.workers ?? Math.min(4, hw)));
     this.pool = new WorkerPool(size, () => defaultWorker(options.workerUrl));
-    this.resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => this.resize()) : null;
+    this.resizeObserver =
+      !this.hosted && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => this.resize()) : null;
     this.resizeObserver?.observe(container);
+    if (this.hosted) this.ground.visible = false;
   }
 
   // ------------------------------------------------------------------------------------------- lifecycle
@@ -341,6 +378,10 @@ export class CityMapImpl implements CityMap {
     if (this.options.filter) this.filter = this.options.filter;
     await this.setStyle(this.options.style ?? 'light');
     if (this.options.attributionControl !== false) this.addAttribution();
+    if (this.hosted) {
+      this.syncHostCamera();
+      return;
+    }
     if (this.options.interactive !== false)
       this.controls = new Controls(this.controlHost(), {
         dragPan: true,
@@ -363,8 +404,7 @@ export class CityMapImpl implements CityMap {
     const a = this.tileset.attribution;
     const div = document.createElement('div');
     div.className = 'city-attribution';
-    div.style.cssText =
-      'position:absolute;right:0;bottom:0;padding:2px 6px;font:11px/1.4 system-ui,sans-serif;background:rgba(255,255,255,.75);color:#333;pointer-events:auto';
+    div.style.cssText = `position:absolute;${this.hosted ? 'left' : 'right'}:0;bottom:0;padding:2px 6px;font:11px/1.4 system-ui,sans-serif;background:rgba(255,255,255,.75);color:#333;pointer-events:auto`;
     const link = document.createElement('a');
     link.href = a.url;
     link.target = '_blank';
@@ -416,8 +456,10 @@ export class CityMapImpl implements CityMap {
     (this.ground.material as MeshBasicMaterial).dispose();
     this.renderer.renderLists.dispose();
     this.renderer.dispose();
-    this.renderer.forceContextLoss?.();
-    this.canvas.remove();
+    if (!this.hosted) {
+      this.renderer.forceContextLoss?.();
+      this.canvas.remove();
+    } else this.renderer.resetState();
     this.overlay.remove();
     this.attribution?.remove();
     this.listeners.clear();
@@ -648,6 +690,11 @@ export class CityMapImpl implements CityMap {
     this.listeners.get(type)?.delete(handler);
   }
 
+  /** Dispatches an event to listeners (used by the MapLibre adapter for host clicks). */
+  emit(e: MapEvent): void {
+    this.fire(e);
+  }
+
   private fire(e: MapEvent) {
     for (const h of [...(this.listeners.get(e.type) ?? [])])
       try {
@@ -700,6 +747,7 @@ export class CityMapImpl implements CityMap {
     }
     if (!items.length) return null;
     this.scene.updateMatrixWorld();
+    if (this.hosted) this.renderer.resetState();
     const hit = this.picker.pick(
       this.renderer,
       this.scene,
@@ -842,8 +890,9 @@ export class CityMapImpl implements CityMap {
     const resolved = resolveStyle(style);
     this.styleId = resolved.id;
     this.renderer.setClearColor(new Color(resolved.background));
-    this.scene.background = new Color(resolved.background);
-    this.scene.fog = new Fog(resolved.background, 1, 2);
+    // In a host map the host draws the background and its own fog.
+    this.scene.background = this.hosted ? null : new Color(resolved.background);
+    this.scene.fog = this.hosted ? null : new Fog(resolved.background, 1, 2);
     (this.ground.material as MeshBasicMaterial).color = new Color(resolved.ground);
     this.sun.intensity = resolved.sun;
     this.hemi.intensity = resolved.ambient;
@@ -887,6 +936,8 @@ export class CityMapImpl implements CityMap {
   }
 
   private load(entry: TileEntry) {
+    const token = (entry.loadToken = (entry.loadToken ?? 0) + 1);
+    const current = () => entry.loadToken === token;
     entry.state = 'loading';
     const controller = new AbortController();
     entry.controller = controller;
@@ -894,7 +945,8 @@ export class CityMapImpl implements CityMap {
     this.requestStats.started++;
     readBinary(url, this.options, controller.signal)
       .then((buffer) => {
-        if (controller.signal.aborted) throw Object.assign(new Error('Cancelled'), { name: 'AbortError' });
+        if (controller.signal.aborted || !current())
+          throw Object.assign(new Error('Cancelled'), { name: 'AbortError' });
         this.requestStats.completed++;
         this.requestStats.bytes += buffer.byteLength;
         entry.controller = null;
@@ -904,6 +956,7 @@ export class CityMapImpl implements CityMap {
         return work.promise;
       })
       .then((response) => {
+        if (!current()) return;
         entry.cancelWork = null;
         if (this.disposed) return;
         if (response.type === 'error')
@@ -916,6 +969,10 @@ export class CityMapImpl implements CityMap {
         this.dirty = true;
       })
       .catch((error: Error & { diagnostic?: Diagnostic; permanent?: boolean; status?: number }) => {
+        if (!current()) {
+          if (error.name === 'AbortError') this.requestStats.cancelled++;
+          return;
+        }
         entry.controller = null;
         entry.cancelWork = null;
         if (this.disposed) return;
@@ -946,6 +1003,7 @@ export class CityMapImpl implements CityMap {
   }
 
   private cancel(entry: TileEntry) {
+    entry.loadToken = (entry.loadToken ?? 0) + 1;
     entry.controller?.abort();
     entry.controller = null;
     entry.cancelWork?.();
@@ -972,10 +1030,20 @@ export class CityMapImpl implements CityMap {
     let spent = 0;
     while (this.uploads.length && (spent < this.budget.uploadMsPerFrame || spent === 0)) {
       const { entry, response } = this.uploads.shift()!;
-      if (!this.tiles.has(entry.key) || entry.object) continue;
+      if (!this.tiles.has(entry.key)) continue;
+      if (entry.object) {
+        entry.state = 'ready';
+        continue;
+      }
       const capacity = response.features.reduce((m, f) => Math.max(m, f.renderId), 0);
       const object = buildTileObject(response.generated, this.materials, capacity);
       object.group.userData.tile = entry.key;
+      if (this.hosted && this.hosted.ground === 'host')
+        for (const mesh of object.meshes)
+          if (HOST_GROUND_LAYERS.has(String(mesh.userData.layer))) {
+            mesh.visible = false;
+            object.pickable.splice(object.pickable.indexOf(mesh), 1);
+          }
       entry.object = object;
       entry.features = response.features;
       this.applyStates(entry);
@@ -1132,6 +1200,48 @@ export class CityMapImpl implements CityMap {
 
   // ------------------------------------------------------------------------------------------- frame loop
 
+  private syncHostCamera() {
+    const h = this.hosted!;
+    const c = h.camera();
+    if (c.width !== this.transform.width || c.height !== this.transform.height) {
+      this.transform.resize(c.width, c.height);
+      this.renderer.setPixelRatio(globalThis.devicePixelRatio || 1);
+      this.renderer.setSize(c.width, c.height, false);
+    }
+    this.transform.limits = { minZoom: 0, maxZoom: 24, maxPitch: 90 };
+    this.applyCamera({ center: c.center, zoom: c.zoom, pitch: c.pitch, bearing: c.bearing });
+    if (Math.abs(this.transform.fov - c.fov) > 1e-9) this.transform.set({ fov: c.fov });
+  }
+
+  /** Called by the MapLibre layer from its render hook: sync the camera, stream, draw into the host's context. */
+  hostedRender(): void {
+    if (this.disposed || !this.hosted || !this.tileset) return;
+    const now = performance.now();
+    this.syncHostCamera();
+    this.processUploads(now);
+    this.updateTiles(now);
+    this.renderer.resetState();
+    // Our depth range differs from the host's: start from a clear depth buffer and clear it again afterwards so host
+    // layers above the city (labels, markers) are never hidden by the city's depth values (AC803).
+    const gl = this.hosted.gl;
+    gl.depthMask(true);
+    gl.clear(gl.DEPTH_BUFFER_BIT);
+    this.render(now);
+    gl.depthMask(true);
+    gl.clear(gl.DEPTH_BUFFER_BIT);
+    this.renderer.resetState();
+    this.dirty = false;
+    const idle = !this.busy() && !this.pendingWanted(now);
+    if (!idle) this.hosted.repaint();
+    else if (!this.wasIdle) {
+      this.wasIdle = true;
+      this.fire({ type: 'idle' });
+      const waiters = this.idleWaiters;
+      this.idleWaiters = [];
+      for (const w of waiters) w();
+    }
+  }
+
   requestRender(): void {
     this.dirty = true;
   }
@@ -1143,6 +1253,10 @@ export class CityMapImpl implements CityMap {
 
   resize(): void {
     if (this.disposed) return;
+    if (this.hosted) {
+      this.syncHostCamera();
+      return;
+    }
     const r = this.options.container.getBoundingClientRect();
     const w = Math.max(1, Math.round(r.width));
     const h = Math.max(1, Math.round(r.height));
@@ -1237,6 +1351,7 @@ export class CityMapImpl implements CityMap {
       this.idleWaiters.push(done);
       this.wasIdle = false;
       this.dirty = true;
+      this.hosted?.repaint();
     });
   }
 

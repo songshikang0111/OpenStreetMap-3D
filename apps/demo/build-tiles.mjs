@@ -1,7 +1,9 @@
 // Builds the demo sample tilesets into apps/demo/public/tiles (generated data, not committed).
 // Usage: node apps/demo/build-tiles.mjs [name ...]
 import path from 'node:path';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { parseOSM } from '../../src/osm.js';
+import { normalizeRaw } from '../../src/core/contract.js';
 import { fileURLToPath } from 'node:url';
 import { buildTiles } from '../../packages/builder/dist/index.js';
 
@@ -31,4 +33,25 @@ for (const name of names) {
     ...(s.bbox ? { bbox: s.bbox } : {}),
   });
   console.log(name, JSON.stringify(report.counts));
+  // Building footprints as GeoJSON: the stand-in "basemap buildings" of the MapLibre demo and the AC802 check.
+  const raw = JSON.parse(readFileSync(path.join(root, 'public/data', `${s.input}.json`), 'utf8'));
+  const [south, west, north, east] = s.bbox ? [s.bbox[1], s.bbox[0], s.bbox[3], s.bbox[2]] : raw.metadata.bbox;
+  const origin = s.bbox
+    ? { lat: (south + north) / 2, lon: (west + east) / 2 }
+    : { lat: raw.metadata.center[0], lon: raw.metadata.center[1] };
+  const data = parseOSM(normalizeRaw(raw, { area: { south, west, north, east }, origin }), 1);
+  const ll = (p) => {
+    const [lat, lon] = data.project.inverse(p);
+    return [+lon.toFixed(8), +lat.toFixed(8)];
+  };
+  const features = data.buildings.map((b) => ({
+    type: 'Feature',
+    id: b.id,
+    properties: { height: b.height, min_height: b.minHeight },
+    geometry: { type: 'Polygon', coordinates: [b.outer, ...b.holes].map((r) => [...r.map(ll), ll(r[0])]) },
+  }));
+  writeFileSync(
+    path.join(root, 'apps/demo/public/tiles', name, 'buildings.geojson'),
+    JSON.stringify({ type: 'FeatureCollection', features }),
+  );
 }

@@ -12,5 +12,6 @@ dist-sdk/
 *.tgz
 packages/*/dist/
 apps/demo/public/tiles/
+apps/demo/public/maplibre-gl.css
 apps/demo/dist/
 packages/map/bundle/
