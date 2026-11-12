@@ -172,3 +172,26 @@ test('C2/AC303: parapets, piers and stairs do not depend on the planning-cell pa
     await rm(dir, { recursive: true, force: true });
   }
 });
+
+test('near details: complete walls are collected for frames, sills and balconies only on request', async () => {
+  const { l1 } = await beijing();
+  const { nearbyFacadeFrames } = await import('../src/facade-layout.js');
+  let walls = 0,
+    frames = 0;
+  for (const t of l1) {
+    assert.equal(generateTile(t).nearWalls, undefined);
+    const g = generateTile(t, { collectNearWalls: true });
+    walls += g.nearWalls.length;
+    for (const w of g.nearWalls) assert.ok(w.renderId > 0 && w.len > 7 && w.layout.bays >= 1);
+    if (g.nearWalls.length) {
+      const w = g.nearWalls[0];
+      frames += nearbyFacadeFrames(g.nearWalls, {
+        x: w.a[0] + w.normal[0] * 20,
+        y: 20,
+        z: w.a[1] + w.normal[2] * 20,
+      }).length;
+    }
+  }
+  assert.ok(walls > 200, `walls ${walls}`);
+  assert.ok(frames > 100, `frames ${frames}`);
+});

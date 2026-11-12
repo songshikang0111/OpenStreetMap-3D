@@ -100,7 +100,11 @@ export function handleRequest(request: WorkerRequest): { response: WorkerRespons
     const t0 = performance.now();
     const tile = decodeTile(request.buffer);
     const t1 = performance.now();
-    const generated = generateTile(tile, { ...request.options, layerGenerators: DETAIL_GENERATORS });
+    const generated = generateTile(tile, {
+      ...request.options,
+      layerGenerators: DETAIL_GENERATORS,
+      collectNearWalls: true,
+    });
     const features = featureRecords(tile);
     const t2 = performance.now();
     const transfer = batchTransferables(generated.batches);

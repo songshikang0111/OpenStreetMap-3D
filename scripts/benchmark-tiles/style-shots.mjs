@@ -31,6 +31,7 @@ export const VIEWS = {
     views: {
       overview: { center: [116.4605, 39.9095], zoom: 15.2, pitch: 55, bearing: -20 },
       street: { center: [116.4598, 39.9088], zoom: 17.6, pitch: 68, bearing: 30 },
+      close: { center: [116.4585, 39.9102], zoom: 19.2, pitch: 72, bearing: 200 },
       bridge: { center: [116.4524, 39.9152], zoom: 18.2, pitch: 66, bearing: 35 },
       stairs: { center: [116.465, 39.91485], zoom: 19.3, pitch: 60, bearing: 0 },
     },
@@ -40,6 +41,7 @@ export const VIEWS = {
     views: {
       overview: { center: [135.775, 35.0025], zoom: 16.3, pitch: 66, bearing: 0 },
       street: { center: [135.7752, 35.0035], zoom: 17.8, pitch: 65, bearing: 60 },
+      close: { center: [135.7745, 35.0042], zoom: 19.4, pitch: 72, bearing: 120 },
       roofs: { center: [135.7785, 35.0015], zoom: 17.4, pitch: 50, bearing: -30 },
     },
   },
@@ -75,8 +77,17 @@ for (const sample of samples) {
         const file = path.join(out, `${sample}-${name}-${style}${filter ? '-' + filter : ''}.png`);
         await page.screenshot(file);
         const stats = await page.evaluate('JSON.stringify(cityMap.getStats())').then(JSON.parse);
-        summary.push({ sample, style, view: name, file, drawCalls: stats.drawCalls, triangles: stats.triangles });
-        console.log(`${file} drawCalls=${stats.drawCalls} triangles=${stats.triangles}`);
+        const raw = await page.evaluate('JSON.stringify(cityMap.getStats({ raw: true }).raw.nearDetails ?? null)');
+        summary.push({
+          sample,
+          style,
+          view: name,
+          file,
+          drawCalls: stats.drawCalls,
+          triangles: stats.triangles,
+          nearDetails: raw,
+        });
+        console.log(`${file} drawCalls=${stats.drawCalls} triangles=${stats.triangles} near=${raw}`);
       }
       const errors = page.events.filter((e) => e.level === 'error');
       if (errors.length) console.warn(`${sample}/${style}: ${errors.length} console errors`, errors.slice(0, 3));

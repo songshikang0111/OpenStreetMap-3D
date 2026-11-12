@@ -4,7 +4,7 @@ import type { DecodedTile, FeatureLayer, MeshLayer } from '@city-ink/tiles';
 import { BatchSet, triangleCount } from './batch.js';
 import type { MeshBatch } from './batch.js';
 import { generateBuildings } from './building.js';
-import type { BuildingOptions } from './building.js';
+import type { BuildingOptions, NearWall } from './building.js';
 import { generateBands, generateMassing, generatePolygons } from './surfaces.js';
 import { generateStructures } from './structures.js';
 
@@ -23,6 +23,8 @@ export interface TreeInstances {
 export interface GeneratedTile {
   batches: MeshBatch[];
   trees: TreeInstances;
+  /** Complete facade walls for near-camera details (only with `collectNearWalls`). */
+  nearWalls?: NearWall[];
   stats: {
     triangles: number;
     vertices: number;
@@ -102,6 +104,7 @@ export function generateTile(tile: DecodedTile, options: GenerateOptions = {}): 
   const wanted = (name: string) => !options.layers || options.layers.includes(name);
   const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
   let buildings = 0;
+  const nearWalls: NearWall[] = [];
   let trees: TreeInstances = { data: new Float32Array(0), renderId: new Float32Array(0), count: 0 };
   for (const name of Object.keys(tile.layers).sort()) {
     if (!wanted(name) || name === 'buildingContext') continue;
@@ -115,13 +118,9 @@ export function generateTile(tile: DecodedTile, options: GenerateOptions = {}): 
     } else if (layer.type === 'mesh') meshBatches(layer, name, batches);
     else if (name === 'building' && tile.profile === 'full') {
       const context = tile.layers.buildingContext;
-      buildings += generateBuildings(
-        layer,
-        context?.type === 'features' ? context : null,
-        step,
-        options,
-        batches,
-      ).buildings;
+      const r = generateBuildings(layer, context?.type === 'features' ? context : null, step, options, batches);
+      buildings += r.buildings;
+      nearWalls.push(...r.nearWalls);
     } else if (name === 'building') {
       generateMassing(layer, name, step, batches, options.seed ?? 1);
       buildings += layer.featureCount;
@@ -136,6 +135,7 @@ export function generateTile(tile: DecodedTile, options: GenerateOptions = {}): 
   return {
     batches: built,
     trees,
+    ...(options.collectNearWalls ? { nearWalls } : {}),
     stats: {
       triangles: built.reduce((s, b) => s + triangleCount(b), 0),
       vertices: built.reduce((s, b) => s + b.vertexCount, 0),

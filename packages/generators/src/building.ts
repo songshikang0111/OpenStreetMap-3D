@@ -18,6 +18,23 @@ export const PHASE1_GROUND_OFFSET = 0.45;
 export interface BuildingOptions {
   seed?: number;
   inferRoofs?: boolean;
+  /** Collect complete walls for near-camera frames, sills and balconies (phase-one nearbyFacadeFrames). */
+  collectNearWalls?: boolean;
+}
+
+/** A complete facade wall in tile metres (phase-one heights, 0.45 m above the tile ground) for near details. */
+export interface NearWall {
+  renderId: number;
+  key: string;
+  a: [number, number];
+  dx: number;
+  dz: number;
+  len: number;
+  normal: number[];
+  angle: number;
+  baseY: number;
+  layout: Record<string, unknown>;
+  style: { family: string; balcony: boolean };
 }
 
 const SOURCE_BY_PROVENANCE = { observed: 'height', derived: 'levels', inferred: 'estimated' } as const;
@@ -92,6 +109,7 @@ export interface BuildingResult {
   triangles: number;
   /** Per-feature triangle counts and bounds in tile metres, for comparisons and statistics. */
   perFeature: Map<string, { triangles: number; bounds: [number, number, number, number, number, number] }>;
+  nearWalls: NearWall[];
 }
 
 /**
@@ -120,7 +138,8 @@ export function generateBuildings(
       return roof.supported ? { ...b, height: roof.eave - PHASE1_GROUND_OFFSET } : b;
     }),
   );
-  const result: BuildingResult = { buildings: own.length, triangles: 0, perFeature: new Map() };
+  const result: BuildingResult = { buildings: own.length, triangles: 0, perFeature: new Map(), nearWalls: [] };
+  const nearWalls: Record<string, unknown>[] = [];
   own.forEach((building, i) => {
     const renderId = layer.renderId[i]!;
     const before = collect ? batchBounds(batches, layerName) : null;
@@ -129,7 +148,23 @@ export function generateBuildings(
       seed: options.seed ?? 1,
       roofPlan: roofPlans.get(building.id)!,
       envelopePlan: envelopes.get(building.id)!,
+      ...(options.collectNearWalls ? { counts: { nearWalls } } : {}),
     });
+    if (options.collectNearWalls)
+      for (const w of nearWalls.splice(0) as unknown as (NearWall & { style: Record<string, unknown> })[])
+        result.nearWalls.push({
+          renderId,
+          key: w.key,
+          a: w.a,
+          dx: w.dx,
+          dz: w.dz,
+          len: w.len,
+          normal: w.normal,
+          angle: w.angle,
+          baseY: w.baseY,
+          layout: w.layout,
+          style: { family: String(w.style.family), balcony: Boolean(w.style.balcony) },
+        });
     let triangles = appendWriter(batches, writer, renderId, null, layerName);
     triangles += appendWriter(batches, roofWriter, renderId, 'facility', layerName);
     result.triangles += triangles;

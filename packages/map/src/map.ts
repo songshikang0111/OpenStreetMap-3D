@@ -9,6 +9,13 @@ import {
   HemisphereLight,
   Mesh,
   MeshBasicMaterial,
+  MeshStandardMaterial,
+  MeshDepthMaterial,
+  RGBADepthPacking,
+  InstancedMesh,
+  BoxGeometry,
+  Matrix4,
+  Object3D,
   PCFShadowMap,
   Raycaster,
   ShadowMaterial,
@@ -40,7 +47,9 @@ import { MaterialLibrary, buildTileObject } from './tile-object.js';
 import type { TileObject, TilePipeline, TileStylePack } from './tile-object.js';
 import { Controls } from './controls.js';
 import { Picker } from './picking/picker.js';
-import { EMPTY_RULES, stateUniforms } from './picking/feature-state.js';
+import { EMPTY_RULES, FLAG_FLATTEN, FLAG_HIDDEN, stateUniforms } from './picking/feature-state.js';
+import { nearbyFacadeFrames } from '../../../src/facade-layout.js';
+import type { NearWall } from '@city-ink/generators';
 import type { Pickable } from './picking/picker.js';
 import { buildOverlay } from './overlays/overlay.js';
 import type { BuiltOverlay } from './overlays/overlay.js';
@@ -177,6 +186,8 @@ interface TileEntry {
   shownAt: number;
   visible: boolean;
   bytes: number;
+  /** Complete facade walls for near-camera frames, sills and balconies (L1 only). */
+  nearWalls?: NearWall[] | null;
   /** Incremented per load; completions of an older (cancelled) load are ignored. */
   loadToken?: number;
 }
@@ -250,6 +261,9 @@ export class CityMapImpl implements CityMap {
   private readonly shadowCatcher: Mesh;
   private spec: ResolvedStyleSpec | null = null;
   private pipeline: TilePipeline | null = null;
+  /** Near-camera facade frames, sills and balconies (04 section 5.4 nearDetails budget). */
+  private readonly nearFrames: InstancedMesh;
+  private nearKey = '';
   private pack: TileStylePack | null = null;
   private readonly sun = new DirectionalLight('#ffffff', 1.2);
   private readonly hemi = new HemisphereLight('#ffffff', '#d8d4c7', 0.9);
@@ -332,9 +346,23 @@ export class CityMapImpl implements CityMap {
     const mapSize = this.budget.shadowQuality >= 2 ? 4096 : 2048;
     this.sun.shadow.mapSize.set(mapSize, mapSize);
     this.sun.shadow.bias = -0.0004;
+    this.nearFrames = new InstancedMesh(
+      new BoxGeometry(1, 1, 1),
+      new MeshStandardMaterial({ color: '#dadbd4', roughness: 0.83 }),
+      Math.max(1, this.budget.nearDetails),
+    );
+    this.nearFrames.name = 'Nearby frames, sills and balconies (inferred)';
+    this.nearFrames.userData.inkClass = 4;
+    this.nearFrames.castShadow = this.nearFrames.receiveShadow = true;
+    this.nearFrames.count = 0;
+    this.nearFrames.frustumCulled = false;
+    this.nearFrames.matrixAutoUpdate = false;
+    // An owned depth material, so dispose() releases the shadow program too (three's shared one never is).
+    this.nearFrames.customDepthMaterial = new MeshDepthMaterial({ depthPacking: RGBADepthPacking });
     this.scene.add(
       this.ground,
       this.shadowCatcher,
+      this.nearFrames,
       this.tilesRoot,
       this.anchorsRoot,
       this.sun,
@@ -484,6 +512,10 @@ export class CityMapImpl implements CityMap {
     this.picker.dispose();
     this.pipeline?.dispose();
     this.pipeline = null;
+    this.nearFrames.geometry.dispose();
+    (this.nearFrames.material as MeshStandardMaterial).dispose();
+    this.nearFrames.customDepthMaterial?.dispose();
+    this.nearFrames.dispose();
     this.materials.dispose();
     this.ground.geometry.dispose();
     (this.ground.material as MeshBasicMaterial).dispose();
@@ -1123,6 +1155,8 @@ export class CityMapImpl implements CityMap {
       entry.object = null;
     }
     entry.features = null;
+    entry.nearWalls = null;
+    this.nearKey = '';
     entry.featureIndex = null;
     entry.visible = false;
     entry.bytes = 0;
@@ -1150,6 +1184,8 @@ export class CityMapImpl implements CityMap {
           }
       entry.object = object;
       entry.features = response.features;
+      entry.nearWalls = response.generated.nearWalls ?? null;
+      this.nearKey = '';
       this.applyStates(entry);
       this.applyFilter(entry);
       entry.bytes = object.bytes;
@@ -1417,7 +1453,10 @@ export class CityMapImpl implements CityMap {
   private render(time: number) {
     const t = this.transform;
     const c = t.lngLatToWorld(t.center);
-    const radius = Math.max(5000, t.camera.far * 1.2);
+    // Ink pipelines tone distant ground; keep paper (not a grey band) at the horizon by bounding the base plane.
+    const radius = this.pipeline
+      ? Math.max(1200, t.cameraToCenterDistance * t.unitsPerPixel * 2.5)
+      : Math.max(5000, t.camera.far * 1.2);
     this.ground.position.set(c.x, -0.35, c.z);
     this.ground.scale.setScalar(radius);
     this.shadowCatcher.position.set(c.x, -0.3, c.z);
@@ -1442,6 +1481,7 @@ export class CityMapImpl implements CityMap {
     this.materials.facade.projectionScale.value = size.y / (2 * Math.tan((t.fov * Math.PI) / 360));
     for (const { built } of this.overlays.values()) built.update(size, this.renderer.getPixelRatio());
     this.scene.updateMatrixWorld();
+    this.updateNearDetails();
     if (this.pipeline) this.pipeline.render();
     else this.renderer.render(this.scene, t.camera);
     this.frame++;
@@ -1451,6 +1491,48 @@ export class CityMapImpl implements CityMap {
     }
     this.lastFrameTime = time;
     this.positionMarkers();
+  }
+
+  /**
+   * Phase-one near attachments: window frames, sills and balconies on complete walls within ~160 m of a low camera,
+   * rebuilt when the camera moves 25 m or the visible tiles change, capped by the nearDetails budget.
+   */
+  private updateNearDetails() {
+    const cam = this.transform.camera.position;
+    const visible = [...this.tiles.values()].filter((e) => e.visible && e.object && e.nearWalls?.length);
+    const key = `${Math.round(cam.x / 25)},${Math.round(cam.y / 25)},${Math.round(cam.z / 25)}|${visible.map((e) => e.key).join(',')}`;
+    if (key === this.nearKey) return;
+    this.nearKey = key;
+    let count = 0;
+    const limit = this.budget.nearDetails;
+    if (limit > 0 && this.filter.details !== false) {
+      const inverse = new Matrix4();
+      const local = new Vector3();
+      const dummy = new Object3D();
+      const m = new Matrix4();
+      const byDistance = visible
+        .map((e) => ({ e, d: e.object!.group.getWorldPosition(new Vector3()).distanceTo(cam) }))
+        .sort((a, b) => a.d - b.d);
+      for (const { e } of byDistance) {
+        if (count >= limit) break;
+        const group = e.object!.group;
+        inverse.copy(group.matrixWorld).invert();
+        local.copy(cam).applyMatrix4(inverse);
+        if (local.y >= 180) continue;
+        const flags = e.object!.state.data;
+        const walls = e.nearWalls!.filter((w) => (flags[w.renderId * 4 + 3]! & (FLAG_HIDDEN | FLAG_FLATTEN)) === 0);
+        for (const f of nearbyFacadeFrames(walls, { x: local.x, y: local.y + 0.45, z: local.z }, limit - count)) {
+          dummy.position.set(f.x, f.y - 0.45, f.z);
+          dummy.rotation.set(0, f.angle, 0);
+          dummy.scale.set(f.w, f.h, f.d);
+          dummy.updateMatrix();
+          m.multiplyMatrices(group.matrixWorld, dummy.matrix);
+          this.nearFrames.setMatrixAt(count++, m);
+        }
+      }
+    }
+    this.nearFrames.count = count;
+    this.nearFrames.instanceMatrix.needsUpdate = true;
   }
 
   private positionMarkers() {
@@ -1547,6 +1629,7 @@ export class CityMapImpl implements CityMap {
         featureStates: this.featureState.size,
         styles: Object.keys(BUILTIN_STYLES),
         pack: this.pack?.id ?? null,
+        nearDetails: this.nearFrames.count,
       };
     return stats;
   }
