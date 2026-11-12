@@ -1,306 +1,226 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://city-ink.invalid/schemas/style.schema.json",
-  "title": "City Ink StyleSpec",
-  "description": "Declarative style (docs/phase2/05-style-contract.md section 4). Validated at runtime by validateStyleSpec in @city-ink/styles/spec, which also checks expression arity.",
+  "$id": "https://city-ink.local/schemas/style.schema.json",
+  "title": "City Ink style pack metadata v1 (factories are trusted ESM exports)",
   "type": "object",
-  "additionalProperties": false,
   "required": [
     "schemaVersion",
-    "id"
+    "id",
+    "version",
+    "engineCompatibility",
+    "styleContractVersion",
+    "parametersSchema",
+    "materialRoles",
+    "fallbackRole",
+    "rebuildParameters",
+    "qualityHints"
   ],
-  "$defs": {
-    "color": {
-      "type": "string",
-      "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$"
-    },
-    "role": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "color": {
-          "$ref": "#/$defs/color"
-        },
-        "roughness": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "metalness": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "opacity": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "reflectivity": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "emissive": {
-          "$ref": "#/$defs/color"
-        },
-        "emissiveIntensity": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 10
-        },
-        "blend": {
-          "enum": [
-            "replace",
-            "multiply"
-          ]
-        },
-        "inherit": {
-          "type": "boolean"
-        }
-      }
-    },
-    "expression": {
-      "description": "Expression subset: get, provenance, ==, !=, <, <=, >, >=, all, any, !, in (05 section 4).",
-      "anyOf": [
-        {
-          "type": [
-            "string",
-            "number",
-            "boolean",
-            "null"
-          ]
-        },
-        {
-          "type": "array",
-          "minItems": 2,
-          "prefixItems": [
-            {
-              "enum": [
-                "get",
-                "provenance",
-                "==",
-                "!=",
-                "<",
-                "<=",
-                ">",
-                ">=",
-                "all",
-                "any",
-                "!",
-                "in"
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  },
   "properties": {
-    "$schema": {
-      "type": "string"
-    },
     "schemaVersion": {
-      "const": 2
+      "const": 1
+    },
+    "styleContractVersion": {
+      "const": 1
     },
     "id": {
       "type": "string",
-      "pattern": "^[a-z0-9][a-z0-9-]{0,63}$"
+      "minLength": 1
     },
-    "name": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "engineCompatibility": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parametersSchema": {
+      "type": "object",
+      "required": [
+        "type",
+        "properties",
+        "additionalProperties"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "object"
+        },
+        "additionalProperties": {
+          "const": false
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/parameterRule"
+          }
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "$comment": "Only optional number/integer/boolean/string properties are supported. Runtime also requires finite numbers, ordered/inhabited numeric bounds and enum/default values consistent with type, bounds and enum. Defaults apply only to omitted keys; explicit null/undefined values are invalid. Integers use JavaScript safe integer precision."
+    },
+    "materialRoles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "fallbackRole": {
       "type": "string"
     },
-    "extends": {
-      "enum": [
-        null,
-        "plain",
-        "light",
-        "dark"
-      ]
-    },
-    "environment": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "background": {
-          "$ref": "#/$defs/color"
-        },
-        "fog": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "color": {
-                  "$ref": "#/$defs/color"
-                },
-                "start": {
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 2
-                },
-                "end": {
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 2
-                }
-              }
-            }
-          ]
-        },
-        "sun": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "azimuth": {
-              "type": "number",
-              "minimum": -360,
-              "maximum": 360
-            },
-            "altitude": {
-              "type": "number",
-              "minimum": 1,
-              "maximum": 90
-            },
-            "color": {
-              "$ref": "#/$defs/color"
-            },
-            "intensity": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 10
-            }
-          }
-        },
-        "ambient": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "color": {
-              "$ref": "#/$defs/color"
-            },
-            "ground": {
-              "$ref": "#/$defs/color"
-            },
-            "intensity": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 10
-            }
-          }
-        },
-        "shadows": {
-          "type": "boolean"
-        },
-        "ambientOcclusion": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
-        }
-      }
-    },
-    "roles": {
-      "type": "object",
-      "propertyNames": {
-        "pattern": "^(wall|glass|roof|structure|road|water|foliage|ground|facility|landmark)(\\.[a-z0-9-]+)*$"
-      },
-      "additionalProperties": {
-        "$ref": "#/$defs/role"
-      }
-    },
-    "facade": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "windows": {
-          "type": "boolean"
-        },
-        "density": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 2
-        },
-        "nightLights": {
-          "type": "boolean"
-        }
-      }
-    },
-    "rules": {
+    "rebuildParameters": {
       "type": "array",
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "layer",
-          "when",
-          "set"
-        ],
-        "properties": {
-          "layer": {
-            "type": "string",
-            "minLength": 1
-          },
-          "when": {
-            "$ref": "#/$defs/expression"
-          },
-          "set": {
-            "type": "object",
-            "minProperties": 1,
-            "propertyNames": {
-              "pattern": "^(wall|glass|roof|structure|road|water|foliage|ground|facility|landmark)(\\.[a-z0-9-]+)*$"
-            },
-            "additionalProperties": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "color": {
-                  "$ref": "#/$defs/color"
-                },
-                "opacity": {
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 1
-                }
-              }
-            }
-          }
-        }
+        "type": "string"
       }
     },
-    "featureState": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "highlight": {
+    "qualityHints": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "parameterRule": {
+      "oneOf": [
+        {
           "type": "object",
+          "required": [
+            "type"
+          ],
           "additionalProperties": false,
           "properties": {
-            "emissive": {
-              "$ref": "#/$defs/color"
+            "type": {
+              "const": "number"
             },
-            "emissiveIntensity": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 10
+            "default": {
+              "type": "number"
+            },
+            "enum": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "number"
+              }
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "minimum": {
+              "type": "number"
+            },
+            "maximum": {
+              "type": "number"
             }
           }
         },
-        "hidden": {
+        {
           "type": "object",
+          "required": [
+            "type"
+          ],
           "additionalProperties": false,
           "properties": {
-            "visible": {
+            "type": {
+              "const": "integer"
+            },
+            "default": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "enum": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              }
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "minimum": {
+              "type": "number"
+            },
+            "maximum": {
+              "type": "number"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "boolean"
+            },
+            "default": {
               "type": "boolean"
+            },
+            "enum": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "boolean"
+              }
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "string"
+            },
+            "default": {
+              "type": "string"
+            },
+            "enum": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string"
+              }
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
             }
           }
         }
-      }
-    },
-    "hostCompatible": {
-      "type": "boolean"
+      ]
     }
   }
 }

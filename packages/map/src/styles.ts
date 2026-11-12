@@ -58,7 +58,7 @@ export function resolveStyle(style: string | StyleSpec | StylePack, hosted = fal
     throw new StyleError(
       'STYLE_INVALID',
       `Invalid style: ${first.path} ${first.message}${result.errors.length > 1 ? ` (+${result.errors.length - 1} more)` : ''}.`,
-      'See schemas/style.schema.json and docs/phase2/05-style-contract.md section 4.',
+      'See schemas/style-spec.schema.json and docs/phase2/05-style-contract.md section 4.',
       result.errors,
     );
   }

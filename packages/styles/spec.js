@@ -1,5 +1,5 @@
 // StyleSpec (05 section 4): validation, inheritance and the rule expression subset. Pure data functions, no Three.js,
-// usable in Node, browsers and Workers. The JSON Schema in schemas/style.schema.json describes the same contract.
+// usable in Node, browsers and Workers. The JSON Schema in schemas/style-spec.schema.json describes the same contract.
 
 export const STYLE_SPEC_VERSION = 2;
 

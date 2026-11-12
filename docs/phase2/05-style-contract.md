@@ -32,7 +32,7 @@
 - `foliage.broadleaf`、`foliage.conifer`、`foliage.trunk`
 - `roof.flat`、`roof.pitched`
 
-角色清单是公共契约，新增角色必须同步更新 `schemas/style.schema.json`、类型和本文件。
+角色清单是公共契约，新增角色必须同步更新 `schemas/style-spec.schema.json`、类型和本文件。
 
 ## 4. 样式配置规范
 
@@ -83,7 +83,7 @@
 - `rules` 使用小型表达式子集：`get`（取属性）、`provenance`（取来源等级）、`==`、`!=`、`<`、`<=`、`>`、`>=`、`all`、`any`、`!`、`in`。不支持任意脚本。表达式在瓦片加载时求值并写入逐要素属性，不在每帧求值。
 - `featureState` 定义 [04 第 6 节](04-runtime-sdk.md) 中状态键的外观。
 - `hostCompatible` 声明能否用于 MapLibre 图层模式。
-- 补充字段（决策 E8）：角色样式的 `blend`（`replace` 默认，`multiply` 保留并着色生成器颜色）、`environment.ambientOcclusion`（墙脚接触暗化，0–1）、`environment.ambient.ground`（半球光地面色）。完整 Schema 见 `schemas/style.schema.json`，校验函数为 `@city-ink/styles/spec` 的 `validateStyleSpec`。
+- 补充字段（决策 E8）：角色样式的 `blend`（`replace` 默认，`multiply` 保留并着色生成器颜色）、`environment.ambientOcclusion`（墙脚接触暗化，0–1）、`environment.ambient.ground`（半球光地面色）。完整 Schema 见 `schemas/style-spec.schema.json`，校验函数为 `@city-ink/styles/spec` 的 `validateStyleSpec`。
 - 校验沿用一期风格参数的严格策略：未知字段、类型不符、非法颜色都明确拒绝并给出路径，不静默忽略。
 - 运行时调用 `setStyle` 切换样式配置不得重新取瓦片；只改颜色和光照时不得重建几何。
 

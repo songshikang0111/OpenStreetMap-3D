@@ -128,4 +128,5 @@
   4. 立面着色器源文件迁到 `packages/styles/facade-shader.js`，`src/facade-shader.js` 转发导出（一期行为不变）。瓦片模式另加 `extendFacadeShader`：接触暗化、夜间窗灯、去掉一期写入 alpha 通道的线稿信号（直接画到画布或宿主地图时 alpha 会让墙半透明）。
   5. 阴影：单张太阳阴影贴图，每帧围绕相机目标点拟合，范围随相机距离在 180–1,600 m 之间变化，`balanced` 为 2048²、`high` 为 4096²、`low` 关闭。阴影深度通道使用每块瓦片自己的深度材质，隐藏和压平状态同样作用于投影。无瓦片地面处由透明的阴影接收平面承接。`drawCalls`、`triangles` 仍取自 `renderer.info`，开启阴影后约为原来的两倍（含深度通道），基准比较时须注明。
 - 理由：保留一期配色是默认观感的主要来源；接触暗化成本低且不依赖后处理，可用于移动端与 MapLibre 图层模式。
-- 影响的规格和工作包：05 第 4 节（字段补充，`schemas/style.schema.json` 同步）；06 的绘制调用预算按"颜色通道"统计时需扣除阴影通道（WP-I）。
+  6. StyleSpec 的 JSON Schema 放在 `schemas/style-spec.schema.json`。09 中 WP-G 写入范围列出的 `schemas/style.schema.json` 是一期风格包元数据的公共契约（一期证据记录了它的哈希），保持不变。
+- 影响的规格和工作包：05 第 4 节（字段补充，`schemas/style-spec.schema.json`）；06 的绘制调用预算按"颜色通道"统计时需扣除阴影通道（WP-I）。

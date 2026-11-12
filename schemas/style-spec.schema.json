@@ -1,0 +1,306 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://city-ink.invalid/schemas/style-spec.schema.json",
+  "title": "City Ink StyleSpec",
+  "description": "Declarative style (docs/phase2/05-style-contract.md section 4). Validated at runtime by validateStyleSpec in @city-ink/styles/spec, which also checks expression arity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id"
+  ],
+  "$defs": {
+    "color": {
+      "type": "string",
+      "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$"
+    },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "$ref": "#/$defs/color"
+        },
+        "roughness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "metalness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reflectivity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "emissive": {
+          "$ref": "#/$defs/color"
+        },
+        "emissiveIntensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "blend": {
+          "enum": [
+            "replace",
+            "multiply"
+          ]
+        },
+        "inherit": {
+          "type": "boolean"
+        }
+      }
+    },
+    "expression": {
+      "description": "Expression subset: get, provenance, ==, !=, <, <=, >, >=, all, any, !, in (05 section 4).",
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "enum": [
+                "get",
+                "provenance",
+                "==",
+                "!=",
+                "<",
+                "<=",
+                ">",
+                ">=",
+                "all",
+                "any",
+                "!",
+                "in"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "const": 2
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,63}$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "extends": {
+      "enum": [
+        null,
+        "plain",
+        "light",
+        "dark"
+      ]
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "background": {
+          "$ref": "#/$defs/color"
+        },
+        "fog": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "color": {
+                  "$ref": "#/$defs/color"
+                },
+                "start": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 2
+                },
+                "end": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 2
+                }
+              }
+            }
+          ]
+        },
+        "sun": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "azimuth": {
+              "type": "number",
+              "minimum": -360,
+              "maximum": 360
+            },
+            "altitude": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 90
+            },
+            "color": {
+              "$ref": "#/$defs/color"
+            },
+            "intensity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 10
+            }
+          }
+        },
+        "ambient": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "color": {
+              "$ref": "#/$defs/color"
+            },
+            "ground": {
+              "$ref": "#/$defs/color"
+            },
+            "intensity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 10
+            }
+          }
+        },
+        "shadows": {
+          "type": "boolean"
+        },
+        "ambientOcclusion": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "roles": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^(wall|glass|roof|structure|road|water|foliage|ground|facility|landmark)(\\.[a-z0-9-]+)*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/role"
+      }
+    },
+    "facade": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "windows": {
+          "type": "boolean"
+        },
+        "density": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "nightLights": {
+          "type": "boolean"
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "layer",
+          "when",
+          "set"
+        ],
+        "properties": {
+          "layer": {
+            "type": "string",
+            "minLength": 1
+          },
+          "when": {
+            "$ref": "#/$defs/expression"
+          },
+          "set": {
+            "type": "object",
+            "minProperties": 1,
+            "propertyNames": {
+              "pattern": "^(wall|glass|roof|structure|road|water|foliage|ground|facility|landmark)(\\.[a-z0-9-]+)*$"
+            },
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "color": {
+                  "$ref": "#/$defs/color"
+                },
+                "opacity": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "featureState": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "highlight": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "emissive": {
+              "$ref": "#/$defs/color"
+            },
+            "emissiveIntensity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 10
+            }
+          }
+        },
+        "hidden": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "visible": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "hostCompatible": {
+      "type": "boolean"
+    }
+  }
+}
