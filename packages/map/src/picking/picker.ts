@@ -25,6 +25,9 @@ void main() {
   int id = int(rid + 0.5);
   vec4 s = texelFetch(featureState, ivec2(id % ${STATE_WIDTH}, id / ${STATE_WIDTH}), 0);
   if (int(s.a * 255.0 + 0.5) % 2 == 1) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
+#ifndef USE_INSTANCING
+  if ((int(s.a * 255.0 + 0.5) / 8) % 2 == 1) p.y = min(p.y, 0.3);
+#endif
   vId = rid;
   gl_Position = projectionMatrix * modelViewMatrix * p;
 }`;

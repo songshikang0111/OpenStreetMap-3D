@@ -38,7 +38,7 @@ export const VIEWS = {
   kyoto: {
     tiles: './tiles/kyoto-gion-grow-9/tileset.json',
     views: {
-      overview: { center: [135.775, 35.0005], zoom: 16.4, pitch: 72, bearing: 0 },
+      overview: { center: [135.775, 35.0025], zoom: 16.3, pitch: 66, bearing: 0 },
       street: { center: [135.7752, 35.0035], zoom: 17.8, pitch: 65, bearing: 60 },
       roofs: { center: [135.7785, 35.0015], zoom: 17.4, pitch: 50, bearing: -30 },
     },

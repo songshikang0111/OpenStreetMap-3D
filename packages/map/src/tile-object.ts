@@ -13,95 +13,224 @@ import {
   InstancedMesh,
   Matrix4,
   Mesh,
+  MeshDepthMaterial,
   MeshStandardMaterial,
   Quaternion,
+  RGBADepthPacking,
   Vector3,
 } from 'three';
-import type { Material } from 'three';
+import type { Material, Object3D } from 'three';
+import { installFacadeShader, extendFacadeShader, facadeAttributeDefaults } from '@city-ink/styles/facade-shader';
+import { roleStyle } from '@city-ink/styles/spec';
+import type { ResolvedStyleSpec, RoleStyle } from '@city-ink/styles/spec';
+import { builtinStyle } from '@city-ink/styles/defaults';
 import type { GeneratedTile, MeshBatch } from '@city-ink/generators';
 import { FeatureStateTexture, patchFeatureState } from './picking/feature-state.js';
 import { TREE_STRIDE } from '@city-ink/generators';
 
-export interface RoleStyle {
-  color?: string;
-  roughness?: number;
-  metalness?: number;
-  opacity?: number;
+export type { RoleStyle } from '@city-ink/styles/spec';
+
+/** A code style pack usable in tile mode (05 section 8): materials per role plus optional streaming hooks. */
+export interface TileStylePack {
+  id: string;
+  supportsTiles?: boolean;
+  hostCompatible?: boolean;
+  parametersSchema?: { properties?: Record<string, { default?: unknown }> };
+  createMaterial(context: {
+    object: Object3D;
+    role: string;
+    semantic: Record<string, unknown>;
+    shared: Record<string, { value: unknown }>;
+    parameters: Record<string, unknown>;
+    sourceMaterial?: Material;
+    services: Record<string, unknown>;
+  }): Material;
+  onTileLoad?(event: { tile: string; group: Group; features: unknown[] }): void;
+  onTileUnload?(event: { tile: string; group: Group }): void;
+}
+
+const FACADE_ROLE = /^(wall|glass)(\.|$)/;
+const GROUND_ROLE = /^(road|ground|water)/;
+
+interface Copy {
+  depth: Material | null;
+  role: string;
+  mesh: Object3D | null;
+  state: FeatureStateTexture;
+  replace: { value: number };
 }
 
 /**
  * Materials keyed by semantic role; rebuilt by setStyle without touching geometry. Each tile draws with its own
- * lightweight copies (same program) so its feature-state texture can be bound (see patchFeatureState).
+ * lightweight copies (same program) so its feature-state and rule textures can be bound (see patchFeatureState).
+ * Wall and glass materials carry the phase-one procedural facade shader (windows, finishes, glass) on L0 and L1.
  */
 export class MaterialLibrary {
-  private readonly copies = new Map<MeshStandardMaterial, string>();
-  private foliage = '#8fbf7a';
-  constructor(public roles: Record<string, RoleStyle> = {}) {}
+  spec: ResolvedStyleSpec;
+  pack: TileStylePack | null = null;
+  /** Shared facade uniforms (src/facade-shader.js contract) and the tile-mode extras. */
+  readonly facade = {
+    windows: { value: 1 },
+    provenance: { value: 0 },
+    facadeDetail: { value: 0.5 },
+    glassReflection: { value: 0.65 },
+    toneSize: { value: 4.2 },
+    sunDirection: { value: new Vector3(0.5, 0.707, -0.5) },
+    projectionScale: { value: 1000 },
+  };
+  readonly extras = {
+    uContactShadow: { value: 0.35 },
+    uContactHeight: { value: 4.5 },
+    uNightLights: { value: 0 },
+    uNightColor: { value: new Color('#ffcf8a') },
+  };
+  private readonly copies = new Map<Material, Copy>();
+  constructor(spec?: ResolvedStyleSpec) {
+    this.spec = spec ?? builtinStyle('light')!;
+  }
 
   /** Resolves a role ("road.marking" falls back to "road"). */
   resolve(role: string): RoleStyle {
-    let r = role;
-    while (r) {
-      if (this.roles[r]) return this.roles[r]!;
-      const dot = r.lastIndexOf('.');
-      r = dot > 0 ? r.slice(0, dot) : '';
-    }
-    return {};
+    return roleStyle(this.spec, role);
   }
 
   /** A material for one tile or overlay, bound to its feature-state texture; release it with `release`. */
-  acquire(role: string, state: FeatureStateTexture): MeshStandardMaterial {
-    const m = new MeshStandardMaterial({ vertexColors: role !== 'tree.crown' && role !== 'tree.trunk' });
+  acquire(role: string, state: FeatureStateTexture, mesh: Object3D | null = null): Material {
+    const replace = { value: 0 };
+    const m = this.create(role, mesh, replace);
     patchFeatureState(m, state.texture);
-    this.apply(role, m);
-    this.copies.set(m, role);
+    this.patchReplace(m, replace);
+    // Shadow depth pass with the same hidden/flatten state (the default depth material would ignore it).
+    let depth: Material | null = null;
+    if (mesh) {
+      depth = new MeshDepthMaterial({ depthPacking: RGBADepthPacking });
+      patchFeatureState(depth, state.texture);
+      (mesh as Mesh).customDepthMaterial = depth;
+    }
+    this.copies.set(m, { role, mesh, state, replace, depth });
+    if (!this.pack) this.apply(role, m as MeshStandardMaterial, replace);
     return m;
   }
 
-  release(m: MeshStandardMaterial) {
-    if (this.copies.delete(m)) m.dispose();
+  private create(role: string, mesh: Object3D | null, replace: { value: number }): Material {
+    if (this.pack) {
+      const defaults = Object.fromEntries(
+        Object.entries(this.pack.parametersSchema?.properties ?? {}).map(([k, v]) => [k, v.default]),
+      );
+      const services = {
+        createFacadeMaterial: () => this.facadeMaterial(),
+        createFoliageMaterial: (source?: Material) =>
+          new MeshStandardMaterial({ color: (source as MeshStandardMaterial)?.color ?? '#8fbf7a', roughness: 0.9 }),
+      };
+      return this.pack.createMaterial({
+        object: mesh ?? new Mesh(),
+        role: role === 'tree.crown' ? 'foliage' : role === 'tree.trunk' ? 'foliage' : role,
+        semantic: { role },
+        shared: this.facade,
+        parameters: defaults,
+        services,
+      });
+    }
+    void replace;
+    if (FACADE_ROLE.test(role)) return this.facadeMaterial();
+    return new MeshStandardMaterial({ vertexColors: role !== 'tree.crown' && role !== 'tree.trunk' });
+  }
+
+  private facadeMaterial(): MeshStandardMaterial {
+    const m = new MeshStandardMaterial({ vertexColors: true, roughness: 0.76, metalness: 0.04 });
+    const withDefaults = m as unknown as { defaultAttributeValues: Record<string, unknown> };
+    withDefaults.defaultAttributeValues = { ...withDefaults.defaultAttributeValues, ...facadeAttributeDefaults };
+    m.onBeforeCompile = (shader) => {
+      installFacadeShader(shader, this.facade);
+      extendFacadeShader(shader, this.extras);
+    };
+    m.customProgramCacheKey = () => 'city-tile-facade-v1';
+    return m;
+  }
+
+  /** "replace" roles ignore generator vertex colours; "multiply" roles keep them tinted by the role colour. */
+  private patchReplace(m: Material, replace: { value: number }) {
+    const previous = m.onBeforeCompile;
+    m.onBeforeCompile = (shader, renderer) => {
+      previous.call(m, shader, renderer);
+      shader.uniforms.cityReplaceColor = replace;
+      shader.fragmentShader = shader.fragmentShader
+        .replace('#include <common>', '#include <common>\nuniform float cityReplaceColor;')
+        .replace(
+          '#include <color_fragment>',
+          'vec3 cityRoleColor = diffuseColor.rgb;\n#include <color_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, cityRoleColor, cityReplaceColor);',
+        );
+    };
+  }
+
+  release(m: Material) {
+    const copy = this.copies.get(m);
+    if (!copy) return;
+    this.copies.delete(m);
+    copy.depth?.dispose();
+    for (const key of (m.userData.cityOwnedTextures as string[] | undefined) ?? [])
+      (m as unknown as Record<string, { dispose?(): void }>)[key]?.dispose?.();
+    m.dispose();
   }
 
   get size(): number {
     return this.copies.size;
   }
 
-  private apply(role: string, m: MeshStandardMaterial) {
-    if (role === 'tree.crown') {
-      m.color = new Color(this.foliage);
-      m.roughness = 0.9;
-      m.flatShading = true;
-      m.needsUpdate = true;
-      return;
-    }
-    if (role === 'tree.trunk') {
-      m.color = new Color('#7a6450');
-      m.roughness = 1;
-      m.needsUpdate = true;
-      return;
-    }
-    const s = this.resolve(role);
-    const ground = /^(road|ground|water)/.test(role);
-    // Vertex colours carry generator colours; a role colour tints them (white keeps them as generated).
-    m.color = new Color(s.color ?? '#ffffff');
-    m.roughness = s.roughness ?? (role.startsWith('glass') ? 0.25 : role === 'water' ? 0.15 : 0.9);
-    m.metalness = s.metalness ?? (role.startsWith('glass') ? 0.15 : 0.02);
-    m.transparent = (s.opacity ?? 1) < 1;
-    m.opacity = s.opacity ?? 1;
+  private apply(role: string, m: MeshStandardMaterial, replace: { value: number }) {
+    const styleRole = role === 'tree.crown' ? 'foliage' : role === 'tree.trunk' ? 'foliage.trunk' : role;
+    const s = this.resolve(styleRole);
+    const multiply = s.inherit || s.blend === 'multiply';
+    replace.value = multiply || role.startsWith('tree.') ? 0 : 1;
+    m.color = new Color(s.inherit ? '#ffffff' : (s.color ?? '#ffffff'));
+    const glassy = role.startsWith('glass');
+    m.roughness = s.roughness ?? (role === 'water' ? 0.15 : glassy ? 0.76 : 0.9);
+    m.metalness = s.metalness ?? (glassy ? 0.04 : 0.02);
+    m.emissive = new Color(s.emissive ?? '#000000');
+    m.emissiveIntensity = s.emissiveIntensity ?? 1;
+    const opacity = s.opacity ?? 1;
+    m.transparent = opacity < 1 || this.ruleOpacityRoles.has(role);
+    m.opacity = opacity;
+    m.flatShading = role === 'tree.crown';
+    const ground = GROUND_ROLE.test(role);
     m.polygonOffset = ground;
     m.polygonOffsetFactor = ground ? -1 : 0;
     m.polygonOffsetUnits = ground ? -1 : 0;
     m.needsUpdate = true;
   }
 
-  restyle(roles: Record<string, RoleStyle>, crown?: string) {
-    this.roles = roles;
-    if (crown) this.foliage = crown;
-    for (const [m, role] of this.copies) this.apply(role, m);
+  /** Material roles that some style rule makes translucent (they need blending). */
+  ruleOpacityRoles = new Set<string>();
+
+  /** Applies a new style. Spec→spec restyles in place; switching to or from a code pack replaces mesh materials. */
+  restyle(spec: ResolvedStyleSpec, pack: TileStylePack | null = null) {
+    const modeChanged = Boolean(pack) !== Boolean(this.pack) || (pack && pack !== this.pack);
+    this.spec = spec;
+    this.pack = pack;
+    if (!modeChanged) {
+      for (const [m, c] of this.copies) this.apply(c.role, m as MeshStandardMaterial, c.replace);
+      return;
+    }
+    for (const [old, c] of [...this.copies]) {
+      if (!c.mesh) {
+        if (!pack) this.apply(c.role, old as MeshStandardMaterial, c.replace);
+        continue;
+      }
+      const ruleState = (old.userData.featureStateUniforms as { ruleState: { value: unknown } }).ruleState.value;
+      const next = this.acquire(c.role, c.state, c.mesh);
+      (next.userData.featureStateUniforms as { ruleState: { value: unknown } }).ruleState.value = ruleState;
+      (c.mesh as Mesh).material = next;
+      this.release(old);
+    }
+  }
+
+  /** Materials currently bound to a mesh (for rule textures). */
+  entries(): IterableIterator<[Material, Copy]> {
+    return this.copies.entries();
   }
 
   dispose() {
-    for (const m of this.copies.keys()) m.dispose();
+    for (const m of [...this.copies.keys()]) this.release(m);
     this.copies.clear();
   }
 }
@@ -159,9 +288,10 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
   for (const batch of generated.batches) {
     const geometry = geometryOf(batch);
     disposables.push(geometry);
-    const material = materials.acquire(batch.role, state);
-    disposables.push({ dispose: () => materials.release(material) });
-    const mesh = new Mesh(geometry, material);
+    const mesh = new Mesh(geometry);
+    const material = materials.acquire(batch.role, state, mesh);
+    mesh.material = material;
+    disposables.push({ dispose: () => materials.release(mesh.material as Material) });
     mesh.name = `${batch.layer}:${batch.role}`;
     mesh.userData.layer = batch.layer;
     mesh.userData.role = batch.role;
@@ -178,11 +308,13 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
   }
   const trees = generated.trees;
   if (trees.count) {
-    const crownMaterial = materials.acquire('tree.crown', state);
-    const trunkMaterial = materials.acquire('tree.trunk', state);
-    disposables.push({ dispose: () => (materials.release(crownMaterial), materials.release(trunkMaterial)) });
-    const crowns = new InstancedMesh(crownGeometry(), crownMaterial, trees.count);
-    const trunks = new InstancedMesh(trunkGeometry(), trunkMaterial, trees.count);
+    const crowns = new InstancedMesh(crownGeometry(), undefined, trees.count);
+    const trunks = new InstancedMesh(trunkGeometry(), undefined, trees.count);
+    crowns.material = materials.acquire('tree.crown', state, crowns);
+    trunks.material = materials.acquire('tree.trunk', state, trunks);
+    disposables.push({
+      dispose: () => (materials.release(crowns.material as Material), materials.release(trunks.material as Material)),
+    });
     crowns.instanceMatrix.setUsage(DynamicDrawUsage);
     const m = new Matrix4();
     const q = new Quaternion();
@@ -207,6 +339,7 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
     crowns.userData.layer = trunks.userData.layer = 'tree';
     crowns.userData.renderIds = trees.renderId;
     crowns.castShadow = true;
+    trunks.castShadow = true;
     crowns.computeBoundingSphere();
     trunks.computeBoundingSphere();
     const instanceIds = new InstancedBufferAttribute(new Float32Array(trees.renderId), 1);

@@ -34,7 +34,13 @@ export function roleFor(layer: string, kind: string | null): string {
   if (layer === 'water') return 'water';
   if (layer === 'green') return 'ground.green';
   if (layer === 'ground')
-    return kind === 'drive' || kind === 'road' ? 'road' : kind === 'plaza' ? 'ground.plaza' : 'ground.pavement';
+    return kind === 'drive' || kind === 'road'
+      ? 'road'
+      : kind === 'marking'
+        ? 'road.marking'
+        : kind === 'plaza'
+          ? 'ground.plaza'
+          : 'ground.pavement';
   if (layer === 'road') return 'road';
   if (layer === 'structure') return 'structure';
   return layer;

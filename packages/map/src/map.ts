@@ -9,7 +9,9 @@ import {
   HemisphereLight,
   Mesh,
   MeshBasicMaterial,
+  PCFShadowMap,
   Raycaster,
+  ShadowMaterial,
   Scene,
   Vector2,
   Vector3,
@@ -35,13 +37,15 @@ import { WorkerPool } from './pool.js';
 import type { WorkerLike } from './pool.js';
 import type { FeatureRecord, WorkerResponse } from './worker-core.js';
 import { MaterialLibrary, buildTileObject } from './tile-object.js';
-import type { RoleStyle, TileObject } from './tile-object.js';
+import type { TileObject, TileStylePack } from './tile-object.js';
 import { Controls } from './controls.js';
 import { Picker } from './picking/picker.js';
+import { EMPTY_RULES, stateUniforms } from './picking/feature-state.js';
 import type { Pickable } from './picking/picker.js';
 import { buildOverlay } from './overlays/overlay.js';
 import type { BuiltOverlay } from './overlays/overlay.js';
-import { BUILTIN_STYLES, resolveStyle } from './styles.js';
+import { BUILTIN_STYLES, StyleError, resolveStyle } from './styles.js';
+import type { ResolvedStyleSpec } from '@city-ink/styles/spec';
 import type {
   AnimationOptions,
   Budget,
@@ -242,6 +246,10 @@ export class CityMapImpl implements CityMap {
   private readonly picker = new Picker();
   private readonly materials = new MaterialLibrary();
   private readonly ground: Mesh;
+  /** Receives building shadows where no tile ground polygon covers the base plane. */
+  private readonly shadowCatcher: Mesh;
+  private spec: ResolvedStyleSpec | null = null;
+  private pack: TileStylePack | null = null;
   private readonly sun = new DirectionalLight('#ffffff', 1.2);
   private readonly hemi = new HemisphereLight('#ffffff', '#d8d4c7', 0.9);
   private readonly ambient = new AmbientLight('#ffffff', 0.2);
@@ -309,8 +317,27 @@ export class CityMapImpl implements CityMap {
     );
     this.ground.position.y = -0.35;
     this.ground.renderOrder = -1;
+    this.shadowCatcher = new Mesh(this.ground.geometry, new ShadowMaterial({ color: '#000000', opacity: 0.22 }));
+    this.shadowCatcher.receiveShadow = true;
+    this.shadowCatcher.renderOrder = -1;
     this.sun.position.set(-0.5, 0.8, -0.3);
-    this.scene.add(this.ground, this.tilesRoot, this.anchorsRoot, this.sun, this.sun.target, this.hemi, this.ambient);
+    // Shadows (06 section 3 shadowQuality): one sun shadow map fitted around the camera target every frame.
+    this.renderer.shadowMap.enabled = this.budget.shadowQuality > 0;
+    this.renderer.shadowMap.type = PCFShadowMap;
+    this.sun.castShadow = this.budget.shadowQuality > 0;
+    const mapSize = this.budget.shadowQuality >= 2 ? 4096 : 2048;
+    this.sun.shadow.mapSize.set(mapSize, mapSize);
+    this.sun.shadow.bias = -0.0004;
+    this.scene.add(
+      this.ground,
+      this.shadowCatcher,
+      this.tilesRoot,
+      this.anchorsRoot,
+      this.sun,
+      this.sun.target,
+      this.hemi,
+      this.ambient,
+    );
     this.tilesRoot.matrixAutoUpdate = false;
     const hw = (globalThis.navigator?.hardwareConcurrency ?? 4) - 1;
     const size = Math.max(1, Math.floor(options.workers ?? Math.min(4, hw)));
@@ -318,7 +345,7 @@ export class CityMapImpl implements CityMap {
     this.resizeObserver =
       !this.hosted && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => this.resize()) : null;
     this.resizeObserver?.observe(container);
-    if (this.hosted) this.ground.visible = false;
+    if (this.hosted) this.ground.visible = this.shadowCatcher.visible = false;
   }
 
   // ------------------------------------------------------------------------------------------- lifecycle
@@ -454,6 +481,9 @@ export class CityMapImpl implements CityMap {
     this.materials.dispose();
     this.ground.geometry.dispose();
     (this.ground.material as MeshBasicMaterial).dispose();
+    (this.shadowCatcher.material as ShadowMaterial).dispose();
+    this.sun.shadow.map?.dispose();
+    EMPTY_RULES.dispose();
     this.renderer.renderLists.dispose();
     this.renderer.dispose();
     if (!this.hosted) {
@@ -887,19 +917,56 @@ export class CityMapImpl implements CityMap {
 
   async setStyle(style: string | StyleSpec | StylePack): Promise<void> {
     this.assertAlive();
-    const resolved = resolveStyle(style);
-    this.styleId = resolved.id;
-    this.renderer.setClearColor(new Color(resolved.background));
+    let resolved;
+    try {
+      resolved = resolveStyle(style, Boolean(this.hosted));
+    } catch (error) {
+      if (error instanceof StyleError) {
+        const e = new MapError(error.code, 'style', error.message, error.hint);
+        Object.assign(e, { errors: error.errors });
+        this.diagnostic({ code: error.code, stage: 'style', message: error.message, hint: error.hint });
+        throw e;
+      }
+      throw error;
+    }
+    const { spec, pack } = resolved;
+    this.spec = spec;
+    this.pack = pack;
+    this.styleId = pack ? pack.id : spec.id;
+    const env = spec.environment;
+    this.renderer.setClearColor(new Color(env.background));
     // In a host map the host draws the background and its own fog.
-    this.scene.background = this.hosted ? null : new Color(resolved.background);
-    this.scene.fog = this.hosted ? null : new Fog(resolved.background, 1, 2);
-    (this.ground.material as MeshBasicMaterial).color = new Color(resolved.ground);
-    this.sun.intensity = resolved.sun;
-    this.hemi.intensity = resolved.ambient;
-    this.materials.restyle(resolved.roles as Record<string, RoleStyle>, resolved.foliage);
+    this.scene.background = this.hosted ? null : new Color(env.background);
+    this.scene.fog = this.hosted || !env.fog ? null : new Fog(env.fog.color ?? env.background, 1, 2);
+    (this.ground.material as MeshBasicMaterial).color = new Color(groundColor(spec));
+    this.sun.color = new Color(env.sun.color);
+    this.sun.intensity = env.sun.intensity * 1.6;
+    this.hemi.color = new Color(env.ambient.color);
+    this.hemi.groundColor = new Color(env.ambient.ground);
+    this.hemi.intensity = env.ambient.intensity;
+    this.ambient.intensity = 0.15;
+    const az = (env.sun.azimuth * Math.PI) / 180,
+      alt = (env.sun.altitude * Math.PI) / 180;
+    // Azimuth clockwise from north; world x is east, z is south.
+    this.sunDirection.set(Math.sin(az) * Math.cos(alt), Math.sin(alt), -Math.cos(az) * Math.cos(alt)).normalize();
+    this.sun.castShadow = env.shadows && this.budget.shadowQuality > 0;
+    this.shadowCatcher.visible = this.sun.castShadow && !this.hosted;
+    (this.shadowCatcher.material as ShadowMaterial).opacity = env.background < '#555555' ? 0.35 : 0.2;
+    const f = this.materials.facade,
+      x = this.materials.extras;
+    f.windows.value = spec.facade.windows ? 1 : 0;
+    f.facadeDetail.value = Math.min(1, 0.5 * spec.facade.density);
+    f.sunDirection.value.copy(this.sunDirection);
+    x.uContactShadow.value = env.ambientOcclusion;
+    x.uNightLights.value = spec.facade.nightLights ? 1 : 0;
+    stateUniforms.highlightColor.value.set(spec.featureState.highlight.emissive);
+    stateUniforms.highlightIntensity.value = spec.featureState.highlight.emissiveIntensity;
+    this.materials.restyle(spec, pack);
     this.dirty = true;
     this.fire({ type: 'styledata' });
   }
+
+  private readonly sunDirection = new Vector3(0.5, 0.7, -0.5);
 
   setFilter(filter: ProvenanceFilter): void {
     this.assertAlive();
@@ -1103,8 +1170,9 @@ export class CityMapImpl implements CityMap {
     desired.unshift(...ancestors.filter((a, i, list) => list.findIndex((b) => b.key === a.key) === i));
     // Fog follows the visible distance limit.
     if (this.scene.fog instanceof Fog) {
-      this.scene.fog.near = maxDistance * 0.55;
-      this.scene.fog.far = maxDistance * 1.05;
+      const fog = this.spec?.environment.fog;
+      this.scene.fog.near = maxDistance * (fog?.start ?? 0.55);
+      this.scene.fog.far = maxDistance * (fog?.end ?? 1.05);
     }
     // Decide visibility.
     const show = new Set<string>();
@@ -1308,9 +1376,26 @@ export class CityMapImpl implements CityMap {
     const radius = Math.max(5000, t.camera.far * 1.2);
     this.ground.position.set(c.x, -0.35, c.z);
     this.ground.scale.setScalar(radius);
-    this.sun.position.set(c.x - 400, 900, c.z - 250);
-    this.sun.target.position.copy(c);
+    this.shadowCatcher.position.set(c.x, -0.3, c.z);
+    this.shadowCatcher.scale.setScalar(radius);
+    // Fit the sun's shadow camera around the view target; the extent follows the camera distance.
+    const reach = Math.min(1600, Math.max(180, t.cameraToCenterDistance * t.unitsPerPixel * 1.6));
+    const texel = (2 * reach) / this.sun.shadow.mapSize.x;
+    const cx = Math.round(c.x / texel) * texel,
+      cz = Math.round(c.z / texel) * texel;
+    this.sun.target.position.set(cx, 0, cz);
+    this.sun.position.set(cx, 0, cz).addScaledVector(this.sunDirection, reach * 2);
+    const cam = this.sun.shadow.camera;
+    if (cam.right !== reach) {
+      cam.left = cam.bottom = -reach;
+      cam.right = cam.top = reach;
+      cam.near = 1;
+      cam.far = reach * 4.5;
+      cam.updateProjectionMatrix();
+      this.sun.shadow.normalBias = texel * 1.5;
+    }
     const size = this.renderer.getDrawingBufferSize(new Vector2());
+    this.materials.facade.projectionScale.value = size.y / (2 * Math.tan((t.fov * Math.PI) / 360));
     for (const { built } of this.overlays.values()) built.update(size, this.renderer.getPixelRatio());
     this.scene.updateMatrixWorld();
     this.renderer.render(this.scene, t.camera);
@@ -1416,6 +1501,7 @@ export class CityMapImpl implements CityMap {
         filter: this.filter,
         featureStates: this.featureState.size,
         styles: Object.keys(BUILTIN_STYLES),
+        pack: this.pack?.id ?? null,
       };
     return stats;
   }
@@ -1426,4 +1512,14 @@ function overlaps(a: TileId, b: TileId): boolean {
   const [hi, lo] = a.z > b.z ? [a, b] : [b, a];
   const d = 2 ** (hi.z - lo.z);
   return Math.floor(hi.x / d) === lo.x && Math.floor(hi.y / d) === lo.y;
+}
+
+/** Colour of the base plane under all tiles: the ground role colour (tinted generator pavement for "multiply"). */
+function groundColor(spec: ResolvedStyleSpec): string {
+  const r = spec.roles.ground ?? {};
+  if (r.blend === 'multiply' || r.inherit) {
+    const base = new Color('#f3f2ee');
+    return '#' + base.multiply(new Color(r.color ?? '#ffffff')).getHexString();
+  }
+  return r.color ?? '#f3f2ee';
 }

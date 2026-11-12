@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 2,
+  "id": "light",
+  "name": "Light",
+  "extends": null,
+  "environment": {
+    "background": "#eef1f4",
+    "fog": { "color": "#eef1f4", "start": 0.6, "end": 1.0 },
+    "sun": { "azimuth": 135, "altitude": 50, "color": "#ffffff", "intensity": 1.0 },
+    "ambient": { "color": "#ffffff", "intensity": 0.6 },
+    "shadows": true
+  },
+  "roles": {
+    "wall": { "color": "#e9e6e1", "roughness": 0.9 },
+    "glass": { "color": "#b9c7d3", "roughness": 0.2, "reflectivity": 0.4 },
+    "roof": { "color": "#d6d2cb" },
+    "road": { "color": "#c9ccd1" },
+    "road.marking": { "color": "#ffffff" },
+    "water": { "color": "#a9c8e6" },
+    "ground": { "color": "#f3f2ee" },
+    "ground.green": { "color": "#cfe3c0" },
+    "foliage": { "color": "#9cc48a" },
+    "structure": { "color": "#bdbdbd" },
+    "facility": { "color": "#9a9a9a" },
+    "landmark": { "inherit": true }
+  },
+  "facade": { "windows": true, "density": 1.0, "nightLights": false },
+  "rules": [
+    {
+      "layer": "building",
+      "when": ["==", ["provenance", "height"], "inferred"],
+      "set": { "wall": { "opacity": 0.85 } }
+    },
+    { "layer": "building", "when": [">", ["get", "height"], 150], "set": { "wall": { "color": "#dfe6ee" } } }
+  ],
+  "featureState": {
+    "highlight": { "emissive": "#ffb300", "emissiveIntensity": 0.6 },
+    "hidden": { "visible": false }
+  },
+  "hostCompatible": true
+}

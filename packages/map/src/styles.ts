@@ -1,83 +1,73 @@
-// Temporary built-in looks (WP-D task D6) until the StyleSpec interpreter of WP-G. Role colours tint the generator's
-// vertex colours (white keeps them), so buildings keep the phase-one facade palette.
+// Style resolution for createMap (05): a built-in id, a StyleSpec object (validated strictly) or a code style pack
+// that declares `supportsTiles: true`.
+import { BUILTIN_STYLE_SPECS } from '@city-ink/styles/defaults';
+import { resolveStyleSpec, validateStyleSpec } from '@city-ink/styles/spec';
+import type { ResolvedStyleSpec, StyleSpec as SpecData } from '@city-ink/styles/spec';
 import type { StylePack, StyleSpec } from './types.js';
+import type { TileStylePack } from './tile-object.js';
 
-export interface ResolvedStyle {
-  id: string;
-  background: string;
-  ground: string;
-  sun: number;
-  ambient: number;
-  foliage: string;
-  roles: Record<string, { color?: string; roughness?: number; metalness?: number; opacity?: number }>;
+/** The built-in StyleSpec documents, by id (plain, light, dark). */
+export const BUILTIN_STYLES: Record<string, SpecData> = BUILTIN_STYLE_SPECS;
+
+export interface StyleResolution {
+  spec: ResolvedStyleSpec;
+  pack: TileStylePack | null;
 }
 
-export const BUILTIN_STYLES: Record<string, ResolvedStyle> = {
-  light: {
-    id: 'light',
-    background: '#eef1f4',
-    ground: '#f3f2ee',
-    sun: 1.2,
-    ambient: 0.9,
-    foliage: '#9cc48a',
-    roles: {
-      wall: { color: '#ffffff' },
-      glass: { color: '#dfe8f0' },
-      roof: { color: '#f4f2ee' },
-      water: { color: '#ffffff' },
-      road: { color: '#ffffff' },
-    },
-  },
-  plain: {
-    id: 'plain',
-    background: '#f2f2f2',
-    ground: '#f5f5f5',
-    sun: 1.1,
-    ambient: 1.0,
-    foliage: '#cfd8c8',
-    roles: {
-      wall: { color: '#ffffff' },
-      glass: { color: '#ffffff' },
-      roof: { color: '#ffffff' },
-      structure: { color: '#ffffff' },
-      facility: { color: '#ffffff' },
-      landmark: { color: '#ffffff' },
-      road: { color: '#e9e9e9' },
-      ground: { color: '#f0f0f0' },
-      water: { color: '#dde6ee' },
-    },
-  },
-  dark: {
-    id: 'dark',
-    background: '#0f141a',
-    ground: '#151b22',
-    sun: 0.45,
-    ambient: 0.45,
-    foliage: '#2f4a33',
-    roles: {
-      wall: { color: '#59626e' },
-      glass: { color: '#3e4f63' },
-      roof: { color: '#4a525c' },
-      structure: { color: '#4a4f57' },
-      facility: { color: '#4a4f57' },
-      landmark: { color: '#6a7480' },
-      road: { color: '#2a3038' },
-      ground: { color: '#252a31' },
-      water: { color: '#1b3550' },
-    },
-  },
-};
+export class StyleError extends Error {
+  constructor(
+    readonly code: string,
+    message: string,
+    readonly hint: string,
+    readonly errors: { path: string; message: string }[] = [],
+  ) {
+    super(message);
+  }
+}
 
-export function resolveStyle(style: string | StyleSpec | StylePack): ResolvedStyle {
+export function resolveStyle(style: string | StyleSpec | StylePack, hosted = false): StyleResolution {
   if (typeof style === 'string') {
     const s = BUILTIN_STYLES[style];
     if (!s)
-      throw Object.assign(new Error(`Unknown style "${style}".`), {
-        code: 'STYLE_UNKNOWN',
-        hint: `Use one of ${Object.keys(BUILTIN_STYLES).join(', ')}.`,
-      });
-    return s;
+      throw new StyleError(
+        'STYLE_UNKNOWN',
+        `Unknown style "${style}".`,
+        `Use one of ${Object.keys(BUILTIN_STYLES).join(', ')}, a StyleSpec object or an imported style pack.`,
+      );
+    return { spec: resolveStyleSpec(s, BUILTIN_STYLES), pack: null };
   }
-  const base = BUILTIN_STYLES[String((style as { extends?: unknown }).extends ?? 'light')] ?? BUILTIN_STYLES.light!;
-  return { ...base, id: String(style.id) };
+  const pack = style as unknown as TileStylePack & { createPipeline?: unknown };
+  if (typeof pack.createMaterial === 'function') {
+    if (pack.supportsTiles !== true)
+      throw new StyleError(
+        'STYLE_UNSUPPORTED',
+        `Style pack "${pack.id}" does not declare supportsTiles and cannot be used with createMap.`,
+        'Use a tile-ready pack (for example from @city-ink/styles-ink) or createCityViewer for scene packages.',
+      );
+    if (hosted && pack.hostCompatible === false)
+      throw new StyleError(
+        'STYLE_NOT_HOST_COMPATIBLE',
+        `Style pack "${pack.id}" needs its own post-processing and cannot draw inside a MapLibre layer.`,
+        'Use plain, light, dark or another pack with hostCompatible: true in MapLibre layer mode.',
+      );
+    return { spec: resolveStyleSpec(BUILTIN_STYLES.light!, BUILTIN_STYLES), pack };
+  }
+  const result = validateStyleSpec(style);
+  if (!result.valid) {
+    const first = result.errors[0]!;
+    throw new StyleError(
+      'STYLE_INVALID',
+      `Invalid style: ${first.path} ${first.message}${result.errors.length > 1 ? ` (+${result.errors.length - 1} more)` : ''}.`,
+      'See schemas/style.schema.json and docs/phase2/05-style-contract.md section 4.',
+      result.errors,
+    );
+  }
+  const spec = resolveStyleSpec(style as unknown as SpecData, BUILTIN_STYLES);
+  if (hosted && !spec.hostCompatible)
+    throw new StyleError(
+      'STYLE_NOT_HOST_COMPATIBLE',
+      `Style "${spec.id}" declares hostCompatible: false.`,
+      'Use a style with hostCompatible: true in MapLibre layer mode.',
+    );
+  return { spec, pack: null };
 }

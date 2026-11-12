@@ -8,6 +8,8 @@ export const STATE_WIDTH = 256;
 export const FLAG_HIDDEN = 1;
 export const FLAG_HIGHLIGHT = 2;
 export const FLAG_COLOR = 4;
+/** Set by the ProvenanceFilter: the feature is drawn as a footprint on the ground (05 section 5). */
+export const FLAG_FLATTEN = 8;
 
 export interface FeatureStateValue {
   hidden?: boolean;
@@ -19,9 +21,14 @@ export interface FeatureStateValue {
 export class FeatureStateTexture {
   readonly texture: DataTexture;
   readonly data: Uint8Array;
+  /** Flags owned by the ProvenanceFilter, merged with the user state flags. */
+  private readonly filterFlags: Uint8Array;
+  private readonly userFlags: Uint8Array;
   constructor(readonly capacity: number) {
     const rows = Math.max(1, Math.ceil((capacity + 1) / STATE_WIDTH));
     this.data = new Uint8Array(STATE_WIDTH * rows * 4);
+    this.filterFlags = new Uint8Array(STATE_WIDTH * rows);
+    this.userFlags = new Uint8Array(STATE_WIDTH * rows);
     this.texture = new DataTexture(this.data, STATE_WIDTH, rows, RGBAFormat, UnsignedByteType);
     this.texture.magFilter = this.texture.minFilter = NearestFilter;
     this.texture.generateMipmaps = false;
@@ -41,7 +48,17 @@ export class FeatureStateTexture {
       this.data[o + 1] = Math.round(c.g * 255);
       this.data[o + 2] = Math.round(c.b * 255);
     } else this.data[o] = this.data[o + 1] = this.data[o + 2] = 0;
-    this.data[o + 3] = flags;
+    this.userFlags[renderId] = flags;
+    this.data[o + 3] = flags | this.filterFlags[renderId]!;
+    this.texture.needsUpdate = true;
+  }
+
+  /** Replaces the filter flags of a feature (FLAG_HIDDEN, FLAG_FLATTEN); user state flags are kept. */
+  setFilter(renderId: number, flags: number): void {
+    if (renderId < 0 || renderId >= this.filterFlags.length) return;
+    if (this.filterFlags[renderId] === flags) return;
+    this.filterFlags[renderId] = flags;
+    this.data[renderId * 4 + 3] = this.userFlags[renderId]! | flags;
     this.texture.needsUpdate = true;
   }
 
@@ -58,13 +75,52 @@ export const stateUniforms = {
   highlightIntensity: { value: 0.6 },
 };
 
+/** A 1x1 texture meaning "no style rule applies" (05 section 4 rules are evaluated per tile into RuleTexture). */
+export const EMPTY_RULES = new DataTexture(new Uint8Array(4), 1, 1, RGBAFormat, UnsignedByteType);
+EMPTY_RULES.needsUpdate = true;
+
+/**
+ * Per-feature style-rule results of one tile and role: rgb = colour, a = 0 (no rule) or 1 + opacity·126, plus 128 when
+ * the colour is set. Written when a tile loads or the style changes, never per frame.
+ */
+export class RuleTexture {
+  readonly texture: DataTexture;
+  readonly data: Uint8Array;
+  constructor(capacity: number) {
+    const rows = Math.max(1, Math.ceil((capacity + 1) / STATE_WIDTH));
+    this.data = new Uint8Array(STATE_WIDTH * rows * 4);
+    this.texture = new DataTexture(this.data, STATE_WIDTH, rows, RGBAFormat, UnsignedByteType);
+    this.texture.magFilter = this.texture.minFilter = NearestFilter;
+    this.texture.generateMipmaps = false;
+  }
+  set(renderId: number, color: string | undefined, opacity: number | undefined) {
+    if (renderId < 0 || renderId * 4 + 3 >= this.data.length) return;
+    const o = renderId * 4;
+    if (color) {
+      const c = new Color(color);
+      this.data[o] = Math.round(c.r * 255);
+      this.data[o + 1] = Math.round(c.g * 255);
+      this.data[o + 2] = Math.round(c.b * 255);
+    }
+    this.data[o + 3] = 1 + Math.round(Math.max(0, Math.min(1, opacity ?? 1)) * 126) + (color ? 128 : 0);
+  }
+  commit() {
+    this.texture.needsUpdate = true;
+  }
+  dispose() {
+    this.texture.dispose();
+  }
+}
+
 const VERTEX_DECL = /* glsl */ `
 attribute float renderId;
 #ifdef USE_INSTANCING
 attribute float instanceRenderId;
 #endif
 uniform sampler2D featureState;
+uniform sampler2D ruleState;
 varying vec4 vFeatureState;
+varying vec4 vRuleState;
 `;
 
 const VERTEX_BODY = /* glsl */ `
@@ -75,11 +131,15 @@ const VERTEX_BODY = /* glsl */ `
 #endif
   int cityId = int(cityRid + 0.5);
   vFeatureState = texelFetch(featureState, ivec2(cityId % ${STATE_WIDTH}, cityId / ${STATE_WIDTH}), 0);
+  ivec2 citySize = textureSize(ruleState, 0);
+  vRuleState = citySize.x > 1 ? texelFetch(ruleState, ivec2(cityId % ${STATE_WIDTH}, cityId / ${STATE_WIDTH}), 0) : vec4(0.0);
   if (int(vFeatureState.a * 255.0 + 0.5) % 2 == 1) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
+  if ((int(vFeatureState.a * 255.0 + 0.5) / 8) % 2 == 1) transformed.y = min(transformed.y, 0.3);
 `;
 
 const FRAGMENT_DECL = /* glsl */ `
 varying vec4 vFeatureState;
+varying vec4 vRuleState;
 uniform vec3 highlightColor;
 uniform float highlightIntensity;
 `;
@@ -92,11 +152,14 @@ uniform float highlightIntensity;
 export function patchFeatureState(material: Material, texture: DataTexture | null = null): void {
   const own = {
     featureState: { value: texture },
+    ruleState: { value: EMPTY_RULES as DataTexture },
     highlightColor: stateUniforms.highlightColor,
     highlightIntensity: stateUniforms.highlightIntensity,
   };
   material.userData.featureStateUniforms = own;
-  material.onBeforeCompile = (shader) => {
+  const previous = material.onBeforeCompile;
+  material.onBeforeCompile = (shader, renderer) => {
+    previous.call(material, shader, renderer);
     Object.assign(shader.uniforms, own);
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', `#include <common>\n${VERTEX_DECL}`)
@@ -106,7 +169,12 @@ export function patchFeatureState(material: Material, texture: DataTexture | nul
       .replace(
         '#include <color_fragment>',
         `#include <color_fragment>
-  { int cityFlags = int(vFeatureState.a * 255.0 + 0.5);
+  { int cityRule = int(vRuleState.a * 255.0 + 0.5);
+    if (cityRule > 0) {
+      if (cityRule >= 128) diffuseColor.rgb = vRuleState.rgb;
+      diffuseColor.a *= float((cityRule % 128) - 1) / 126.0;
+    }
+    int cityFlags = int(vFeatureState.a * 255.0 + 0.5);
     if ((cityFlags / 4) % 2 == 1) diffuseColor.rgb = vFeatureState.rgb; }`,
       )
       .replace(
@@ -117,7 +185,7 @@ export function patchFeatureState(material: Material, texture: DataTexture | nul
       );
   };
   const key = material.customProgramCacheKey.bind(material);
-  material.customProgramCacheKey = () => `${key()}|city-feature-state-v1`;
+  material.customProgramCacheKey = () => `${key()}|city-feature-state-v2`;
 }
 
 /** Binds an object's state texture before each draw (shared materials need a per-object uniform value). */
