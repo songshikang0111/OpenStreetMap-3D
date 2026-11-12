@@ -33,9 +33,32 @@ const map = await createMap({
 });
 
 map.addMarker({ lngLat: [116.4602, 39.9115], element: myDiv });
-map.on('click', (e) => console.log(e.lngLat, e.feature));
+// Click a building: show its OSM identity, kept tags and provenance, and highlight it.
+const info = document.getElementById('info');
+let selected = null;
+map.on('click', (e) => {
+  if (selected) map.setFeatureState(selected, { highlight: false });
+  selected = e.feature?.id ?? null;
+  if (!e.feature || !info) {
+    if (info) info.hidden = true;
+    return;
+  }
+  map.setFeatureState(selected, { highlight: true });
+  const { id, layer, properties, provenance } = e.feature;
+  info.hidden = false;
+  info.textContent = JSON.stringify({ id, layer, properties, provenance }, null, 1);
+});
 map.on('tileerror', (e) => console.warn('tile error', e.tile, e.error));
 
+const city = document.getElementById('city');
+if (city) {
+  city.value = tiles;
+  city.addEventListener('change', () => {
+    const url = new URL(location.href);
+    url.searchParams.set('tiles', city.value);
+    location.href = url.href; // a new tileset is a new map
+  });
+}
 const picker = document.getElementById('style');
 if (picker) {
   picker.value = styleId;

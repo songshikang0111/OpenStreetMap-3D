@@ -27,6 +27,19 @@
         font: 12px/1.35 ui-monospace, monospace;
         pointer-events: none;
       }
+      #info {
+        position: absolute;
+        right: 8px;
+        bottom: 28px;
+        max-width: 320px;
+        max-height: 40%;
+        overflow: auto;
+        padding: 6px 8px;
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 4px;
+        font: 12px/1.4 ui-monospace, monospace;
+        white-space: pre-wrap;
+      }
       #panel {
         position: absolute;
         right: 8px;
@@ -54,6 +67,14 @@
     <div id="hud">loading…</div>
     <div id="panel">
       <label
+        >City
+        <select id="city">
+          <option value="./tiles/beijing-cbd-grow-9/tileset.json">Beijing · CBD</option>
+          <option value="./tiles/kyoto-gion-grow-9/tileset.json">Kyoto · Gion</option>
+          <option value="./tiles/manhattan-financial/tileset.json">New York · Financial District</option>
+        </select>
+      </label>
+      <label
         >Style
         <select id="style">
           <option value="light">light</option>
@@ -69,7 +90,9 @@
       <label><input type="checkbox" id="details" checked /> street details</label>
       <label><input type="checkbox" id="observed" /> observed heights only</label>
       <label><input type="checkbox" id="roofs" checked /> inferred roofs</label>
+      <nav><a href="./overlays.html">overlays</a> · <a href="./maplibre.html">MapLibre layer</a></nav>
     </div>
+    <div id="info" hidden></div>
     <script type="module" src="./main.js"></script>
   </body>
 </html>

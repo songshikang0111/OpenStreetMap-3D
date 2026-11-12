@@ -1,0 +1,233 @@
+# 一期历史：城市线境 / City Ink 0.x
+
+本文是二期 README 重写前的根目录 README 原文（2026-11-13 迁移），记录一期的本地城市工具链、场景包、漫画风渲染与五洲地点测试。一期接口（`createCityViewer`、`compileScene`、场景包清单、`city` CLI）在二期继续可用。二期说明见 [README](../README.md) 与 [二期计划书](phase2/README.md)。
+
+---
+
+## 城市线境 / City Ink（一期 README 原文）
+
+本地城市生成工具链与 Three.js / WebGL 2 SDK：定位地点、确定范围、下载或导入 OSM、离线构建连续区域、预览画风，并交付可复现项目和静态网页。维护者不运营地图或构建服务器。包名暂沿用 `beijing-city-ink`，本轮仅本地打包，不远端发布。
+
+一期已在集成分支完成，AC01–AC27 独立验收全部通过：344项测试、严格类型、三套构建和140文件生产安装包验证通过。参考RTX4090上的北京/京都12组60秒路径及60轮资源往返通过，默认整帧预算不变；实际支持范围、下载源限制和可复跑证据见 [最新整体验收](phase1-evidence/remediation/root-acceptance/acceptance.md)。[首次失败报告](phase1-evidence/root-acceptance/acceptance.md)与旧原始记录保留，完整约定见 [一期规划](phase1-plan.md)。历史版本与视觉研究保留在本文后半部分。
+
+## 快速开始
+
+需要 Node 22.11+；安装依赖后，内置合成小街区可断外网试用：
+
+```sh
+npm ci
+npm run build
+npm run studio -- --workspace ./work/studio
+```
+
+打开命令输出的本机 URL（默认 `http://127.0.0.1:4178/`），点击“打开内置离线样例”。也可输入坐标、官方地标 ID、OSM 链接或地址，选择候选、确认范围、创建项目、下载数据并构建。保存会保留范围、种子、规则/风格配置及当前相机；下次从项目列表或工作目录内相对路径重开。输入没有建筑或服务失败会给出诊断，不替换地点。
+
+CLI 使用同一管线和持久化任务：
+
+```sh
+node bin/city.js init ./work/my-city --sample --json
+node bin/city.js build --project ./work/my-city --offline --json
+node bin/city.js validate --project ./work/my-city --offline --json
+node bin/city.js export web --project ./work/my-city --json
+node scripts/serve-static.mjs ./work/my-city/site --port 4180
+```
+
+真实小范围示例：`city init my-city --area 39.908,116.459,39.910,116.462`，再 `city data fetch --project my-city`。本地 JSON 用 `city data import file.json --project my-city`。普通 build/export 不刷新网络；刷新数据须 `data fetch --refresh`。完整命令、JSON 输出和退出码见 `node bin/city.js --help`。失败任务用 `city jobs resume JOB_ID --project my-city` 恢复；批处理输入为 `{"projects":[{"project":"relative/path","kind":"build"}]}`，`city batch list.json --concurrency 2 --json` 可受控并行，部分失败返回非零。
+
+工作台只绑定 loopback、只访问指定工作根；Web SDK 和静态站点不依赖工作台 API。PNG/GLB CLI 导出使用已安装 Chrome/Edge（可设置 `CITY_BROWSER`）；PNG 为当前视野及已加载 LOD，GLB 明确完整范围并遵守资源预算。程序窗格、玻璃与漫画后处理不保证通用 GLB 保留。
+
+## 嵌入自己的网页
+
+将项目 `dist/` 作为静态 `scene/` 目录，安装本地 `npm pack` 产出的包，在自己的打包器项目中：
+
+```js
+import {createCityViewer} from 'beijing-city-ink';
+const viewer = await createCityViewer({
+  container: document.getElementById('city'),
+  manifestUrl: './scene/manifest.json',
+  style: 'comic', quality: 'balanced',
+  onDiagnostic: console.warn,
+  onSelect: feature => console.log(feature),
+});
+await viewer.whenIdle();
+await viewer.setStyle('line');
+// 容器卸载时：await viewer.dispose();
+```
+
+容器需有明确宽高。清单 URL 相对页面 base，块 URL 相对清单；可注入 `readAsset(url,{signal,responseType})`。SDK 提供相机、LOD/驻留预算、整帧统计、选择与 PNG/GLB 导出；类型位于 `src/sdk/index.d.ts`，独立例子位于 [examples/quickstart](../examples/quickstart/index.html)。静态导出全部资源在本地，支持非根路径部署，需通过 HTTP 访问。
+
+## 开发与扩展
+
+```sh
+npm test
+npm run build
+npm pack --ignore-scripts --dry-run
+npm run dev
+```
+
+`npm run dev` 保留旧独立演示（默认端口 5178）。公共入口：根包为 SDK，`/core` 为编译与校验，`/styles` 为风格注册，`/landmarks` 为地标注册；JSON Schema 位于 `schemas/`。查看 [CONTRIBUTING](../CONTRIBUTING.md)、[扩展教程](extensions.md)、[支持与故障诊断](support.md)、[AGENTS](../AGENTS.md)。
+
+地图数据 © OpenStreetMap contributors，ODbL；原创代码与配方 MIT。地形、缺失高度与部分地标是明确的规则近似，不代表测绘级还原。下载和搜索依赖公开服务的当前配额，运行已构建场景可离线于外网。移动 GPU 和未实测平台不承诺支持。
+
+## 历史版本与演示研究
+
+使用真实北京 OSM 数据、Three.js 与独立编写的程序化建模/漫画渲染代码，在浏览器中构建国贸 CBD 街区。
+
+v0.2 根据同地点的 Location Scout 截图对照，改进地标轮廓、普通立面、街道环境与漫画层次。本项目参考其产品思路，未复制其程序、着色器、素材或专用地标生成器；新增形体规则由本项目独立实现。
+
+v0.3 在同一国贸样本继续打磨：远景窗格过滤、独立漫画光照、不规则叶簇/叶片纹理、路面交口拼接及标线避让。新增远景窗格滑杆并支持保存。第二轮人工评分64.8→68.5/100（非还原率），[本轮验收](render-polish-report.md)与[离线滑动对照](evidence-v03/report.html)保留11组匹配机位证据。
+
+v0.4 统一窗格与实体窗框布局，提供12种确定性语法和可保存的玻璃留白；修复近框按输入顺序截断的问题。树冠改为连续几何过渡，地面区分白地与落影。道路新增抬高步道、过街路缘开口、近景铺装接缝，以及有厚度的桥板、护栏和避障桥墩。人工评分68.5→71.75（非还原率），[第三轮验收](render-v04-report.md)、[15组离线对照](evidence-v04/report.html)与[独立差异审计](visual-gap-audit-v04.md)记录收益和剩余问题。
+
+v0.4.1 补足道路纵断面：真实OSM节点建图，78处共享节点高差消除；沿已有steps路线生成28段楼梯，路面、标线、护栏和附属物随坡。独立全宽检查覆盖184处跨越，道路项人工评分7.5→8.0/10，其他项未重评。[坡道与楼梯对照](evidence-road-grades/report.html)、[独立验收](road-grade-validation.md)保留4组匹配机位。高程仍为推断；23条非台阶陡步道、真实路基及地形尚待完善。
+
+v0.4.2 修复远景立面同质化：细窗墨线与平均材质灰度分离，横纵轴和宽组带按投影尺寸/网点尺寸分别过滤；收腰放样共享UV参考周长，避免竖纹扭转。70项测试通过，6组匹配机位加原版远窗开关实验见[本轮对照](evidence-distance/report.html)。[独立评审](distance-facade-validation.md)给立面类型辨识2→7.5/10，噪声克制7.5→6.5/10，近景8→8/10；静态改善通过，部分板楼颗粒与运动稳定性仍待打磨。
+
+v0.5.0 新增通用场地补全：恢复 OSM 场地标签、补充同区域48个对象，在空白处按建筑/道路关系生成前场、庭院、退界绿带和大空隙庭园。已知停车、运动、施工、水体和桥梯净空优先；场地、低灌木、疏树与座椅共用预算。支持参数文件与关闭开关，不按北京坐标定制。[场地引擎与换区方法](landscape-engine.md)、[前后滑动对照](evidence-landscape/report.html)及[独立验收](landscape-validation.md)记录边界与结果。参考真实鸟瞰照片选择模板比例，未从照片恢复真实几何。
+
+v0.6.0 升级树木与建筑材质：四种饱满树冠、沿道路/绿地边缘连续种植，统一避让建筑、车行桥与人行结构。当前规则树木2692→5079，远冠接触比例0→33.9%（几何连续性代理，非真实覆盖率）。玻璃使用连续大窗与随视角变化的程序环境反射，普通建筑有18种窗格和6种饰面；修复网点灰度跨50%硬反相导致的雪花。105项测试通过，[15组固定机位对照、独立评分与复用说明](evidence-trees/report.html)保留证据。总树木几何量增加，尚未完成移动GPU性能验证。
+
+v0.6.1 增加细高柏形与宽底层叠针叶冠，公园/庭院按小片混植，未标注的行道树保持阔叶节奏。优先保留 OSM `leaf_type`、`genus`、`species`；不会把所有常绿树都判成针叶树。当前5075棵中463棵使用针叶形，都是缺失树种标签时的规则示意。112项测试通过，[本轮证据与复用参数](evidence-conifers/README.md)记录三组同机位对照及近景。
+
+v0.7.0 改进远景构图：建筑网点随屏幕尺度连续转为灰阶块面，窗格过滤与大面积玻璃反射分离；玻璃反射读取真实太阳方位/高度，保留冷暖面、方向性亮部和宽反光带。屋顶小设备按投影尺寸收起，近景与高分辨率导出恢复细节。没有新增按坐标定制规则。[9组同机位对照、太阳转向与近景验收](evidence-distance-v07/README.md)记录效果及局限。
+
+v0.8.0 增加上海陆家嘴、京都祇园与阿姆斯特丹运河街区的独立OSM样本，左上角可切换地点；新地点使用相同渲染参数与默认生成规则。修复京都场地标线切割的精度异常。121项测试通过，[三地泛化报告与12张截图](evidence-generalization/README.md)记录数据覆盖率、效果评分及高度估算/屋顶/性能边界。能够跨地区生成可审阅原型，历史街区风貌仍未达到直接成品标准。
+
+### 五洲地点测试（2026-11-02）
+
+2026-11-03后续修正：未知空地补绿默认关闭；实现四类标签坡顶与可选的小房屋坡顶推测；补齐悉尼港湾关系并统一2D/3D水域。另修正交叉净空约束范围过大的问题，恢复包含完整环形码头路网的悉尼样本（584体块、1,656道路、160处交叉约束）。138项测试通过。[修正说明、验证与预览](evidence-generalization/README.md)记录证据。歌剧院贝壳曲面尚未实现。以下五洲初测截图保留作改前记录。
+
+新增五份独立 OSM 样本，使用现有渲染器、默认参数与种子1。启动本地服务后可直接打开，也可在左上角切换。
+
+| 地点 | 样本类型 | 建筑体块 / 道路对象 | 高度或层数覆盖 |
+| --- | --- | --- | --- |
+| [丽江 · 束河古镇](http://127.0.0.1:5178/?site=shuhe) | 亚洲，中国低层古镇 | 868 / 182 | 0% |
+| [英国 · 拜伯里村](http://127.0.0.1:5178/?site=bibury) | 欧洲，乡村排屋与河道 | 148 / 120 | 0% |
+| [纽约 · 曼哈顿金融区](http://127.0.0.1:5178/?site=manhattan) | 北美洲，高层街谷 | 1,317 / 2,050 | 98.6% |
+| [马拉喀什 · 老城](http://127.0.0.1:5178/?site=marrakech) | 非洲，广场与密集巷道 | 3,137 / 809 | 2.3% |
+| [悉尼 · 歌剧院](http://127.0.0.1:5178/?site=sydney) | 大洋洲，海港地标与邻近植物园 | 126 / 178 | 12.7% |
+
+![五地默认漫画渲染预览](evidence-generalization/five-sites/overview.jpg)
+
+五处已实际打开并生成三维视图，[浏览器检查](evidence-generalization/five-sites/browser-checks.json)及同目录原始截图保留记录。各地点的构建统计在 `docs/evidence-generalization/{地点ID}.json`，几何非有限值计数均为0。曼哈顿本次 Node 构建审计约93秒，首次加载较慢；这不是GPU帧率。传统屋顶、歌剧院贝壳曲面与海岸水面尚未完整建模，低层样本的高度大量依赖规则估算。
+
+选样时宏村的 OSM 建筑轮廓不足，改用束河。悉尼最初包含环形码头的较大范围触发 `Road grade constraints conflict`，最终收窄到歌剧院与邻近植物园；未修改道路规则来绕过冲突。此批地图通过官方小范围 Map API 获取，原始节点、道路及关系保留，来源URL、边界与时间记录在各文件 `metadata`；范围外成员缺失时，部分多边形关系不能闭合。可复现下载，例如：
+
+```powershell
+python scripts/fetch_osm.py --source map-api --bbox 26.9170,100.2010,26.9250,100.2110 --name "丽江 · 束河古镇" --output public/data/lijiang-shuhe.json --context
+```
+
+## 运行
+
+要求：Node.js 20.19+ 或 Node.js 22（本机验证版本 22.11.0）；重新下载数据时需要 Python 3。
+
+```powershell
+cd C:\myGit\beijing-city-ink
+npm ci
+npm run dev
+```
+
+打开 <http://127.0.0.1:5178/>。也可在 PowerShell 中运行 `./start.ps1`。
+
+领秀新硅谷 D 区及周边可直接打开 <http://127.0.0.1:5178/?site=lingxiu>，也可在左上角地点菜单选择。独立 OSM 样本覆盖 WGS84 南 40.0485、西 116.2965、北 40.0575、东 116.3095，沿用通用渲染规则与机位，不加载国贸的补充标注。D 区位置参照 [36 号楼](https://www.poi86.com/poi/amap2/118838995.html)与 [60 号楼](https://www.poi86.com/poi/amap2/118838997.html)的大地坐标核对；地图来源、获取时间及许可保存在 `public/data/beijing-lingxiu-d.json` 的 `metadata` 中。缺失的楼高、树木与立面细节仍由现有规则估算。
+
+主数据保存在 `public/data/beijing-cbd.json`，补充街道标注在 `public/data/street-details.json`，补充场地在 `public/data/landscape-details.json`，场地模板参数在 `public/data/landscape-profile.json`。首次安装依赖后，预览不需要外部网络、地图密钥或在线推理服务。没有使用卫星影像、街景纹理或外部三维模型；侧栏俯视图也是按矢量数据绘制。
+
+```powershell
+npm test          # 数据、建筑、街道、渲染接口与视角状态回归检查
+npm run build     # 生成 dist/
+npm run preview   # 预览生产构建；请先停止同端口的 dev 服务
+```
+
+该历史阶段记录为121项完整自动测试与生产构建通过；当前一期结果见本文开头。v0.2的历史截图和评分见 [对比验收报告](comparison-report.md)；依据见 [需求与评分约定](comparison-requirements.md)及[原项目证据研究](research-evidence.md)。构建仍会提示 Three.js 分包超过500kB，这是体积提示，不是失败。
+
+## v0.2 已实现
+
+- 北京国贸 CBD 的真实建筑轮廓、建筑分部、内庭院与道路；局部坐标单位为米。
+- 优先使用 OSM `height`，其次根据 `building:levels` 换算，缺失时采用用途/面积与固定随机种子估算。
+- 支持 `min_height` 和 `building:min_level`；避免完整建筑轮廓与其分部重复叠加。
+- 中国尊按真实 OSM 对象匹配，补充圆角、收腰扩顶、连续竖肋与顶部凹入结构，保留 528 米高度。央视总部按四个分部补充倾斜塔身和上部连接，保留空中部件的 161 米离地高度。界面明确标注这些为参数化形体近似。
+- 幕墙、住宅、商业带窗、低层四类稳定立面；入口雨棚、女儿墙、冠部横带、竖向构件、受轮廓和庭院约束的屋顶设备组。
+- 近景实例化窗框、窗台和部分住宅阳台；建筑主体和窗格着色器保留，细节按距离控制。
+- 沿道路与绿地补充树木，检查车道、建筑、庭院、重复道路和树间距；分层树冠、近景分枝、不同树形与距离 LOD。
+- 路缘、路灯、斑马线、信号灯及少量静态车辆和行人；斑马线与信号灯优先使用补充 OSM 标注，设施可独立关闭。
+- 颜色、法线/深度、对象分类离屏渲染与半分辨率近似 AO；自定义全屏着色器生成轮廓、网点和分类明暗。
+- 颜色离屏目标采用 4× MSAA，缓解高空细肋混叠；法线折角线在约 500–1500 米间衰减，减少远处碎线；相机近裁面随高度调整以改善深度精度。
+- 漫画、线稿、彩色、白模四种风格；外/内线、网点、实黑、AO、树冠明暗、远景淡化、太阳方位/高度与 FOV 可调。
+- 根据来源给建筑着色；点击建筑查看高度、推算方式、OSM ID 和原始对象链接。
+- 俯瞰、天际线、街道、顶部及五个细节机位；拖动、缩放、平移与地图定位；保存视角链接和参数 JSON。
+- PNG 导出（长边 2400 像素、附 OSM 署名）和 GLB 几何导出。
+
+## 数据范围与真实性
+
+- WGS84 包围框：南 39.9015、西 116.4490、北 39.9175、东 116.4720。
+- 约 2.0 × 1.8 公里，中心 39.9095, 116.4605。
+- 当前默认种子解析后：477 个建筑体块、785 个道路对象、5075 棵树。**当前样本树木全部是规则补充，不是 OSM 实测树点。**v0.6统一检查建筑、车行桥、人行桥与楼梯的植被净空。建筑体块不等同于现实中的独立楼栋数量，道路对象也不等同于街道条数。
+- 补充数据包含 215 个 OSM 街道节点；当前采用 85 个过街标注、29 个信号灯标注。设施几何、缺失的朝向/尺寸与部分布置仍有推断。
+- 高度来源：28 个 OSM 标注高度，267 个楼层换算，182 个规则估算。
+- 国贸三期 A 座 330 米、中国尊 528 米来自数据中的高度标签。央视部分几何保留了 `min_height=161` 的空中结构。
+- 完整请求、获取时间、服务地址与许可信息保存在数据文件 `metadata` 中。OSM 本身可能存在缺漏或过时信息。
+
+### 当前简化
+
+1. **平地**：尚未接入 DEM 高程，不能用于高差精确的场景。
+2. **地标近似**：中国尊收腰和央视倾斜连体已实现，但准确曲率、扭转、结构细部和真实幕墙仍简化；这些不是 OSM 原生完整曲面，也不是测绘精模。
+3. **推测细节**：窗格、入口、设备、阳台和树木并非照片重建，尚无完整凹窗洞口、临街/共墙判断与地区建筑库。屋顶主要按平顶处理；本样本也几乎没有屋顶形状标签。
+4. **有限 LOD 与街道模型**：主体全部保留，细节实例与树木按距离控制；没有全球瓦片流式加载和完整树木图片替身。道路宽度缺失时按车道/类别估计，车辆和行人为静态尺度参照，未重建真实交通组织和全部立交结构。
+5. **GLB**：导出体块、道路、树木和当前已生成的几何细节。漫画后处理、程序化窗格、玻璃反射与墙面纹理属于渲染器效果，不会变成 GLB 贴图。GLB 附来源信息，使用时仍需保留地图署名。
+6. **关系容错**：能拼接 multipolygon 外环/内环；完整分部的覆盖率检查是简化规则，不是精确布尔并集。复杂或不完整数据需要后续完善。
+7. **渲染**：AO 是有限采样的屏幕空间近似；中性光照通道同时记录落影量，直接光与环境光尚未分别输出。远景减噪会损失部分小细节，极细竖肋仍可能有采样误差。近区阴影精度有限，尚未做多设备 GPU 帧率验证。玻璃反光是示意天空场，不是真实邻楼反射。未实现原版完整夜景、笔触系统、远景地形及所有后期特效。
+8. **立体道路**：以layer×7m为起始名义高度，经连接、坡度、相对净空约束调整；78处共享节点断层已修复，生成28段楼梯。290条道路对象调整高程，包含66条原非桥机动车道路局部抬升；路基、桥台土体、真实高程与23条陡步道仍未解决，不能用于真实交通或无障碍评估。
+
+## 固定视角与版本对照
+
+主视角为「街区俯瞰、城市天际线、街道视角、正上方」。细节机位为「中国尊轮廓、央视空中连体、近看建筑立面、屋顶与街树、道路与行人」。FOV 滑块单位是视野角度，不是镜头毫米数。
+
+点击「保存视角」会把机位、目标点、画风、光照、开关和随机种子写入 URL；复制链接或刷新可复现，也可从侧栏导出参数 JSON。相机读数为局部米制坐标。「重估缺失高度」只改变缺少高度/层数的估算部分，已知高度和真实轮廓保持不变；相同输入与种子可稳定复现。
+
+打开 <http://127.0.0.1:5178/?baseline=1> 可切换到 v0.1 建筑/渲染实现，用相同当前数据、相机与 UI 做受控对照。它不等于完整复原旧网页的所有界面和数据状态。对比截图应保持机位、FOV、画面尺寸与光照一致。
+
+## 更新或换一块地图
+
+```powershell
+npm run data:fetch
+python scripts/fetch_osm.py --bbox 39.9015,116.4490,39.9175,116.4720 --name "北京 · 国贸 CBD"
+```
+
+脚本直接调用 Overpass API，只在下载并验证成功后覆盖主数据。默认使用两个公开实例作为顺序备用。请小范围请求，避免反复批量抓取。补充街道标注是独立的北京快照；换区时也要更新或移除该文件，并修改静态地点标题、细节机位和地标匹配规则。
+
+## 代码结构
+
+| 文件 | 作用 |
+| --- | --- |
+| `src/osm.js` | 经纬度投影、关系拼接、内环、楼高来源、道路裁切 |
+| `src/building-rules.js` | 立面家族、固定种子参数、地标匹配与设备约束 |
+| `src/landmarks.js` | 中国尊和央视的独立参数化形体 |
+| `src/city.js` | 批量建筑网格、立面着色、近景装饰及场景整合 |
+| `src/streetlife.js` | 植被避让、设施规划、实例化与 LOD |
+| `src/ink-renderer.js` | 多通道离屏渲染、AO、分类轮廓、网点与抗锯齿 |
+| `src/view-state.js` | 分享视角参数的校验、编码与解码 |
+| `src/main.js` | 相机、光源、界面、选取、状态恢复与导出 |
+| `src/baseline/` | v0.1 建筑与渲染对照实现 |
+| `scripts/fetch_osm.py` | 真实数据获取与来源记录 |
+| `test/` | 地理数据、建筑、街道、渲染接口和视角回归检查 |
+| `docs/` | 原版证据、需求、截图验收与剩余差距 |
+
+## 原项目是否开源
+
+截至 2026-10-29，本次检索未找到作者 MIYADAIKU / oyasumi-gamedev 的官方 Rokehan 开源仓库或开源许可证。GitHub 搜索中的若干同名项目与本产品无关；这不构成对今后发布情况的断言。
+
+作者当前的 [使用条款](https://oyasumi-gamedev.com/tools/terms/) 声明保留程序版权，限制程序/组件的提取和再分发；其页面可读取的 JavaScript 不等于开源许可。其引用的 OSM、Three.js 等第三方部分有各自许可。
+
+原版更像真实建筑的一项原因，是人工建筑知识被编码为地区与地标规则。研究中未发现卫星影像参与其核心生成链的证据；这不排除作者编写规则时人工参考建筑照片。具体依据和限制见研究文档。
+
+## 来源与许可
+
+- 本项目原创程序：MIT，见 `LICENSE`。
+- 地图数据库：© OpenStreetMap contributors，ODbL 1.0，见 `DATA_LICENSE.md`。
+- Three.js：MIT；Vite：MIT。依赖的许可证保留在安装包中。
+- [OSM Simple 3D Buildings](https://wiki.openstreetmap.org/wiki/Simple_3D_Buildings)
+- [Overpass QL](https://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL)
+- [Three.js](https://threejs.org/)
+
+本项目与 Location Scout / MIYADAIKU 无隶属或授权关系。

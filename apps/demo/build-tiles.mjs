@@ -22,7 +22,9 @@ const SAMPLES = {
   'manhattan-financial': { input: 'manhattan-financial' },
   'shanghai-lujiazui': { input: 'shanghai-lujiazui' },
 };
-const names = process.argv.slice(2).length ? process.argv.slice(2) : ['beijing-cbd-grow-9', 'kyoto-gion-grow-9'];
+const names = process.argv.slice(2).length
+  ? process.argv.slice(2)
+  : ['beijing-cbd-grow-9', 'kyoto-gion-grow-9', 'manhattan-financial'];
 for (const name of names) {
   const s = SAMPLES[name];
   if (!s) throw new Error(`Unknown sample ${name}; choose from ${Object.keys(SAMPLES).join(', ')}`);
