@@ -98,3 +98,40 @@ test('extends merges roles per field, concatenates rules and sub-roles fall back
   assert.equal(roleStyle(r, 'road.motorway').color, BUILTIN_STYLE_SPECS.light.roles.road.color);
   assert.equal(roleStyle(r, 'road.marking').color, BUILTIN_STYLE_SPECS.light.roles['road.marking'].color);
 });
+
+test('AC707/AC708: ink looks come from @city-ink/styles-ink; createMap code never imports it', async () => {
+  const { readdir, readFile } = await import('node:fs/promises');
+  const path = await import('node:path');
+  const dir = new URL('../packages/map/dist/', import.meta.url).pathname;
+  const files = [];
+  const walk = async (d) => {
+    for (const e of await readdir(d, { withFileTypes: true }))
+      if (e.isDirectory()) await walk(path.join(d, e.name));
+      else if (e.name.endsWith('.js')) files.push(path.join(d, e.name));
+  };
+  await walk(dir);
+  for (const f of files) {
+    const text = await readFile(f, 'utf8');
+    assert.doesNotMatch(text, /(from|import\()\s*['"][^'"]*(styles-ink|ink-renderer|halftone)/, f);
+  }
+  const { resolveStyle } = await import('../packages/map/dist/styles.js');
+  const ink = await import('../packages/styles-ink/dist/index.js');
+  assert.equal(resolveStyle(ink.comic).pack.id, 'comic');
+  assert.throws(
+    () => resolveStyle(ink.comic, true),
+    (e) => e.code === 'STYLE_NOT_HOST_COMPATIBLE',
+  );
+  assert.equal(resolveStyle(ink.cel, true).pack.id, 'external-cel');
+  const { officialStyles } = await import('../packages/styles/index.js');
+  assert.throws(
+    () => resolveStyle(officialStyles[0]),
+    (e) => e.code === 'STYLE_UNSUPPORTED',
+  );
+  assert.throws(
+    () => resolveStyle({ schemaVersion: 2, id: 'x', roles: { wall: { color: 'red' } } }),
+    (e) => e.code === 'STYLE_INVALID' && e.errors[0].path === '$.roles.wall.color',
+  );
+  // phase-one ids keep working in the root SDK registry
+  const root = await import('../src/styles/index.js');
+  for (const id of ['comic', 'line', 'color', 'white']) assert.ok(root.getStyle(id), id);
+});

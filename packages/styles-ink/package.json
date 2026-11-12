@@ -1,7 +1,7 @@
 {
   "name": "@city-ink/styles-ink",
   "version": "0.0.0",
-  "description": "Optional comic, line and cel style packs for City Ink",
+  "description": "Optional comic, line, colour, clay and cel looks for City Ink, with the phase-one ink post-processing for createMap",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,

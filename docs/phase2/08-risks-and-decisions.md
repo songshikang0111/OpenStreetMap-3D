@@ -130,3 +130,9 @@
 - 理由：保留一期配色是默认观感的主要来源；接触暗化成本低且不依赖后处理，可用于移动端与 MapLibre 图层模式。
   6. StyleSpec 的 JSON Schema 放在 `schemas/style-spec.schema.json`。09 中 WP-G 写入范围列出的 `schemas/style.schema.json` 是一期风格包元数据的公共契约（一期证据记录了它的哈希），保持不变。
 - 影响的规格和工作包：05 第 4 节（字段补充，`schemas/style-spec.schema.json`）；06 的绘制调用预算按"颜色通道"统计时需扣除阴影通道（WP-I）。
+
+### E9 漫画等风格在瓦片模式中的实现位置（2026-11-13，WP-G 任务 G6）
+- 问题：05 第 7 节要求一期 `comic`、`line`、`color`、`white` 和 `cel` 迁入 `styles-ink`，根包"内部转为依赖 styles-ink"。但 WP-A 的包清单检查（`scripts/phase2-pack-check.mjs`，AC108）禁止根包携带任何二期工作区文件，根包无法依赖 `packages/styles-ink/dist`；而一期风格描述符（`createOfficialStyle`）和一期 `InkRenderer` 本来就随根包发布。
+- 选择：风格描述符（每个角色的材质选择）仍在 `@city-ink/styles`（根包已携带，一期原 ID 不变，AC707）；`@city-ink/styles-ink` 是瓦片模式的公开入口，导出 `comic`、`line`、`color`、`white`、`cel`，为前四者补上瓦片管线：直接使用一期 `src/ink-renderer.js`（描边、网点、实黑、AO、FXAA），ID 通道改读瓦片的 `renderId`。`createMap` 新增对 `supportsTiles: true` 风格包的 `createPipeline` 支持（整帧替代 `renderer.render`）和 `onTileLoad/onTileUnload` 钩子；`createMap` 本身不引用 `styles-ink`（AC708）。前四者声明 `hostCompatible: false`，在 MapLibre 图层中设置会抛出 `STYLE_NOT_HOST_COMPATIBLE`；`cel` 只换材质，可用于图层模式。
+- 限制：墨线各通道使用覆盖材质，`setFeatureState` 的隐藏和压平只作用于颜色通道；开启管线后 `getStats().drawCalls` 只反映最后一个全屏通道。
+- 影响的规格和工作包：05 第 7 节（物理位置与原文不同，接口一致）；WP-J 发布 `styles-ink` 时同样需要处理对 `src/` 的相对引用（同 E4）。

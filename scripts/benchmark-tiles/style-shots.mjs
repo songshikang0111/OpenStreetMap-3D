@@ -64,7 +64,7 @@ for (const sample of samples) {
     continue;
   }
   for (const style of styles) {
-    const query = `?tiles=${encodeURIComponent(s.tiles)}&style=${style}${filter ? `&filter=${filter}` : ''}&hud=0`;
+    const query = `?tiles=${encodeURIComponent(s.tiles)}&style=${style}${filter ? `&filter=${filter}` : ''}&hud=0&panel=0`;
     const page = await openPage(dist, `index.html${query}`);
     try {
       await page.waitFor('!!globalThis.cityMap', 30000);

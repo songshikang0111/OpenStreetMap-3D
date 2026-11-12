@@ -37,7 +37,7 @@ import { WorkerPool } from './pool.js';
 import type { WorkerLike } from './pool.js';
 import type { FeatureRecord, WorkerResponse } from './worker-core.js';
 import { MaterialLibrary, buildTileObject } from './tile-object.js';
-import type { TileObject, TileStylePack } from './tile-object.js';
+import type { TileObject, TilePipeline, TileStylePack } from './tile-object.js';
 import { Controls } from './controls.js';
 import { Picker } from './picking/picker.js';
 import { EMPTY_RULES, stateUniforms } from './picking/feature-state.js';
@@ -249,6 +249,7 @@ export class CityMapImpl implements CityMap {
   /** Receives building shadows where no tile ground polygon covers the base plane. */
   private readonly shadowCatcher: Mesh;
   private spec: ResolvedStyleSpec | null = null;
+  private pipeline: TilePipeline | null = null;
   private pack: TileStylePack | null = null;
   private readonly sun = new DirectionalLight('#ffffff', 1.2);
   private readonly hemi = new HemisphereLight('#ffffff', '#d8d4c7', 0.9);
@@ -319,6 +320,9 @@ export class CityMapImpl implements CityMap {
     this.ground.renderOrder = -1;
     this.shadowCatcher = new Mesh(this.ground.geometry, new ShadowMaterial({ color: '#000000', opacity: 0.22 }));
     this.shadowCatcher.receiveShadow = true;
+    // Ink pipelines read these as paper-coloured ground (phase-one class 5).
+    this.ground.userData.inkClass = this.shadowCatcher.userData.inkClass = 5;
+    this.ground.name = 'ground plane';
     this.shadowCatcher.renderOrder = -1;
     this.sun.position.set(-0.5, 0.8, -0.3);
     // Shadows (06 section 3 shadowQuality): one sun shadow map fitted around the camera target every frame.
@@ -478,6 +482,8 @@ export class CityMapImpl implements CityMap {
     for (const o of this.overlays.values()) o.built.dispose();
     this.overlays.clear();
     this.picker.dispose();
+    this.pipeline?.dispose();
+    this.pipeline = null;
     this.materials.dispose();
     this.ground.geometry.dispose();
     (this.ground.material as MeshBasicMaterial).dispose();
@@ -962,6 +968,22 @@ export class CityMapImpl implements CityMap {
     stateUniforms.highlightColor.value.set(spec.featureState.highlight.emissive);
     stateUniforms.highlightIntensity.value = spec.featureState.highlight.emissiveIntensity;
     this.materials.restyle(spec, pack);
+    this.pipeline?.dispose();
+    this.pipeline = null;
+    if (pack?.createPipeline && !this.hosted) {
+      this.pipeline = pack.createPipeline({
+        renderer: this.renderer,
+        scene: this.scene,
+        camera: this.transform.camera,
+        shared: this.materials.facade,
+        parameters: this.materials.packParameters(),
+      });
+      const size = this.renderer.getDrawingBufferSize(new Vector2());
+      this.pipeline.resize(size.x, size.y);
+    }
+    // With a pipeline the base plane itself receives the sun shadow in the ink light pass.
+    this.ground.receiveShadow = Boolean(this.pipeline);
+    if (this.pipeline) this.shadowCatcher.visible = false;
     this.dirty = true;
     this.fire({ type: 'styledata' });
   }
@@ -1081,6 +1103,8 @@ export class CityMapImpl implements CityMap {
   private unload(entry: TileEntry) {
     this.cancel(entry);
     if (entry.object) {
+      this.pack?.onTileUnload?.({ tile: entry.key, group: entry.object.group });
+      this.pipeline?.onTileUnload?.({ tile: entry.key, group: entry.object.group });
       entry.object.group.removeFromParent();
       entry.object.dispose();
       entry.object = null;
@@ -1118,6 +1142,8 @@ export class CityMapImpl implements CityMap {
       entry.state = 'ready';
       entry.retries = 0;
       this.placeTile(entry);
+      this.pack?.onTileLoad?.({ tile: entry.key, group: object.group, features: entry.features });
+      this.pipeline?.onTileLoad?.({ tile: entry.key, group: object.group });
       this.dirty = true;
       this.fire({ type: 'tileload', tile: entry.key });
       spent = performance.now() - start;
@@ -1330,6 +1356,10 @@ export class CityMapImpl implements CityMap {
     const h = Math.max(1, Math.round(r.height));
     this.renderer.setSize(w, h, false);
     this.transform.resize(w, h);
+    if (this.pipeline) {
+      const size = this.renderer.getDrawingBufferSize(new Vector2());
+      this.pipeline.resize(size.x, size.y);
+    }
     this.dirty = true;
   }
 
@@ -1398,7 +1428,8 @@ export class CityMapImpl implements CityMap {
     this.materials.facade.projectionScale.value = size.y / (2 * Math.tan((t.fov * Math.PI) / 360));
     for (const { built } of this.overlays.values()) built.update(size, this.renderer.getPixelRatio());
     this.scene.updateMatrixWorld();
-    this.renderer.render(this.scene, t.camera);
+    if (this.pipeline) this.pipeline.render();
+    else this.renderer.render(this.scene, t.camera);
     this.frame++;
     if (this.lastFrameTime) {
       this.frameIntervals.push(time - this.lastFrameTime);

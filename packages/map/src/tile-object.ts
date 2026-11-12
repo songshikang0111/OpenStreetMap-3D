@@ -45,7 +45,25 @@ export interface TileStylePack {
     sourceMaterial?: Material;
     services: Record<string, unknown>;
   }): Material;
+  /** Facade materials keep the phase-one ink signal in alpha (packs with an ink post-processing pipeline). */
+  inkAlpha?: boolean;
+  createPipeline?(context: {
+    renderer: unknown;
+    scene: unknown;
+    camera: unknown;
+    shared: Record<string, { value: unknown }>;
+    parameters: Record<string, unknown>;
+  }): TilePipeline;
   onTileLoad?(event: { tile: string; group: Group; features: unknown[] }): void;
+  onTileUnload?(event: { tile: string; group: Group }): void;
+}
+
+/** A pack's frame renderer (post-processing); replaces renderer.render for the whole frame. */
+export interface TilePipeline {
+  render(): void;
+  resize(width: number, height: number): void;
+  dispose(): void;
+  onTileLoad?(event: { tile: string; group: Group }): void;
   onTileUnload?(event: { tile: string; group: Group }): void;
 }
 
@@ -118,7 +136,7 @@ export class MaterialLibrary {
         Object.entries(this.pack.parametersSchema?.properties ?? {}).map(([k, v]) => [k, v.default]),
       );
       const services = {
-        createFacadeMaterial: () => this.facadeMaterial(),
+        createFacadeMaterial: () => this.facadeMaterial(Boolean(this.pack?.inkAlpha)),
         createFoliageMaterial: (source?: Material) =>
           new MeshStandardMaterial({ color: (source as MeshStandardMaterial)?.color ?? '#8fbf7a', roughness: 0.9 }),
       };
@@ -136,15 +154,22 @@ export class MaterialLibrary {
     return new MeshStandardMaterial({ vertexColors: role !== 'tree.crown' && role !== 'tree.trunk' });
   }
 
-  private facadeMaterial(): MeshStandardMaterial {
+  /** Default parameter values of the current pack. */
+  packParameters(): Record<string, unknown> {
+    return Object.fromEntries(
+      Object.entries(this.pack?.parametersSchema?.properties ?? {}).map(([k, v]) => [k, v.default]),
+    );
+  }
+
+  private facadeMaterial(inkAlpha = false): MeshStandardMaterial {
     const m = new MeshStandardMaterial({ vertexColors: true, roughness: 0.76, metalness: 0.04 });
     const withDefaults = m as unknown as { defaultAttributeValues: Record<string, unknown> };
     withDefaults.defaultAttributeValues = { ...withDefaults.defaultAttributeValues, ...facadeAttributeDefaults };
     m.onBeforeCompile = (shader) => {
       installFacadeShader(shader, this.facade);
-      extendFacadeShader(shader, this.extras);
+      if (!inkAlpha) extendFacadeShader(shader, this.extras);
     };
-    m.customProgramCacheKey = () => 'city-tile-facade-v1';
+    m.customProgramCacheKey = () => (inkAlpha ? 'city-tile-facade-ink-v1' : 'city-tile-facade-v1');
     return m;
   }
 
@@ -255,6 +280,17 @@ function geometryOf(batch: MeshBatch): BufferGeometry {
   return g;
 }
 
+/** Phase-one ink classes: 1 building, 2 tree, 3 road (3.2 walkway, 3.5 paint), 4 structure, 5 ground, 6 water. */
+function inkClassOf(layer: string, role: string): number {
+  if (layer === 'building' || layer === 'landmark') return 1;
+  if (role === 'road.marking') return 3.5;
+  if (role.startsWith('road')) return 3;
+  if (role === 'ground.pavement' || role === 'ground.plaza') return 3.2;
+  if (role === 'water') return 6;
+  if (role.startsWith('ground')) return 5;
+  return 4;
+}
+
 const crownGeometry = () => new IcosahedronGeometry(1, 1);
 const trunkGeometry = () => new CylinderGeometry(0.12, 0.18, 1, 6, 1).translate(0, 0.5, 0);
 
@@ -289,6 +325,13 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
     const geometry = geometryOf(batch);
     disposables.push(geometry);
     const mesh = new Mesh(geometry);
+    mesh.name = `${batch.layer}:${batch.role}`;
+    // Semantics read by code style packs and the ink pipeline (phase-one conventions).
+    if (FACADE_ROLE.test(batch.role)) {
+      mesh.userData.city = { shader: 'facade-v6' };
+      mesh.userData.generatedFacade = true;
+    }
+    mesh.userData.inkClass = inkClassOf(batch.layer, batch.role);
     const material = materials.acquire(batch.role, state, mesh);
     mesh.material = material;
     disposables.push({ dispose: () => materials.release(mesh.material as Material) });
@@ -309,6 +352,9 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
   const trees = generated.trees;
   if (trees.count) {
     const crowns = new InstancedMesh(crownGeometry(), undefined, trees.count);
+    crowns.name = 'tree crowns';
+    crowns.userData.inkClass = 2;
+    crowns.userData.city = { shader: 'foliage-v1' };
     const trunks = new InstancedMesh(trunkGeometry(), undefined, trees.count);
     crowns.material = materials.acquire('tree.crown', state, crowns);
     trunks.material = materials.acquire('tree.trunk', state, trunks);

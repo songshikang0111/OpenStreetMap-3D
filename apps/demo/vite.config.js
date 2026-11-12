@@ -11,6 +11,7 @@ export default defineConfig({
     alias: {
       '@city-ink/map/maplibre': fileURLToPath(new URL('../../packages/map/dist/maplibre/index.js', import.meta.url)),
       '@city-ink/map': fileURLToPath(new URL('../../packages/map/dist/index.js', import.meta.url)),
+      '@city-ink/styles-ink': fileURLToPath(new URL('../../packages/styles-ink/dist/index.js', import.meta.url)),
     },
   },
   worker: { format: 'es' },
