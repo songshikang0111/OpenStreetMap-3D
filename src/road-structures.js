@@ -71,6 +71,45 @@ export function supportClearance(point, radius, top, data, segments) {
   return null;
 }
 
+/** Uniform grid over item bounding boxes; queries return items in their original order (results stay identical). */
+class BoxGrid {
+  constructor(items, boxOf, size = 64) {
+    this.items = items;
+    this.size = size;
+    this.cells = new Map();
+    items.forEach((item, i) => {
+      const [x0, z0, x1, z1] = boxOf(item);
+      for (let x = Math.floor(x0 / size); x <= Math.floor(x1 / size); x++)
+        for (let z = Math.floor(z0 / size); z <= Math.floor(z1 / size); z++) {
+          const k = x * 1048576 + z;
+          let list = this.cells.get(k);
+          if (!list) this.cells.set(k, (list = []));
+          list.push(i);
+        }
+    });
+  }
+  query(x0, z0, x1, z1) {
+    const found = new Set();
+    for (let x = Math.floor(x0 / this.size); x <= Math.floor(x1 / this.size); x++)
+      for (let z = Math.floor(z0 / this.size); z <= Math.floor(z1 / this.size); z++)
+        for (const i of this.cells.get(x * 1048576 + z) || []) found.add(i);
+    return [...found].sort((a, b) => a - b).map((i) => this.items[i]);
+  }
+}
+const ringBox = (ring) => {
+  let x0 = Infinity,
+    z0 = Infinity,
+    x1 = -Infinity,
+    z1 = -Infinity;
+  for (const [x, z] of ring) {
+    if (x < x0) x0 = x;
+    if (z < z0) z0 = z;
+    if (x > x1) x1 = x;
+    if (z > z1) z1 = z;
+  }
+  return [x0, z0, x1, z1];
+};
+
 export function planRoadStructures(data, roadPlan) {
   const b = data.bounds || [-1e8, -1e8, 1e8, 1e8],
     bridges = roadPlan.segments.filter(
@@ -79,6 +118,15 @@ export function planRoadStructures(data, roadPlan) {
   const deckSurfaces = roadPlan.surfaces.filter(
     (s) => !s.stairFlight && s.kind !== 'paving' && (s.bridge || Math.max(s.yA ?? s.y, s.yB ?? s.y) > 0.65),
   );
+  // Spatial indexes: whole-city inputs have thousands of decks, segments and buildings (results are unchanged).
+  const deckGrid = new BoxGrid(deckSurfaces, (d) => d.bounds);
+  const segmentGrid = new BoxGrid(roadPlan.segments, (s) => [
+    Math.min(s.a[0], s.b[0]),
+    Math.min(s.a[1], s.b[1]),
+    Math.max(s.a[0], s.b[0]),
+    Math.max(s.a[1], s.b[1]),
+  ]);
+  const buildingGrid = new BoxGrid(data.buildings || [], (b) => ringBox(b.outer));
   const segmentsByRoad = new Map();
   for (const s of bridges) {
     if (!segmentsByRoad.has(s.road.id)) segmentsByRoad.set(s.road.id, []);
@@ -118,7 +166,13 @@ export function planRoadStructures(data, roadPlan) {
         // Suppress barriers inside same-level junctions/overlapping bridge decks.
         const probeA = at(s, start + 0.01, side * (s.width / 2 + 0.12)),
           probeB = at(s, end - 0.01, side * (s.width / 2 + 0.12));
-        const interior = deckSurfaces.some(
+        const near = deckGrid.query(
+          Math.min(probeA[0], probeB[0]) - 0.5,
+          Math.min(probeA[1], probeB[1]) - 0.5,
+          Math.max(probeA[0], probeB[0]) + 0.5,
+          Math.max(probeA[1], probeB[1]) + 0.5,
+        );
+        const interior = near.some(
           (d) => Math.abs(roadHeightAt(d, probeA) - roadHeightAt(s, probeA)) < 0.12 && entersDeck(probeA, probeB, d),
         );
         if (interior) {
@@ -155,14 +209,23 @@ export function planRoadStructures(data, roadPlan) {
         reject('near-existing-support');
         continue;
       }
+      // Candidates near the support only: segment half-widths are at most 25 m, clearances a few metres.
+      const reach = 30 + capRadius;
+      const nearSegments = segmentGrid.query(point[0] - reach, point[1] - reach, point[0] + reach, point[1] + reach);
+      const nearBuildings = buildingGrid.query(
+        point[0] - capRadius - 1,
+        point[1] - capRadius - 1,
+        point[0] + capRadius + 1,
+        point[1] + capRadius + 1,
+      );
       const blocked =
-        supportClearance(point, radius, top, data, roadPlan.segments) ||
+        supportClearance(point, radius, top, { buildings: nearBuildings, water: data.water }, nearSegments) ||
         supportClearance(
           point,
           capRadius,
           deckY - thickness(s),
-          { buildings: (data.buildings || []).filter((b) => b.height > top), water: [] },
-          roadPlan.segments.filter((lower) => roadHeightAt(lower, point) + 4.8 > top),
+          { buildings: nearBuildings.filter((b) => b.height > top), water: [] },
+          nearSegments.filter((lower) => roadHeightAt(lower, point) + 4.8 > top),
         );
       if (blocked) {
         reject(blocked);
