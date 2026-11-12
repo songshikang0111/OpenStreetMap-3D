@@ -1,0 +1,117 @@
+{
+  "before": {
+    "date": "2026-11-12T18:25:31.951Z",
+    "status": "simulated: not a user-designated reference device (decision D5 pending)",
+    "environment": {
+      "browser": "Chrome/150.0.7871.114",
+      "gpu": "ANGLE (AMD, AMD Radeon 780M Graphics (radeonsi phoenix ACO), OpenGL ES 3.2)",
+      "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+      "cores": 16,
+      "platform": "linux 7.2.11-200.fc44.x86_64",
+      "viewport": [
+        1280,
+        720
+      ],
+      "devicePixelRatio": 1,
+      "rendererPixelRatio": 1,
+      "quality": "balanced",
+      "headless": true
+    },
+    "path": "scripts/benchmark-tiles/paths/kyoto-gion-grow-9.json",
+    "durationMs": 60094,
+    "frameIntervalMs": {
+      "p50": 16.69999999999709,
+      "p95": 16.799999999995634,
+      "p99": 16.80000000000291,
+      "max": 116.60000000000036
+    },
+    "longFramesPerMinute": 1,
+    "firstUsableMs": 461,
+    "maxDrawCalls": 140,
+    "maxTriangles": 1584051,
+    "workerDecodeGenerateMs": {
+      "count": 27,
+      "p50": 308.5,
+      "p95": 601,
+      "max": 632
+    },
+    "sdkCommit": "b210872a824eb5a9e83017f13865c71488927c1e"
+  },
+  "after": {
+    "date": "2026-11-12T18:24:11.967Z",
+    "status": "simulated: not a user-designated reference device (decision D5 pending)",
+    "environment": {
+      "browser": "Chrome/150.0.7871.114",
+      "gpu": "ANGLE (AMD, AMD Radeon 780M Graphics (radeonsi phoenix ACO), OpenGL ES 3.2)",
+      "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+      "cores": 16,
+      "platform": "linux 7.2.11-200.fc44.x86_64",
+      "viewport": [
+        1280,
+        720
+      ],
+      "devicePixelRatio": 1,
+      "rendererPixelRatio": 1,
+      "quality": "balanced",
+      "headless": true
+    },
+    "path": "scripts/benchmark-tiles/paths/kyoto-gion-grow-9.json",
+    "durationMs": 60094,
+    "frameIntervalMs": {
+      "p50": 16.69999999999709,
+      "p95": 16.700000000004366,
+      "p99": 16.80000000000291,
+      "max": 133.29999999999927
+    },
+    "longFramesPerMinute": 1,
+    "firstUsableMs": 449,
+    "maxDrawCalls": 140,
+    "maxTriangles": 1531329,
+    "workerDecodeGenerateMs": {
+      "count": 27,
+      "p50": 230.5,
+      "p95": 469,
+      "max": 518.8999999994412
+    },
+    "sdkCommit": "1ea2cc7b98eda01babb73684efeb553eb131b4b1"
+  },
+  "nodeAfter": {
+    "tileset": "kyoto-gion-grow-9",
+    "tiles": 6,
+    "p50": 122.1,
+    "p95": 222.9,
+    "max": 222.9,
+    "msByLayerTotal": {
+      "building": 430,
+      "green": 1,
+      "ground": 18,
+      "landscape": 1,
+      "road": 0,
+      "structure": 128,
+      "tree": 0,
+      "water": 0,
+      "detail": 2
+    },
+    "slowest": [
+      {
+        "tile": "16/57484/25957.c3t",
+        "ms": 222.94152199999996,
+        "buildings": 1125,
+        "triangles": 236378
+      },
+      {
+        "tile": "16/57485/25957.c3t",
+        "ms": 191.22361699999988,
+        "buildings": 1097,
+        "triangles": 203145
+      },
+      {
+        "tile": "16/57485/25958.c3t",
+        "ms": 122.0949270000001,
+        "buildings": 971,
+        "triangles": 79369
+      }
+    ],
+    "node": "v24.18.0"
+  }
+}
