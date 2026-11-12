@@ -29,3 +29,9 @@ jobs:
         run: npm pack --ignore-scripts --dry-run
       - name: Workspace package file lists
         run: node scripts/phase2-pack-check.mjs
+      - name: Static performance budget (tile draw calls and sizes, map bundle size)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          node apps/demo/build-tiles.mjs beijing-cbd-grow-9 kyoto-gion-grow-9
+          npm run build:map-bundle
+          npm run check:static-budget
