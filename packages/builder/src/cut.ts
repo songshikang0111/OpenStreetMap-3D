@@ -224,10 +224,11 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
       const xs = grid.map((g) => g[0]),
         ys = grid.map((g) => g[1]);
       const span = 2 ** e;
-      const tx0 = Math.floor(Math.min(...xs) / span),
-        tx1 = Math.floor(Math.max(...xs) / span),
-        ty0 = Math.floor(Math.min(...ys) / span),
-        ty1 = Math.floor(Math.max(...ys) / span);
+      // Loops, not Math.min(...xs): large land-use multipolygons exceed the call stack (whole-city builds).
+      const tx0 = Math.floor(minOf(xs) / span),
+        tx1 = Math.floor(maxOf(xs) / span),
+        ty0 = Math.floor(minOf(ys) / span),
+        ty1 = Math.floor(maxOf(ys) / span);
       for (let ty = ty0; ty <= ty1; ty++)
         for (let tx = tx0; tx <= tx1; tx++) {
           const id = { z, x: tx, y: ty };
@@ -434,7 +435,7 @@ function addBuildingContext(tiles: Map<string, TileInput>, records: PlanRecord[]
     return {
       r,
       owner: tileKey(lngLatToTile(r.anchor[0], r.anchor[1], z)),
-      box: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)] as Rect,
+      box: [minOf(xs), minOf(ys), maxOf(xs), maxOf(ys)] as Rect,
     };
   });
   const bucket = 2 ** (e - 3);
@@ -539,4 +540,15 @@ function appendLandmark(t: TileInput, r: PlanRecord, project: Phase1Data['projec
       indexCount: m.index.length,
     });
   }
+}
+
+function minOf(values: number[]): number {
+  let m = Infinity;
+  for (const v of values) if (v < m) m = v;
+  return m;
+}
+function maxOf(values: number[]): number {
+  let m = -Infinity;
+  for (const v of values) if (v > m) m = v;
+  return m;
 }

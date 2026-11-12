@@ -9,13 +9,13 @@ import type { Diagnostic } from '@city-ink/tiles';
 
 export const TILES_HELP = `city tiles — build and check static 3D city tiles
 
-  city tiles build (--input file.json | --project dir) --output dir [--bbox w,s,e,n] [--resume]
+  city tiles build (--input file.json|city.osm.pbf | --project dir) --output dir [--bbox w,s,e,n] [--resume]
                    [--seed n] [--config options.json] [--concurrency n] [--cell-zoom n] [--json]
   city tiles validate <dir> [--json]
   city tiles inspect <dir> --tile z/x/y [--json]
   city tiles serve <dir> [--port 4181] [--json]
 
-Input: OSM JSON (Overpass / OSM Map) or a phase-one project. PBF input and \`pack\` arrive in M3.
+Input: OSM JSON (Overpass / OSM Map), an .osm.pbf extract (<= 1 GB, build area <= 5,000 km2) or a phase-one project.
 Options file (--config): {"inferRoofs": false, "ruleTrees": true, "details": false, "landscape": false}. Output is ODbL data; keep the attribution.`;
 
 export interface TilesCLIResult {
