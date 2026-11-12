@@ -28,16 +28,53 @@ export interface WriterLike {
   surfaces: number[];
 }
 
+/** A growable typed array: amortised appends without number[] boxing or GC pressure (decision E5 follow-up). */
+class Grow<T extends Float32Array | Uint32Array> {
+  data: T;
+  length = 0;
+  constructor(
+    private readonly make: (n: number) => T,
+    capacity = 256,
+  ) {
+    this.data = make(capacity);
+  }
+  reserve(extra: number) {
+    const need = this.length + extra;
+    if (need <= this.data.length) return;
+    let cap = this.data.length * 2;
+    while (cap < need) cap *= 2;
+    const next = this.make(cap);
+    next.set(this.data.subarray(0, this.length));
+    this.data = next;
+  }
+  push3(a: number, b: number, c: number) {
+    this.reserve(3);
+    const d = this.data,
+      n = this.length;
+    d[n] = a;
+    d[n + 1] = b;
+    d[n + 2] = c;
+    this.length = n + 3;
+  }
+  push(v: number) {
+    this.reserve(1);
+    this.data[this.length++] = v;
+  }
+  view(): T {
+    return this.data.subarray(0, this.length) as T;
+  }
+}
+const f32 = (n: number) => new Float32Array(n);
+const u32 = (n: number) => new Uint32Array(n);
+
 export class BatchBuilder {
-  readonly position: number[] = [];
-  readonly normal: number[] = [];
-  readonly color: number[] = [];
-  readonly renderId: number[] = [];
-  readonly aFacade: number[] = [];
-  readonly aStyle: number[] = [];
-  readonly aLayout: number[] = [];
-  readonly aSurface: number[] = [];
-  readonly index: number[] = [];
+  private readonly pos = new Grow(f32);
+  private readonly nor = new Grow(f32);
+  private readonly col = new Grow(f32);
+  private readonly rid = new Grow(f32);
+  private readonly idx = new Grow(u32);
+  /** Vertices written through vertex() (before writer runs). */
+  private own = 0;
   hasFacade = false;
   constructor(
     readonly layer: string,
@@ -50,44 +87,47 @@ export class BatchBuilder {
   private runVertices = 0;
 
   get vertexCount(): number {
-    return this.position.length / 3 + this.runVertices;
+    return this.own + this.runVertices;
   }
+
+  /** Index buffer appender (indexed batches). */
+  readonly index = { push: (i: number) => this.idx.push(i) };
 
   addWriterRun(writer: WriterLike, start: number, count: number, renderId: number, yOffset: number) {
     if (this.indexed) throw new Error('Writer runs require a non-indexed batch.');
+    if (this.own) throw new Error('Writer runs must precede direct vertices in a facade batch.');
     this.hasFacade = true;
     this.runs.push({ writer, start, count, renderId, yOffset });
     this.runVertices += count;
   }
 
   vertex(p: ArrayLike<number>, n: ArrayLike<number>, c: ArrayLike<number>, renderId: number): number {
-    this.position.push(p[0]!, p[1]!, p[2]!);
-    this.normal.push(n[0]!, n[1]!, n[2]!);
-    this.color.push(c[0]!, c[1]!, c[2]!);
-    this.renderId.push(renderId);
-    if (this.hasFacade) {
-      this.aFacade.push(0, 0, 0, 0);
-      this.aStyle.push(0, 0);
-      this.aLayout.push(0, 0, 0, 0);
-      this.aSurface.push(0, 1);
-    }
-    return this.vertexCount - 1;
+    if (this.hasFacade) throw new Error('Direct vertices are not supported in a facade batch.');
+    this.pos.push3(p[0]!, p[1]!, p[2]!);
+    this.nor.push3(n[0]!, n[1]!, n[2]!);
+    this.col.push3(c[0]!, c[1]!, c[2]!);
+    this.rid.push(renderId);
+    return this.own++;
   }
 
   triangle(a: number, b: number, c: number) {
-    this.index.push(a, b, c);
+    this.idx.push3(a, b, c);
   }
 
   build(): MeshBatch {
     const n = this.vertexCount;
-    const position = new Float32Array(n * 3);
-    const normal = new Float32Array(n * 3);
-    const color = new Float32Array(n * 3);
-    const renderId = new Float32Array(n);
-    position.set(this.position);
-    normal.set(this.normal);
-    color.set(this.color);
-    renderId.set(this.renderId);
+    let position: Float32Array, normal: Float32Array, color: Float32Array, renderId: Float32Array;
+    if (!this.runs.length) {
+      position = this.pos.view().slice();
+      normal = this.nor.view().slice();
+      color = this.col.view().slice();
+      renderId = this.rid.view().slice();
+    } else {
+      position = new Float32Array(n * 3);
+      normal = new Float32Array(n * 3);
+      color = new Float32Array(n * 3);
+      renderId = new Float32Array(n);
+    }
     const facade = this.hasFacade
       ? {
           aFacade: new Float32Array(n * 4),
@@ -96,13 +136,7 @@ export class BatchBuilder {
           aSurface: new Float32Array(n * 2),
         }
       : null;
-    if (facade) {
-      facade.aFacade.set(this.aFacade);
-      facade.aStyle.set(this.aStyle);
-      facade.aLayout.set(this.aLayout);
-      facade.aSurface.set(this.aSurface);
-    }
-    let v = this.position.length / 3;
+    let v = 0;
     for (const run of this.runs) {
       const w = run.writer;
       for (let i = run.start, end = run.start + run.count; i < end; i++, v++) {
@@ -151,7 +185,7 @@ export class BatchBuilder {
       color,
       renderId,
       facade,
-      index: this.indexed ? new Uint32Array(this.index) : null,
+      index: this.indexed ? this.idx.view().slice() : null,
     };
   }
 }

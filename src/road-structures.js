@@ -204,6 +204,13 @@ export function planRoadStructures(data, roadPlan) {
   return { decks, rails, piers, stats };
 }
 
+const colorCache = new Map();
+function cachedColor(value) {
+  let c = colorCache.get(value);
+  if (!c) colorCache.set(value, (c = new THREE.Color(value)));
+  return c;
+}
+
 class StructureWriter {
   constructor() {
     this.positions = [];
@@ -211,15 +218,25 @@ class StructureWriter {
     this.colors = [];
   }
   triangle(a, b, c, color) {
-    const ab = new THREE.Vector3().subVectors(new THREE.Vector3(...b), new THREE.Vector3(...a)),
-      ac = new THREE.Vector3().subVectors(new THREE.Vector3(...c), new THREE.Vector3(...a)),
-      n = ab.cross(ac);
-    if (n.lengthSq() < 1e-12) return;
-    n.normalize();
-    const rgb = new THREE.Color(color);
+    // Same arithmetic as Vector3 subVectors/cross/normalize, without per-triangle allocations.
+    const abx = b[0] - a[0],
+      aby = b[1] - a[1],
+      abz = b[2] - a[2],
+      acx = c[0] - a[0],
+      acy = c[1] - a[1],
+      acz = c[2] - a[2];
+    let nx = aby * acz - abz * acy,
+      ny = abz * acx - abx * acz,
+      nz = abx * acy - aby * acx;
+    if (nx * nx + ny * ny + nz * nz < 1e-12) return;
+    const inv = 1 / (Math.sqrt(nx * nx + ny * ny + nz * nz) || 1);
+    nx *= inv;
+    ny *= inv;
+    nz *= inv;
+    const rgb = cachedColor(color);
     for (const p of [a, b, c]) {
-      this.positions.push(...p);
-      this.normals.push(n.x, n.y, n.z);
+      this.positions.push(p[0], p[1], p[2]);
+      this.normals.push(nx, ny, nz);
       this.colors.push(rgb.r, rgb.g, rgb.b);
     }
   }

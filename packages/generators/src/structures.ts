@@ -40,16 +40,60 @@ function lines(layer: FeatureLayer, i: number, step: number): Line[] {
 function appendPlain(batch: BatchBuilder, w: PlainWriter, renderId: number): number {
   const base = batch.vertexCount;
   const n = w.positions.length / 3;
-  const p = [0, 0, 0];
+  const p = [0, 0, 0],
+    nn = [0, 0, 0],
+    c = [0, 0, 0];
   for (let v = 0; v < n; v++) {
-    p[0] = w.positions[v * 3]!;
-    p[1] = w.positions[v * 3 + 1]! - GROUND;
-    p[2] = w.positions[v * 3 + 2]!;
-    batch.vertex(p, w.normals.slice(v * 3, v * 3 + 3), w.colors.slice(v * 3, v * 3 + 3), renderId);
+    const o = v * 3;
+    p[0] = w.positions[o]!;
+    p[1] = w.positions[o + 1]! - GROUND;
+    p[2] = w.positions[o + 2]!;
+    nn[0] = w.normals[o]!;
+    nn[1] = w.normals[o + 1]!;
+    nn[2] = w.normals[o + 2]!;
+    c[0] = w.colors[o]!;
+    c[1] = w.colors[o + 1]!;
+    c[2] = w.colors[o + 2]!;
+    batch.vertex(p, nn, c, renderId);
   }
   for (let v = 0; v < n; v += 3) batch.triangle(base + v, base + v + 1, base + v + 2);
   return n / 3;
 }
+
+/**
+ * Joins consecutive parapet pieces that continue in the same direction and slope into one run, so a straight
+ * parapet is one box instead of one per 3-7 m piece (same silhouette, far fewer triangles). Pedestrian handrails keep
+ * a post at the start of every original piece.
+ */
+function mergeRails(rails: BridgeRail[]): { runs: BridgeRail[]; posts: BridgeRail[] } {
+  const runs: BridgeRail[] = [];
+  const posts: BridgeRail[] = [];
+  for (const r of rails) {
+    const last = runs.at(-1);
+    if (last) {
+      const lx = last.b[0] - last.a[0],
+        lz = last.b[1] - last.a[1],
+        rx = r.b[0] - r.a[0],
+        rz = r.b[1] - r.a[1];
+      const ll = Math.hypot(lx, lz),
+        rl = Math.hypot(rx, rz);
+      const joined = Math.hypot(r.a[0] - last.b[0], r.a[1] - last.b[1]) < 0.02 && Math.abs(r.yA - last.yB) < 0.02;
+      const straight = ll > 0 && rl > 0 && Math.abs((lx * rz - lz * rx) / (ll * rl)) < 0.02 && lx * rx + lz * rz > 0;
+      const sameSlope = Math.abs((last.yB - last.yA) / ll - (r.yB - r.yA) / rl) < 0.01;
+      if (joined && straight && sameSlope) {
+        last.b = r.b;
+        last.yB = r.yB;
+        last.y = (last.yA + last.yB) / 2;
+        if (r.walk) posts.push(r);
+        continue;
+      }
+    }
+    runs.push({ ...r, a: [...r.a] as Point2, b: [...r.b] as Point2 });
+  }
+  return { runs, posts };
+}
+
+const POST_COLOR = hexToRgb('#82908a');
 
 /** Quad with the winding chosen so that its front face points along `n` (back faces are culled). */
 export function quad(batch: BatchBuilder, pts: number[][], n: number[], color: number[], renderId: number) {
@@ -138,7 +182,30 @@ export function generateStructures(layer: FeatureLayer, step: number, batches: B
             roadId: 0,
             source: 'tile',
           });
-      triangles += appendPlain(batch, writeRoadStructures({ decks: [], rails, piers: [] }).rail, renderId);
+      const { runs, posts } = mergeRails(rails);
+      triangles += appendPlain(batch, writeRoadStructures({ decks: [], rails: runs, piers: [] }).rail, renderId);
+      for (const p of posts) {
+        // the phase-one handrail post at a piece start: 0.065 m square, 1.1 m tall
+        const [x, z] = p.a,
+          y0 = p.yA - GROUND,
+          h = 0.0325;
+        const box = [
+          [x - h, y0, z - h],
+          [x + h, y0, z - h],
+          [x + h, y0, z + h],
+          [x - h, y0, z + h],
+        ];
+        const top = box.map(([bx, by, bz]) => [bx!, by! + 1.1, bz!]);
+        for (const [i, j, n] of [
+          [0, 1, [0, 0, -1]],
+          [1, 2, [1, 0, 0]],
+          [2, 3, [0, 0, 1]],
+          [3, 0, [-1, 0, 0]],
+        ] as [number, number, number[]][])
+          quad(batch, [box[i]!, box[j]!, top[j]!, top[i]!], n, POST_COLOR, renderId);
+        quad(batch, top, UP, POST_COLOR, renderId);
+        triangles += 10;
+      }
     } else if (kind === 'pier') {
       const piers: BridgePier[] = [];
       for (const { points, heights } of parts) {
