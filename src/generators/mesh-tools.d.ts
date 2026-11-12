@@ -11,6 +11,8 @@ export class MeshWriter {
   materialRole?: string | null;
   style: number;
   variant: number;
+  layout: number[];
+  surface: number[];
   triangle(
     a: number[],
     b: number[],

@@ -6,3 +6,4 @@ export * from './ids.js';
 export * from './building.js';
 export * from './surfaces.js';
 export * from './tile.js';
+export { generateStructures } from './structures.js';

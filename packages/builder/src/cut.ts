@@ -197,6 +197,19 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
         continue;
       }
 
+      // Piers and stair flights are owned by one tile (anchor) and kept whole, like buildings.
+      if (r.layer === 'structure' && (r.properties.kind === 'pier' || r.properties.kind === 'stairs')) {
+        const id = lngLatToTile(r.anchor[0], r.anchor[1], z);
+        if (!wanted(id)) continue;
+        const q = r.geometry.map((part) => part.map((ring) => ring.flatMap((p) => gridToTile(toGrid(p, z, e), id, e))));
+        if (q.some((part) => part.some((ring) => ring.some((v) => !fitsInt16(v))))) {
+          fallbacks.push({ id: r.id, tile: tileKey(id), reason: 'coordinate range' });
+          continue;
+        }
+        push(tileOf(id, level.profile), 'structure', { ...base, geometry: q, elevation: r.elevation! });
+        continue;
+      }
+
       // Clipped layers: polygons and lines, restricted to tile ∩ owner cell.
       const owner = parseKey(r.cell);
       const allPoints = r.geometry.flat(2);

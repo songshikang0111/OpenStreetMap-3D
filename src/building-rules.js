@@ -67,10 +67,15 @@ export function landmarkKind(building) {
   return null;
 }
 
+/** Small low buildings (houses, shophouses, machiya) carry no rooftop plant: below both thresholds, none is placed. */
+export const ROOF_EQUIPMENT_MIN_HEIGHT = 12;
+export const ROOF_EQUIPMENT_MIN_LOW_AREA = 1500;
+
 export function roofEquipment(building) {
   if (
     landmarkKind(building) ||
     building.area < 160 ||
+    (building.height < ROOF_EQUIPMENT_MIN_HEIGHT && building.area < ROOF_EQUIPMENT_MIN_LOW_AREA) ||
     building.minHeight > 0 ||
     /gabled|hipped|dome|pyramidal/.test(building.tags?.['roof:shape'] || '')
   )

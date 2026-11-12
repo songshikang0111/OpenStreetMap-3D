@@ -280,11 +280,12 @@ class StructureWriter {
   }
 }
 
-export function buildRoadStructures(data, roadPlan) {
-  const plan = planRoadStructures(data, roadPlan),
-    group = new THREE.Group();
-  group.name = 'Inferred bridge decks, guards and clearance-checked supports';
-  const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.94 });
+/**
+ * Writes deck sides and soffits, parapets and piers of a structure plan into plain position/normal/colour arrays.
+ * Renderer-free: shared by the phase-one scene path below and the phase-two tile generators (piers, rails and decks
+ * planned at build time, written in a Worker).
+ */
+export function writeRoadStructures(plan) {
   const deckWriter = new StructureWriter(),
     railWriter = new StructureWriter(),
     pierWriter = new StructureWriter();
@@ -347,6 +348,15 @@ export function buildRoadStructures(data, roadPlan) {
       p.slope,
     );
   }
+  return { deck: deckWriter, rail: railWriter, pier: pierWriter };
+}
+
+export function buildRoadStructures(data, roadPlan) {
+  const plan = planRoadStructures(data, roadPlan),
+    group = new THREE.Group();
+  group.name = 'Inferred bridge decks, guards and clearance-checked supports';
+  const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.94 });
+  const { deck: deckWriter, rail: railWriter, pier: pierWriter } = writeRoadStructures(plan);
   for (const [writer, name, id] of [
     [deckWriter, 'Bridge deck thickness and soffits', 61001],
     [railWriter, 'Bridge parapets and pedestrian guardrails', 61002],

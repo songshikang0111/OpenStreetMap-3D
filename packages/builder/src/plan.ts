@@ -5,6 +5,8 @@ import { buildingStyle } from '../../../src/building-rules.js';
 import { planRoadSurface } from '../../../src/road-surface.js';
 import type { RoadSurfacePiece } from '../../../src/road-surface.js';
 import { planStreetLife } from '../../../src/streetlife.js';
+import { planRoadStructures } from '../../../src/road-structures.js';
+import type { StairFlight } from '../../../src/road-stairs.js';
 import type { Phase1Building, Phase1Data, Phase1Polygon, Point2 } from '../../../src/phase1-types.js';
 import { phase1IdToFeatureId } from '@city-ink/generators';
 import { tileToLngLatBounds, DEFAULT_KEPT_TAGS } from '@city-ink/tiles';
@@ -317,6 +319,86 @@ export async function planCell(ctx: PlanContext, cell: TileId | null, options: P
         });
         count('structures');
       }
+    }
+    // Bridge parapets and clearance-checked piers (phase-one planRoadStructures needs neighbouring buildings, roads and
+    // water, so it runs here) and OSM stair flights; generators write their meshes (WP-C task C4).
+    const structures = planRoadStructures(data, road);
+    const railsByRoad = new Map<number, typeof structures.rails>();
+    for (const rail of structures.rails) {
+      if (!railsByRoad.has(rail.roadId)) railsByRoad.set(rail.roadId, []);
+      railsByRoad.get(rail.roadId)!.push(rail);
+    }
+    for (const [roadId, rails] of [...railsByRoad].sort((a, b) => a[0] - b[0])) {
+      for (const walk of [false, true]) {
+        const list = rails.filter((r) => r.walk === walk);
+        if (!list.length) continue;
+        const geometry = list.map((r) => [[ll(r.a), ll(r.b)]]);
+        if (!geometry.some((g) => intersects(ringBounds(g[0]!)))) continue;
+        records.push({
+          layer: 'structure',
+          id: `way/${roadId}#${walk ? 2 : 1}`, // #0 is the deck; #1 parapets, #2 pedestrian handrails
+          cell: key,
+          geometry,
+          elevation: list.map((r) => [[r.yA - GROUND, r.yB - GROUND]]),
+          anchor: geometry[0]![0]![0]!,
+          properties: {
+            kind: walk ? 'rail.walk' : 'rail',
+            width: list[0]!.width,
+            thickness: null,
+            source: list[0]!.source,
+          },
+          provenance: { elevation: 'inferred' },
+          tags: {},
+        });
+        count('bridgeRails');
+      }
+    }
+    for (const p of structures.piers) {
+      const anchor = ll(p.point);
+      if (!owns(anchor)) continue;
+      // A pier is a three-vertex line: the support axis, then two points along the deck direction that carry the
+      // cap's underside height and slope. It is owned by one tile and never clipped.
+      const dir: Point2 = [Math.cos(p.angle), -Math.sin(p.angle)];
+      const along = (t: number): Point2 => [p.point[0] + dir[0] * t, p.point[1] + dir[1] * t];
+      records.push({
+        layer: 'structure',
+        id: `way/${p.roadId}#${1000 + (hash52(`pier:${p.point[0].toFixed(2)},${p.point[1].toFixed(2)}`) % 1e9)}`,
+        cell: key,
+        geometry: [[[anchor, ll(along(0.5)), ll(along(1))]]],
+        elevation: [[[p.top - GROUND, p.deckBottom - GROUND, p.deckBottom - GROUND + p.slope * 0.5]]],
+        anchor,
+        properties: { kind: 'pier', width: p.width, thickness: p.radius, source: p.source },
+        provenance: { elevation: 'inferred' },
+        tags: {},
+      });
+      count('bridgePiers');
+    }
+    for (const f of road.grades.stairs as StairFlight[]) {
+      const points = f.points;
+      if (points.length < 2) continue;
+      // Owned by the cell containing the flight's midpoint, so one tile writes the whole flight with its landings.
+      const mid = points[Math.floor((points.length - 1) / 2)]!;
+      const next = points[Math.floor((points.length - 1) / 2) + 1] ?? mid;
+      const anchor = ll([(mid[0] + next[0]) / 2, (mid[1] + next[1]) / 2]);
+      if (!owns(anchor)) continue;
+      let run = 0;
+      const distances = points.map((q, i) =>
+        i ? (run += Math.hypot(q[0] - points[i - 1]![0], q[1] - points[i - 1]![1])) : 0,
+      );
+      const length = run || 1;
+      const ids = [...(f.roadIds ?? [])].sort((a, b) => a - b);
+      records.push({
+        layer: 'structure',
+        id: `${ids.length ? `way/${ids[0]}` : 'generated/0'}#${1000 + (hash52(`stairs:${points.map((q) => q.map((v) => v.toFixed(2)).join(',')).join(';')}`) % 1e9)}`,
+        cell: key,
+        geometry: [[points.map(ll)]],
+        elevation: [[distances.map((d) => f.y0 + ((f.y1 - f.y0) * d) / length - GROUND)]],
+        anchor,
+        properties: { kind: 'stairs', width: f.width, thickness: null, source: String(f.source ?? 'osm-steps') },
+        provenance: { elevation: 'inferred' },
+        tags: {},
+      });
+      count('stairFlights');
     }
     const surfaceRecord = (s: RoadSurfacePiece, kind: string, n: number) => {
       const ring = s.polygon.map(ll);

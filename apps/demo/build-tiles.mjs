@@ -30,6 +30,9 @@ for (const name of names) {
     input: path.join(root, 'public/data', `${s.input}.json`),
     output: path.join(root, 'apps/demo/public/tiles', name),
     name,
+    // The demo shows the explicit, conservative roof inference (pitched roofs on small houses; 05 section 5). The
+    // builder default stays off, and the runtime ProvenanceFilter `roofs.inferred: false` turns it back off.
+    inferRoofs: true,
     ...(s.bbox ? { bbox: s.bbox } : {}),
   });
   console.log(name, JSON.stringify(report.counts));

@@ -173,11 +173,11 @@ function treadHeight(f, t) {
   return f.y0 + Math.min(f.count, Math.floor((t - f.landing) / f.depth) + 1) * f.rise;
 }
 
-/** Build bounded, merged tread/riser and handrail geometry on known stair paths. */
-export function buildRoadStairs(flights = []) {
-  const group = new THREE.Group();
-  group.name = 'OSM stair access with inferred connected elevations';
-  const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.94 });
+/**
+ * Writes treads, risers, sides, soffits and handrails of stair flights into plain position/normal/colour arrays.
+ * Renderer-free: shared by the phase-one scene path and the phase-two tile generators.
+ */
+export function writeRoadStairs(flights = []) {
   const treads = new Writer(),
     shell = new Writer(),
     rails = new Writer();
@@ -265,6 +265,15 @@ export function buildRoadStairs(flights = []) {
       roadIds: f.roadIds,
     });
   }
+  return { treads, shell, rails, stats, metadata };
+}
+
+/** Build bounded, merged tread/riser and handrail geometry on known stair paths. */
+export function buildRoadStairs(flights = []) {
+  const group = new THREE.Group();
+  group.name = 'OSM stair access with inferred connected elevations';
+  const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.94 });
+  const { treads, shell, rails, stats, metadata } = writeRoadStairs(flights);
   for (const [writer, name, id, inkClass] of [
     [treads, 'Stair treads and endpoint landings', 61101, 3.2],
     [shell, 'Stair risers, sides and soffits', 61102, 4],

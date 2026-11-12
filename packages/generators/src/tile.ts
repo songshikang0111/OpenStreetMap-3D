@@ -6,6 +6,7 @@ import type { MeshBatch } from './batch.js';
 import { generateBuildings } from './building.js';
 import type { BuildingOptions } from './building.js';
 import { generateBands, generateMassing, generatePolygons } from './surfaces.js';
+import { generateStructures } from './structures.js';
 
 export const GENERATOR_VERSION = '2.0.0';
 
@@ -115,10 +116,11 @@ export function generateTile(tile: DecodedTile, options: GenerateOptions = {}): 
         batches,
       ).buildings;
     } else if (name === 'building') {
-      generateMassing(layer, name, step, batches);
+      generateMassing(layer, name, step, batches, options.seed ?? 1);
       buildings += layer.featureCount;
     } else if (name === 'tree') trees = generateTrees(layer, step);
     else if (layer.geometry === 'polygon') generatePolygons(layer, name, step, batches);
+    else if (name === 'structure' && tile.profile === 'full') generateStructures(layer, step, batches);
     else if (layer.geometry === 'line' && (name === 'structure' || tile.profile === 'massing'))
       generateBands(layer, name, step, batches);
     msByLayer[name] = now() - t0;

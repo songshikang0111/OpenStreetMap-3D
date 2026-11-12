@@ -5,6 +5,7 @@ import { createMap } from '@city-ink/map';
 const params = new URLSearchParams(location.search);
 const tiles = params.get('tiles') ?? './tiles/beijing-cbd-grow-9/tileset.json';
 const hud = document.getElementById('hud');
+if (params.get('hud') === '0') hud.style.display = 'none';
 
 const myDiv = document.createElement('div');
 myDiv.className = 'marker';
