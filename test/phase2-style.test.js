@@ -135,3 +135,19 @@ test('AC707/AC708: ink looks come from @city-ink/styles-ink; createMap code neve
   const root = await import('../src/styles/index.js');
   for (const id of ['comic', 'line', 'color', 'white']) assert.ok(root.getStyle(id), id);
 });
+
+test('AC710: the extension tutorial example files validate', async () => {
+  const brand = JSON.parse(readFileSync(new URL('../examples/phase2/styles/brand.json', import.meta.url), 'utf8'));
+  assert.deepEqual(validateStyleSpec(brand), { valid: true, errors: [] });
+  const doc = readFileSync(new URL('../docs/extensions.md', import.meta.url), 'utf8');
+  for (const f of ['use-styles.ts', 'brand.json', 'toon-pack.mjs'])
+    assert.match(doc, new RegExp(f.replace('.', '\\.')));
+  const { default: toonPack } = await import('../examples/phase2/styles/toon-pack.mjs');
+  const THREE = await import('three');
+  const pack = toonPack(THREE);
+  assert.equal(pack.supportsTiles, true);
+  const m = pack.createMaterial({ role: 'water', object: { geometry: { attributes: {} } } });
+  assert.equal(m.type, 'MeshToonMaterial');
+  m.gradientMap.dispose();
+  m.dispose();
+});

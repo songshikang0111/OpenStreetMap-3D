@@ -47,9 +47,20 @@ if (picker) {
   });
 }
 globalThis.styleFor = styleFor;
+// For automated checks of custom style packs (loaded on demand, not part of the initial bundle).
+globalThis.loadThree = () => import('three');
 const filter = {};
 document.getElementById('details')?.addEventListener('change', (e) => {
   filter.details = e.target.checked;
+  map.setFilter({ ...filter });
+});
+// ProvenanceFilter (05 section 5): buildings without an observed height become ground footprints.
+document.getElementById('observed')?.addEventListener('change', (e) => {
+  filter.buildings = e.target.checked ? { minHeightProvenance: 'observed' } : undefined;
+  map.setFilter({ ...filter });
+});
+document.getElementById('roofs')?.addEventListener('change', (e) => {
+  filter.roofs = { inferred: e.target.checked };
   map.setFilter({ ...filter });
 });
 

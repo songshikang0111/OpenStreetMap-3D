@@ -47,7 +47,8 @@ import { MaterialLibrary, buildTileObject } from './tile-object.js';
 import type { TileObject, TilePipeline, TileStylePack } from './tile-object.js';
 import { Controls } from './controls.js';
 import { Picker } from './picking/picker.js';
-import { EMPTY_RULES, FLAG_FLATTEN, FLAG_HIDDEN, stateUniforms } from './picking/feature-state.js';
+import { EMPTY_RULES, FLAG_FLATTEN, FLAG_HIDDEN, RuleTexture, stateUniforms } from './picking/feature-state.js';
+import { evaluateExpression, ruleRoleApplies } from '@city-ink/styles/spec';
 import { nearbyFacadeFrames } from '../../../src/facade-layout.js';
 import type { NearWall } from '@city-ink/generators';
 import type { Pickable } from './picking/picker.js';
@@ -188,11 +189,17 @@ interface TileEntry {
   bytes: number;
   /** Complete facade walls for near-camera frames, sills and balconies (L1 only). */
   nearWalls?: NearWall[] | null;
+  /** Copy of the tile bytes, to regenerate without refetching (ProvenanceFilter roofs). */
+  buffer?: ArrayBuffer | null;
+  /** Rule textures of the current style for this tile. */
+  rules?: RuleTexture[];
   /** Incremented per load; completions of an older (cancelled) load are ignored. */
   loadToken?: number;
 }
 
 interface PendingUpload {
+  /** Replaces an existing object (regeneration after a filter change). */
+  replace?: boolean;
   entry: TileEntry;
   response: Extract<WorkerResponse, { type: 'result' }>;
 }
@@ -424,7 +431,11 @@ export class CityMapImpl implements CityMap {
       });
     }
     const build = this.tileset.build?.options ?? {};
-    this.generationOptions = { seed: this.tileset.build?.seed ?? 1, inferRoofs: Boolean(build.inferRoofs) };
+    this.tilesetInferRoofs = Boolean(build.inferRoofs);
+    this.generationOptions = {
+      seed: this.tileset.build?.seed ?? 1,
+      inferRoofs: this.tilesetInferRoofs && this.options.filter?.roofs?.inferred !== false,
+    };
     const [lng, lat, zoom] = this.tileset.center;
     this.transform.anchor = this.options.center ?? [lng, lat];
     this.transform.set({
@@ -968,6 +979,11 @@ export class CityMapImpl implements CityMap {
       throw error;
     }
     const { spec, pack } = resolved;
+    // Streaming hooks see every resident tile: the old pack is told they leave, the new one that they arrive.
+    if (pack !== this.pack)
+      for (const e of this.tiles.values())
+        if (e.object) this.pack?.onTileUnload?.({ tile: e.key, group: e.object.group });
+    const previousPack = this.pack;
     this.spec = spec;
     this.pack = pack;
     this.styleId = pack ? pack.id : spec.id;
@@ -999,7 +1015,18 @@ export class CityMapImpl implements CityMap {
     x.uNightLights.value = spec.facade.nightLights ? 1 : 0;
     stateUniforms.highlightColor.value.set(spec.featureState.highlight.emissive);
     stateUniforms.highlightIntensity.value = spec.featureState.highlight.emissiveIntensity;
+    this.materials.ruleOpacityRoles = new Set(
+      spec.rules.flatMap((r) =>
+        Object.entries(r.set)
+          .filter(([, v]) => v.opacity !== undefined && v.opacity < 1)
+          .flatMap(([k]) => (k === 'wall' ? ['wall', 'glass'] : [k])),
+      ),
+    );
     this.materials.restyle(spec, pack);
+    for (const e of this.tiles.values()) this.applyRules(e);
+    if (pack && pack !== previousPack)
+      for (const e of this.tiles.values())
+        if (e.object && e.features) pack.onTileLoad?.({ tile: e.key, group: e.object.group, features: e.features });
     this.pipeline?.dispose();
     this.pipeline = null;
     if (pack?.createPipeline && !this.hosted) {
@@ -1026,13 +1053,108 @@ export class CityMapImpl implements CityMap {
     this.assertAlive();
     this.filter = { ...filter };
     for (const e of this.tiles.values()) this.applyFilter(e);
+    // Roof inference is a generator option: regenerate loaded tiles from their cached bytes (no new requests).
+    const inferRoofs = this.tilesetInferRoofs && this.filter.roofs?.inferred !== false;
+    if (inferRoofs !== Boolean(this.generationOptions.inferRoofs)) {
+      this.generationOptions = { ...this.generationOptions, inferRoofs };
+      for (const e of this.tiles.values()) this.regenerate(e);
+    }
     this.dirty = true;
+  }
+
+  private tilesetInferRoofs = false;
+
+  /** Buildings in loaded L1 tiles, and how many the ProvenanceFilter draws as footprints (AC706). */
+  private buildingCounts() {
+    let total = 0,
+      flattened = 0;
+    const finest = this.tileset.levels.length - 1;
+    for (const e of this.tiles.values()) {
+      if (e.level !== finest || !e.object || !e.features) continue;
+      for (const f of e.features)
+        if (f.layer === 'building') {
+          total++;
+          if (e.object.state.data[f.renderId * 4 + 3]! & FLAG_FLATTEN) flattened++;
+        }
+    }
+    return { total, flattened, shown: total - flattened };
+  }
+
+  private regenerate(entry: TileEntry) {
+    if (!entry.buffer || entry.state !== 'ready' || !entry.object) return;
+    const token = (entry.loadToken = (entry.loadToken ?? 0) + 1);
+    const work = this.pool.run(entry.buffer.slice(0), entry.priority, this.generationOptions);
+    void work.promise.then((response) => {
+      if (entry.loadToken !== token || this.disposed || response.type !== 'result') return;
+      this.uploads.push({ entry, response, replace: true });
+      this.dirty = true;
+      this.hosted?.repaint();
+    });
+  }
+
+  /** Evaluates the style's `rules` for one tile into per-role rule textures (05 section 4: at load, not per frame). */
+  private applyRules(entry: TileEntry) {
+    if (!entry.object) return;
+    for (const r of entry.rules ?? []) r.dispose();
+    entry.rules = [];
+    const rules = this.pack ? [] : (this.spec?.rules ?? []);
+    const cache = new Map<string, RuleTexture>();
+    for (const mesh of entry.object.meshes) {
+      const role = String(mesh.userData.role ?? '');
+      const applicable = rules
+        .map((rule, i) => ({ rule, i }))
+        .filter(
+          ({ rule }) =>
+            rule.layer === mesh.userData.layer && Object.keys(rule.set).some((k) => ruleRoleApplies(k, role)),
+        );
+      const uniforms = (mesh.material as { userData: { featureStateUniforms?: { ruleState: { value: unknown } } } })
+        .userData.featureStateUniforms;
+      if (!uniforms) continue;
+      if (!applicable.length || !entry.features) {
+        uniforms.ruleState.value = EMPTY_RULES;
+        continue;
+      }
+      const key = `${role}:${applicable.map((a) => a.i).join(',')}`;
+      let texture = cache.get(key);
+      if (!texture) {
+        texture = new RuleTexture(entry.object.state.capacity);
+        for (const f of entry.features)
+          for (const { rule } of applicable) {
+            if (f.layer !== rule.layer || !evaluateExpression(rule.when as never, f)) continue;
+            let color: string | undefined, opacity: number | undefined;
+            for (const [k, v] of Object.entries(rule.set))
+              if (ruleRoleApplies(k, role)) {
+                color = v.color ?? color;
+                opacity = v.opacity ?? opacity;
+              }
+            texture.set(f.renderId, color, opacity);
+          }
+        texture.commit();
+        cache.set(key, texture);
+        entry.rules.push(texture);
+      }
+      uniforms.ruleState.value = texture.texture;
+    }
   }
 
   /** Applies the ProvenanceFilter to one loaded tile without refetching or regenerating it (05 section 5). */
   private applyFilter(entry: TileEntry) {
     if (!entry.object) return;
     const details = this.filter.details !== false;
+    // Buildings whose height is less certain than required are drawn as footprints; inferred trees can be hidden.
+    const rank = { observed: 0, derived: 1, inferred: 2 } as const;
+    const min = this.filter.buildings?.minHeightProvenance;
+    const hideTrees = this.filter.trees?.inferred === false;
+    if (entry.features)
+      for (const f of entry.features) {
+        let flags = 0;
+        if (f.layer === 'building' && min) {
+          const prov = (f.provenance.height ?? 'inferred') as keyof typeof rank;
+          if (rank[prov] > rank[min]) flags |= FLAG_FLATTEN;
+        } else if (f.layer === 'tree' && hideTrees && f.provenance.position === 'inferred') flags |= FLAG_HIDDEN;
+        entry.object.state.setFilter(f.renderId, flags);
+      }
+    this.nearKey = '';
     const hostGround = this.hosted?.ground === 'host';
     for (const mesh of entry.object.meshes) {
       const layer = String(mesh.userData.layer);
@@ -1085,6 +1207,7 @@ export class CityMapImpl implements CityMap {
         this.requestStats.bytes += buffer.byteLength;
         entry.controller = null;
         entry.state = 'generating';
+        entry.buffer = buffer.slice(0);
         const work = this.pool.run(buffer, entry.priority, this.generationOptions);
         entry.cancelWork = work.cancel;
         return work.promise;
@@ -1156,6 +1279,9 @@ export class CityMapImpl implements CityMap {
     }
     entry.features = null;
     entry.nearWalls = null;
+    entry.buffer = null;
+    for (const r of entry.rules ?? []) r.dispose();
+    entry.rules = [];
     this.nearKey = '';
     entry.featureIndex = null;
     entry.visible = false;
@@ -1167,11 +1293,16 @@ export class CityMapImpl implements CityMap {
     const start = performance.now();
     let spent = 0;
     while (this.uploads.length && (spent < this.budget.uploadMsPerFrame || spent === 0)) {
-      const { entry, response } = this.uploads.shift()!;
+      const { entry, response, replace } = this.uploads.shift()!;
       if (!this.tiles.has(entry.key)) continue;
-      if (entry.object) {
+      let previous: TileObject | null = null;
+      if (entry.object && !replace) {
         entry.state = 'ready';
         continue;
+      }
+      if (replace) {
+        if (!entry.object) continue;
+        previous = entry.object;
       }
       const capacity = response.features.reduce((m, f) => Math.max(m, f.renderId), 0);
       const object = buildTileObject(response.generated, this.materials, capacity);
@@ -1182,12 +1313,23 @@ export class CityMapImpl implements CityMap {
             mesh.visible = false;
             object.pickable.splice(object.pickable.indexOf(mesh), 1);
           }
+      if (previous) {
+        this.pack?.onTileUnload?.({ tile: entry.key, group: previous.group });
+        this.pipeline?.onTileUnload?.({ tile: entry.key, group: previous.group });
+        const shown = previous.group.parent !== null;
+        previous.group.removeFromParent();
+        previous.dispose();
+        for (const r of entry.rules ?? []) r.dispose();
+        entry.rules = [];
+        if (shown) this.tilesRoot.add(object.group);
+      }
       entry.object = object;
       entry.features = response.features;
       entry.nearWalls = response.generated.nearWalls ?? null;
       this.nearKey = '';
       this.applyStates(entry);
       this.applyFilter(entry);
+      this.applyRules(entry);
       entry.bytes = object.bytes;
       entry.state = 'ready';
       entry.retries = 0;
@@ -1630,6 +1772,7 @@ export class CityMapImpl implements CityMap {
         styles: Object.keys(BUILTIN_STYLES),
         pack: this.pack?.id ?? null,
         nearDetails: this.nearFrames.count,
+        buildings: this.buildingCounts(),
       };
     return stats;
   }

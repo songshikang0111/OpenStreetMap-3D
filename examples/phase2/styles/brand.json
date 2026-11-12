@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 2,
+  "id": "brand",
+  "extends": "light",
+  "environment": { "background": "#f4efe6", "sun": { "azimuth": 200, "altitude": 35, "intensity": 1.3 } },
+  "roles": {
+    "wall": { "color": "#f1c9a5", "blend": "multiply" },
+    "roof": { "color": "#b8644a" },
+    "water": { "color": "#2f7fb5" },
+    "foliage": { "color": "#4f8f3a" }
+  },
+  "rules": [
+    { "layer": "building", "when": ["==", ["provenance", "height"], "inferred"], "set": { "wall": { "opacity": 0.6 } } },
+    { "layer": "building", "when": [">", ["get", "height"], 150], "set": { "wall": { "color": "#3d5a80" } } }
+  ],
+  "featureState": { "highlight": { "emissive": "#00b4d8", "emissiveIntensity": 0.8 } }
+}

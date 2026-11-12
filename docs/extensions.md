@@ -4,6 +4,52 @@
 
 ## 添加画风
 
+画风有两条入口：瓦片模式（`createMap`，二期主路径）和场景包模式（`createCityViewer`，一期，见本节后半）。
+
+### 瓦片模式（`createMap`）
+
+三个层次，按需要选用（规格见 [05 风格契约](phase2/05-style-contract.md)）。本节每段代码都在 [`examples/phase2/styles/use-styles.ts`](../examples/phase2/styles/use-styles.ts) 中，由 `npm run test:types` 做类型检查。
+
+**1. 样式配置 `StyleSpec`**：一个 JSON 文件，只写颜色、光照、立面窗格开关和按属性着色的规则，不写着色器。例子 [`brand.json`](../examples/phase2/styles/brand.json) 继承 `light`，换了墙、屋顶、水、树的颜色，并把推断高度的建筑半透明、150 m 以上的建筑换色：
+
+```js
+import { createMap, validateStyleSpec } from '@city-ink/map';
+const spec = await fetch('./brand.json').then((r) => r.json());
+const check = validateStyleSpec(spec); // 未知字段、类型不符、非法颜色、不支持的表达式都会给出字段路径
+if (!check.valid) throw new Error(check.errors.map((e) => `${e.path} ${e.message}`).join('\n'));
+const map = await createMap({ container, tiles, style: spec });
+await map.setStyle('dark'); // 内置 plain、light、dark；切换不重新取瓦片、不重建几何
+map.setFilter({ buildings: { minHeightProvenance: 'observed' }, details: false });
+```
+
+- 角色：`wall`、`glass`、`roof`、`structure`、`road`、`water`、`foliage`、`ground`、`facility`、`landmark` 及子角色（如 `road.marking`、`ground.green`、`foliage.trunk`），未识别的子角色回退到父角色。
+- `blend: "multiply"` 保留生成器为每栋建筑写入的一期立面配色，并用角色色着色；默认 `replace` 用角色色整体替换。
+- `rules` 的表达式子集：`get`、`provenance`、`==`、`!=`、`<`、`<=`、`>`、`>=`、`all`、`any`、`!`、`in`；在瓦片加载和切换风格时求值，不在每帧求值。
+- 完整 Schema：[`schemas/style-spec.schema.json`](../schemas/style-spec.schema.json)。
+
+**2. 风格化风格包 `@city-ink/styles-ink`**：一期的 `comic`（网点漫画）、`line`（线稿）、`color`（柔和彩色）、`white`（白模）和 `cel`。前四种带一期描边、网点、实黑、AO 后处理，只能用于独立地图（`hostCompatible: false`，在 MapLibre 图层中设置会报 `STYLE_NOT_HOST_COMPATIBLE`）；`cel` 只换材质，图层模式也可用。需要显式引入，`createMap` 的默认构建不含它们：
+
+```js
+import { comic, cel } from '@city-ink/styles-ink';
+const map = await createMap({ container, tiles, style: comic });
+await map.setStyle(cel);
+```
+
+**3. 自定义代码风格包**：完全接管材质。[`toon-pack.mjs`](../examples/phase2/styles/toon-pack.mjs) 只依赖传入的 Three.js 命名空间，声明 `supportsTiles: true`，按角色返回材质，并用 `onTileLoad` / `onTileUnload` 跟踪流式加载的瓦片：
+
+```js
+import * as THREE from 'three';
+import toonPack from './toon-pack.mjs';
+const pack = toonPack(THREE);
+const map = await createMap({ container, tiles, style: pack });
+await map.whenIdle();
+console.log('tiles drawn by the pack', pack.loaded.size);
+```
+
+风格包的 `createMaterial({ role, object, shared, parameters, services })` 与一期签名相同；要保留程序化立面窗格，对 `object.userData.city?.shader === 'facade-v6'` 的网格返回 `services.createFacadeMaterial(shared)`。带后处理的包实现 `createPipeline({ renderer, scene, camera, shared, parameters })`，返回 `{ render, resize, dispose, onTileLoad?, onTileUnload? }`，由地图整帧调用。
+
+### 场景包模式（`createCityViewer`，一期）
+
 将 [独立 sepia 画风](../examples/quickstart/sepia-style.js) 复制到自己的项目 `styles/sepia.js`，在 `city.config.json` 保存明确入口：
 
 ```json
@@ -39,7 +85,7 @@ city export glb --project ./my-city --offline --json
 
 标准导出使用同一 SDK/注册表，打包所有风格模块、相对依赖、CSS/资产并验证 metadata、id、兼容性及参数；未知 id 必须声明入口。无效入口或参数会在发布前失败，已有站点保留。`viewer-config.json` 记录参数与 `styleModule`，`style-build.json` 记录输入/输出哈希；产物可放在任意 HTTP 子路径，无 CDN/本地服务运行时依赖。PNG/GLB CLI 也先导出同一标准页面再加载画风。GLB 仍只保留基础材质/几何，不保证移植程序后处理。
 
-参数规则是明确的小型子集，`StyleParameterRule`/`StyleParametersSchema` 与 `schemas/style.schema.json` 同步：
+参数规则是明确的小型子集，`StyleParameterRule`/`StyleParametersSchema` 与 `schemas/style.schema.json`（一期风格包元数据，不是二期的 StyleSpec）同步：
 
 - `number`：有限 JavaScript number；`integer`：`Number.isSafeInteger`（±9007199254740991 内）。两者支持包含边界的 minimum/maximum；边界也必须有限，minimum ≤ maximum，integer 范围必须至少包含一个安全整数。整数边界可为小数，例如 .5–2.5 接受1/2，拒绝1.25。
 - `boolean` 和 `string`：不做隐式转换，不接受 minimum/maximum。

@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-12T18:12:20.842Z",
+  "gpuFlags": "--use-gl=angle --use-angle=gl-egl --ignore-gpu-blocklist",
+  "results": {
+    "AC704": {
+      "pass": true,
+      "times": [
+        20.199999999720603,
+        16.200000000186265,
+        15.799999999813735,
+        16.200000000186265,
+        16.799999999813735
+      ],
+      "requests": 0,
+      "geometriesBefore": 143,
+      "geometriesAfter": 143,
+      "maxWarmMs": 16.799999999813735,
+      "note": "setStyle + next frame; measured on the machine in the summary, not the reference device"
+    },
+    "AC703-browser": {
+      "pass": true,
+      "threw": true,
+      "code": "STYLE_INVALID",
+      "path": "$.roles.wall.color",
+      "style": "light"
+    },
+    "AC705-browser": {
+      "pass": true,
+      "redPixelsWithRule": 74871,
+      "redPixelsWithout": 0
+    },
+    "AC706": {
+      "pass": true,
+      "reportHeight": {
+        "observed": 21,
+        "derived": 132,
+        "inferred": 128
+      },
+      "loadedL1Buildings": 281,
+      "observedOnly": {
+        "total": 281,
+        "flattened": 260,
+        "shown": 21
+      },
+      "derivedOrBetter": {
+        "total": 281,
+        "flattened": 128,
+        "shown": 153
+      },
+      "all": {
+        "total": 281,
+        "flattened": 0,
+        "shown": 281
+      },
+      "newRequests": 0
+    },
+    "AC706-switches": {
+      "pass": true,
+      "requests": 0,
+      "trianglesBefore": 1041158,
+      "trianglesFiltered": 893482,
+      "trianglesAfter": 1041158
+    },
+    "AC709": {
+      "pass": true,
+      "pack": "toon-example",
+      "loadedAfterLoad": 19,
+      "readyAfterLoad": 19,
+      "sameAfterLoad": true,
+      "loadedAway": 4,
+      "readyAway": 4,
+      "sameAway": true
+    },
+    "console": {
+      "pass": true,
+      "errors": []
+    }
+  }
+}

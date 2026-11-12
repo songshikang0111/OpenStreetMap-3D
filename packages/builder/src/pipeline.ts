@@ -397,6 +397,12 @@ function makeReport(
     if (seen.has(key)) continue; // polygon/line records repeat per intersecting cell
     seen.add(key);
     counts[r.layer] = (counts[r.layer] ?? 0) + 1;
+    // Buildings claimed by a landmark recipe are drawn by the landmark mesh at full detail; their provenance is
+    // reported separately so `provenance.building` matches the L1 building features (and the runtime filter).
+    if (r.layer === 'building' && r.properties.landmark === 'claimed') {
+      counts.landmarkClaimedBuildings = (counts.landmarkClaimedBuildings ?? 0) + 1;
+      continue;
+    }
     for (const [attr, level] of Object.entries(r.provenance)) {
       const layer = (provenance[r.layer] ??= {});
       const slot = (layer[attr] ??= { observed: 0, derived: 0, inferred: 0 });
