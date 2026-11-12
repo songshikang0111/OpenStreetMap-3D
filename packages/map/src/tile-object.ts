@@ -9,6 +9,7 @@ import {
   DynamicDrawUsage,
   Group,
   IcosahedronGeometry,
+  InstancedBufferAttribute,
   InstancedMesh,
   Matrix4,
   Mesh,
@@ -18,6 +19,7 @@ import {
 } from 'three';
 import type { Material } from 'three';
 import type { GeneratedTile, MeshBatch } from '@city-ink/generators';
+import { FeatureStateTexture, patchFeatureState } from './picking/feature-state.js';
 import { TREE_STRIDE } from '@city-ink/generators';
 
 export interface RoleStyle {
@@ -27,15 +29,14 @@ export interface RoleStyle {
   opacity?: number;
 }
 
-/** Shared materials keyed by semantic role; rebuilt by setStyle without touching geometry. */
+/**
+ * Materials keyed by semantic role; rebuilt by setStyle without touching geometry. Each tile draws with its own
+ * lightweight copies (same program) so its feature-state texture can be bound (see patchFeatureState).
+ */
 export class MaterialLibrary {
-  private readonly map = new Map<string, MeshStandardMaterial>();
-  readonly crown: MeshStandardMaterial;
-  readonly trunk: MeshStandardMaterial;
-  constructor(public roles: Record<string, RoleStyle> = {}) {
-    this.crown = new MeshStandardMaterial({ color: '#8fbf7a', roughness: 0.9, flatShading: true });
-    this.trunk = new MeshStandardMaterial({ color: '#7a6450', roughness: 1 });
-  }
+  private readonly copies = new Map<MeshStandardMaterial, string>();
+  private foliage = '#8fbf7a';
+  constructor(public roles: Record<string, RoleStyle> = {}) {}
 
   /** Resolves a role ("road.marking" falls back to "road"). */
   resolve(role: string): RoleStyle {
@@ -48,17 +49,37 @@ export class MaterialLibrary {
     return {};
   }
 
-  get(role: string): MeshStandardMaterial {
-    let m = this.map.get(role);
-    if (!m) {
-      m = new MeshStandardMaterial({ vertexColors: true });
-      this.apply(role, m);
-      this.map.set(role, m);
-    }
+  /** A material for one tile or overlay, bound to its feature-state texture; release it with `release`. */
+  acquire(role: string, state: FeatureStateTexture): MeshStandardMaterial {
+    const m = new MeshStandardMaterial({ vertexColors: role !== 'tree.crown' && role !== 'tree.trunk' });
+    patchFeatureState(m, state.texture);
+    this.apply(role, m);
+    this.copies.set(m, role);
     return m;
   }
 
+  release(m: MeshStandardMaterial) {
+    if (this.copies.delete(m)) m.dispose();
+  }
+
+  get size(): number {
+    return this.copies.size;
+  }
+
   private apply(role: string, m: MeshStandardMaterial) {
+    if (role === 'tree.crown') {
+      m.color = new Color(this.foliage);
+      m.roughness = 0.9;
+      m.flatShading = true;
+      m.needsUpdate = true;
+      return;
+    }
+    if (role === 'tree.trunk') {
+      m.color = new Color('#7a6450');
+      m.roughness = 1;
+      m.needsUpdate = true;
+      return;
+    }
     const s = this.resolve(role);
     const ground = /^(road|ground|water)/.test(role);
     // Vertex colours carry generator colours; a role colour tints them (white keeps them as generated).
@@ -75,15 +96,13 @@ export class MaterialLibrary {
 
   restyle(roles: Record<string, RoleStyle>, crown?: string) {
     this.roles = roles;
-    for (const [role, m] of this.map) this.apply(role, m);
-    if (crown) this.crown.color = new Color(crown);
+    if (crown) this.foliage = crown;
+    for (const [m, role] of this.copies) this.apply(role, m);
   }
 
   dispose() {
-    for (const m of this.map.values()) m.dispose();
-    this.map.clear();
-    this.crown.dispose();
-    this.trunk.dispose();
+    for (const m of this.copies.keys()) m.dispose();
+    this.copies.clear();
   }
 }
 
@@ -116,20 +135,33 @@ export interface TileObject {
   triangles: number;
   drawCalls: number;
   meshes: Mesh[];
+  /** Per-feature state (hidden, highlight, colour) indexed by renderId. */
+  state: FeatureStateTexture;
+  /** Meshes that take part in picking (trunks excluded). */
+  pickable: Mesh[];
   dispose(): void;
 }
 
-export function buildTileObject(generated: GeneratedTile, materials: MaterialLibrary): TileObject {
+export function buildTileObject(generated: GeneratedTile, materials: MaterialLibrary, capacity?: number): TileObject {
   const group = new Group();
   group.matrixAutoUpdate = false;
   let bytes = 0;
   let triangles = 0;
   const meshes: Mesh[] = [];
+  let maxId = capacity ?? 0;
+  if (capacity === undefined) {
+    for (const b of generated.batches) for (const r of b.renderId) if (r > maxId) maxId = r;
+    for (const r of generated.trees.renderId) if (r > maxId) maxId = r;
+  }
+  const state = new FeatureStateTexture(maxId);
+  const pickable: Mesh[] = [];
   const disposables: { dispose(): void }[] = [];
   for (const batch of generated.batches) {
     const geometry = geometryOf(batch);
     disposables.push(geometry);
-    const mesh = new Mesh(geometry, materials.get(batch.role));
+    const material = materials.acquire(batch.role, state);
+    disposables.push({ dispose: () => materials.release(material) });
+    const mesh = new Mesh(geometry, material);
     mesh.name = `${batch.layer}:${batch.role}`;
     mesh.userData.layer = batch.layer;
     mesh.userData.role = batch.role;
@@ -138,6 +170,7 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
     mesh.receiveShadow = true;
     group.add(mesh);
     meshes.push(mesh);
+    pickable.push(mesh);
     for (const a of Object.values(geometry.attributes))
       bytes += (a.array as ArrayLike<number> & { byteLength: number }).byteLength;
     if (geometry.index) bytes += (geometry.index.array as Uint32Array).byteLength;
@@ -145,8 +178,11 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
   }
   const trees = generated.trees;
   if (trees.count) {
-    const crowns = new InstancedMesh(crownGeometry(), materials.crown, trees.count);
-    const trunks = new InstancedMesh(trunkGeometry(), materials.trunk, trees.count);
+    const crownMaterial = materials.acquire('tree.crown', state);
+    const trunkMaterial = materials.acquire('tree.trunk', state);
+    disposables.push({ dispose: () => (materials.release(crownMaterial), materials.release(trunkMaterial)) });
+    const crowns = new InstancedMesh(crownGeometry(), crownMaterial, trees.count);
+    const trunks = new InstancedMesh(trunkGeometry(), trunkMaterial, trees.count);
     crowns.instanceMatrix.setUsage(DynamicDrawUsage);
     const m = new Matrix4();
     const q = new Quaternion();
@@ -173,6 +209,10 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
     crowns.castShadow = true;
     crowns.computeBoundingSphere();
     trunks.computeBoundingSphere();
+    const instanceIds = new InstancedBufferAttribute(new Float32Array(trees.renderId), 1);
+    crowns.geometry.setAttribute('instanceRenderId', instanceIds);
+    trunks.geometry.setAttribute('instanceRenderId', instanceIds);
+    pickable.push(crowns);
     group.add(crowns, trunks);
     disposables.push(crowns.geometry, trunks.geometry, { dispose: () => (crowns.dispose(), trunks.dispose()) });
     bytes += trees.count * 16 * 4 * 2 + trees.data.byteLength;
@@ -186,8 +226,11 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
     triangles,
     drawCalls: meshes.length + (trees.count ? 2 : 0),
     meshes,
+    state,
+    pickable,
     dispose() {
       for (const d of disposables) d.dispose();
+      state.dispose();
       group.clear();
     },
   };

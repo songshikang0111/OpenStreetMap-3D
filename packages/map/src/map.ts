@@ -37,6 +37,10 @@ import type { FeatureRecord, WorkerResponse } from './worker-core.js';
 import { MaterialLibrary, buildTileObject } from './tile-object.js';
 import type { RoleStyle, TileObject } from './tile-object.js';
 import { Controls } from './controls.js';
+import { Picker } from './picking/picker.js';
+import type { Pickable } from './picking/picker.js';
+import { buildOverlay } from './overlays/overlay.js';
+import type { BuiltOverlay } from './overlays/overlay.js';
 import { BUILTIN_STYLES, resolveStyle } from './styles.js';
 import type {
   AnimationOptions,
@@ -202,14 +206,15 @@ export class CityMapImpl implements CityMap {
   private coverage: Coverage | null = null;
   private readonly tilesRoot = new Group();
   private readonly anchorsRoot = new Group();
-  private readonly anchors = new Set<{ group: Group; lngLat: LngLat; altitude: number }>();
+  private readonly anchors = new Set<{ group: Group; lngLat: LngLat; altitude: number; originScale: number }>();
   private readonly tiles = new Map<string, TileEntry>();
   private readonly uploads: PendingUpload[] = [];
   private readonly refined = new Set<string>();
   private readonly listeners = new Map<MapEventType, Set<(e: MapEvent) => void>>();
   private readonly featureState = new Map<string, Record<string, unknown>>();
   private readonly markers = new Set<{ element: HTMLElement; lngLat: LngLat; altitude: number; anchor: string }>();
-  private readonly customLayers = new Map<string, Group>();
+  private readonly overlays = new Map<string, { built: BuiltOverlay; anchor: Group }>();
+  private readonly picker = new Picker();
   private readonly materials = new MaterialLibrary();
   private readonly ground: Mesh;
   private readonly sun = new DirectionalLight('#ffffff', 1.2);
@@ -403,7 +408,9 @@ export class CityMapImpl implements CityMap {
     this.pool.terminate();
     for (const entry of this.tiles.values()) this.unload(entry);
     this.tiles.clear();
-    for (const g of this.customLayers.values()) g.removeFromParent();
+    for (const o of this.overlays.values()) o.built.dispose();
+    this.overlays.clear();
+    this.picker.dispose();
     this.materials.dispose();
     this.ground.geometry.dispose();
     (this.ground.material as MeshBasicMaterial).dispose();
@@ -590,11 +597,16 @@ export class CityMapImpl implements CityMap {
 
   createAnchor(lngLat: LngLat, altitude = 0): Group {
     this.assertAlive();
+    return this.anchorAt(lngLat, altitude, 0);
+  }
+
+  /** originScale > 0: content is in Mercator-relative metres at that scale and is rescaled to the world unit. */
+  private anchorAt(lngLat: LngLat, altitude: number, originScale: number): Group {
     const group = new Group();
     group.name = 'city-anchor';
-    const entry = { group, lngLat: [...lngLat] as LngLat, altitude };
+    const entry = { group, lngLat: [...lngLat] as LngLat, altitude, originScale };
     this.anchors.add(entry);
-    group.position.copy(this.transform.lngLatToWorld(lngLat, altitude));
+    this.placeAnchor(entry);
     group.userData.cityAnchor = entry;
     group.addEventListener('removed', () => this.anchors.delete(entry));
     this.anchorsRoot.add(group);
@@ -609,7 +621,12 @@ export class CityMapImpl implements CityMap {
     this.transform.anchor = [...this.transform.center] as LngLat;
     this.transform.update();
     for (const entry of this.tiles.values()) if (entry.object) this.placeTile(entry);
-    for (const a of this.anchors) a.group.position.copy(this.transform.lngLatToWorld(a.lngLat, a.altitude));
+    for (const a of this.anchors) this.placeAnchor(a);
+  }
+
+  private placeAnchor(a: { group: Group; lngLat: LngLat; altitude: number; originScale: number }) {
+    a.group.position.copy(this.transform.lngLatToWorld(a.lngLat, a.altitude));
+    if (a.originScale > 0) a.group.scale.setScalar(this.transform.anchorScale / a.originScale);
   }
 
   private placeTile(entry: TileEntry) {
@@ -669,26 +686,48 @@ export class CityMapImpl implements CityMap {
 
   queryFeatures(point: { x: number; y: number }): Feature | null {
     this.assertAlive();
-    const ray = new Raycaster();
-    ray.setFromCamera(
-      new Vector2((point.x / this.transform.width) * 2 - 1, 1 - (point.y / this.transform.height) * 2),
-      this.transform.camera,
-    );
-    const meshes: Mesh[] = [];
-    for (const entry of this.tiles.values()) if (entry.visible && entry.object) meshes.push(...entry.object.meshes);
-    const hits = ray.intersectObjects(meshes, false);
-    for (const hit of hits) {
-      const geometry = (hit.object as Mesh).geometry;
-      const ids = geometry.getAttribute('renderId');
-      if (!ids || !hit.face) continue;
-      const renderId = ids.getX(hit.face.a);
-      const tileKeyOf = (hit.object.parent?.userData.tile as string) ?? '';
-      const entry = this.tiles.get(tileKeyOf);
-      if (entry?.features) entry.renderIndex ??= new Map(entry.features.map((f) => [f.renderId, f]));
-      const record = entry?.renderIndex?.get(renderId);
-      if (record) return this.toFeature(record);
+    const items: Pickable[] = [];
+    const slots: ({ kind: 'tile'; entry: TileEntry } | { kind: 'overlay'; built: BuiltOverlay })[] = [];
+    for (const entry of this.tiles.values()) {
+      if (!entry.visible || !entry.object || slots.length >= 254) continue;
+      slots.push({ kind: 'tile', entry });
+      for (const mesh of entry.object.pickable) items.push({ mesh, slot: slots.length, state: entry.object.state });
     }
-    return null;
+    for (const { built } of this.overlays.values()) {
+      if (slots.length >= 254) break;
+      slots.push({ kind: 'overlay', built });
+      for (const mesh of built.pickMeshes) items.push({ mesh, slot: slots.length, state: built.state });
+    }
+    if (!items.length) return null;
+    this.scene.updateMatrixWorld();
+    const hit = this.picker.pick(
+      this.renderer,
+      this.scene,
+      this.transform.camera,
+      point.x,
+      point.y,
+      this.transform.width,
+      this.transform.height,
+      items,
+    );
+    if (!hit) return null;
+    const owner = slots[hit.slot - 1];
+    if (!owner) return null;
+    if (owner.kind === 'overlay') {
+      const f = owner.built.features[Math.max(0, hit.renderId - 1)];
+      return f
+        ? { id: f.id, layer: owner.built.id, properties: { ...f.properties }, provenance: {}, lngLat: f.lngLat }
+        : null;
+    }
+    const entry = owner.entry;
+    if (entry.features) entry.renderIndex ??= new Map(entry.features.map((f) => [f.renderId, f]));
+    const record = entry.renderIndex?.get(hit.renderId);
+    return record ? this.toFeature(record) : null;
+  }
+
+  /** Main-thread time of the last pick in milliseconds (AC502 diagnostics). */
+  get lastPickMs(): number {
+    return this.picker.lastMs;
   }
 
   getFeature(id: string): Feature | null {
@@ -705,8 +744,29 @@ export class CityMapImpl implements CityMap {
 
   setFeatureState(id: string, state: Record<string, unknown>): void {
     this.assertAlive();
-    this.featureState.set(id, { ...(this.featureState.get(id) ?? {}), ...state });
+    const merged = { ...(this.featureState.get(id) ?? {}), ...state };
+    this.featureState.set(id, merged);
+    // Applied to every loaded copy (L0 and L1, overlays) without touching geometry.
+    for (const entry of this.tiles.values()) {
+      if (!entry.object || !entry.features) continue;
+      entry.featureIndex ??= new Map(entry.features.map((f) => [f.id, f]));
+      const record = entry.featureIndex.get(id);
+      if (record) entry.object.state.set(record.renderId, merged);
+    }
+    for (const { built } of this.overlays.values())
+      built.features.forEach((f, i) => {
+        if (f.id === id) built.state.set(i + 1, merged);
+      });
     this.dirty = true;
+  }
+
+  private applyStates(entry: TileEntry) {
+    if (!this.featureState.size || !entry.object || !entry.features) return;
+    entry.featureIndex ??= new Map(entry.features.map((f) => [f.id, f]));
+    for (const [id, state] of this.featureState) {
+      const record = entry.featureIndex.get(id);
+      if (record) entry.object.state.set(record.renderId, state);
+    }
   }
 
   // ------------------------------------------------------------------------------------------- overlays
@@ -740,27 +800,38 @@ export class CityMapImpl implements CityMap {
 
   addLayer(layer: OverlayLayer): void {
     this.assertAlive();
-    if (this.customLayers.has(layer.id))
-      throw new MapError('LAYER_EXISTS', 'overlay', `Layer ${layer.id} already exists.`);
-    if (layer.type !== 'custom')
+    if (this.overlays.has(layer.id)) throw new MapError('LAYER_EXISTS', 'overlay', `Layer ${layer.id} already exists.`);
+    let built: BuiltOverlay;
+    try {
+      built = buildOverlay(layer);
+    } catch (error) {
+      const e = error as Error & { code?: string };
       throw new MapError(
-        'OVERLAY_UNSUPPORTED',
+        e.code ?? 'OVERLAY_DATA_INVALID',
         'overlay',
-        `Overlay type ${layer.type} is not available yet.`,
-        'GeoJSON overlays arrive with WP-E; use type "custom".',
+        e.message,
+        'Overlays take GeoJSON in [lng, lat] order.',
       );
-    const anchor = this.createAnchor(layer.lngLat, layer.altitude ?? 0);
-    anchor.add(layer.object);
+    }
+    const altitude = layer.type === 'custom' ? (layer.altitude ?? 0) : 0;
+    const anchor = this.anchorAt(built.origin, altitude, built.originScale);
     anchor.userData.layerId = layer.id;
-    this.customLayers.set(layer.id, anchor);
+    anchor.add(built.group);
+    built.features.forEach((f, i) => {
+      const s = this.featureState.get(f.id);
+      if (s) built.state.set(i + 1, s);
+    });
+    this.overlays.set(layer.id, { built, anchor });
+    this.dirty = true;
   }
 
   removeLayer(id: string): void {
     this.assertAlive();
-    const g = this.customLayers.get(id);
-    if (!g) return;
-    g.removeFromParent();
-    this.customLayers.delete(id);
+    const o = this.overlays.get(id);
+    if (!o) return;
+    o.anchor.removeFromParent();
+    o.built.dispose();
+    this.overlays.delete(id);
     this.dirty = true;
   }
 
@@ -902,10 +973,12 @@ export class CityMapImpl implements CityMap {
     while (this.uploads.length && (spent < this.budget.uploadMsPerFrame || spent === 0)) {
       const { entry, response } = this.uploads.shift()!;
       if (!this.tiles.has(entry.key) || entry.object) continue;
-      const object = buildTileObject(response.generated, this.materials);
+      const capacity = response.features.reduce((m, f) => Math.max(m, f.renderId), 0);
+      const object = buildTileObject(response.generated, this.materials, capacity);
       object.group.userData.tile = entry.key;
       entry.object = object;
       entry.features = response.features;
+      this.applyStates(entry);
       entry.bytes = object.bytes;
       entry.state = 'ready';
       entry.retries = 0;
@@ -1123,6 +1196,8 @@ export class CityMapImpl implements CityMap {
     this.ground.scale.setScalar(radius);
     this.sun.position.set(c.x - 400, 900, c.z - 250);
     this.sun.target.position.copy(c);
+    const size = this.renderer.getDrawingBufferSize(new Vector2());
+    for (const { built } of this.overlays.values()) built.update(size, this.renderer.getPixelRatio());
     this.scene.updateMatrixWorld();
     this.renderer.render(this.scene, t.camera);
     this.frame++;

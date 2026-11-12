@@ -20,7 +20,7 @@ import type { Object3D } from 'three';
 import { lngLatToMercator, metersPerMercatorUnit } from '@city-ink/tiles';
 import type { LngLat } from '@city-ink/tiles';
 import type { OverlayLayer } from '../types.js';
-import { FeatureStateTexture, bindStateTexture, patchFeatureState } from '../picking/feature-state.js';
+import { FeatureStateTexture, patchFeatureState } from '../picking/feature-state.js';
 
 export interface OverlayFeature {
   id: string;
@@ -306,7 +306,9 @@ function pickVariant(
   return new ShaderMaterial({
     vertexShader: `${declared}varying float vId;\n${vertex.replace('void main() {', `void main() {\n  vId = ${idAttribute};`)}`,
     fragmentShader: `uniform float slot;\nvarying float vId;\nvoid main() {\n  int id = int(vId + 0.5);\n  gl_FragColor = vec4(float(id % 256), float((id / 256) % 256), float((id / 65536) % 256), slot) / 255.0;\n}`,
-    uniforms: { ...uniforms, slot: { value: 0 } },
+    // The pick pass zooms the projection to one pixel, so pixel sizes are expressed against a 1×1 viewport.
+    uniforms: { ...uniforms, resolution: { value: new Vector2(1, 1) }, slot: { value: 0 } },
+    side: DoubleSide,
   });
 }
 
@@ -356,7 +358,6 @@ export function buildOverlay(layer: OverlayLayer): BuiltOverlay {
     return { id: f.id, properties: f.properties, lngLat: [c[0], c[1]] };
   });
   const add = (mesh: Mesh) => {
-    bindStateTexture(mesh, state);
     mesh.userData.overlay = layer.id;
     group.add(mesh);
     pickMeshes.push(mesh);
@@ -386,7 +387,7 @@ export function buildOverlay(layer: OverlayLayer): BuiltOverlay {
       polygonOffsetUnits: -2,
       depthWrite: (layer.paint.opacity ?? 1) >= 1,
     });
-    patchFeatureState(material);
+    patchFeatureState(material, state.texture);
     const alt = layer.altitude ?? 0.3;
     add(
       new Mesh(
@@ -404,7 +405,7 @@ export function buildOverlay(layer: OverlayLayer): BuiltOverlay {
       opacity: paint.opacity ?? 1,
       roughness: 0.8,
     });
-    patchFeatureState(material);
+    patchFeatureState(material, state.texture);
     add(
       new Mesh(
         buildPolygons(

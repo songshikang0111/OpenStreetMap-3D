@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-11T20:59:23.224Z",
+  "date": "2026-11-12T04:03:13.412Z",
   "browser": "Chrome/150.0.7871.114",
   "machine": {
     "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
@@ -28,7 +28,7 @@
     },
     "AC406": {
       "pass": true,
-      "frames": 435,
+      "frames": 698,
       "holeFrames": 0,
       "examples": []
     },
@@ -47,7 +47,7 @@
     },
     "AC409": {
       "pass": true,
-      "mainThreadFunctions": 168,
+      "mainThreadFunctions": 214,
       "bannedFound": [],
       "workerChunkFramesOnMainThread": 0,
       "sawUpload": true

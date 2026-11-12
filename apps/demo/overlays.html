@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>City Ink 3D — overlays and picking</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        font:
+          13px/1.4 system-ui,
+          sans-serif;
+      }
+      #map {
+        position: absolute;
+        inset: 0;
+      }
+      #info {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        max-width: 340px;
+        max-height: 70%;
+        overflow: auto;
+        padding: 8px;
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 4px;
+        white-space: pre-wrap;
+        font:
+          12px/1.35 ui-monospace,
+          monospace;
+      }
+      .pin {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #e2482d;
+        border: 2px solid #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="info">Click a building, tree, road or overlay.</div>
+    <script type="module" src="./overlays.js"></script>
+  </body>
+</html>

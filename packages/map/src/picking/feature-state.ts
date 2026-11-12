@@ -84,12 +84,20 @@ uniform vec3 highlightColor;
 uniform float highlightIntensity;
 `;
 
-/** Patches a built-in material so it honours the per-feature state texture. */
-export function patchFeatureState(material: Material): void {
-  const previous = material.onBeforeCompile;
-  material.onBeforeCompile = (shader, renderer) => {
-    previous.call(material, shader, renderer);
-    Object.assign(shader.uniforms, stateUniforms);
+/**
+ * Patches a built-in material so it honours a per-feature state texture. three.js only re-uploads uniforms of
+ * built-in materials when the material changes between draws, so every tile or overlay gets its own material
+ * instance carrying its own texture; the program is shared through the cache key, so nothing recompiles.
+ */
+export function patchFeatureState(material: Material, texture: DataTexture | null = null): void {
+  const own = {
+    featureState: { value: texture },
+    highlightColor: stateUniforms.highlightColor,
+    highlightIntensity: stateUniforms.highlightIntensity,
+  };
+  material.userData.featureStateUniforms = own;
+  material.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, own);
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', `#include <common>\n${VERTEX_DECL}`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>\n${VERTEX_BODY}`);

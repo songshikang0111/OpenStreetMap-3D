@@ -11,7 +11,12 @@ export default defineConfig({
     alias: { '@city-ink/map': fileURLToPath(new URL('../../packages/map/dist/index.js', import.meta.url)) },
   },
   worker: { format: 'es' },
-  build: { outDir: 'dist', emptyOutDir: true, target: 'es2022' },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    target: 'es2022',
+    rollupOptions: { input: { main: root + 'index.html', overlays: root + 'overlays.html' } },
+  },
   server: { host: '127.0.0.1', port: 5180, strictPort: true },
   preview: { host: '127.0.0.1', port: 5180, strictPort: true },
 });
