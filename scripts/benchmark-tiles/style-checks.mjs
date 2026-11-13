@@ -30,6 +30,8 @@ try {
   {
     const r = await page.evaluate(`(async () => {
       const m = cityMap; const frame = () => new Promise((r) => requestAnimationFrame(() => r()));
+      // Settle first: the triangle budget may still be showing or hiding detail groups (first upload of a hidden mesh).
+      await m.whenIdle({ timeoutMs: 60000 }); await frame(); await frame();
       const before = m.getStats(); const times = [];
       for (const id of ['dark', 'plain', 'light', 'dark', 'light']) {
         const t0 = performance.now(); await m.setStyle(id); await frame(); times.push(performance.now() - t0);

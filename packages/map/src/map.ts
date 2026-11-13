@@ -1098,10 +1098,69 @@ export class CityMapImpl implements CityMap {
    * Adjusted at most every 300 ms, with a dead band, so tiles do not flip back and forth.
    */
   private adaptToBudget(now: number) {
-    let triangles = this.nearFrames.count * 12;
-    for (const e of this.tiles.values()) if (e.visible && e.object) triangles += e.object.triangles;
-    this.visibleTriangles = triangles;
-    const budget = this.budget.visibleTriangles;
+    // Per-tile detail tiers by distance (06 section 3, budget-driven degradation): the nearest tiles keep everything;
+    // farther tiles first drop their structure group (facade trims, roof plant, parapets, piers); only when every
+    // tile is already reduced does the refinement threshold grow so that whole regions fall back to the coarser level.
+    // The estimate below counts whole tiles; the renderer also draws what the estimate misses (frustum and light
+    // frustum differ). Scale the budget by the measured/estimated ratio of the last colour+shadow frame.
+    const correction = this.lastEstimate > 0 && this.lastRendered > 0 ? this.lastRendered / this.lastEstimate : 1;
+    const budget = this.budget.visibleTriangles / Math.min(3, Math.max(1, correction));
+    const eye = this.transform.camera.position;
+    const shown = [...this.tiles.values()].filter((e) => e.visible && e.object);
+    const shadows = this.sun.castShadow && this.renderer.shadowMap.enabled;
+    // Budget counts every triangle the GPU draws: the colour pass plus the shadow depth pass of shadow casters.
+    const tris = (m: Mesh) =>
+      ((m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position!.count) / 3) *
+      ((m as InstancedMesh).isInstancedMesh ? (m as InstancedMesh).count : 1);
+    let total = this.nearFrames.count * 12 * (shadows ? 2 : 1);
+    const ranked: { e: TileEntry; tiers: number[]; d: number }[] = [];
+    for (const e of shown) {
+      const o = e.object!;
+      let colour = 0,
+        optional = 0,
+        caster = 0;
+      o.group.traverse((obj) => {
+        const m = obj as Mesh;
+        if (!m.isMesh || !m.geometry) return;
+        const n = tris(m);
+        const layer = String(m.userData.layer);
+        if (layer === 'structure') optional += n;
+        else colour += n;
+        if (m.castShadow && layer !== 'structure') caster += n;
+      });
+      // tier 0: everything; tier 1: no structure group; tier 2: tier 1 without casting shadows
+      const tiers = [colour + optional + (shadows ? caster : 0), colour + (shadows ? caster : 0), colour];
+      const centre = o.meshes[0]?.geometry.boundingSphere
+        ? o.meshes[0].geometry.boundingSphere.center.clone().applyMatrix4(o.group.matrixWorld)
+        : o.group.getWorldPosition(new Vector3());
+      ranked.push({ e, tiers, d: centre.distanceTo(eye) });
+    }
+    ranked.sort((x, y) => x.d - y.d);
+    // Nearest first: each tile takes the richest tier that still leaves room for every farther tile at tier 2.
+    let remaining = ranked.reduce((n, r) => n + r.tiers[2]!, 0);
+    let reduced = 0;
+    for (const [i, r] of ranked.entries()) {
+      remaining -= r.tiers[2]!;
+      let tier = 2;
+      if (i === 0 || total + r.tiers[0]! + remaining <= budget) tier = 0;
+      else if (total + r.tiers[1]! + remaining <= budget) tier = 1;
+      const o = r.e.object!;
+      o.group.traverse((obj) => {
+        const m = obj as Mesh;
+        if (!m.isMesh) return;
+        if (m.userData.layer === 'structure') m.visible = tier === 0;
+        else if (m.userData.castsShadow !== undefined || m.castShadow) {
+          m.userData.castsShadow ??= m.castShadow;
+          m.castShadow = Boolean(m.userData.castsShadow) && tier < 2;
+        }
+      });
+      total += r.tiers[tier]!;
+      if (tier) reduced++;
+    }
+    this.reducedTiles = reduced;
+    this.visibleTriangles = total;
+    this.lastEstimate = total;
+    const triangles = total;
     // Keep frames coming while over budget so the adjustment converges (the loop otherwise sleeps when idle).
     // Refinement is all-or-nothing per parent tile, so relaxing can jump straight back over budget. Relax only when
     // the last over-budget view cost would now fit, or the camera has moved enough to change the tile set.
@@ -1124,6 +1183,10 @@ export class CityMapImpl implements CityMap {
     }
   }
 
+  /** L1 tiles currently drawn without their structure group. */
+  private reducedTiles = 0;
+  private lastEstimate = 0;
+  private lastRendered = 0;
   private overBudgetAt: { cost: number; zoom: number; center: LngLat } | null = null;
 
   /** True while the budget adjustment has not converged; keeps the frame loop running. */
@@ -1678,7 +1741,10 @@ export class CityMapImpl implements CityMap {
     this.scene.updateMatrixWorld();
     this.updateNearDetails();
     if (this.pipeline) this.pipeline.render();
-    else this.renderer.render(this.scene, t.camera);
+    else {
+      this.renderer.render(this.scene, t.camera);
+      this.lastRendered = this.renderer.info.render.triangles;
+    }
     this.frame++;
     if (this.lastFrameTime) {
       this.frameIntervals.push(time - this.lastFrameTime);
@@ -1699,7 +1765,8 @@ export class CityMapImpl implements CityMap {
     if (key === this.nearKey) return;
     this.nearKey = key;
     let count = 0;
-    const limit = this.budget.nearDetails;
+    // Near attachments take at most a fifth of the triangle budget (12 triangles per instance).
+    const limit = Math.min(this.budget.nearDetails, Math.floor((this.budget.visibleTriangles * 0.2) / 12));
     if (limit > 0 && this.filter.details !== false) {
       const inverse = new Matrix4();
       const local = new Vector3();
@@ -1826,6 +1893,7 @@ export class CityMapImpl implements CityMap {
         pack: this.pack?.id ?? null,
         nearDetails: this.nearFrames.count,
         visibleTriangles: this.visibleTriangles,
+        reducedTiles: this.reducedTiles,
         sseScale: this.sseScale,
         buildings: this.buildingCounts(),
       };

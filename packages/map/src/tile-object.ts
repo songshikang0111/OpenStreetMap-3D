@@ -482,7 +482,8 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
     mesh.userData.layer = batch.layer;
     mesh.userData.role = batch.role;
     mesh.matrixAutoUpdate = false;
-    mesh.castShadow = batch.layer !== 'ground';
+    // Trims, roof plant and parapets add little to shadows and a lot to the depth pass.
+    mesh.castShadow = batch.layer === 'building' || batch.layer === 'landmark';
     mesh.receiveShadow = true;
     group.add(mesh);
     meshes.push(mesh);
