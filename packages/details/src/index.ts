@@ -182,6 +182,7 @@ const LANDSCAPE_COLORS: Record<string, string> = {
   sport: '#9eaf9b',
   construction: '#c0b09a',
   soil: '#baaf94',
+  marking: '#e9e6d7',
 };
 const GREEN_KINDS = /^(lawn|park|wood|garden|shrub|sport)$/;
 
@@ -190,10 +191,10 @@ export function generateLandscape(layer: FeatureLayer, step: number, batches: Ba
   let triangles = 0;
   for (let i = 0; i < layer.featureCount; i++) {
     const kind = String(readFeatureMetaAt(layer, i).properties?.kind ?? 'soil');
-    const role = GREEN_KINDS.test(kind) ? 'ground.green' : 'ground.plaza';
+    const role = kind === 'marking' ? 'road.marking' : GREEN_KINDS.test(kind) ? 'ground.green' : 'ground.plaza';
     const batch = batches.get('landscape', role, true);
     const color = rgb(LANDSCAPE_COLORS[kind] ?? LANDSCAPE_COLORS.soil!);
-    const y = kind === 'shrub' ? 0.05 : 0.03;
+    const y = kind === 'marking' ? 0.045 : kind === 'shrub' ? 0.05 : 0.03;
     const rid = layer.renderId[i]!;
     for (let p = layer.partStart[i]!; p < layer.partStart[i + 1]!; p++) {
       const rings: Vector2[][] = [];

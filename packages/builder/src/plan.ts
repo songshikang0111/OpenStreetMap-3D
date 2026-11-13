@@ -7,6 +7,7 @@ import type { RoadSurfacePiece } from '../../../src/road-surface.js';
 import { planStreetLife } from '../../../src/streetlife.js';
 import { planRoadStructures } from '../../../src/road-structures.js';
 import { planLandscape } from '../../../src/landscape-plan.js';
+import { planLandscapeMarkings } from '../../../src/landscape-markings.js';
 import type { StairFlight } from '../../../src/road-stairs.js';
 import type { Phase1Building, Phase1Data, Phase1Polygon, Point2 } from '../../../src/phase1-types.js';
 import { phase1IdToFeatureId } from '@city-ink/generators';
@@ -441,11 +442,35 @@ export async function planCell(ctx: PlanContext, cell: TileId | null, options: P
 
   // Trees: observed nodes and rule-planted trees, owned by their position.
   // Landscape completion (optional, 03 section 6): inferred surfaces and benches; observed polygons stay in `green`.
+  let landscapeTrees: unknown[] = [];
   if (options.landscape) {
     const land = planLandscape(data, { roadPlan: road, seed: options.seed }) as unknown as {
       surfaces: { id?: string; kind: string; source: string; outer: Point2[]; holes?: Point2[][] }[];
       props: { point: Point2; angle: number; kind: string; length: number; source: string }[];
+      trees: unknown[];
     };
+    // Planting of the inferred sites goes through the street-life planner with the other trees (phase-one order).
+    landscapeTrees = land.trees;
+    // Illustrative parking bays and court lines inside observed parking and pitch outlines (phase one).
+    for (const [n, mark] of (
+      planLandscapeMarkings(data, land) as { outer: Point2[]; holes?: Point2[][] }[]
+    ).entries()) {
+      const rings = [mark.outer.map(ll), ...(mark.holes ?? []).map((h) => h.map(ll))];
+      if (rings[0]!.length < 3 || !intersects(ringBounds(rings[0]!))) continue;
+      const shape = mark.outer.map((q) => q.map((v) => v.toFixed(2)).join(',')).join(';');
+      records.push({
+        layer: 'landscape',
+        id: `generated/${hash52(`marking:${shape}`)}`,
+        cell: key,
+        geometry: [rings],
+        anchor: rings[0]![0]!,
+        properties: { kind: 'marking', source: 'inferred-layout' },
+        provenance: { kind: 'inferred' },
+        tags: {},
+      });
+      void n;
+      count('landscapeMarkings');
+    }
     for (const surface of land.surfaces) {
       if (String(surface.source).startsWith('osm')) continue;
       const rings = [surface.outer.map(ll), ...(surface.holes ?? []).map((h) => h.map(ll))];
@@ -471,10 +496,13 @@ export async function planCell(ctx: PlanContext, cell: TileId | null, options: P
     }
   }
 
-  if (options.ruleTrees || options.details || data.trees.length) {
-    const life = planStreetLife(data, { seed: options.seed, maxTrees: 1e9, roadPlan: road }) as ReturnType<
-      typeof planStreetLife
-    > & {
+  if (options.ruleTrees || options.details || options.landscape || data.trees.length) {
+    const life = planStreetLife(data, {
+      seed: options.seed,
+      maxTrees: 1e9,
+      roadPlan: road,
+      landscapeTrees: landscapeTrees as never,
+    }) as ReturnType<typeof planStreetLife> & {
       lamps?: DetailItem[];
       signals?: DetailItem[];
       crosswalks?: DetailItem[];

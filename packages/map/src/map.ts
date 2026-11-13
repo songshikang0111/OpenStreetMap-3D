@@ -1014,6 +1014,10 @@ export class CityMapImpl implements CityMap {
     f.windows.value = spec.facade.windows ? 1 : 0;
     f.facadeDetail.value = Math.min(1, 0.5 * spec.facade.density);
     f.sunDirection.value.copy(this.sunDirection);
+    // The analytic glass environment is a daylight sky; on a dark background it made curtain walls glow. Scale the
+    // reflection with the background luminance (dark style ≈ 0.2, light styles 0.65 as in phase one).
+    const bg = new Color(env.background);
+    f.glassReflection.value = Math.min(0.65, 0.15 + (0.2126 * bg.r + 0.7152 * bg.g + 0.0722 * bg.b) * 0.6);
     x.uContactShadow.value = env.ambientOcclusion;
     x.uNightLights.value = spec.facade.nightLights ? 1 : 0;
     stateUniforms.highlightColor.value.set(spec.featureState.highlight.emissive);
