@@ -38,10 +38,11 @@ test('E10: details and landscape are off by default, planned when enabled and pa
             kinds[m.properties.kind] = (kinds[m.properties.kind] ?? 0) + 1;
             assert.ok(['observed', 'inferred'].includes(m.provenance.position));
           }
-        for (const batch of generateTile(tile, { layerGenerators: DETAIL_GENERATORS }).batches)
-          if (batch.layer === 'detail' || batch.layer === 'landscape') detailTriangles += batch.index.length / 3;
-        for (const batch of generateTile(tile).batches)
-          if (batch.layer === 'detail' || batch.layer === 'landscape') withoutGenerators++;
+        const tri = (g) => g.batches.reduce((n, b) => n + b.index.length / 3, 0);
+        const withDetails = tri(generateTile(tile, { layerGenerators: DETAIL_GENERATORS }));
+        const without = tri(generateTile(tile));
+        detailTriangles += withDetails - without;
+        if (!tile.layers.detail && !tile.layers.landscape && withDetails !== without) withoutGenerators++;
       }
     for (const k of ['lamp', 'curb', 'car', 'person']) assert.ok(kinds[k] > 0, `${k}: ${JSON.stringify(kinds)}`);
     assert.ok(detailTriangles > 1000);

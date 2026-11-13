@@ -10,27 +10,16 @@
       "name": "beijing-cbd-grow-9",
       "tiles": 20,
       "maxDraws": {
-        "L0": 6,
-        "L1": 17
+        "L0": 2,
+        "L1": 6
       },
       "maxGzip": 176317,
       "worst": {
-        "tile": "16/53968/24831.c3t",
+        "tile": "16/53968/24830.c3t",
         "batches": [
-          "building:facility",
-          "building:glass",
-          "building:roof",
-          "building:structure",
-          "building:wall",
-          "detail:facility",
-          "detail:road.marking",
-          "green:ground.green",
-          "ground:ground.pavement",
-          "ground:road",
-          "ground:road.marking",
+          "building:building",
+          "ground:ground",
           "landmark:landmark",
-          "landscape:ground.green",
-          "landscape:ground.plaza",
           "structure:structure"
         ]
       }
@@ -39,27 +28,16 @@
       "name": "kyoto-gion-grow-9",
       "tiles": 7,
       "maxDraws": {
-        "L0": 5,
-        "L1": 16
+        "L0": 2,
+        "L1": 5
       },
       "maxGzip": 243817,
       "worst": {
-        "tile": "16/57484/25957.c3t",
+        "tile": "16/57484/25956.c3t",
         "batches": [
-          "building:facility",
-          "building:roof",
-          "building:structure",
-          "building:wall",
-          "detail:facility",
-          "detail:road.marking",
-          "green:ground.green",
-          "ground:ground.pavement",
-          "ground:road",
-          "ground:road.marking",
-          "landscape:ground.green",
-          "landscape:ground.plaza",
-          "structure:structure",
-          "water:water"
+          "building:building",
+          "ground:ground",
+          "structure:structure"
         ]
       }
     },
@@ -67,68 +45,21 @@
       "name": "manhattan-financial",
       "tiles": 7,
       "maxDraws": {
-        "L0": 6,
-        "L1": 17
+        "L0": 2,
+        "L1": 5
       },
       "maxGzip": 188082,
       "worst": {
-        "tile": "16/19295/24641.c3t",
+        "tile": "16/19294/24640.c3t",
         "batches": [
-          "building:facility",
-          "building:glass",
-          "building:roof",
-          "building:structure",
-          "building:wall",
-          "detail:facility",
-          "detail:road.marking",
-          "green:ground.green",
-          "ground:ground.pavement",
-          "ground:road",
-          "ground:road.marking",
-          "landscape:ground.green",
-          "landscape:ground.plaza",
-          "structure:structure",
-          "water:water"
+          "building:building",
+          "ground:ground",
+          "structure:structure"
         ]
       }
     }
   ],
   "bundleGzip": 41683,
-  "problems": [
-    "beijing-cbd-grow-9 14/13491/6207.c3t: 5 draw calls > 4 (L0)",
-    "beijing-cbd-grow-9 14/13491/6208.c3t: 5 draw calls > 4 (L0)",
-    "beijing-cbd-grow-9 14/13492/6207.c3t: 5 draw calls > 4 (L0)",
-    "beijing-cbd-grow-9 14/13492/6208.c3t: 6 draw calls > 4 (L0)",
-    "beijing-cbd-grow-9 16/53967/24830.c3t: 13 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53967/24831.c3t: 14 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53967/24832.c3t: 16 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53967/24833.c3t: 16 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53968/24830.c3t: 14 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53968/24831.c3t: 17 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53968/24832.c3t: 16 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53968/24833.c3t: 16 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53969/24830.c3t: 14 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53969/24831.c3t: 15 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53969/24832.c3t: 15 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53969/24833.c3t: 14 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53970/24830.c3t: 14 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53970/24831.c3t: 15 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53970/24832.c3t: 14 draw calls > 12 (L1)",
-    "beijing-cbd-grow-9 16/53970/24833.c3t: 14 draw calls > 12 (L1)",
-    "kyoto-gion-grow-9 14/14371/6489.c3t: 5 draw calls > 4 (L0)",
-    "kyoto-gion-grow-9 16/57484/25956.c3t: 13 draw calls > 12 (L1)",
-    "kyoto-gion-grow-9 16/57484/25957.c3t: 16 draw calls > 12 (L1)",
-    "kyoto-gion-grow-9 16/57484/25958.c3t: 16 draw calls > 12 (L1)",
-    "kyoto-gion-grow-9 16/57485/25956.c3t: 14 draw calls > 12 (L1)",
-    "kyoto-gion-grow-9 16/57485/25957.c3t: 16 draw calls > 12 (L1)",
-    "kyoto-gion-grow-9 16/57485/25958.c3t: 16 draw calls > 12 (L1)",
-    "manhattan-financial 14/4823/6160.c3t: 6 draw calls > 4 (L0)",
-    "manhattan-financial 16/19294/24640.c3t: 14 draw calls > 12 (L1)",
-    "manhattan-financial 16/19294/24641.c3t: 16 draw calls > 12 (L1)",
-    "manhattan-financial 16/19294/24642.c3t: 16 draw calls > 12 (L1)",
-    "manhattan-financial 16/19295/24640.c3t: 16 draw calls > 12 (L1)",
-    "manhattan-financial 16/19295/24641.c3t: 17 draw calls > 12 (L1)",
-    "manhattan-financial 16/19295/24642.c3t: 16 draw calls > 12 (L1)"
-  ],
-  "status": "fail"
+  "problems": [],
+  "status": "pass"
 }

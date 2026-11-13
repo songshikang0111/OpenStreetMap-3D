@@ -86,12 +86,24 @@ EMPTY_RULES.needsUpdate = true;
 export class RuleTexture {
   readonly texture: DataTexture;
   readonly data: Uint8Array;
+  /** Bit mask of the role indices a feature's override applies to (r: roles 0-7, g: roles 8-15). */
+  readonly mask: DataTexture;
+  readonly maskData: Uint8Array;
   constructor(capacity: number) {
     const rows = Math.max(1, Math.ceil((capacity + 1) / STATE_WIDTH));
     this.data = new Uint8Array(STATE_WIDTH * rows * 4);
+    this.maskData = new Uint8Array(STATE_WIDTH * rows * 4);
     this.texture = new DataTexture(this.data, STATE_WIDTH, rows, RGBAFormat, UnsignedByteType);
-    this.texture.magFilter = this.texture.minFilter = NearestFilter;
-    this.texture.generateMipmaps = false;
+    this.mask = new DataTexture(this.maskData, STATE_WIDTH, rows, RGBAFormat, UnsignedByteType);
+    for (const t of [this.texture, this.mask]) {
+      t.magFilter = t.minFilter = NearestFilter;
+      t.generateMipmaps = false;
+    }
+  }
+  setMask(renderId: number, mask: number) {
+    if (renderId < 0 || renderId * 4 + 3 >= this.maskData.length) return;
+    this.maskData[renderId * 4] = mask & 255;
+    this.maskData[renderId * 4 + 1] = (mask >> 8) & 255;
   }
   set(renderId: number, color: string | undefined, opacity: number | undefined) {
     if (renderId < 0 || renderId * 4 + 3 >= this.data.length) return;
@@ -106,9 +118,11 @@ export class RuleTexture {
   }
   commit() {
     this.texture.needsUpdate = true;
+    this.mask.needsUpdate = true;
   }
   dispose() {
     this.texture.dispose();
+    this.mask.dispose();
   }
 }
 

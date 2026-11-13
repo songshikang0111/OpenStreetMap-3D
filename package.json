@@ -90,7 +90,7 @@
     "demo": "vite --config apps/demo/vite.config.js",
     "build:demo": "vite build --config apps/demo/vite.config.js",
     "build:map-bundle": "vite build --config packages/map/vite.config.js",
-    "check:static-budget": "node scripts/benchmark-tiles/static-budget.mjs apps/demo/public/tiles/beijing-cbd-grow-9 apps/demo/public/tiles/kyoto-gion-grow-9 --max-l1-draws 17 --max-l0-draws 6 --max-tile-gzip 262144"
+    "check:static-budget": "node scripts/benchmark-tiles/static-budget.mjs apps/demo/public/tiles/beijing-cbd-grow-9 apps/demo/public/tiles/kyoto-gion-grow-9 --max-tile-gzip 262144"
   },
   "dependencies": {
     "polygon-clipping": "0.15.7",

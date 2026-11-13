@@ -1,7 +1,45 @@
-// Role-batched, non-indexed or indexed triangle buffers. One batch per material role keeps a tile within its draw-call
-// budget (06 section 3). All arrays are plain typed arrays so they can be transferred out of a Worker.
+// Material-group batches (decision E15). Vertices of several semantic roles share one batch per material group, and a
+// per-vertex `roleIndex` tells the style which role each vertex has, so an L1 tile is a handful of draw calls
+// (06 section 3: <= 12 per L1 tile, <= 4 per L0 tile). All arrays are typed arrays transferable out of a Worker.
+
+/** Semantic roles written by generators, in roleIndex order (05 section 3). Append only. */
+export const ROLE_LIST = [
+  'wall',
+  'glass',
+  'roof',
+  'structure',
+  'facility',
+  'road',
+  'road.marking',
+  'ground',
+  'ground.pavement',
+  'ground.plaza',
+  'ground.green',
+  'water',
+  'landmark',
+] as const;
+
+/** Material group of a role: building (facade shader), structure, ground (polygon offset, no shadow casting), landmark. */
+export function groupOf(role: string): 'building' | 'structure' | 'ground' | 'landmark' {
+  if (/^(wall|glass|roof)(\.|$)/.test(role)) return 'building';
+  if (/^(road|ground|water)(\.|$)/.test(role)) return 'ground';
+  if (role === 'landmark') return 'landmark';
+  return 'structure';
+}
+
+export function roleIndexOf(role: string): number {
+  let r = role;
+  while (r) {
+    const i = (ROLE_LIST as readonly string[]).indexOf(r);
+    if (i >= 0) return i;
+    const dot = r.lastIndexOf('.');
+    r = dot > 0 ? r.slice(0, dot) : '';
+  }
+  return (ROLE_LIST as readonly string[]).indexOf('structure');
+}
 
 export interface MeshBatch {
+  /** Material group: building, structure, ground or landmark. */
   layer: string;
   role: string;
   vertexCount: number;
@@ -10,9 +48,11 @@ export interface MeshBatch {
   color: Float32Array;
   /** Tile renderId of the owning feature, one per vertex (exact as float up to 2^24). */
   renderId: Float32Array;
+  /** Index into ROLE_LIST, one per vertex. */
+  roleIndex: Float32Array;
   /** Optional facade-v6 shader attributes (aFacade 4, aStyle 2, aLayout 4, aSurface 2). */
   facade: { aFacade: Float32Array; aStyle: Float32Array; aLayout: Float32Array; aSurface: Float32Array } | null;
-  index: Uint32Array | null;
+  index: Uint32Array;
   /** Axis-aligned bounds [minX, minY, minZ, maxX, maxY, maxZ], computed in the worker. */
   bounds: [number, number, number, number, number, number];
 }
@@ -67,68 +107,40 @@ class Grow<T extends Float32Array | Uint32Array> {
 const f32 = (n: number) => new Float32Array(n);
 const u32 = (n: number) => new Uint32Array(n);
 
-export class BatchBuilder {
-  private readonly pos = new Grow(f32);
-  private readonly nor = new Grow(f32);
-  private readonly col = new Grow(f32);
-  private readonly rid = new Grow(f32);
-  private readonly idx = new Grow(u32);
-  /** Vertices written through vertex() (before writer runs). */
-  private own = 0;
-  hasFacade = false;
-  constructor(
-    readonly layer: string,
-    readonly role: string,
-    readonly indexed = false,
-  ) {}
-
-  /** Vertex ranges of phase-one MeshWriters, copied once into the final typed arrays (non-indexed batches only). */
-  readonly runs: { writer: WriterLike; start: number; count: number; renderId: number; yOffset: number }[] = [];
-  private runVertices = 0;
-
-  get vertexCount(): number {
-    return this.own + this.runVertices;
-  }
-
-  /** Index buffer appender (indexed batches). */
-  readonly index = { push: (i: number) => this.idx.push(i) };
-
-  addWriterRun(writer: WriterLike, start: number, count: number, renderId: number, yOffset: number) {
-    if (this.indexed) throw new Error('Writer runs require a non-indexed batch.');
-    if (this.own) throw new Error('Writer runs must precede direct vertices in a facade batch.');
-    this.hasFacade = true;
-    this.runs.push({ writer, start, count, renderId, yOffset });
-    this.runVertices += count;
-  }
-
-  vertex(p: ArrayLike<number>, n: ArrayLike<number>, c: ArrayLike<number>, renderId: number): number {
-    if (this.hasFacade) throw new Error('Direct vertices are not supported in a facade batch.');
-    this.pos.push3(p[0]!, p[1]!, p[2]!);
-    this.nor.push3(n[0]!, n[1]!, n[2]!);
-    this.col.push3(c[0]!, c[1]!, c[2]!);
-    this.rid.push(renderId);
-    return this.own++;
-  }
-
-  triangle(a: number, b: number, c: number) {
-    this.idx.push3(a, b, c);
-  }
+/** One material group's buffers. Direct vertices are indexed; phase-one writer runs are appended at build time. */
+class GroupBuilder {
+  readonly pos = new Grow(f32);
+  readonly nor = new Grow(f32);
+  readonly col = new Grow(f32);
+  readonly rid = new Grow(f32);
+  readonly role = new Grow(f32);
+  readonly idx = new Grow(u32);
+  own = 0;
+  readonly runs: {
+    writer: WriterLike;
+    start: number;
+    count: number;
+    renderId: number;
+    yOffset: number;
+    roleIndex: number;
+  }[] = [];
+  runVertices = 0;
+  constructor(readonly group: string) {}
 
   build(): MeshBatch {
-    const n = this.vertexCount;
-    let position: Float32Array, normal: Float32Array, color: Float32Array, renderId: Float32Array;
-    if (!this.runs.length) {
-      position = this.pos.view().slice();
-      normal = this.nor.view().slice();
-      color = this.col.view().slice();
-      renderId = this.rid.view().slice();
-    } else {
-      position = new Float32Array(n * 3);
-      normal = new Float32Array(n * 3);
-      color = new Float32Array(n * 3);
-      renderId = new Float32Array(n);
-    }
-    const facade = this.hasFacade
+    const own = this.own;
+    const n = own + this.runVertices;
+    const position = new Float32Array(n * 3);
+    const normal = new Float32Array(n * 3);
+    const color = new Float32Array(n * 3);
+    const renderId = new Float32Array(n);
+    const roleIndex = new Float32Array(n);
+    position.set(this.pos.view());
+    normal.set(this.nor.view());
+    color.set(this.col.view());
+    renderId.set(this.rid.view());
+    roleIndex.set(this.role.view());
+    const facade = this.runs.length
       ? {
           aFacade: new Float32Array(n * 4),
           aStyle: new Float32Array(n * 2),
@@ -136,7 +148,12 @@ export class BatchBuilder {
           aSurface: new Float32Array(n * 2),
         }
       : null;
-    let v = 0;
+    // Direct vertices carry the neutral facade defaults (no windows).
+    if (facade) for (let v = 0; v < own; v++) facade.aSurface[v * 2 + 1] = 1;
+    const index = new Uint32Array(this.idx.length + this.runVertices);
+    index.set(this.idx.view());
+    let k = this.idx.length;
+    let v = own;
     for (const run of this.runs) {
       const w = run.writer;
       for (let i = run.start, end = run.start + run.count; i < end; i++, v++) {
@@ -152,15 +169,17 @@ export class BatchBuilder {
         color[d3 + 1] = w.colors[s3 + 1]!;
         color[d3 + 2] = w.colors[s3 + 2]!;
         renderId[v] = run.renderId;
+        roleIndex[v] = run.roleIndex;
         const f = facade!;
-        for (let k = 0; k < 4; k++) {
-          f.aFacade[v * 4 + k] = w.facades[i * 4 + k]!;
-          f.aLayout[v * 4 + k] = w.layouts[i * 4 + k]!;
+        for (let q = 0; q < 4; q++) {
+          f.aFacade[v * 4 + q] = w.facades[i * 4 + q]!;
+          f.aLayout[v * 4 + q] = w.layouts[i * 4 + q]!;
         }
         f.aStyle[v * 2] = w.styles[i * 2]!;
         f.aStyle[v * 2 + 1] = w.styles[i * 2 + 1]!;
         f.aSurface[v * 2] = w.surfaces[i * 2]!;
         f.aSurface[v * 2 + 1] = w.surfaces[i * 2 + 1]!;
+        index[k++] = v;
       }
     }
     const bounds: MeshBatch['bounds'] = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity];
@@ -177,47 +196,90 @@ export class BatchBuilder {
     }
     return {
       bounds,
-      layer: this.layer,
-      role: this.role,
+      layer: this.group,
+      role: this.group,
       vertexCount: n,
       position,
       normal,
       color,
       renderId,
+      roleIndex,
       facade,
-      index: this.indexed ? this.idx.view().slice() : null,
+      index,
     };
   }
 }
 
+/** A writer for one semantic role inside its material group (the interface generators use). */
+export class BatchBuilder {
+  readonly roleIndex: number;
+  constructor(
+    private readonly g: GroupBuilder,
+    readonly layer: string,
+    readonly role: string,
+  ) {
+    this.roleIndex = roleIndexOf(role);
+  }
+
+  /** Index of the next vertex in the group (indices passed to triangle() are group-wide). */
+  get vertexCount(): number {
+    return this.g.own;
+  }
+
+  readonly index = { push: (i: number) => this.g.idx.push(i) };
+
+  addWriterRun(writer: WriterLike, start: number, count: number, renderId: number, yOffset: number) {
+    this.g.runs.push({ writer, start, count, renderId, yOffset, roleIndex: this.roleIndex });
+    this.g.runVertices += count;
+  }
+
+  vertex(p: ArrayLike<number>, n: ArrayLike<number>, c: ArrayLike<number>, renderId: number): number {
+    const g = this.g;
+    g.pos.push3(p[0]!, p[1]!, p[2]!);
+    g.nor.push3(n[0]!, n[1]!, n[2]!);
+    g.col.push3(c[0]!, c[1]!, c[2]!);
+    g.rid.push(renderId);
+    g.role.push(this.roleIndex);
+    return g.own++;
+  }
+
+  triangle(a: number, b: number, c: number) {
+    this.g.idx.push3(a, b, c);
+  }
+}
+
 export class BatchSet {
-  private readonly map = new Map<string, BatchBuilder>();
-  get(layer: string, role: string, indexed = false): BatchBuilder {
+  private readonly groups = new Map<string, GroupBuilder>();
+  private readonly writers = new Map<string, BatchBuilder>();
+  get(layer: string, role: string, _indexed = false): BatchBuilder {
     const key = `${layer}:${role}`;
-    let b = this.map.get(key);
-    if (!b) {
-      b = new BatchBuilder(layer, role, indexed);
-      this.map.set(key, b);
+    let w = this.writers.get(key);
+    if (!w) {
+      const group = groupOf(role);
+      let g = this.groups.get(group);
+      if (!g) this.groups.set(group, (g = new GroupBuilder(group)));
+      w = new BatchBuilder(g, layer, role);
+      this.writers.set(key, w);
     }
-    return b;
+    return w;
   }
   build(): MeshBatch[] {
-    return [...this.map.keys()]
+    return [...this.groups.keys()]
       .sort()
-      .map((k) => this.map.get(k)!.build())
+      .map((k) => this.groups.get(k)!.build())
       .filter((b) => b.vertexCount > 0);
   }
 }
 
 export function triangleCount(batch: MeshBatch): number {
-  return (batch.index ? batch.index.length : batch.vertexCount) / 3;
+  return batch.index.length / 3;
 }
 
 /** Transferable buffers of a batch list, for postMessage. */
 export function batchTransferables(batches: MeshBatch[]): ArrayBuffer[] {
   const out = new Set<ArrayBuffer>();
   for (const b of batches) {
-    for (const a of [b.position, b.normal, b.color, b.renderId, b.index]) if (a) out.add(a.buffer as ArrayBuffer);
+    for (const a of [b.position, b.normal, b.color, b.renderId, b.roleIndex, b.index]) out.add(a.buffer as ArrayBuffer);
     if (b.facade) for (const a of Object.values(b.facade)) out.add(a.buffer as ArrayBuffer);
   }
   return [...out];

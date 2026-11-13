@@ -19,14 +19,14 @@ import {
   RGBADepthPacking,
   Vector3,
 } from 'three';
-import type { Material, Object3D } from 'three';
+import type { DataTexture, Material, Object3D } from 'three';
 import { installFacadeShader, extendFacadeShader, facadeAttributeDefaults } from '@city-ink/styles/facade-shader';
 import { roleStyle } from '@city-ink/styles/spec';
 import type { ResolvedStyleSpec, RoleStyle } from '@city-ink/styles/spec';
 import { builtinStyle } from '@city-ink/styles/defaults';
 import type { GeneratedTile, MeshBatch } from '@city-ink/generators';
-import { FeatureStateTexture, patchFeatureState } from './picking/feature-state.js';
-import { TREE_STRIDE } from '@city-ink/generators';
+import { EMPTY_RULES, FeatureStateTexture, STATE_WIDTH, patchFeatureState } from './picking/feature-state.js';
+import { ROLE_LIST, TREE_STRIDE, groupOf } from '@city-ink/generators';
 
 export type { RoleStyle } from '@city-ink/styles/spec';
 
@@ -69,6 +69,28 @@ export interface TilePipeline {
 
 const FACADE_ROLE = /^(wall|glass)(\.|$)/;
 const GROUND_ROLE = /^(road|ground|water)/;
+/** Material groups of generated batches (decision E15); `tree.*` materials stay per role. */
+const GROUPS = new Set(['building', 'structure', 'ground', 'landmark']);
+const N_ROLES = ROLE_LIST.length;
+
+/** Phase-one ink class per role index (1 building, 1.25 facade, 3 road, 3.2 walkway, 3.5 paint, 4 structure, 5, 6). */
+const INK_BY_ROLE = ROLE_LIST.map((r) =>
+  r === 'wall' || r === 'glass'
+    ? 1.25
+    : r === 'roof' || r === 'landmark'
+      ? 1
+      : r === 'road'
+        ? 3
+        : r === 'road.marking'
+          ? 3.5
+          : r === 'ground.pavement' || r === 'ground.plaza'
+            ? 3.2
+            : r === 'water'
+              ? 6
+              : r.startsWith('ground')
+                ? 5
+                : 4,
+);
 
 interface Copy {
   depth: Material | null;
@@ -105,6 +127,7 @@ export class MaterialLibrary {
   private readonly copies = new Map<Material, Copy>();
   constructor(spec?: ResolvedStyleSpec) {
     this.spec = spec ?? builtinStyle('light')!;
+    this.fillRoleTable();
   }
 
   /** Resolves a role ("road.marking" falls back to "road"). */
@@ -117,7 +140,8 @@ export class MaterialLibrary {
     const replace = { value: 0 };
     const m = this.create(role, mesh, replace);
     patchFeatureState(m, state.texture);
-    this.patchReplace(m, replace);
+    if (GROUPS.has(role)) this.patchRoles(m);
+    else this.patchReplace(m, replace);
     // Shadow depth pass with the same hidden/flatten state (the default depth material would ignore it).
     let depth: Material | null = null;
     if (mesh) {
@@ -128,6 +152,99 @@ export class MaterialLibrary {
     this.copies.set(m, { role, mesh, state, replace, depth });
     if (!this.pack) this.apply(role, m as MeshStandardMaterial, replace);
     return m;
+  }
+
+  /** Per-role style table shared by all group materials (uniform arrays indexed by the vertex roleIndex). */
+  readonly roles = {
+    cityRoleColor: { value: ROLE_LIST.map(() => new Color('#ffffff')) },
+    cityRoleReplace: { value: new Float32Array(N_ROLES) },
+    cityRoleRoughness: { value: new Float32Array(N_ROLES).fill(0.9) },
+    cityRoleMetalness: { value: new Float32Array(N_ROLES).fill(0.02) },
+    cityRoleOpacity: { value: new Float32Array(N_ROLES).fill(1) },
+  };
+
+  private fillRoleTable() {
+    ROLE_LIST.forEach((role, i) => {
+      const st = this.resolve(role);
+      this.roles.cityRoleColor.value[i]!.set(st.inherit ? '#ffffff' : (st.color ?? '#ffffff'));
+      this.roles.cityRoleReplace.value[i] = st.inherit || st.blend === 'multiply' ? 0 : 1;
+      const glassy = role === 'glass';
+      this.roles.cityRoleRoughness.value[i] = st.roughness ?? (role === 'water' ? 0.15 : glassy ? 0.76 : 0.9);
+      this.roles.cityRoleMetalness.value[i] = st.metalness ?? (glassy ? 0.04 : 0.02);
+      this.roles.cityRoleOpacity.value[i] = st.opacity ?? 1;
+    });
+  }
+
+  /**
+   * Group materials: the role of each vertex selects its colour (replace or multiply), roughness, metalness and
+   * opacity from the shared table, and style-rule overrides apply only to the roles named by the rule (rule mask).
+   */
+  private patchRoles(m: Material) {
+    const rule = { ruleColor: { value: EMPTY_RULES as DataTexture }, ruleMask: { value: EMPTY_RULES as DataTexture } };
+    m.userData.cityRuleUniforms = rule;
+    const previous = m.onBeforeCompile;
+    m.onBeforeCompile = (shader, renderer) => {
+      previous.call(m, shader, renderer);
+      Object.assign(shader.uniforms, this.roles, rule);
+      shader.vertexShader = shader.vertexShader
+        .replace(
+          '#include <common>',
+          `#include <common>
+attribute float roleIndex;
+uniform sampler2D ruleColor;
+uniform sampler2D ruleMask;
+varying float vCityRole;
+varying vec4 vCityRule;
+varying vec4 vCityRuleMask;`,
+        )
+        .replace(
+          '#include <begin_vertex>',
+          `#include <begin_vertex>
+  vCityRole = roleIndex;
+  { int rid = int(renderId + 0.5); ivec2 cell = ivec2(rid % ${STATE_WIDTH}, rid / ${STATE_WIDTH});
+    bool rules = textureSize(ruleColor, 0).x > 1;
+    vCityRule = rules ? texelFetch(ruleColor, cell, 0) : vec4(0.0);
+    vCityRuleMask = rules ? texelFetch(ruleMask, cell, 0) : vec4(0.0); }`,
+        );
+      shader.fragmentShader = shader.fragmentShader
+        .replace(
+          '#include <common>',
+          `#include <common>
+#define CITY_ROLES ${N_ROLES}
+uniform vec3 cityRoleColor[CITY_ROLES];
+uniform float cityRoleReplace[CITY_ROLES];
+uniform float cityRoleRoughness[CITY_ROLES];
+uniform float cityRoleMetalness[CITY_ROLES];
+uniform float cityRoleOpacity[CITY_ROLES];
+varying float vCityRole;
+varying vec4 vCityRule;
+varying vec4 vCityRuleMask;`,
+        )
+        .replace(
+          '#include <color_fragment>',
+          `#include <color_fragment>
+  { int cr = int(vCityRole + 0.5);
+    vec3 rc = cityRoleColor[cr];
+    diffuseColor.rgb = mix(diffuseColor.rgb * rc, rc, cityRoleReplace[cr]);
+    diffuseColor.a *= cityRoleOpacity[cr];
+    int mask = int(vCityRuleMask.r * 255.0 + 0.5) + 256 * int(vCityRuleMask.g * 255.0 + 0.5);
+    int rf = int(vCityRule.a * 255.0 + 0.5);
+    if (rf > 0 && (mask / int(pow(2.0, float(cr)) + 0.5)) % 2 == 1) {
+      if (rf >= 128) diffuseColor.rgb = vCityRule.rgb;
+      diffuseColor.a *= float((rf % 128) - 1) / 126.0;
+    } }`,
+        )
+        .replace(
+          '#include <roughnessmap_fragment>',
+          '#include <roughnessmap_fragment>\n  roughnessFactor = cityRoleRoughness[int(vCityRole + 0.5)];',
+        )
+        .replace(
+          '#include <metalnessmap_fragment>',
+          '#include <metalnessmap_fragment>\n  metalnessFactor = cityRoleMetalness[int(vCityRole + 0.5)];',
+        );
+    };
+    const key = m.customProgramCacheKey.bind(m);
+    m.customProgramCacheKey = () => `${key()}|city-roles-v1`;
   }
 
   private create(role: string, mesh: Object3D | null, replace: { value: number }): Material {
@@ -150,7 +267,7 @@ export class MaterialLibrary {
       });
     }
     void replace;
-    if (FACADE_ROLE.test(role)) return this.facadeMaterial();
+    if (role === 'building' || FACADE_ROLE.test(role)) return this.facadeMaterial();
     return new MeshStandardMaterial({ vertexColors: role !== 'tree.crown' && role !== 'tree.trunk' });
   }
 
@@ -203,6 +320,24 @@ export class MaterialLibrary {
   }
 
   private apply(role: string, m: MeshStandardMaterial, replace: { value: number }) {
+    if (GROUPS.has(role)) {
+      m.color = new Color('#ffffff');
+      m.vertexColors = true;
+      m.roughness = 0.9;
+      m.metalness = 0.02;
+      m.emissive = new Color('#000000');
+      const groupRoles = ROLE_LIST.map((r, i) => [r, i] as const).filter(([r]) => groupOf(r) === role);
+      m.transparent = groupRoles.some(
+        ([r, i]) => this.roles.cityRoleOpacity.value[i]! < 1 || this.ruleOpacityRoles.has(r),
+      );
+      m.opacity = 1;
+      const ground = role === 'ground';
+      m.polygonOffset = ground;
+      m.polygonOffsetFactor = ground ? -1 : 0;
+      m.polygonOffsetUnits = ground ? -1 : 0;
+      m.needsUpdate = true;
+      return;
+    }
     const styleRole = role === 'tree.crown' ? 'foliage' : role === 'tree.trunk' ? 'foliage.trunk' : role;
     const s = this.resolve(styleRole);
     const multiply = s.inherit || s.blend === 'multiply';
@@ -232,6 +367,7 @@ export class MaterialLibrary {
     const modeChanged = Boolean(pack) !== Boolean(this.pack) || (pack && pack !== this.pack);
     this.spec = spec;
     this.pack = pack;
+    this.fillRoleTable();
     if (!modeChanged) {
       for (const [m, c] of this.copies) this.apply(c.role, m as MeshStandardMaterial, c.replace);
       return;
@@ -241,9 +377,10 @@ export class MaterialLibrary {
         if (!pack) this.apply(c.role, old as MeshStandardMaterial, c.replace);
         continue;
       }
-      const ruleState = (old.userData.featureStateUniforms as { ruleState: { value: unknown } }).ruleState.value;
+      const rules = old.userData.cityRuleUniforms as Record<string, { value: unknown }> | undefined;
       const next = this.acquire(c.role, c.state, c.mesh);
-      (next.userData.featureStateUniforms as { ruleState: { value: unknown } }).ruleState.value = ruleState;
+      const nextRules = next.userData.cityRuleUniforms as Record<string, { value: unknown }> | undefined;
+      if (rules && nextRules) for (const k of Object.keys(rules)) nextRules[k]!.value = rules[k]!.value;
       (c.mesh as Mesh).material = next;
       this.release(old);
     }
@@ -266,13 +403,18 @@ function geometryOf(batch: MeshBatch): BufferGeometry {
   g.setAttribute('normal', new BufferAttribute(batch.normal, 3));
   g.setAttribute('color', new BufferAttribute(batch.color, 3));
   g.setAttribute('renderId', new BufferAttribute(batch.renderId, 1));
+  g.setAttribute('roleIndex', new BufferAttribute(batch.roleIndex, 1));
+  // Per-vertex phase-one ink class for the ink pipelines (one batch now holds several roles).
+  const ink = new Float32Array(batch.vertexCount);
+  for (let v = 0; v < ink.length; v++) ink[v] = INK_BY_ROLE[batch.roleIndex[v]!] ?? 4;
+  g.setAttribute('inkClass', new BufferAttribute(ink, 1));
   if (batch.facade) {
     g.setAttribute('aFacade', new BufferAttribute(batch.facade.aFacade, 4));
     g.setAttribute('aStyle', new BufferAttribute(batch.facade.aStyle, 2));
     g.setAttribute('aLayout', new BufferAttribute(batch.facade.aLayout, 4));
     g.setAttribute('aSurface', new BufferAttribute(batch.facade.aSurface, 2));
   }
-  if (batch.index) g.setIndex(new BufferAttribute(batch.index, 1));
+  g.setIndex(new BufferAttribute(batch.index, 1));
   // Bounds come from the worker; recomputing them here would cost milliseconds per tile on the main thread.
   const [x0, y0, z0, x1, y1, z1] = batch.bounds;
   g.boundingBox = new Box3(new Vector3(x0, y0, z0), new Vector3(x1, y1, z1));
@@ -327,11 +469,12 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
     const mesh = new Mesh(geometry);
     mesh.name = `${batch.layer}:${batch.role}`;
     // Semantics read by code style packs and the ink pipeline (phase-one conventions).
-    if (FACADE_ROLE.test(batch.role)) {
+    if (batch.layer === 'building') {
       mesh.userData.city = { shader: 'facade-v6' };
       mesh.userData.generatedFacade = true;
     }
     mesh.userData.inkClass = inkClassOf(batch.layer, batch.role);
+    mesh.userData.perVertexInkClass = true;
     const material = materials.acquire(batch.role, state, mesh);
     mesh.material = material;
     disposables.push({ dispose: () => materials.release(mesh.material as Material) });
@@ -339,7 +482,7 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
     mesh.userData.layer = batch.layer;
     mesh.userData.role = batch.role;
     mesh.matrixAutoUpdate = false;
-    mesh.castShadow = !/^(road|ground|water)/.test(batch.role);
+    mesh.castShadow = batch.layer !== 'ground';
     mesh.receiveShadow = true;
     group.add(mesh);
     meshes.push(mesh);
@@ -347,7 +490,7 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
     for (const a of Object.values(geometry.attributes))
       bytes += (a.array as ArrayLike<number> & { byteLength: number }).byteLength;
     if (geometry.index) bytes += (geometry.index.array as Uint32Array).byteLength;
-    triangles += (batch.index ? batch.index.length : batch.vertexCount) / 3;
+    triangles += batch.index.length / 3;
   }
   const trees = generated.trees;
   if (trees.count) {

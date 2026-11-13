@@ -49,6 +49,7 @@ import { Controls } from './controls.js';
 import { Picker } from './picking/picker.js';
 import { EMPTY_RULES, FLAG_FLATTEN, FLAG_HIDDEN, RuleTexture, stateUniforms } from './picking/feature-state.js';
 import { evaluateExpression, ruleRoleApplies } from '@city-ink/styles/spec';
+import { ROLE_LIST, groupOf } from '@city-ink/generators';
 import { nearbyFacadeFrames } from '../../../src/facade-layout.js';
 import type { NearWall } from '@city-ink/generators';
 import type { Pickable } from './picking/picker.js';
@@ -1136,48 +1137,52 @@ export class CityMapImpl implements CityMap {
     });
   }
 
-  /** Evaluates the style's `rules` for one tile into per-role rule textures (05 section 4: at load, not per frame). */
+  /**
+   * Evaluates the style's `rules` for one tile into rule textures (05 section 4: at load and style change, not per
+   * frame). One texture pair per material-group mesh: the override colour/opacity per feature and the mask of role
+   * indices it applies to (a rule on `wall` tints wall and glass vertices, not the roof of the same building).
+   */
   private applyRules(entry: TileEntry) {
     if (!entry.object) return;
     for (const r of entry.rules ?? []) r.dispose();
     entry.rules = [];
     const rules = this.pack ? [] : (this.spec?.rules ?? []);
-    const cache = new Map<string, RuleTexture>();
     for (const mesh of entry.object.meshes) {
-      const role = String(mesh.userData.role ?? '');
-      const applicable = rules
-        .map((rule, i) => ({ rule, i }))
-        .filter(
-          ({ rule }) =>
-            rule.layer === mesh.userData.layer && Object.keys(rule.set).some((k) => ruleRoleApplies(k, role)),
-        );
-      const uniforms = (mesh.material as { userData: { featureStateUniforms?: { ruleState: { value: unknown } } } })
-        .userData.featureStateUniforms;
+      const uniforms = (mesh.material as { userData: { cityRuleUniforms?: Record<string, { value: unknown }> } })
+        .userData.cityRuleUniforms;
       if (!uniforms) continue;
+      const group = String(mesh.userData.layer);
+      const groupRoles = ROLE_LIST.map((r, i) => [r, i] as const).filter(([r]) => groupOf(r) === group);
+      const applicable = rules.filter((rule) =>
+        Object.keys(rule.set).some((k) => groupRoles.some(([r]) => ruleRoleApplies(k, r))),
+      );
       if (!applicable.length || !entry.features) {
-        uniforms.ruleState.value = EMPTY_RULES;
+        uniforms.ruleColor!.value = EMPTY_RULES;
+        uniforms.ruleMask!.value = EMPTY_RULES;
         continue;
       }
-      const key = `${role}:${applicable.map((a) => a.i).join(',')}`;
-      let texture = cache.get(key);
-      if (!texture) {
-        texture = new RuleTexture(entry.object.state.capacity);
-        for (const f of entry.features)
-          for (const { rule } of applicable) {
-            if (f.layer !== rule.layer || !evaluateExpression(rule.when as never, f)) continue;
-            let color: string | undefined, opacity: number | undefined;
-            for (const [k, v] of Object.entries(rule.set))
-              if (ruleRoleApplies(k, role)) {
+      const texture = new RuleTexture(entry.object.state.capacity);
+      for (const f of entry.features)
+        for (const rule of applicable) {
+          if (f.layer !== rule.layer || !evaluateExpression(rule.when as never, f)) continue;
+          let color: string | undefined,
+            opacity: number | undefined,
+            mask = 0;
+          for (const [k, v] of Object.entries(rule.set))
+            for (const [r, i] of groupRoles)
+              if (ruleRoleApplies(k, r)) {
+                mask |= 1 << i;
                 color = v.color ?? color;
                 opacity = v.opacity ?? opacity;
               }
-            texture.set(f.renderId, color, opacity);
-          }
-        texture.commit();
-        cache.set(key, texture);
-        entry.rules.push(texture);
-      }
-      uniforms.ruleState.value = texture.texture;
+          if (!mask) continue;
+          texture.set(f.renderId, color, opacity);
+          texture.setMask(f.renderId, mask);
+        }
+      texture.commit();
+      entry.rules.push(texture);
+      uniforms.ruleColor!.value = texture.texture;
+      uniforms.ruleMask!.value = texture.mask;
     }
   }
 

@@ -8,7 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildTiles } from '../packages/builder/dist/index.js';
 import { decodeTile, readFeatureMetaAt } from '../packages/tiles/dist/index.js';
-import { generateTile } from '../packages/generators/dist/index.js';
+import { generateTile, ROLE_LIST } from '../packages/generators/dist/index.js';
 import { roofEquipment, ROOF_EQUIPMENT_MIN_HEIGHT, ROOF_EQUIPMENT_MIN_LOW_AREA } from '../src/building-rules.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -27,7 +27,7 @@ function windingErrors(batch) {
   let bad = 0;
   const p = batch.position,
     n = batch.normal;
-  const tri = batch.index ?? Array.from({ length: batch.vertexCount }, (_, i) => i);
+  const tri = batch.index;
   for (let t = 0; t < tri.length; t += 3) {
     const [a, b, c] = [tri[t], tri[t + 1], tri[t + 2]];
     const ux = p[b * 3] - p[a * 3],
@@ -60,8 +60,9 @@ test('C2: L0 major-road bands and L1 structure decks are generated with upward-f
   let roadTriangles = 0;
   for (const t of l0) {
     const g = generateTile(t);
-    for (const b of g.batches.filter((b) => b.layer === 'road')) {
-      roadTriangles += b.index.length / 3;
+    const road = ROLE_LIST.indexOf('road');
+    for (const b of g.batches.filter((b) => b.layer === 'ground')) {
+      for (let t = 0; t < b.index.length; t += 3) if (b.roleIndex[b.index[t]] === road) roadTriangles++;
       assert.equal(windingErrors(b), 0, `L0 ${t.id.z}/${t.id.x}/${t.id.y} road winding`);
       // every band top is lifted above the ground and faces +y
       let up = 0;
@@ -87,14 +88,16 @@ test('C2: an L0 massing prism has the wall colour and facade attributes of the s
       const byRid = new Map();
       for (let i = 0; i < layer.featureCount; i++) byRid.set(layer.renderId[i], readFeatureMetaAt(layer, i).id);
       for (const b of generateTile(t).batches) {
-        if (b.layer !== 'building' || (b.role !== 'wall' && b.role !== 'glass')) continue;
+        if (b.layer !== 'building') continue;
         for (let v = 0; v < b.vertexCount; v++) {
+          const role = ROLE_LIST[b.roleIndex[v]];
+          if (role !== 'wall' && role !== 'glass') continue;
           // vertical walls only (skip trims and roofs written in the wall colour)
           if (Math.abs(b.normal[v * 3 + 1]) > 0.01 || !b.facade || b.facade.aFacade[v * 4 + 2] <= 0) continue;
           const id = byRid.get(b.renderId[v]);
           if (!id || out.has(id)) continue;
           out.set(id, {
-            role: b.role,
+            role,
             color: [b.color[v * 3], b.color[v * 3 + 1], b.color[v * 3 + 2]].map((c) => c.toFixed(4)).join(','),
             style: b.facade.aStyle[v * 2],
           });

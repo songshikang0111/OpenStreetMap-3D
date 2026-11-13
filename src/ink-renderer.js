@@ -412,6 +412,8 @@ export class InkRenderer {
     this.scene.traverse((object) => {
       if (!object.isMesh || !object.geometry?.attributes.position) return;
       active.add(object);
+      // Tile batches hold several roles and carry their own per-vertex inkClass attribute.
+      if (object.userData.perVertexInkClass && object.geometry.attributes.inkClass) return;
       const kind = inferredClass(object) + (object.userData.generatedFacade ? 0.25 : 0);
       const priorClone = this._classificationClones.get(object);
       if (priorClone && object.geometry !== priorClone.clone) {

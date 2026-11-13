@@ -170,3 +170,9 @@
 - 选择：保留 `src/` 为唯一源码。`npm run build:packages` 在 `tsc -b` 之后运行 `scripts/vendor-phase1.mjs`：把各包 dist 引用到的一期模块及其传递依赖（连同 `.d.ts` 类型边界）复制到该包的 `dist/_phase1/`，并把 dist 中的引用改写到那里；一期模块里按路径引用的 workspace 包（如 `../packages/landmarks/index.js`）改写为包名。每次构建都从 `src/` 刷新副本，不会出现两套各自演化的代码。各包补齐运行时依赖：`polygon-clipping`（generators、builder、styles-ink），builder 依赖 `three` 与 `@city-ink/landmarks`，details 声明 `three` peer。
 - 验证：`node scripts/pack-install-check.mjs`（打包 8 个包，装进仓库外空目录，用 `@city-ink/builder` 构建一个小样本，再用 Vite 打包一个最小 `createMap` 页面并在 Chrome 中打开）。
 - 影响：发布前仍需用户决定名称（D1）与发布（D8）；不执行 `npm publish`。一期 `src/` 模块的许可与署名随产物一起发布（MIT）。
+
+### E15 按材质组合批，逐顶点角色索引（2026-11-13，AC903）
+- 问题：批次按"图层:角色"划分，加入结构、装饰、场地层后 L1 瓦片最多 17 次绘制调用、L0 6 次，超过 06 的 12/4。
+- 选择：生成器按材质组输出批次：`building`（墙、玻璃、屋顶，立面着色器）、`structure`（结构、设施）、`ground`（道路、标线、各类地面、水，多边形偏移、不投影）、`landmark`；每个顶点带 `roleIndex`（`ROLE_LIST` 中的序号，只追加不改序）。运行时每组一个材质，按角色索引从共享的 uniform 表取颜色（替换/相乘）、粗糙度、金属度、不透明度；样式规则的覆盖色带角色掩码，只作用于规则指定的角色。一期墨线管线读取逐顶点 `inkClass`（`InkRenderer` 跳过带 `perVertexInkClass` 的网格，一期场景不受影响）。装饰层开关、宿主地面隐藏改用逐要素状态或整组可见性。所有批次都带索引（写入器的非索引片段在构建时补顺序索引）。
+- 结果：北京 L1 最多 6 次、京都与曼哈顿 5 次，L0 2 次（加树 2 次）。AC306、AC308 测试通过，几何不变。
+- 限制：代码风格包（如 `cel`、自定义包）按组而不是按角色拿到材质，无法单独给水或道路着色，除非读取 `roleIndex`；记入扩展教程。
