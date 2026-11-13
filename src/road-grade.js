@@ -350,7 +350,7 @@ export function planRoadGrades(data, options = {}) {
       ambiguous++;
       continue;
     }
-    const proxy = { y: Math.max(...lower.map((n) => n.y)) };
+    const proxy = { y: lower.reduce((m, n) => (n.y > m ? n.y : m), -Infinity) };
     for (const n of lower) constraints.push([n, proxy, 0]);
     for (const n of upper) constraints.push([proxy, n, c.gap]);
   }
@@ -366,7 +366,8 @@ export function planRoadGrades(data, options = {}) {
       }
     }
     if (delta < 1e-7) break;
-    if (Math.max(...ordered.map((n) => n.y)) > 120)
+    // A loop, not Math.max(...): city-sized road graphs exceed the argument limit.
+    if (ordered.some((n) => n.y > 120))
       throw new Error('Road grade constraints conflict: check connected crossings before rendering.');
   }
   if (delta >= 1e-7)

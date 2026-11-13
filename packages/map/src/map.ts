@@ -78,6 +78,8 @@ import type {
 export const RUNTIME_VERSION = '2.0.0';
 
 /** Layers MapLibre draws itself in `ground: 'host'` mode (04 section 8). */
+/** Inferred decorations hidden by `ProvenanceFilter.details = false`; kerbs, crossings, lamps and signals stay. */
+const OPTIONAL_DETAILS = new Set(['car', 'person', 'bench']);
 const HOST_GROUND_LAYERS = new Set(['ground', 'water', 'green', 'road', 'landscape']);
 
 /** Internal options used by the MapLibre layer adapter. */
@@ -1080,6 +1082,48 @@ export class CityMapImpl implements CityMap {
     return { total, flattened, shown: total - flattened };
   }
 
+  /** Screen-space-error multiplier driven by the visible-triangle budget (06 section 3, budget-driven degradation). */
+  private sseScale = 1;
+  private lastBudgetCheck = 0;
+  private visibleTriangles = 0;
+
+  /**
+   * Keeps the triangles of shown tiles (colour pass, shadows excluded) within budget.visibleTriangles: over budget the
+   * refinement threshold grows so distant areas stay at the coarser level; well under budget it relaxes again.
+   * Adjusted at most every 300 ms, with a dead band, so tiles do not flip back and forth.
+   */
+  private adaptToBudget(now: number) {
+    let triangles = this.nearFrames.count * 12;
+    for (const e of this.tiles.values()) if (e.visible && e.object) triangles += e.object.triangles;
+    this.visibleTriangles = triangles;
+    const budget = this.budget.visibleTriangles;
+    // Keep frames coming while over budget so the adjustment converges (the loop otherwise sleeps when idle).
+    // Refinement is all-or-nothing per parent tile, so relaxing can jump straight back over budget. Relax only when
+    // the last over-budget view cost would now fit, or the camera has moved enough to change the tile set.
+    const t = this.transform;
+    const cam = this.overBudgetAt;
+    const moved =
+      !cam ||
+      Math.abs(cam.zoom - t.zoom) > 0.5 ||
+      Math.hypot(cam.center[0] - t.center[0], cam.center[1] - t.center[1]) > 0.004;
+    const canRelax = triangles < budget * 0.55 && this.sseScale > 1 && (moved || cam!.cost < budget * 0.95);
+    this.budgetPending = (triangles > budget && this.sseScale < 16) || canRelax;
+    if (now - this.lastBudgetCheck < 300) return;
+    this.lastBudgetCheck = now;
+    if (triangles > budget) {
+      this.sseScale = Math.min(16, this.sseScale * 1.35);
+      this.overBudgetAt = { cost: triangles, zoom: t.zoom, center: [...t.center] as LngLat };
+    } else if (canRelax) {
+      this.sseScale = Math.max(1, this.sseScale / 1.2);
+      if (moved) this.overBudgetAt = null;
+    }
+  }
+
+  private overBudgetAt: { cost: number; zoom: number; center: LngLat } | null = null;
+
+  /** True while the budget adjustment has not converged; keeps the frame loop running. */
+  private budgetPending = false;
+
   private regenerate(entry: TileEntry) {
     if (!entry.buffer || entry.state !== 'ready' || !entry.object) return;
     const token = (entry.loadToken = (entry.loadToken ?? 0) + 1);
@@ -1152,15 +1196,14 @@ export class CityMapImpl implements CityMap {
           const prov = (f.provenance.height ?? 'inferred') as keyof typeof rank;
           if (rank[prov] > rank[min]) flags |= FLAG_FLATTEN;
         } else if (f.layer === 'tree' && hideTrees && f.provenance.position === 'inferred') flags |= FLAG_HIDDEN;
+        else if (
+          !details &&
+          (f.layer === 'landscape' || (f.layer === 'detail' && OPTIONAL_DETAILS.has(String(f.properties.kind))))
+        )
+          flags |= FLAG_HIDDEN;
         entry.object.state.setFilter(f.renderId, flags);
       }
     this.nearKey = '';
-    const hostGround = this.hosted?.ground === 'host';
-    for (const mesh of entry.object.meshes) {
-      const layer = String(mesh.userData.layer);
-      if (hostGround && HOST_GROUND_LAYERS.has(layer)) continue;
-      if (layer === 'detail' || layer === 'landscape') mesh.visible = details;
-    }
   }
 
   // ------------------------------------------------------------------------------------------- loading
@@ -1354,7 +1397,7 @@ export class CityMapImpl implements CityMap {
       this.tileset,
       this.coverage,
       {
-        maximumScreenSpaceError: this.options.maximumScreenSpaceError ?? 16,
+        maximumScreenSpaceError: (this.options.maximumScreenSpaceError ?? 16) * this.sseScale,
         prefetchMargin: this.budget.prefetchMargin,
         hysteresis: this.budget.hysteresis,
         maxDistance,
@@ -1439,6 +1482,7 @@ export class CityMapImpl implements CityMap {
       } else if (!visible && e.visible && e.object) e.object.group.removeFromParent();
       e.visible = visible && !!e.object;
     }
+    this.adaptToBudget(now);
     // Loads: cancel stale work, start the most important queued tiles within concurrency and queue budgets.
     for (const e of this.tiles.values())
       if (!wanted.has(e.key) && (e.state === 'loading' || e.state === 'generating')) {
@@ -1576,13 +1620,13 @@ export class CityMapImpl implements CityMap {
     const now = performance.now();
     this.processUploads(now);
     const loading = this.busy();
-    if (this.dirty || loading) {
+    if (this.dirty || loading || this.budgetPending) {
       this.updateTiles(now);
       this.render(time);
       this.dirty = false;
       this.wasIdle = false;
     } else this.lastFrameTime = 0;
-    const idle = !this.busy() && !this.pendingWanted(now) && !this.dirty;
+    const idle = !this.busy() && !this.pendingWanted(now) && !this.dirty && !this.budgetPending;
     if (idle && !this.wasIdle) {
       this.wasIdle = true;
       this.fire({ type: 'idle' });
@@ -1772,6 +1816,8 @@ export class CityMapImpl implements CityMap {
         styles: Object.keys(BUILTIN_STYLES),
         pack: this.pack?.id ?? null,
         nearDetails: this.nearFrames.count,
+        visibleTriangles: this.visibleTriangles,
+        sseScale: this.sseScale,
         buildings: this.buildingCounts(),
       };
     return stats;
