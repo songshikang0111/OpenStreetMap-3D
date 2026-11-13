@@ -12,6 +12,7 @@ import {
   encodeCoverage,
   encodeTile,
   tileKey,
+  tileToLngLatBounds,
   tilesInBounds,
   validateTileset,
   TILE_EXTENSION,
@@ -22,7 +23,8 @@ import { GENERATOR_VERSION } from '@city-ink/generators';
 import { PlanContext, planCell, cellKey } from './plan.js';
 import type { CellPlan, PlanOptions, PlanRecord } from './plan.js';
 import { cutTiles } from './cut.js';
-import type { LevelSpec } from './cut.js';
+import type { CutResult, LevelSpec } from './cut.js';
+import { boundsContains, expandBounds } from './geo.js';
 
 export const BUILDER_VERSION = GENERATOR_VERSION;
 export const DEFAULT_LEVELS: (LevelSpec & { geometricErrorMeters: number })[] = [
@@ -253,9 +255,12 @@ export async function buildTiles(
   const cells: (TileId | null)[] = cellZoom >= 0 ? tilesInBounds(areaBounds, cellZoom) : [null];
   step('partition');
 
-  // plan (cached per cell)
-  const records: PlanRecord[] = [];
+  // plan (cached per cell). Only the building records of every cell stay in memory (neighbour context for the
+  // cut); everything else is read back one cell at a time (WP-F task F4, memory bounded by the largest cell).
   const planStats: Record<string, number> = {};
+  const summary = new RecordSummary();
+  const buildingRecords: PlanRecord[] = [];
+  const planFiles: { cell: TileId | null; file: string }[] = [];
   for (const [i, cell] of cells.entries()) {
     const key = cellKey(cell);
     const file = path.join(cache, 'plan', `${key.replace(/\//g, '-')}.json`);
@@ -264,40 +269,69 @@ export async function buildTiles(
       plan = { ...(await planCell(ctx, cell, planOptions)), inputHash };
       await writeAtomic(file, JSON.stringify(plan));
     }
-    records.push(...plan.records);
+    for (const r of plan.records) {
+      summary.add(r);
+      if (r.layer === 'building') buildingRecords.push(r);
+    }
     for (const [k, v] of Object.entries(plan.stats)) planStats[k] = (planStats[k] ?? 0) + v;
+    planFiles.push({ cell, file });
     progress('plan', (i + 1) / cells.length, key);
     step('plan');
   }
 
-  // cut
-  progress('cut', 0);
-  const cut = cutTiles(records, { levels, data });
-  step('cut');
-
-  // encode (skip tiles already written with a matching hash when resuming)
+  // cut and encode, cell by cell. Every tile lies inside one planning cell and only records owned by that cell
+  // reach it, so cutting per cell gives the same tiles as one global cut; neighbouring buildings are added for the
+  // shared-wall context and their own tiles are discarded.
   const encodedFile = path.join(cache, 'encoded.json');
   const encoded = (options.resume ? await readJSONIf<Record<string, string>>(encodedFile) : null) ?? {};
-  const keys = [...cut.tiles.keys()].sort();
   const sizes = new Map<string, { raw: number; gzip: number; hash: string; profile: string }>();
+  const keys: string[] = [];
+  const layers = new Set<string>();
+  const cutDiagnostics: Diagnostic[] = [];
+  const fallbacks: CutResult['fallbacks'] = [];
   let sinceFlush = 0;
-  for (const [i, key] of keys.entries()) {
-    const tile = cut.tiles.get(key)!;
-    const bytes = encodeTile(tile);
-    const hash = sha256(bytes);
-    const file = path.join(out, `${key}.${TILE_EXTENSION}`);
-    if (encoded[key] !== hash) {
-      await writeAtomic(file, bytes);
-      encoded[key] = hash;
-      if (++sinceFlush >= 16 || i === keys.length - 1) {
-        await writeAtomic(encodedFile, JSON.stringify(encoded));
-        sinceFlush = 0;
+  let cutSteps = 0;
+  progress('cut', 0);
+  for (const { cell, file } of planFiles) {
+    const plan = (await readJSONIf<CellPlan>(file))!;
+    const own = new Set(plan.records.map((r) => r.id));
+    const cellRect = cell ? tileToLngLatBounds(cell) : null;
+    const near = cellRect ? expandBounds(cellRect, 400) : null;
+    const context = buildingRecords.filter(
+      (r) => r.cell !== plan.cell && !own.has(r.id) && (!near || boundsContains(near, r.anchor)),
+    );
+    const cut = cutTiles(context.length ? [...plan.records, ...context] : plan.records, { levels, data });
+    const inside = (k: string) => {
+      if (!cell) return true;
+      const [z, x, y] = k.split('/').map(Number);
+      const d = 2 ** (z! - cell.z);
+      return Math.floor(x! / d) === cell.x && Math.floor(y! / d) === cell.y;
+    };
+    for (const d of cut.diagnostics) if (!d.tileId || inside(d.tileId)) cutDiagnostics.push(d);
+    for (const f of cut.fallbacks) if (inside(f.tile)) fallbacks.push(f);
+    if (cutSteps++ === 0) step('cut');
+    for (const key of [...cut.tiles.keys()].filter(inside).sort()) {
+      const tile = cut.tiles.get(key)!;
+      for (const l of Object.keys(tile.layers)) layers.add(l);
+      const bytes = encodeTile(tile);
+      const hash = sha256(bytes);
+      const out_ = path.join(out, `${key}.${TILE_EXTENSION}`);
+      if (encoded[key] !== hash) {
+        await writeAtomic(out_, bytes);
+        encoded[key] = hash;
+        if (++sinceFlush >= 16) {
+          await writeAtomic(encodedFile, JSON.stringify(encoded));
+          sinceFlush = 0;
+        }
       }
+      keys.push(key);
+      sizes.set(key, { raw: bytes.length, gzip: gzipSync(bytes, { level: 6 }).length, hash, profile: tile.profile });
+      progress('encode', keys.length, key);
+      step('encode');
     }
-    sizes.set(key, { raw: bytes.length, gzip: gzipSync(bytes, { level: 6 }).length, hash, profile: tile.profile });
-    progress('encode', (i + 1) / keys.length, key);
-    step('encode');
   }
+  keys.sort();
+  const cut = { diagnostics: cutDiagnostics, fallbacks };
   await writeAtomic(encodedFile, JSON.stringify(encoded));
   // remove stale tiles from an earlier build into the same directory
   await removeStaleTiles(out, new Set(keys));
@@ -316,8 +350,6 @@ export async function buildTiles(
   );
   const coverageBytes = encodeCoverage(coverage);
   await writeAtomic(path.join(out, 'coverage.bin'), coverageBytes);
-  const layers = new Set<string>();
-  for (const t of cut.tiles.values()) for (const l of Object.keys(t.layers)) layers.add(l);
   const tileset: Tileset = {
     schemaVersion: TILESET_SCHEMA_VERSION,
     name: input.name,
@@ -368,7 +400,7 @@ export async function buildTiles(
     });
   await writeAtomic(path.join(out, 'tileset.json'), JSON.stringify(tileset, null, 2) + '\n');
 
-  const report = makeReport(input.name, tileset, records, cut, sizes, levels, data, planOptions, coverageBytes);
+  const report = makeReport(input.name, tileset, summary, cut, sizes, levels, data, planOptions, coverageBytes);
   await writeAtomic(path.join(out, 'report.json'), JSON.stringify(report, null, 2) + '\n');
   step('finalize');
   progress('finalize', 1);
@@ -389,34 +421,15 @@ async function removeStaleTiles(out: string, keep: Set<string>) {
 function makeReport(
   name: string,
   tileset: Tileset,
-  records: PlanRecord[],
-  cut: ReturnType<typeof cutTiles>,
+  summary: RecordSummary,
+  cut: Pick<CutResult, 'diagnostics' | 'fallbacks'>,
   sizes: Map<string, { raw: number; gzip: number; hash: string; profile: string }>,
   levels: LevelSpec[],
   data: ReturnType<typeof parseOSM>,
   planOptions: PlanOptions,
   coverageBytes: Uint8Array,
 ): BuildReport {
-  const counts: Record<string, number> = {};
-  const provenance: BuildReport['provenance'] = {};
-  const seen = new Set<string>();
-  for (const r of records) {
-    const key = `${r.layer}:${r.id}`;
-    if (seen.has(key)) continue; // polygon/line records repeat per intersecting cell
-    seen.add(key);
-    counts[r.layer] = (counts[r.layer] ?? 0) + 1;
-    // Buildings claimed by a landmark recipe are drawn by the landmark mesh at full detail; their provenance is
-    // reported separately so `provenance.building` matches the L1 building features (and the runtime filter).
-    if (r.layer === 'building' && r.properties.landmark === 'claimed') {
-      counts.landmarkClaimedBuildings = (counts.landmarkClaimedBuildings ?? 0) + 1;
-      continue;
-    }
-    for (const [attr, level] of Object.entries(r.provenance)) {
-      const layer = (provenance[r.layer] ??= {});
-      const slot = (layer[attr] ??= { observed: 0, derived: 0, inferred: 0 });
-      slot[level]++;
-    }
-  }
+  const { counts, provenance } = summary;
   const tiles = levels.map((level) => {
     const list = [...sizes].filter(([k]) => k.startsWith(`${level.zoom}/`));
     const gz = list.map(([, s]) => s.gzip).sort((a, b) => a - b);
@@ -478,3 +491,27 @@ export async function fileSize(file: string): Promise<number> {
 }
 
 export type { TileInput, FeatureLayerInput };
+
+/** Object counts and provenance of plan records, deduplicated across cells (polygon and line records repeat). */
+class RecordSummary {
+  readonly counts: Record<string, number> = {};
+  readonly provenance: BuildReport['provenance'] = {};
+  private readonly seen = new Set<string>();
+  add(r: PlanRecord) {
+    const key = `${r.layer}:${r.id}`;
+    if (this.seen.has(key)) return;
+    this.seen.add(key);
+    this.counts[r.layer] = (this.counts[r.layer] ?? 0) + 1;
+    // Buildings claimed by a landmark recipe are drawn by the landmark mesh at full detail; their provenance is
+    // reported separately so `provenance.building` matches the L1 building features (and the runtime filter).
+    if (r.layer === 'building' && r.properties.landmark === 'claimed') {
+      this.counts.landmarkClaimedBuildings = (this.counts.landmarkClaimedBuildings ?? 0) + 1;
+      return;
+    }
+    for (const [attr, level] of Object.entries(r.provenance)) {
+      const layer = (this.provenance[r.layer] ??= {});
+      const slot = (layer[attr] ??= { observed: 0, derived: 0, inferred: 0 });
+      slot[level]++;
+    }
+  }
+}
