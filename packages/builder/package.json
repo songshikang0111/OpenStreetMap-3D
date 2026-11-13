@@ -31,9 +31,7 @@
     "@city-ink/tiles": "0.0.0",
     "@city-ink/generators": "0.0.0",
     "@city-ink/landmarks": "1.0.0",
-    "polygon-clipping": "0.15.7"
-  },
-  "peerDependencies": {
-    "three": ">=0.186.0 <0.187.0"
+    "polygon-clipping": "0.15.7",
+    "three": "0.186.1"
   }
 }

@@ -80,7 +80,7 @@
     "test:types": "tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 examples/quickstart/typecheck.ts && tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 --lib ES2022,DOM,DOM.Iterable --skipLibCheck examples/phase2/map-usage.ts && tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 --lib ES2022,DOM,DOM.Iterable --skipLibCheck examples/phase2/styles/use-styles.ts && tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 --lib ES2022,DOM,DOM.Iterable --skipLibCheck examples/phase2/llms-usage.ts",
     "check:package": "node scripts/phase1-package-check.mjs",
     "data:fetch": "python scripts/fetch_osm.py",
-    "build:packages": "tsc -b packages/tiles packages/generators packages/builder packages/map packages/styles-ink packages/details",
+    "build:packages": "tsc -b packages/tiles packages/generators packages/builder packages/map packages/styles-ink packages/details && node scripts/vendor-phase1.mjs",
     "test:packages": "npm run build:packages && npm test --workspaces --if-present",
     "test:all": "npm test && npm run test:packages",
     "format": "prettier --write .",

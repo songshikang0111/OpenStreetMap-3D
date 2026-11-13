@@ -164,3 +164,9 @@
   4. 规模上限按 03：输入超过 1 GB 或构建范围超过 5,000 km² 时报 `PBF_TOO_LARGE` / `BUILD_AREA_TOO_LARGE`，提示用 `osmium extract` 裁剪。
 - 限制：规划仍对构建范围内的全部要素做一次一期解析，内存和耗时随范围线性甚至更快增长（实测见 WP-F 报告）；按规划格从要素存储读取（F4）、并行（AC606）、过大组诊断（F5/AC607）、单文件归档（F7/AC608）未实现。整城构建因此尚未完成。
 - 影响的规格和工作包：03 第 2 节（三遍）；WP-F 剩余任务；WP-I 的首屏下载量（AC904）依赖整城产物。
+
+### E14 发布产物自包含：构建后把一期模块"打进"各包的 dist（2026-11-13，WP-J 任务 J6）
+- 问题：E4 让二期包以 `../../../src/...` 相对路径复用一期模块（单一来源），E9 的 `styles-ink` 同样如此；`npm pack` 后在仓库外安装时这些文件不存在（AC1006 未通过）。
+- 选择：保留 `src/` 为唯一源码。`npm run build:packages` 在 `tsc -b` 之后运行 `scripts/vendor-phase1.mjs`：把各包 dist 引用到的一期模块及其传递依赖（连同 `.d.ts` 类型边界）复制到该包的 `dist/_phase1/`，并把 dist 中的引用改写到那里；一期模块里按路径引用的 workspace 包（如 `../packages/landmarks/index.js`）改写为包名。每次构建都从 `src/` 刷新副本，不会出现两套各自演化的代码。各包补齐运行时依赖：`polygon-clipping`（generators、builder、styles-ink），builder 依赖 `three` 与 `@city-ink/landmarks`，details 声明 `three` peer。
+- 验证：`node scripts/pack-install-check.mjs`（打包 8 个包，装进仓库外空目录，用 `@city-ink/builder` 构建一个小样本，再用 Vite 打包一个最小 `createMap` 页面并在 Chrome 中打开）。
+- 影响：发布前仍需用户决定名称（D1）与发布（D8）；不执行 `npm publish`。一期 `src/` 模块的许可与署名随产物一起发布（MIT）。

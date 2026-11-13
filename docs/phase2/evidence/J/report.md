@@ -19,10 +19,10 @@
 | AC1003 | 通过 | `npm run test:types` | `docs/llms.md` 每段 JS 对应 `examples/phase2/llms-usage.ts`；扩展教程对应 `examples/phase2/styles/use-styles.ts`；04 用法对应 `examples/phase2/map-usage.ts`；严格类型检查通过。README 的 `createMap`/`createMapLibreLayer` 片段与 llms 相同 |
 | AC1004 | 通过 | demo 复制到 `/some/path/demo/` 子路径后用无头 Chrome（硬件 GPU）打开京都样本 | 6 块瓦片可见，18 个资源请求全部同源（外部请求 0），显示"© OpenStreetMap contributors"，控制台错误 0 |
 | AC1005 | 通过 | 同上；`style-checks.mjs` | 城市切换（3 个）、风格切换、真实性过滤开关、点击建筑属性面板、标记、MapLibre 图层页面链接均在 demo 中 |
-| AC1006 | **未通过** | — | 未执行 `npm pack` 到新目录安装：`@city-ink/generators`、`builder`、`map`、`styles-ink` 的产物以相对路径引用仓库 `src/` 中的一期模块（决策 E4、E9），单独安装会缺文件。发布前需把这些模块迁入包内或打包进产物 |
+| AC1006 | 通过（2026-11-13 补做） | `CITY_BROWSER_FLAGS="--use-gl=angle --use-angle=gl-egl --ignore-gpu-blocklist" node scripts/pack-install-check.mjs` | 8 个包 `npm pack` 后装进仓库外空目录（另装 three 0.186.1、vite 6.4.5）：`@city-ink/builder` 构建出 15 个文件，最小 `createMap` 页面经 Vite 打包后在 Chrome 中显示 9 块瓦片、带标记，控制台错误 0。做法见决策 E14（构建后把一期模块打进各包 dist） |
 | AC1007 | 通过 | 人工核对 | README（中英文）都包含"它不是什么"、独立地图无文字标注、中国大陆数据与合规提示、真实与推断说明 |
 | AC1008 | 通过 | `docs/phase2/starter-issues.md` | 12 个入门任务，各注明涉及文件和验证方式 |
 | AC1009 | 未验证 | — | 需要独立 agent 按 CONTRIBUTING 走查 |
 | AC1010 | 通过（相对链接） | `node scripts/check-links.mjs` | 59 个文档、无断开的相对链接（不抓取外部 URL）；一期结论可从 `docs/history.md` 与 `docs/phase1-evidence/` 找到 |
 
-未做：J5（预构建城市发布准备，依赖 D7/D2）、J6（各包发布配置与文件清单最终检查，依赖 E4 迁移）、J7（Issue/PR 模板、行为准则、安全报告方式）、J9（仓库瘦身，依赖 D3）、J10（新用户走查）。
+未做：J5（预构建城市发布准备，依赖 D7/D2）、J7（Issue/PR 模板、行为准则、安全报告方式）、J9（仓库瘦身，依赖 D3）、J10（新用户走查）。
