@@ -70,8 +70,17 @@ try {
   {
     const r = await page.evaluate(`(async () => {
       const frame = () => new Promise((res) => { mlMap.once('render', res); mlMap.triggerRepaint(); });
-      const pixel = (x, y) => { const gl = mlMap.getCanvas().getContext('webgl2'); const p = new Uint8Array(4); gl.readPixels(Math.round(x * devicePixelRatio), gl.drawingBufferHeight - Math.round(y * devicePixelRatio), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, p); return Array.from(p); };
-      // a host circle placed over a tall building, drawn above the city layer (as labels are)
+      // Count pixels of a green text symbol drawn by MapLibre directly over a building. With no glyphs URL
+      // MapLibre rasterises the local font, which also works offline.
+      const greenText = (p) => {
+        const gl = mlMap.getCanvas().getContext('webgl2');
+        const ratio = mlMap.getPixelRatio(), w = Math.ceil(100 * ratio), h = Math.ceil(48 * ratio);
+        const rgba = new Uint8Array(w * h * 4);
+        gl.readPixels(Math.round(p.x * ratio - w/2), Math.round(gl.drawingBufferHeight - p.y * ratio - h/2), w, h, gl.RGBA, gl.UNSIGNED_BYTE, rgba);
+        let n = 0;
+        for (let i = 0; i < rgba.length; i += 4) if (rgba[i] < 80 && rgba[i+1] > 200 && rgba[i+2] < 80) n++;
+        return n;
+      };
       const gj = await fetch('./tiles/beijing-cbd-grow-9/buildings.geojson').then((x) => x.json());
       const tall = gj.features.sort((a, b) => b.properties.height - a.properties.height)[0];
       const ring = tall.geometry.coordinates[0];
@@ -80,34 +89,37 @@ try {
       await cityLayer.whenIdle({ timeoutMs: 60000 }); await frame();
       const under = cityLayer.queryFeatures(mlMap.project(at));
       mlMap.addSource('probe', { type: 'geojson', data: { type: 'Point', coordinates: at } });
-      mlMap.addLayer({ id: 'probe', type: 'circle', source: 'probe', paint: { 'circle-color': '#00ff00', 'circle-radius': 12 } });
+      mlMap.addLayer({ id: 'probe', type: 'symbol', source: 'probe',
+        layout: { 'text-field': 'CITY', 'text-font': ['sans-serif'], 'text-size': 30, 'text-allow-overlap': true },
+        paint: { 'text-color': '#00ff00' } });
       for (let i = 0; i < 200 && !mlMap.isSourceLoaded('probe'); i++) await frame();
       await frame(); await frame();
       const p = mlMap.project(at);
-      const probe = pixel(p.x, p.y);
+      let greenLabelPixels = 0;
+      for (let i = 0; i < 120 && greenLabelPixels < 30; i++) {
+        await frame();
+        greenLabelPixels = greenText(p);
+      }
       mlMap.removeLayer('probe'); mlMap.removeSource('probe');
       // host image without the city layer, before and after add/remove
       const renderer = cityLayer.renderer;
       mlMap.removeLayer('city3d'); await frame(); await frame();
       const before = mlMap.getCanvas().toDataURL();
       const layer2 = createMapLibreLayer({ id: 'city3d', tiles: './tiles/beijing-cbd-grow-9/tileset.json' });
-      mlMap.addLayer(layer2); await layer2.ready(); await layer2.whenIdle({ timeoutMs: 60000 }); await frame();
+      const willAttach = layer2.ready(); mlMap.addLayer(layer2); await willAttach; await layer2.whenIdle({ timeoutMs: 60000 }); await frame();
       const r2 = layer2.renderer; const geomWhileOn = r2.info.memory.geometries;
       mlMap.removeLayer('city3d'); await frame(); await frame();
       const after = mlMap.getCanvas().toDataURL();
-      return { buildingUnderProbe: under?.layer ?? null, probePixel: probe, hostImageRestored: before === after, geometriesWhileOn: geomWhileOn, geometriesAfterRemove: r2.info.memory.geometries, firstRendererAfterRemove: renderer.info.memory.geometries, hostStillLoaded: mlMap.loaded() };
+      return { buildingUnderProbe: under?.layer ?? null, greenLabelPixels, hostImageRestored: before === after, geometriesWhileOn: geomWhileOn, geometriesAfterRemove: r2.info.memory.geometries, firstRendererAfterRemove: renderer.info.memory.geometries, hostStillLoaded: mlMap.loaded() };
     })()`);
     record(
       'AC803',
-      ['building', 'landmark'].includes(r.buildingUnderProbe) &&
-        r.probePixel[1] > 200 &&
-        r.probePixel[0] < 80 &&
-        r.hostImageRestored,
+      ['building', 'landmark'].includes(r.buildingUnderProbe) && r.greenLabelPixels >= 30 && r.hostImageRestored,
       {
         buildingUnderProbe: r.buildingUnderProbe,
-        probePixel: r.probePixel,
+        greenLabelPixels: r.greenLabelPixels,
         hostImageRestored: r.hostImageRestored,
-        note: 'host circle layer used as a stand-in for labels (no online glyphs offline)',
+        note: 'host symbol with a locally rasterised text-field above the city layer',
       },
     );
     record(
