@@ -62,6 +62,47 @@ try {
     });
   }
 
+  // A two-pass pack isolates the render counter contract: picking and stats queries must not alter a completed frame.
+  {
+    const r = await page.evaluate(`(async () => {
+      const m = cityMap, THREE = await loadThree();
+      let firstCalls, bothCalls, firstTris, bothTris;
+      await m.setStyle({ id: 'two-pass-probe', supportsTiles: true,
+        createMaterial: () => new THREE.MeshBasicMaterial(),
+        createPipeline: ({ renderer, scene, camera }) => ({
+          resize() {}, dispose() {},
+          render() {
+            renderer.render(scene, camera);
+            firstCalls = renderer.info.render.calls; firstTris = renderer.info.render.triangles;
+            renderer.render(scene, camera);
+            bothCalls = renderer.info.render.calls; bothTris = renderer.info.render.triangles;
+          }
+        })
+      });
+      await m.whenIdle({timeoutMs:60000});
+      const s = m.getStats({raw:true});
+      m.queryFeatures({x:640,y:360});
+      const after = m.getStats();
+      const flags = s.raw.workerSamples.map((sample) => sample.profile);
+      await m.setStyle('light');
+      await m.whenIdle({timeoutMs:60000});
+      return { firstCalls, bothCalls, firstTris, bothTris, stable: after.triangles === s.triangles && after.drawCalls === s.drawCalls,
+        counted: bothTris === s.triangles && bothCalls === s.drawCalls,
+        gpuAvailable: s.raw.gpu.available, gpuSamples: s.raw.gpu.samples, gpuReason: s.raw.gpu.reason,
+        workerProfiles: [...new Set(flags)] };
+    })()`);
+    record(
+      'multi-pass-accounting',
+      r.stable &&
+        r.counted &&
+        r.bothTris > r.firstTris &&
+        r.bothCalls > r.firstCalls &&
+        r.workerProfiles.includes('full') &&
+        (r.gpuAvailable ? r.gpuSamples > 0 : !!r.gpuReason),
+      r,
+    );
+  }
+
   // AC403: project/unproject are inverse on the ground (1,000 random points, <= 0.5 px)
   {
     const r = await page.evaluate(`(() => {

@@ -70,7 +70,7 @@ export interface TilePipeline {
 const FACADE_ROLE = /^(wall|glass)(\.|$)/;
 const GROUND_ROLE = /^(road|ground|water)/;
 /** Material groups of generated batches (decision E15); `tree.*` materials stay per role. */
-const GROUPS = new Set(['building', 'structure', 'ground', 'landmark']);
+const GROUPS = new Set(['building', 'structure', 'ground', 'landmark', 'detail']);
 const N_ROLES = ROLE_LIST.length;
 
 /** Phase-one ink class per role index (1 building, 1.25 facade, 3 road, 3.2 walkway, 3.5 paint, 4 structure, 5, 6). */
@@ -326,7 +326,9 @@ varying vec4 vCityRuleMask;`,
       m.roughness = 0.9;
       m.metalness = 0.02;
       m.emissive = new Color('#000000');
-      const groupRoles = ROLE_LIST.map((r, i) => [r, i] as const).filter(([r]) => groupOf(r) === role);
+      const groupRoles = ROLE_LIST.map((r, i) => [r, i] as const).filter(
+        ([r]) => groupOf(r) === (role === 'detail' ? 'structure' : role),
+      );
       m.transparent = groupRoles.some(
         ([r, i]) => this.roles.cityRoleOpacity.value[i]! < 1 || this.ruleOpacityRoles.has(r),
       );

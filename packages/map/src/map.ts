@@ -50,6 +50,7 @@ import { Picker } from './picking/picker.js';
 import { EMPTY_RULES, FLAG_FLATTEN, FLAG_HIDDEN, RuleTexture, stateUniforms } from './picking/feature-state.js';
 import { evaluateExpression, ruleRoleApplies } from '@city-ink/styles/spec';
 import { ROLE_LIST, groupOf } from '@city-ink/generators';
+import { GpuFrameTimer } from '../../../src/runtime/gpu-timer.js';
 import { nearbyFacadeFrames } from '../../../src/facade-layout.js';
 import type { NearWall } from '@city-ink/generators';
 import type { Pickable } from './picking/picker.js';
@@ -186,6 +187,8 @@ interface TileEntry {
   retryAt: number;
   controller: AbortController | null;
   cancelWork: (() => void) | null;
+  inferRoofs?: boolean;
+  regenerating?: boolean;
   lastWanted: number;
   shownAt: number;
   visible: boolean;
@@ -204,6 +207,7 @@ interface PendingUpload {
   /** Replaces an existing object (regeneration after a filter change). */
   replace?: boolean;
   entry: TileEntry;
+  token: number;
   response: Extract<WorkerResponse, { type: 'result' }>;
 }
 
@@ -243,8 +247,13 @@ async function readBinary(url: string, options: MapOptions, signal: AbortSignal)
 export async function createMap(options: MapOptions): Promise<CityMap> {
   if (!options?.container) throw new MapError('MAP_CONTAINER_MISSING', 'init', 'createMap needs a container element.');
   const map = new CityMapImpl(options);
-  await map.init();
-  return map;
+  try {
+    await map.init();
+    return map;
+  } catch (error) {
+    await map.dispose();
+    throw error;
+  }
 }
 
 export class CityMapImpl implements CityMap {
@@ -262,9 +271,16 @@ export class CityMapImpl implements CityMap {
   private readonly refined = new Set<string>();
   private readonly listeners = new Map<MapEventType, Set<(e: MapEvent) => void>>();
   private readonly featureState = new Map<string, Record<string, unknown>>();
-  private readonly markers = new Set<{ element: HTMLElement; lngLat: LngLat; altitude: number; anchor: string }>();
+  private readonly markers = new Set<{
+    element: HTMLElement;
+    lngLat: LngLat;
+    altitude: number;
+    anchor: string;
+    occlude: boolean;
+  }>();
   private readonly overlays = new Map<string, { built: BuiltOverlay; anchor: Group }>();
   private readonly picker = new Picker();
+  private readonly markerRay = new Raycaster();
   private readonly materials = new MaterialLibrary();
   private readonly ground: Mesh;
   /** Receives building shadows where no tile ground polygon covers the base plane. */
@@ -279,7 +295,11 @@ export class CityMapImpl implements CityMap {
   private readonly hemi = new HemisphereLight('#ffffff', '#d8d4c7', 0.9);
   private readonly ambient = new AmbientLight('#ffffff', 0.2);
   private readonly budget: Budget;
+  private readonly mobile: boolean;
   private readonly pool: WorkerPool;
+  private readonly gpuTimer: GpuFrameTimer;
+  private lastDrawCalls = 0;
+  private readonly initController = new AbortController();
   private readonly canvas: HTMLCanvasElement;
   private readonly overlay: HTMLDivElement;
   private attribution: HTMLDivElement | null = null;
@@ -308,7 +328,8 @@ export class CityMapImpl implements CityMap {
   private lastUpdate = 0;
 
   constructor(private readonly options: MapOptions) {
-    const quality = options.quality ?? 'balanced';
+    this.mobile = navigator.maxTouchPoints > 0 && matchMedia('(pointer: coarse)').matches;
+    const quality = options.quality ?? (this.mobile ? 'low' : 'balanced');
     this.budget =
       typeof quality === 'string' ? { ...QUALITY_BUDGETS[quality] } : { ...QUALITY_BUDGETS.balanced, ...quality };
     const container = options.container;
@@ -328,6 +349,8 @@ export class CityMapImpl implements CityMap {
       this.renderer = new WebGLRenderer({ canvas: this.canvas, antialias: true, powerPreference: 'high-performance' });
       this.renderer.setPixelRatio(Math.min(globalThis.devicePixelRatio || 1, this.budget.pixelRatio));
     }
+    this.renderer.info.autoReset = false;
+    this.gpuTimer = new GpuFrameTimer(this.renderer.getContext());
     this.overlay = document.createElement('div');
     this.overlay.style.cssText = 'position:absolute;inset:0;pointer-events:none;overflow:hidden';
     container.appendChild(this.overlay);
@@ -393,12 +416,13 @@ export class CityMapImpl implements CityMap {
   // ------------------------------------------------------------------------------------------- lifecycle
 
   async init(): Promise<void> {
-    const controller = new AbortController();
+    const controller = this.initController;
     let json: unknown = this.options.tiles;
     if (typeof this.options.tiles === 'string') {
       this.tilesetUrl = new URL(this.options.tiles, globalThis.location?.href ?? 'http://localhost/').href;
       json = await readJSON(this.tilesetUrl, this.options, controller.signal);
     } else this.tilesetUrl = globalThis.location?.href ?? 'http://localhost/';
+    this.assertAlive();
     const valid = validateTileset(json);
     if (!valid.valid) {
       const first = valid.diagnostics[0]!;
@@ -426,6 +450,7 @@ export class CityMapImpl implements CityMap {
       const url = new URL(this.tileset.coverage.index, this.tilesetUrl).href;
       this.coverage = decodeCoverage(await readBinary(url, this.options, controller.signal));
     } catch (error) {
+      this.assertAlive();
       this.diagnostic({
         code: 'COVERAGE_UNAVAILABLE',
         stage: 'tileset',
@@ -433,6 +458,7 @@ export class CityMapImpl implements CityMap {
         hint: 'Every tile in bounds will be requested.',
       });
     }
+    this.assertAlive();
     const build = this.tileset.build?.options ?? {};
     this.tilesetInferRoofs = Boolean(build.inferRoofs);
     this.generationOptions = {
@@ -450,6 +476,7 @@ export class CityMapImpl implements CityMap {
     });
     if (this.options.filter) this.filter = this.options.filter;
     await this.setStyle(this.options.style ?? 'light');
+    this.assertAlive();
     if (this.options.attributionControl !== false) this.addAttribution();
     if (this.hosted) {
       this.syncHostCamera();
@@ -514,6 +541,8 @@ export class CityMapImpl implements CityMap {
   async dispose(): Promise<void> {
     if (this.disposed) return;
     this.disposed = true;
+    this.initController.abort();
+    this.gpuTimer.dispose();
     cancelAnimationFrame(this.raf);
     this.stopAnimation();
     this.controls?.dispose();
@@ -544,6 +573,11 @@ export class CityMapImpl implements CityMap {
     } else this.renderer.resetState();
     this.overlay.remove();
     this.attribution?.remove();
+    this.markers.clear();
+    this.anchorsRoot.clear();
+    this.anchors.clear();
+    this.featureState.clear();
+    this.uploads.length = 0;
     this.listeners.clear();
     for (const w of this.idleWaiters) w();
     this.idleWaiters = [];
@@ -883,6 +917,7 @@ export class CityMapImpl implements CityMap {
       const record = entry.featureIndex.get(id);
       if (record) entry.object.state.set(record.renderId, merged);
     }
+    this.nearKey = '';
     for (const { built } of this.overlays.values())
       built.features.forEach((f, i) => {
         if (f.id === id) built.state.set(i + 1, merged);
@@ -908,6 +943,7 @@ export class CityMapImpl implements CityMap {
       lngLat: [...o.lngLat] as LngLat,
       altitude: o.altitude ?? 0,
       anchor: o.anchor ?? 'bottom',
+      occlude: o.occlude ?? false,
     };
     o.element.style.position = 'absolute';
     o.element.style.left = '0';
@@ -1006,6 +1042,7 @@ export class CityMapImpl implements CityMap {
       alt = (env.sun.altitude * Math.PI) / 180;
     // Azimuth clockwise from north; world x is east, z is south.
     this.sunDirection.set(Math.sin(az) * Math.cos(alt), Math.sin(alt), -Math.cos(az) * Math.cos(alt)).normalize();
+    this.budgetSettled = null;
     this.sun.castShadow = env.shadows && this.budget.shadowQuality > 0;
     this.shadowCatcher.visible = this.sun.castShadow && !this.hosted;
     (this.shadowCatcher.material as ShadowMaterial).opacity = env.background < '#555555' ? 0.35 : 0.2;
@@ -1064,7 +1101,6 @@ export class CityMapImpl implements CityMap {
     const inferRoofs = this.tilesetInferRoofs && this.filter.roofs?.inferred !== false;
     if (inferRoofs !== Boolean(this.generationOptions.inferRoofs)) {
       this.generationOptions = { ...this.generationOptions, inferRoofs };
-      for (const e of this.tiles.values()) this.regenerate(e);
     }
     this.dirty = true;
   }
@@ -1087,63 +1123,118 @@ export class CityMapImpl implements CityMap {
     return { total, flattened, shown: total - flattened };
   }
 
+  private filteredFeatureCounts() {
+    let hiddenTrees = 0,
+      hiddenDetails = 0;
+    for (const tile of this.tiles.values()) {
+      if (!tile.object || !tile.features) continue;
+      for (const f of tile.features) {
+        if (!(tile.object.state.data[f.renderId * 4 + 3]! & FLAG_HIDDEN)) continue;
+        if (f.layer === 'tree') hiddenTrees++;
+        if (f.layer === 'detail' || f.layer === 'landscape') hiddenDetails++;
+      }
+    }
+    return { hiddenTrees, hiddenDetails };
+  }
+
   /** Screen-space-error multiplier driven by the visible-triangle budget (06 section 3, budget-driven degradation). */
   private sseScale = 1;
   private lastBudgetCheck = 0;
   private visibleTriangles = 0;
 
   /**
-   * Keeps the triangles of shown tiles (colour pass, shadows excluded) within budget.visibleTriangles: over budget the
+   * Keeps the estimated colour and shadow passes within the triangle and draw-call budgets. Over budget the
    * refinement threshold grows so distant areas stay at the coarser level; well under budget it relaxes again.
    * Adjusted at most every 300 ms, with a dead band, so tiles do not flip back and forth.
    */
   private adaptToBudget(now: number) {
+    // Hysteresis: once settled, sub-5 m camera jitter or tiny zoom changes neither re-tier nor change the threshold.
+    const eyeNow = this.transform.camera.position;
+    const shown = [...this.tiles.values()].filter((e) => e.visible && e.object);
+    let neededBytes = 0;
+    for (const e of this.tiles.values()) if (e.visible || e.lastWanted === now) neededBytes += e.bytes;
+    const shownKey = shown.map((e) => e.key).join() + `#${this.objectsVersion}/${this.nearFrames.count}/${neededBytes}`;
+    const settled = this.budgetSettled;
+    if (
+      settled &&
+      ((this.lastRendered <= this.budget.visibleTriangles && this.lastDrawCalls <= this.budget.drawCalls) ||
+        this.sseScale >= 16) &&
+      !this.budgetPending &&
+      settled.key === shownKey &&
+      settled.eye.distanceTo(eyeNow) < 5 &&
+      Math.abs(settled.zoom - this.transform.zoom) < 0.05
+    )
+      return;
     // Per-tile detail tiers by distance (06 section 3, budget-driven degradation): the nearest tiles keep everything;
     // farther tiles first drop their structure group (facade trims, roof plant, parapets, piers); only when every
     // tile is already reduced does the refinement threshold grow so that whole regions fall back to the coarser level.
     // The estimate below counts whole tiles; the renderer also draws what the estimate misses (frustum and light
     // frustum differ). Scale the budget by the measured/estimated ratio of the last colour+shadow frame.
     const correction = this.lastEstimate > 0 && this.lastRendered > 0 ? this.lastRendered / this.lastEstimate : 1;
-    const budget = this.budget.visibleTriangles / Math.min(3, Math.max(1, correction));
-    const eye = this.transform.camera.position;
-    const shown = [...this.tiles.values()].filter((e) => e.visible && e.object);
+    // 5% headroom: the shadow pass varies with the light frustum from frame to frame.
+    const budget = (this.budget.visibleTriangles * 0.95) / Math.min(3, Math.max(1, correction));
+    const drawCorrection = this.lastDrawEstimate > 0 ? Math.max(1, this.lastDrawCalls / this.lastDrawEstimate) : 1;
+    const drawBudget = this.budget.drawCalls / drawCorrection;
+    const eye = eyeNow;
     const shadows = this.sun.castShadow && this.renderer.shadowMap.enabled;
     // Budget counts every triangle the GPU draws: the colour pass plus the shadow depth pass of shadow casters.
     const tris = (m: Mesh) =>
       ((m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position!.count) / 3) *
       ((m as InstancedMesh).isInstancedMesh ? (m as InstancedMesh).count : 1);
     let total = this.nearFrames.count * 12 * (shadows ? 2 : 1);
-    const ranked: { e: TileEntry; tiers: number[]; d: number }[] = [];
+    let draws =
+      Number(this.ground.visible) +
+      Number(this.shadowCatcher.visible) +
+      (this.nearFrames.count ? (shadows ? 2 : 1) : 0);
+    const ranked: { e: TileEntry; tiers: number[]; draws: number[]; d: number }[] = [];
     for (const e of shown) {
       const o = e.object!;
       let colour = 0,
         optional = 0,
         caster = 0;
+      let baseDraws = 0,
+        optionalDraws = 0,
+        shadowDraws = 0;
       o.group.traverse((obj) => {
         const m = obj as Mesh;
         if (!m.isMesh || !m.geometry) return;
         const n = tris(m);
         const layer = String(m.userData.layer);
-        if (layer === 'structure') optional += n;
-        else colour += n;
-        if (m.castShadow && layer !== 'structure') caster += n;
+        if (layer === 'structure') {
+          optional += n;
+          optionalDraws++;
+        } else if (m.visible) {
+          colour += n;
+          baseDraws++;
+          if (shadows && (m.userData.castsShadow ?? m.castShadow)) {
+            caster += n;
+            shadowDraws++;
+          }
+        }
       });
       // tier 0: everything; tier 1: no structure group; tier 2: tier 1 without casting shadows
       const tiers = [colour + optional + (shadows ? caster : 0), colour + (shadows ? caster : 0), colour];
       const centre = o.meshes[0]?.geometry.boundingSphere
         ? o.meshes[0].geometry.boundingSphere.center.clone().applyMatrix4(o.group.matrixWorld)
         : o.group.getWorldPosition(new Vector3());
-      ranked.push({ e, tiers, d: centre.distanceTo(eye) });
+      ranked.push({
+        e,
+        tiers,
+        draws: [baseDraws + optionalDraws + shadowDraws, baseDraws + shadowDraws, baseDraws],
+        d: centre.distanceTo(eye),
+      });
     }
     ranked.sort((x, y) => x.d - y.d);
     // Nearest first: each tile takes the richest tier that still leaves room for every farther tile at tier 2.
     let remaining = ranked.reduce((n, r) => n + r.tiers[2]!, 0);
+    let remainingDraws = ranked.reduce((n, r) => n + r.draws[2]!, 0);
     let reduced = 0;
-    for (const [i, r] of ranked.entries()) {
+    for (const r of ranked) {
       remaining -= r.tiers[2]!;
-      let tier = 2;
-      if (i === 0 || total + r.tiers[0]! + remaining <= budget) tier = 0;
-      else if (total + r.tiers[1]! + remaining <= budget) tier = 1;
+      remainingDraws -= r.draws[2]!;
+      const fits = (tier: number) =>
+        total + r.tiers[tier]! + remaining <= budget && draws + r.draws[tier]! + remainingDraws <= drawBudget;
+      const tier = fits(0) ? 0 : fits(1) ? 1 : 2;
       const o = r.e.object!;
       o.group.traverse((obj) => {
         const m = obj as Mesh;
@@ -1155,12 +1246,14 @@ export class CityMapImpl implements CityMap {
         }
       });
       total += r.tiers[tier]!;
+      draws += r.draws[tier]!;
       if (tier) reduced++;
     }
     this.reducedTiles = reduced;
     this.visibleTriangles = total;
     this.lastEstimate = total;
-    const triangles = total;
+    this.lastDrawEstimate = draws;
+    const pressure = Math.max(total / budget, draws / drawBudget, neededBytes / this.budget.residentBytes);
     // Keep frames coming while over budget so the adjustment converges (the loop otherwise sleeps when idle).
     // Refinement is all-or-nothing per parent tile, so relaxing can jump straight back over budget. Relax only when
     // the last over-budget view cost would now fit, or the camera has moved enough to change the tile set.
@@ -1170,38 +1263,73 @@ export class CityMapImpl implements CityMap {
       !cam ||
       Math.abs(cam.zoom - t.zoom) > 0.5 ||
       Math.hypot(cam.center[0] - t.center[0], cam.center[1] - t.center[1]) > 0.004;
-    const canRelax = triangles < budget * 0.55 && this.sseScale > 1 && (moved || cam!.cost < budget * 0.95);
-    this.budgetPending = (triangles > budget && this.sseScale < 16) || canRelax;
+    const canRelax = pressure < 0.55 && this.sseScale > 1 && moved;
+    this.budgetPending = (pressure > 1 && this.sseScale < 16) || canRelax;
+    this.budgetSettled = this.budgetPending ? null : { key: shownKey, eye: eyeNow.clone(), zoom: this.transform.zoom };
     if (now - this.lastBudgetCheck < 300) return;
     this.lastBudgetCheck = now;
-    if (triangles > budget) {
+    if (pressure > 1) {
       this.sseScale = Math.min(16, this.sseScale * 1.35);
-      this.overBudgetAt = { cost: triangles, zoom: t.zoom, center: [...t.center] as LngLat };
+      this.overBudgetAt = { zoom: t.zoom, center: [...t.center] as LngLat };
     } else if (canRelax) {
       this.sseScale = Math.max(1, this.sseScale / 1.2);
       if (moved) this.overBudgetAt = null;
     }
   }
 
+  private budgetSettled: { key: string; eye: Vector3; zoom: number } | null = null;
+  /** Incremented whenever a tile object is created or replaced (budget tiers must be re-applied). */
+  private objectsVersion = 0;
   /** L1 tiles currently drawn without their structure group. */
   private reducedTiles = 0;
+  private recheckedTriangles = 0;
+  private recheckedDraws = 0;
   private lastEstimate = 0;
+  private lastDrawEstimate = 0;
   private lastRendered = 0;
-  private overBudgetAt: { cost: number; zoom: number; center: LngLat } | null = null;
+  private overBudgetAt: { zoom: number; center: LngLat } | null = null;
 
   /** True while the budget adjustment has not converged; keeps the frame loop running. */
   private budgetPending = false;
 
+  private needsRegeneration(entry: TileEntry) {
+    return (
+      entry.state === 'ready' &&
+      entry.buffer &&
+      !entry.regenerating &&
+      entry.inferRoofs !== this.generationOptions.inferRoofs
+    );
+  }
+
   private regenerate(entry: TileEntry) {
-    if (!entry.buffer || entry.state !== 'ready' || !entry.object) return;
     const token = (entry.loadToken = (entry.loadToken ?? 0) + 1);
-    const work = this.pool.run(entry.buffer.slice(0), entry.priority, this.generationOptions);
-    void work.promise.then((response) => {
-      if (entry.loadToken !== token || this.disposed || response.type !== 'result') return;
-      this.uploads.push({ entry, response, replace: true });
-      this.dirty = true;
-      this.hosted?.repaint();
-    });
+    entry.regenerating = true;
+    entry.inferRoofs = this.generationOptions.inferRoofs;
+    const work = this.pool.run(entry.buffer!.slice(0), entry.priority, this.generationOptions);
+    entry.cancelWork = work.cancel;
+    void work.promise
+      .then((response) => {
+        if (entry.loadToken !== token || this.disposed) return;
+        if (response.type === 'error')
+          throw Object.assign(new Error(response.diagnostic.message), { diagnostic: response.diagnostic });
+        this.uploads.push({ entry, response, token, replace: true });
+      })
+      .catch((error: Error & { diagnostic?: Diagnostic }) => {
+        if (entry.loadToken !== token || this.disposed) return;
+        const d = {
+          ...(error.diagnostic ?? { code: 'TILE_GENERATE_FAILED', stage: 'generate', message: error.message }),
+          tileId: entry.key,
+        };
+        this.diagnostic(d);
+        this.fire({ type: 'tileerror', tile: entry.key, error: d });
+      })
+      .finally(() => {
+        if (entry.loadToken !== token || this.disposed) return;
+        entry.regenerating = false;
+        entry.cancelWork = null;
+        this.dirty = true;
+        this.hosted?.repaint();
+      });
   }
 
   /**
@@ -1219,7 +1347,9 @@ export class CityMapImpl implements CityMap {
         .userData.cityRuleUniforms;
       if (!uniforms) continue;
       const group = String(mesh.userData.layer);
-      const groupRoles = ROLE_LIST.map((r, i) => [r, i] as const).filter(([r]) => groupOf(r) === group);
+      const groupRoles = ROLE_LIST.map((r, i) => [r, i] as const).filter(
+        ([r]) => groupOf(r) === (group === 'detail' ? 'structure' : group),
+      );
       const applicable = rules.filter((rule) =>
         Object.keys(rule.set).some((k) => groupRoles.some(([r]) => ruleRoleApplies(k, r))),
       );
@@ -1323,6 +1453,7 @@ export class CityMapImpl implements CityMap {
         entry.controller = null;
         entry.state = 'generating';
         entry.buffer = buffer.slice(0);
+        entry.inferRoofs = this.generationOptions.inferRoofs;
         const work = this.pool.run(buffer, entry.priority, this.generationOptions);
         entry.cancelWork = work.cancel;
         return work.promise;
@@ -1336,7 +1467,7 @@ export class CityMapImpl implements CityMap {
             diagnostic: response.diagnostic,
             permanent: true,
           });
-        this.uploads.push({ entry, response });
+        this.uploads.push({ entry, response, token });
         this.uploads.sort((a, b) => a.entry.priority - b.entry.priority);
         this.dirty = true;
       })
@@ -1408,8 +1539,8 @@ export class CityMapImpl implements CityMap {
     const start = performance.now();
     let spent = 0;
     while (this.uploads.length && (spent < this.budget.uploadMsPerFrame || spent === 0)) {
-      const { entry, response, replace } = this.uploads.shift()!;
-      if (!this.tiles.has(entry.key)) continue;
+      const { entry, response, replace, token } = this.uploads.shift()!;
+      if (entry.loadToken !== token) continue;
       let previous: TileObject | null = null;
       if (entry.object && !replace) {
         entry.state = 'ready';
@@ -1439,13 +1570,15 @@ export class CityMapImpl implements CityMap {
         if (shown) this.tilesRoot.add(object.group);
       }
       entry.object = object;
+      this.objectsVersion++;
       entry.features = response.features;
+      entry.renderIndex = entry.featureIndex = null;
       entry.nearWalls = response.generated.nearWalls ?? null;
       this.nearKey = '';
       this.applyStates(entry);
       this.applyFilter(entry);
       this.applyRules(entry);
-      entry.bytes = object.bytes;
+      entry.bytes = object.bytes + (entry.buffer?.byteLength ?? 0) + object.state.data.byteLength;
       entry.state = 'ready';
       entry.retries = 0;
       this.placeTile(entry);
@@ -1562,13 +1695,27 @@ export class CityMapImpl implements CityMap {
       }
     const inFlight = [...this.tiles.values()].filter((e) => e.state === 'loading').length;
     const inWorkers = this.pool.queued + this.pool.running;
-    let slots = Math.min(this.budget.concurrentLoads - inFlight, this.budget.workerQueue - inWorkers);
+    let slots = Math.min(this.budget.concurrentLoads - inFlight, this.budget.workerQueue - inWorkers - inFlight);
     for (const d of desired) {
       if (slots <= 0) break;
       const e = this.tiles.get(d.key)!;
       if (e.state === 'queued' && now >= e.retryAt) {
         this.load(e);
         slots--;
+      }
+    }
+    // Keep existing geometry visible until its replacement is ready. Regenerate from cached bytes
+    // within the same worker budget, including tiles whose first load began before the filter changed.
+    let generationSlots =
+      this.budget.workerQueue -
+      this.pool.running -
+      this.pool.queued -
+      [...this.tiles.values()].filter((e) => e.state === 'loading').length;
+    for (const e of this.tiles.values()) {
+      if (generationSlots <= 0) break;
+      if (this.needsRegeneration(e)) {
+        this.regenerate(e);
+        generationSlots--;
       }
     }
     // Unload tiles that are neither wanted nor shown, after a delay; then enforce the resident budget (LRU).
@@ -1633,9 +1780,11 @@ export class CityMapImpl implements CityMap {
     gl.clear(gl.DEPTH_BUFFER_BIT);
     this.renderer.resetState();
     this.dirty = false;
-    const idle = !this.busy() && !this.pendingWanted(now);
-    if (!idle) this.hosted.repaint();
-    else if (!this.wasIdle) {
+    const idle = !this.busy() && !this.pendingWanted(now) && !this.budgetPending;
+    if (!idle) {
+      this.wasIdle = false;
+      this.hosted.repaint();
+    } else if (!this.wasIdle) {
       this.wasIdle = true;
       this.fire({ type: 'idle' });
       const waiters = this.idleWaiters;
@@ -1645,10 +1794,13 @@ export class CityMapImpl implements CityMap {
   }
 
   requestRender(): void {
+    this.assertAlive();
     this.dirty = true;
+    this.hosted?.repaint();
   }
 
   pause(value = true): void {
+    this.assertAlive();
     this.paused = value;
     if (!value) this.dirty = true;
   }
@@ -1662,8 +1814,12 @@ export class CityMapImpl implements CityMap {
     const r = this.options.container.getBoundingClientRect();
     const w = Math.max(1, Math.round(r.width));
     const h = Math.max(1, Math.round(r.height));
+    let pixelRatio = Math.min(globalThis.devicePixelRatio || 1, this.budget.pixelRatio);
+    if (this.mobile) pixelRatio = Math.min(pixelRatio, Math.sqrt(2_500_000 / (w * h)));
+    this.renderer.setPixelRatio(pixelRatio);
     this.renderer.setSize(w, h, false);
     this.transform.resize(w, h);
+    this.budgetSettled = null;
     if (this.pipeline) {
       const size = this.renderer.getDrawingBufferSize(new Vector2());
       this.pipeline.resize(size.x, size.y);
@@ -1673,7 +1829,7 @@ export class CityMapImpl implements CityMap {
 
   private busy(): boolean {
     for (const e of this.tiles.values()) {
-      if (e.state === 'loading' || e.state === 'generating') return true;
+      if (e.state === 'loading' || e.state === 'generating' || e.regenerating || this.needsRegeneration(e)) return true;
       // A wanted tile waiting for its retry backoff keeps the loop running.
       if (e.state === 'queued' && e.retries > 0 && e.lastWanted >= this.lastUpdate) return true;
     }
@@ -1740,10 +1896,25 @@ export class CityMapImpl implements CityMap {
     for (const { built } of this.overlays.values()) built.update(size, this.renderer.getPixelRatio());
     this.scene.updateMatrixWorld();
     this.updateNearDetails();
-    if (this.pipeline) this.pipeline.render();
-    else {
-      this.renderer.render(this.scene, t.camera);
-      this.lastRendered = this.renderer.info.render.triangles;
+    this.renderer.info.reset();
+    const sampled = this.gpuTimer.begin(time);
+    try {
+      if (this.pipeline) this.pipeline.render();
+      else this.renderer.render(this.scene, t.camera);
+    } finally {
+      if (sampled) this.gpuTimer.end();
+    }
+    this.lastRendered = this.renderer.info.render.triangles;
+    this.lastDrawCalls = this.renderer.info.render.calls;
+    if (
+      this.budgetSettled &&
+      this.sseScale < 16 &&
+      (this.lastRendered > this.budget.visibleTriangles || this.lastDrawCalls > this.budget.drawCalls) &&
+      (this.recheckedTriangles !== this.lastRendered || this.recheckedDraws !== this.lastDrawCalls)
+    ) {
+      this.recheckedTriangles = this.lastRendered;
+      this.recheckedDraws = this.lastDrawCalls;
+      this.budgetPending = true;
     }
     this.frame++;
     if (this.lastFrameTime) {
@@ -1793,14 +1964,43 @@ export class CityMapImpl implements CityMap {
         }
       }
     }
+    if (count !== this.nearFrames.count) this.budgetPending = true;
     this.nearFrames.count = count;
     this.nearFrames.instanceMatrix.needsUpdate = true;
+  }
+
+  /** Occlusion is opt-in. Test visible building shells up to the marker, respecting hidden/flattened features. */
+  private markerOccluded(lngLat: LngLat, altitude: number) {
+    const eye = this.transform.camera.position;
+    const toward = this.transform.lngLatToWorld(lngLat, altitude).sub(eye);
+    const distance = toward.length();
+    if (distance <= 0.1) return false;
+    const ray = this.markerRay;
+    ray.set(eye, toward.divideScalar(distance));
+    ray.far = distance - 0.1;
+    for (const tile of this.tiles.values()) {
+      if (!tile.visible || !tile.object) continue;
+      for (const mesh of tile.object.meshes) {
+        if (!mesh.visible || (mesh.userData.layer !== 'building' && mesh.userData.layer !== 'landmark')) continue;
+        const ids = mesh.geometry.getAttribute('renderId');
+        for (const hit of ray.intersectObject(mesh, false)) {
+          if (!hit.face) continue;
+          const flags = tile.object.state.data[4 * ids.getX(hit.face.a) + 3]!;
+          if ((flags & (FLAG_HIDDEN | FLAG_FLATTEN)) === 0) return true;
+        }
+      }
+    }
+    return false;
   }
 
   private positionMarkers() {
     for (const m of this.markers) {
       const p = this.transform.project(m.lngLat, m.altitude);
       if (!p || p.x < -200 || p.y < -200 || p.x > this.transform.width + 200 || p.y > this.transform.height + 200) {
+        m.element.style.display = 'none';
+        continue;
+      }
+      if (m.occlude && this.markerOccluded(m.lngLat, m.altitude)) {
         m.element.style.display = 'none';
         continue;
       }
@@ -1850,8 +2050,8 @@ export class CityMapImpl implements CityMap {
     const stats: MapStats = {
       frame: this.frame,
       fps: iv.length ? 1000 / iv[Math.floor(iv.length / 2)]! : null,
-      drawCalls: info.render.calls,
-      triangles: info.render.triangles,
+      drawCalls: this.lastDrawCalls,
+      triangles: this.lastRendered,
       tiles: counts,
       requests: { ...this.requestStats },
       workers: {
@@ -1877,8 +2077,10 @@ export class CityMapImpl implements CityMap {
     };
     if (o.raw)
       stats.raw = {
+        gpu: this.gpuTimer.snapshot({ raw: true }),
         frameIntervals: [...this.frameIntervals],
         generateMs: [...this.pool.timings],
+        workerSamples: this.pool.samples.map((sample) => ({ ...sample })),
         desired: this.lastDesired.map((d) => d.key),
         tiles: [...this.tiles.values()].map((e) => ({
           key: e.key,
@@ -1896,6 +2098,7 @@ export class CityMapImpl implements CityMap {
         reducedTiles: this.reducedTiles,
         sseScale: this.sseScale,
         buildings: this.buildingCounts(),
+        featureVisibility: this.filteredFeatureCounts(),
       };
     return stats;
   }
