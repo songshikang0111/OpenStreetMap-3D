@@ -1,0 +1,73 @@
+{
+  "date": "2026-11-26T09:26:59.072Z",
+  "machine": {
+    "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+    "platform": "linux 7.3.4-300.fc45.x86_64"
+  },
+  "maplibre": "6.16.0",
+  "results": {
+    "AC801": {
+      "pass": true,
+      "boxesVisibility": "none",
+      "visibleTiles": 8,
+      "drawCalls": 46,
+      "maplibre": "6.16.0",
+      "consoleErrors": 0
+    },
+    "AC802": {
+      "pass": true,
+      "cameras": 50,
+      "points": 3980,
+      "worstPx": 6.692399695988872e-8,
+      "note": "host camera vs layer camera on footprint vertices; tile placement accuracy is covered by AC203/AC307 (grid quantisation <= 3 cm)"
+    },
+    "AC803": {
+      "pass": true,
+      "buildingUnderProbe": "landmark",
+      "greenLabelPixels": 326,
+      "hostImageRestored": true,
+      "note": "host symbol with a locally rasterised text-field above the city layer"
+    },
+    "AC804": {
+      "pass": true,
+      "geometriesWhileOn": 59,
+      "geometriesAfterRemove": 0,
+      "hostStillLoaded": true
+    },
+    "AC805": {
+      "pass": true,
+      "mainImports": [
+        "./map.js",
+        "./transform.js",
+        "./selection.js",
+        "./styles.js",
+        "@city-ink/styles/spec",
+        "./archive.js",
+        "three",
+        "@city-ink/tiles",
+        "./refinement-budget.js",
+        "./pool.js",
+        "./timings.js",
+        "./tile-object.js",
+        "./controls.js",
+        "./picking/picker.js",
+        "./picking/feature-state.js",
+        "@city-ink/generators",
+        "./_phase1/runtime/gpu-timer.js",
+        "./_phase1/facade-layout.js",
+        "./overlays/overlay.js",
+        "./upload-data.js",
+        "@city-ink/styles/facade-shader",
+        "@city-ink/styles/defaults"
+      ],
+      "optionalPeer": {
+        "optional": true
+      }
+    },
+    "AC806": {
+      "pass": true,
+      "tested": "6.16.0",
+      "declared": ">=6.16.0 <7.0.0"
+    }
+  }
+}

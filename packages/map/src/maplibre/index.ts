@@ -24,6 +24,7 @@ export interface HostMap {
   getZoom(): number;
   getPitch(): number;
   getBearing(): number;
+  getPadding?(): { left: number; right: number; top: number; bottom: number };
   getVerticalFieldOfView?(): number;
   transform?: { fov?: number };
   triggerRepaint(): void;
@@ -78,6 +79,12 @@ export function createMapLibreLayer(options: MapLibreLayerOptions): CityMapLibre
   // ready() can be awaited before the host adds the layer. Link those waiters to this attachment's init.
   let readyPromise: Promise<void> | null = null;
   let waitForAdd: ((result: Promise<void>) => void)[] = [];
+  function publishReady(promise: Promise<void>) {
+    readyPromise = promise;
+    for (const resolve of waitForAdd) resolve(promise);
+    waitForAdd = [];
+    promise.catch(() => undefined);
+  }
   const pending: [MapEventType, (e: MapEvent) => void][] = [];
   const onClick = (e: {
     point: { x: number; y: number };
@@ -114,35 +121,45 @@ export function createMapLibreLayer(options: MapLibreLayerOptions): CityMapLibre
         ground: options.ground ?? 'host',
         camera: () => {
           const c = map.getCenter();
+          const width = canvas.clientWidth || canvas.width;
+          const height = canvas.clientHeight || canvas.height;
+          const padding = map.getPadding?.();
           return {
             center: [c.lng, c.lat] as LngLat,
             zoom: map.getZoom(),
             pitch: map.getPitch(),
             bearing: map.getBearing(),
             fov: hostFov(map),
-            width: canvas.clientWidth || canvas.width,
-            height: canvas.clientHeight || canvas.height,
+            width,
+            height,
+            offsetX: padding ? Math.max(-width, Math.min(width, padding.left - padding.right)) / 2 : 0,
+            offsetY: padding ? Math.max(-height, Math.min(height, padding.top - padding.bottom)) / 2 : 0,
           };
         },
         repaint: () => map.triggerRepaint(),
       };
-      core = new CityMapImpl({ ...options, container: map.getContainer(), hosted } as HostedOptions);
+      try {
+        core = new CityMapImpl({ ...options, container: map.getContainer(), hosted } as HostedOptions);
+      } catch (error) {
+        host = null;
+        publishReady(Promise.reject(error));
+        throw error;
+      }
       for (const [type, handler] of pending) core.on(type, handler);
       const attaching = core;
-      readyPromise = attaching
-        .init()
-        .then(() => map.triggerRepaint())
-        .catch(async (error) => {
-          if (core === attaching) {
-            core = null;
-            map.off('click', onClick);
-            await attaching.dispose();
-          }
-          throw error;
-        });
-      for (const resolve of waitForAdd) resolve(readyPromise);
-      waitForAdd = [];
-      readyPromise.catch(() => undefined);
+      publishReady(
+        attaching
+          .init()
+          .then(() => map.triggerRepaint())
+          .catch(async (error) => {
+            if (core === attaching) {
+              core = null;
+              map.off('click', onClick);
+              await attaching.dispose();
+            }
+            throw error;
+          }),
+      );
       map.on('click', onClick);
     },
     render() {

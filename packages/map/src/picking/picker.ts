@@ -1,11 +1,12 @@
 // GPU picking (04 section 6, WP-E): renders only the pixel under the cursor with id materials into a 1×1 target.
 // RGB carries the renderId (24 bits), A the slot of the tile or overlay that owns the mesh.
-import { Color, NoBlending, ShaderMaterial, WebGLRenderTarget } from 'three';
-import type { Material, Mesh, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
-import { STATE_WIDTH, bindStateTexture, stateUniforms } from './feature-state.js';
+import { Color, NoBlending, PerspectiveCamera, ShaderMaterial, WebGLRenderTarget } from 'three';
+import type { Material, Mesh, Scene, WebGLRenderer } from 'three';
+import { STATE_WIDTH } from './feature-state.js';
 import type { FeatureStateTexture } from './feature-state.js';
 
 export const PICK_LAYER = 31;
+const skipMaterialHook = () => {};
 
 const VERTEX = /* glsl */ `
 attribute float renderId;
@@ -54,21 +55,24 @@ export interface PickResult {
 export class Picker {
   private readonly target = new WebGLRenderTarget(1, 1);
   private readonly materials = new Map<number, ShaderMaterial>();
+  private readonly camera = new PerspectiveCamera();
   private readonly pixel = new Uint8Array(4);
   /** Main-thread time of the last pick, for diagnostics (AC502). */
   lastMs = 0;
 
-  private material(slot: number): ShaderMaterial {
+  private material(slot: number, state: FeatureStateTexture): ShaderMaterial {
     let m = this.materials.get(slot);
     if (!m) {
       m = new ShaderMaterial({
         vertexShader: VERTEX,
         fragmentShader: FRAGMENT,
-        uniforms: { featureState: stateUniforms.featureState, slot: { value: slot } },
+        uniforms: { featureState: { value: null }, slot: { value: slot } },
         blending: NoBlending,
       });
       this.materials.set(slot, m);
     }
+    // Each slot belongs to exactly one tile or overlay throughout this pick.
+    m.uniforms.featureState!.value = state.texture;
     return m;
   }
 
@@ -93,11 +97,15 @@ export class Picker {
       });
       const own = item.mesh.userData.pickMaterial as ShaderMaterial | undefined;
       if (own) (own.uniforms.slot as { value: number }).value = item.slot;
-      item.mesh.material = own ?? this.material(item.slot);
+      item.mesh.material = own ?? this.material(item.slot, item.state);
       item.mesh.layers.set(PICK_LAYER);
-      bindStateTexture(item.mesh, item.state);
+      item.mesh.onBeforeRender = skipMaterialHook;
     }
-    const cameraLayers = camera.layers.mask;
+    const pickCamera = this.camera.copy(camera, false);
+    const view = camera.view;
+    const gl = renderer.getContext();
+    const sx = gl.drawingBufferWidth / width,
+      sy = gl.drawingBufferHeight / height;
     const background = scene.background;
     const fog = scene.fog;
     const target = renderer.getRenderTarget();
@@ -107,16 +115,21 @@ export class Picker {
     try {
       scene.background = null;
       scene.fog = null;
-      camera.layers.set(PICK_LAYER);
-      camera.setViewOffset(width, height, Math.floor(x), Math.floor(y), 1, 1);
+      pickCamera.layers.set(PICK_LAYER);
+      pickCamera.setViewOffset(
+        width,
+        height,
+        (view?.enabled ? view.offsetX : 0) + Math.floor(x * sx) / sx,
+        (view?.enabled ? view.offsetY : 0) + Math.floor(y * sy) / sy,
+        1 / sx,
+        1 / sy,
+      );
       renderer.setRenderTarget(this.target);
       renderer.setClearColor(0x000000, 0);
       renderer.autoClear = true;
-      renderer.render(scene, camera);
+      renderer.render(scene, pickCamera);
       renderer.readRenderTargetPixels(this.target, 0, 0, 1, 1, this.pixel);
     } finally {
-      camera.clearViewOffset();
-      camera.layers.mask = cameraLayers;
       scene.background = background;
       scene.fog = fog;
       renderer.setRenderTarget(target);

@@ -2,7 +2,7 @@
 // indexed by renderId. Materials read it in the vertex shader: alpha holds flags (1 hidden, 2 highlight, 4 colour),
 // rgb an override colour. Setting a state only rewrites four bytes and re-uploads the texture.
 import { Color, DataTexture, NearestFilter, RGBAFormat, UnsignedByteType } from 'three';
-import type { Material, Mesh, Object3D } from 'three';
+import type { Material, Mesh } from 'three';
 
 export const STATE_WIDTH = 256;
 export const FLAG_HIDDEN = 1;
@@ -67,17 +67,16 @@ export class FeatureStateTexture {
   }
 }
 
-/** Shared uniforms of all patched materials; their values are switched per drawn object in onBeforeRender. */
-export const stateUniforms = {
-  featureState: { value: null as DataTexture | null },
-  featureStateRows: { value: 1 },
-  highlightColor: { value: new Color('#ffb300') },
-  highlightIntensity: { value: 0.6 },
-};
+/** Colour uniforms and the empty rule texture belong to one map's material library. */
+export class FeatureStyle {
+  readonly highlightColor = { value: new Color('#ffb300') };
+  readonly highlightIntensity = { value: 0.6 };
+  readonly emptyRules = new DataTexture(new Uint8Array(4), 1, 1, RGBAFormat, UnsignedByteType);
 
-/** A 1x1 texture meaning "no style rule applies" (05 section 4 rules are evaluated per tile into RuleTexture). */
-export const EMPTY_RULES = new DataTexture(new Uint8Array(4), 1, 1, RGBAFormat, UnsignedByteType);
-EMPTY_RULES.needsUpdate = true;
+  constructor() {
+    this.emptyRules.needsUpdate = true;
+  }
+}
 
 /**
  * Per-feature style-rule results of one tile and role: rgb = colour, a = 0 (no rule) or 1 + opacity·126, plus 128 when
@@ -163,12 +162,12 @@ uniform float highlightIntensity;
  * built-in materials when the material changes between draws, so every tile or overlay gets its own material
  * instance carrying its own texture; the program is shared through the cache key, so nothing recompiles.
  */
-export function patchFeatureState(material: Material, texture: DataTexture | null = null): void {
+export function patchFeatureState(material: Material, texture: DataTexture, style: FeatureStyle): void {
   const own = {
     featureState: { value: texture },
-    ruleState: { value: EMPTY_RULES as DataTexture },
-    highlightColor: stateUniforms.highlightColor,
-    highlightIntensity: stateUniforms.highlightIntensity,
+    ruleState: { value: style.emptyRules },
+    highlightColor: style.highlightColor,
+    highlightIntensity: style.highlightIntensity,
   };
   material.userData.featureStateUniforms = own;
   const previous = material.onBeforeCompile;
@@ -200,14 +199,6 @@ export function patchFeatureState(material: Material, texture: DataTexture | nul
   };
   const key = material.customProgramCacheKey.bind(material);
   material.customProgramCacheKey = () => `${key()}|city-feature-state-v2`;
-}
-
-/** Binds an object's state texture before each draw (shared materials need a per-object uniform value). */
-export function bindStateTexture(object: Object3D, state: FeatureStateTexture): void {
-  object.onBeforeRender = (_r, _s, _c, _g, material) => {
-    stateUniforms.featureState.value = state.texture;
-    (material as Material & { uniformsNeedUpdate: boolean }).uniformsNeedUpdate = true;
-  };
 }
 
 export type { Mesh };

@@ -51,7 +51,7 @@ import { MaterialLibrary, prepareTileObject, tileCost } from './tile-object.js';
 import type { TileObject, TilePipeline, TileStylePack } from './tile-object.js';
 import { Controls } from './controls.js';
 import { Picker } from './picking/picker.js';
-import { EMPTY_RULES, FLAG_FLATTEN, FLAG_HIDDEN, RuleTexture, stateUniforms } from './picking/feature-state.js';
+import { FLAG_FLATTEN, FLAG_HIDDEN, RuleTexture } from './picking/feature-state.js';
 import { evaluateExpression, ruleRoleApplies } from '@city-ink/styles/spec';
 import { ROLE_LIST, groupOf } from '@city-ink/generators';
 import { GpuFrameTimer } from '../../../src/runtime/gpu-timer.js';
@@ -103,6 +103,8 @@ export interface HostedOptions extends MapOptions {
       pitch: number;
       bearing: number;
       fov: number;
+      offsetX: number;
+      offsetY: number;
       width: number;
       height: number;
     };
@@ -351,21 +353,20 @@ export class CityMapImpl implements CityMap {
       typeof quality === 'string' ? { ...QUALITY_BUDGETS[quality] } : { ...QUALITY_BUDGETS.balanced, ...quality };
     const container = options.container;
     this.hosted = (options as HostedOptions).hosted ?? null;
-    if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
     if (this.hosted) {
       // MapLibre layer mode: share the host's canvas and WebGL context; the host owns size, clearing and the loop.
       this.canvas = this.hosted.canvas;
       this.renderer = new WebGLRenderer({ canvas: this.canvas, context: this.hosted.gl });
       this.renderer.autoClear = false;
-      this.renderer.setPixelRatio(globalThis.devicePixelRatio || 1);
     } else {
       this.canvas = document.createElement('canvas');
       this.canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;outline:none';
       this.canvas.tabIndex = 0;
-      container.appendChild(this.canvas);
       this.renderer = new WebGLRenderer({ canvas: this.canvas, antialias: true, powerPreference: 'high-performance' });
       this.renderer.setPixelRatio(Math.min(globalThis.devicePixelRatio || 1, this.budget.pixelRatio));
     }
+    if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
+    if (!this.hosted) container.appendChild(this.canvas);
     this.renderer.info.autoReset = false;
     this.gpuTimer = new GpuFrameTimer(this.renderer.getContext());
     this.overlay = document.createElement('div');
@@ -592,7 +593,6 @@ export class CityMapImpl implements CityMap {
     (this.ground.material as MeshBasicMaterial).dispose();
     (this.shadowCatcher.material as ShadowMaterial).dispose();
     this.sun.shadow.map?.dispose();
-    EMPTY_RULES.dispose();
     this.renderer.renderLists.dispose();
     this.renderer.dispose();
     if (!this.hosted) {
@@ -998,7 +998,7 @@ export class CityMapImpl implements CityMap {
     if (this.overlays.has(layer.id)) throw new MapError('LAYER_EXISTS', 'overlay', `Layer ${layer.id} already exists.`);
     let built: BuiltOverlay;
     try {
-      built = buildOverlay(layer);
+      built = buildOverlay(layer, this.materials.featureStyle);
     } catch (error) {
       const e = error as Error & { code?: string };
       throw new MapError(
@@ -1086,8 +1086,8 @@ export class CityMapImpl implements CityMap {
     f.glassReflection.value = Math.min(0.65, 0.15 + (0.2126 * bg.r + 0.7152 * bg.g + 0.0722 * bg.b) * 0.6);
     x.uContactShadow.value = env.ambientOcclusion;
     x.uNightLights.value = spec.facade.nightLights ? 1 : 0;
-    stateUniforms.highlightColor.value.set(spec.featureState.highlight.emissive);
-    stateUniforms.highlightIntensity.value = spec.featureState.highlight.emissiveIntensity;
+    this.materials.featureStyle.highlightColor.value.set(spec.featureState.highlight.emissive);
+    this.materials.featureStyle.highlightIntensity.value = spec.featureState.highlight.emissiveIntensity;
     this.materials.ruleOpacityRoles = new Set(
       spec.rules.flatMap((r) =>
         Object.entries(r.set)
@@ -1392,8 +1392,8 @@ export class CityMapImpl implements CityMap {
         Object.keys(rule.set).some((k) => groupRoles.some(([r]) => ruleRoleApplies(k, r))),
       );
       if (!applicable.length || !entry.features) {
-        uniforms.ruleColor!.value = EMPTY_RULES;
-        uniforms.ruleMask!.value = EMPTY_RULES;
+        uniforms.ruleColor!.value = this.materials.featureStyle.emptyRules;
+        uniforms.ruleMask!.value = this.materials.featureStyle.emptyRules;
         continue;
       }
       const texture = new RuleTexture(entry.object.state.capacity);
@@ -1910,11 +1910,13 @@ export class CityMapImpl implements CityMap {
   private syncHostCamera() {
     const h = this.hosted!;
     const c = h.camera();
+    this.transform.offsetX = c.offsetX;
+    this.transform.offsetY = c.offsetY;
     if (c.width !== this.transform.width || c.height !== this.transform.height) {
       this.transform.resize(c.width, c.height);
-      this.renderer.setPixelRatio(globalThis.devicePixelRatio || 1);
-      this.renderer.setSize(c.width, c.height, false);
     }
+    // The host owns its backing store, including its clamped or explicitly configured pixel ratio.
+    this.renderer.setViewport(0, 0, h.gl.drawingBufferWidth, h.gl.drawingBufferHeight);
     this.transform.limits = { minZoom: 0, maxZoom: 24, maxPitch: 90 };
     this.applyCamera({ center: c.center, zoom: c.zoom, pitch: c.pitch, bearing: c.bearing });
     if (Math.abs(this.transform.fov - c.fov) > 1e-9) this.transform.set({ fov: c.fov });
@@ -2051,9 +2053,10 @@ export class CityMapImpl implements CityMap {
       cam.updateProjectionMatrix();
       this.sun.shadow.normalBias = texel * 1.5;
     }
-    const size = this.renderer.getDrawingBufferSize(new Vector2());
+    const gl = this.renderer.getContext();
+    const size = new Vector2(gl.drawingBufferWidth, gl.drawingBufferHeight);
     this.materials.facade.projectionScale.value = size.y / (2 * Math.tan((t.fov * Math.PI) / 360));
-    for (const { built } of this.overlays.values()) built.update(size, this.renderer.getPixelRatio());
+    for (const { built } of this.overlays.values()) built.update(size, size.y / t.height);
     this.scene.updateMatrixWorld();
     this.updateNearDetails();
     this.adaptToBudget(this.selectionTime);

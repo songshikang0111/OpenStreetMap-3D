@@ -20,7 +20,7 @@ import type { Object3D } from 'three';
 import { lngLatToMercator, metersPerMercatorUnit } from '@city-ink/tiles';
 import type { LngLat } from '@city-ink/tiles';
 import type { OverlayLayer } from '../types.js';
-import { FeatureStateTexture, patchFeatureState } from '../picking/feature-state.js';
+import { FeatureStateTexture, type FeatureStyle, patchFeatureState } from '../picking/feature-state.js';
 
 export interface OverlayFeature {
   id: string;
@@ -320,7 +320,7 @@ function pickVariant(
 
 // ----------------------------------------------------------------------------------------------- build
 
-export function buildOverlay(layer: OverlayLayer): BuiltOverlay {
+export function buildOverlay(layer: OverlayLayer, style: FeatureStyle): BuiltOverlay {
   const group = new Group();
   group.name = `overlay:${layer.id}`;
   const disposables: { dispose(): void }[] = [];
@@ -393,7 +393,7 @@ export function buildOverlay(layer: OverlayLayer): BuiltOverlay {
       polygonOffsetUnits: -2,
       depthWrite: (layer.paint.opacity ?? 1) >= 1,
     });
-    patchFeatureState(material, state.texture);
+    patchFeatureState(material, state.texture, style);
     const alt = layer.altitude ?? 0.3;
     add(
       new Mesh(
@@ -411,7 +411,7 @@ export function buildOverlay(layer: OverlayLayer): BuiltOverlay {
       opacity: paint.opacity ?? 1,
       roughness: 0.8,
     });
-    patchFeatureState(material, state.texture);
+    patchFeatureState(material, state.texture, style);
     add(
       new Mesh(
         buildPolygons(
