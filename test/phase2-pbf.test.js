@@ -192,6 +192,8 @@ test('PBF decodes signed int64 offsets and rejects truncated or oversized framin
     const nodes = [];
     await readPbf(file, { node: (id, lat, lon) => nodes.push([id, lat, lon]) });
     assert.deepEqual(nodes, [[1, 2.0000025, -1.000005]]);
+    await writeFile(file, block('OSMHeader', bytesField(4, str('HistoricalInformation'))));
+    await assert.rejects(readPbf(file, {}), /Unsupported required OSM PBF feature: HistoricalInformation/);
     for (const bad of [data.subarray(0, -1), data.subarray(0, 3), Buffer.from([255, 255, 255, 255])]) {
       await writeFile(file, bad);
       await assert.rejects(readPbf(file, {}), /Truncated PBF|Invalid PBF/);
