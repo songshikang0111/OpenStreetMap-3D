@@ -3,10 +3,12 @@
 // Usage: node scripts/benchmark-tiles/static-budget.mjs <tilesetDir ...> [--bundle packages/map/bundle/city-map.js]
 //        [--max-l1-draws 12] [--max-l0-draws 4] [--max-tile-gzip 1048576] [--max-bundle-gzip 184320] [--json out]
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { gzipSync } from 'node:zlib';
 import path from 'node:path';
 import os from 'node:os';
-import { decodeTile } from '../../packages/tiles/dist/index.js';
+import { decodeCoverage, decodeTile, parentTile, tileKey } from '../../packages/tiles/dist/index.js';
+import { validateTilesetDir } from '../../packages/builder/dist/validate.js';
 import { generateTile } from '../../packages/generators/dist/index.js';
 import { DETAIL_GENERATORS } from '../../packages/details/dist/index.js';
 
@@ -29,6 +31,17 @@ const p95 = (values) => (values.length ? values.toSorted((a, b) => a - b)[Math.c
 for (const dir of dirs) {
   const ts = JSON.parse(readFileSync(path.join(dir, 'tileset.json'), 'utf8'));
   const report = JSON.parse(readFileSync(path.join(dir, 'report.json'), 'utf8'));
+  const validation = await validateTilesetDir(dir);
+  if (!validation.valid || !validation.tiles) {
+    problems.push(`${ts.name}: invalid or empty tileset (${validation.diagnostics.map((d) => d.code).join(', ')})`);
+    continue;
+  }
+  const coverage = decodeCoverage(readFileSync(path.join(dir, ts.coverage.index)));
+  const expected = new Set();
+  for (const id of coverage.tiles())
+    for (const level of ts.levels) expected.add(tileKey(parentTile(id, level.zoom)) + '.c3t');
+  for (const key of Object.keys(report.hashes).filter((k) => k.endsWith('.c3t')))
+    if (!expected.has(key)) problems.push(`${ts.name}: unexpected tile in report: ${key}`);
   const options = { inferRoofs: Boolean(ts.build?.options?.inferRoofs), layerGenerators: DETAIL_GENERATORS };
   const decodeTimes = [],
     generateTimes = [];
@@ -42,8 +55,10 @@ for (const dir of dirs) {
     maxGzip: 0,
     worst: null,
   };
-  for (const key of Object.keys(report.hashes).filter((k) => k.endsWith('.c3t'))) {
+  for (const key of expected) {
     const bytes = readFileSync(path.join(dir, key));
+    if (createHash('sha256').update(bytes).digest('hex') !== report.hashes[key])
+      problems.push(`${ts.name}: missing or incorrect tile digest: ${key}`);
     generateTile(decodeTile(bytes), options); // warm up the codec and generators before recording
     const decode = [],
       generate = [];
