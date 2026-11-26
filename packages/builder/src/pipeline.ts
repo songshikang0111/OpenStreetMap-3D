@@ -1,3 +1,5 @@
+import { RegionMask } from './region.js';
+import type { BuildRegionInput } from './region.js';
 import { ingestPbf } from './ingest/index.js';
 // Build pipeline: ingest → partition → plan → cut → encode → finalize (03 section 3), with per-stage caches,
 // atomic writes and resume. Same input, options and versions give byte-identical outputs.
@@ -46,6 +48,8 @@ export interface BuildOptions {
   project?: string;
   output: string;
   bbox?: Bounds;
+  /** GeoJSON polygonal mask, mutually exclusive with bbox. */
+  region?: BuildRegionInput;
   name?: string;
   seed?: number;
   /** Use 3 m above the known base when height and floors are missing. Defaults to inference. */
@@ -253,6 +257,12 @@ async function readComplete(out: string, marker: CompleteBuild): Promise<BuildOu
 export async function buildTiles(
   options: BuildOptions,
 ): Promise<{ report: BuildReport; tileset: Tileset; output: string }> {
+  const region = options.region ? new RegionMask(options.region) : null;
+  if (region) {
+    if (options.bbox)
+      throw Object.assign(new Error('Choose either bbox or a polygon region.'), { code: 'BUILD_REGION_INVALID' });
+    options = { ...options, bbox: region.bounds };
+  }
   const out = path.resolve(options.output);
   const cache = path.join(out, '.build');
   const concurrency = options.concurrency ?? 1;
@@ -303,6 +313,7 @@ export async function buildTiles(
         config: source.config,
         project: Boolean(options.project),
         bbox: options.bbox ?? null,
+        ...(region ? { region: region.polygons } : {}),
         name: options.name ?? null,
         seed: options.seed ?? null,
         ...(options.inferHeights === false ? { inferHeights: false } : {}),
@@ -343,6 +354,7 @@ export async function buildTiles(
     version: BUILDER_VERSION,
     area: input.area,
     origin: input.origin,
+    ...(region ? { region: region.polygons } : {}),
   };
   const configHash = sha256(canonicalStringify(buildConfig));
   const inputHash = sha256('2:' + input.sourceSha256 + configHash);
@@ -404,6 +416,7 @@ export async function buildTiles(
     planOptions,
     Math.min(concurrency, Math.max(1, Math.floor(memoryMiB / 1024))),
     async (job, plan) => {
+      if (region) plan.records = plan.records.flatMap((r) => region.clip(r));
       await writeAtomic(job.file, JSON.stringify({ ...plan, inputHash }));
       complete(job.cell);
     },

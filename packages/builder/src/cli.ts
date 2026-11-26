@@ -11,7 +11,7 @@ import type { Diagnostic } from '@city-ink/tiles';
 
 export const TILES_HELP = `city tiles — build and check static 3D city tiles
 
-  city tiles build (--input file.json|city.osm.pbf | --project dir) --output dir [--bbox w,s,e,n] [--resume]
+  city tiles build (--input file.json|city.osm.pbf | --project dir) --output dir [--bbox w,s,e,n | --polygon mask.geojson] [--resume]
                    [--seed n] [--config options.json] [--concurrency n] [--max-memory MiB] [--levels 14,16] [--cell-zoom n] [--json]
   city tiles validate <dir> [--json]
   city tiles inspect <dir> --tile z/x/y [--json]
@@ -39,6 +39,7 @@ const VALUE_OPTIONS = new Set([
   'project',
   'output',
   'bbox',
+  'polygon',
   'seed',
   'config',
   'concurrency',
@@ -143,6 +144,7 @@ export async function runTilesCLI(
         ...(o.seed ? { seed: Number(o.seed) } : {}),
         ...(o.name ? { name: String(o.name) } : {}),
         ...(o['cell-zoom'] !== undefined ? { cellZoom: Number(o['cell-zoom']) } : {}),
+        ...(o.polygon ? { region: JSON.parse(await readFile(resolve(o.polygon), 'utf8')) } : {}),
         ...config,
         resume: Boolean(o.resume),
         concurrency,
