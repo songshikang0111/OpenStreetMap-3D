@@ -116,9 +116,25 @@ try {
       const marker = m.addMarker({ lngLat: ll, element: el, occlude: true });
       await m.whenIdle({ timeoutMs: 60000 });
       const occluded = el.style.display === 'none';
+      // Offscreen tiles may be evicted while the camera is at rest. Inspect the displayed
+      // copies of the selected feature, including their actual vertex and index attributes.
+      const snapshot = () => [...m.tiles.values()]
+        .filter(e => e.visible && e.object && e.features?.some(f => f.id === target.id))
+        .flatMap(e => e.object.group.children.filter(mesh => mesh.isMesh).map(mesh => ({
+          mesh, geometry: mesh.geometry,
+          buffers: [...Object.values(mesh.geometry.attributes), mesh.geometry.index].filter(Boolean).map(a => [a, a.version])
+        })));
+      const prior = snapshot();
+      const unchanged = () => {
+        const current = snapshot();
+        return prior.length > 0 && current.length === prior.length && current.every((r, i) =>
+          r.mesh === prior[i].mesh && r.geometry === prior[i].geometry && r.buffers.length === prior[i].buffers.length &&
+          r.buffers.every(([attr, version], j) => attr === prior[i].buffers[j][0] && version === prior[i].buffers[j][1]));
+      };
       const geometriesBefore = m.renderer.info.memory.geometries;
       m.setFeatureState(target.id, { highlight: true, color: '#ff0000' });
       await T.frame(); await T.frame();
+      const highlightGeometryStable = unchanged();
       const stillPickable = m.queryFeatures(point)?.id === target.id;
       m.renderer.render(m.scene, m.camera);
       const gl = m.renderer.getContext(); const px = new Uint8Array(4);
@@ -129,6 +145,7 @@ try {
       await T.frame();
       const hiddenPick = m.queryFeatures(point)?.id === target.id;
       const passThrough = el.style.display !== 'none';
+      const hiddenGeometryStable = unchanged();
       marker.remove();
       const geometriesAfter = m.renderer.info.memory.geometries;
       // L0: same building id appears in the massing tile
@@ -145,7 +162,7 @@ try {
       m.setFeatureState(target.id, { hidden: false, highlight: false, color: null });
       await T.frame();
       const visibleAgain = m.queryFeatures(m.project(ll))?.id === target.id;
-      return { feature: target.id, occluded, passThrough, renderedRed, pixel: Array.from(px), highlightPickable: stillPickable, hiddenNotPicked: !hiddenPick, geometriesBefore, geometriesAfter, hiddenAtL0, hiddenAfterReload, visibleAgain };
+      return { feature: target.id, occluded, passThrough, renderedRed, pixel: Array.from(px), highlightPickable: stillPickable, hiddenNotPicked: !hiddenPick, trackedMeshes: prior.length, highlightGeometryStable, hiddenGeometryStable, geometriesBefore, geometriesAfter, hiddenAtL0, hiddenAfterReload, visibleAgain };
     })()`);
     record('marker-occlusion', r.occluded && r.passThrough, { occluded: r.occluded, passThrough: r.passThrough });
     record(
@@ -153,7 +170,8 @@ try {
       r.renderedRed &&
         r.highlightPickable &&
         r.hiddenNotPicked &&
-        r.geometriesBefore === r.geometriesAfter &&
+        r.highlightGeometryStable &&
+        r.hiddenGeometryStable &&
         r.hiddenAtL0 &&
         r.hiddenAfterReload &&
         r.visibleAgain,
