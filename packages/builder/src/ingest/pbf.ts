@@ -154,6 +154,7 @@ export async function readPbf(file: string, visitor: PbfVisitor): Promise<PbfHea
       if (!dataSize || dataSize > MAX_BLOB) throw new Error('Invalid PBF Blob size');
       const blob = Buffer.alloc(dataSize);
       await read(blob);
+      if (type !== 'OSMHeader' && type !== 'OSMData') continue;
       const data = inflateBlob(blob);
       if (type === 'OSMHeader') {
         readHeader(data, header);
@@ -192,6 +193,10 @@ function readHeader(data: Uint8Array, header: PbfHeader) {
       }
       // left, right, top, bottom → west, south, east, north
       header.bbox = [box[0]!, box[3]!, box[1]!, box[2]!];
+    } else if (f === 4) {
+      const feature = text.decode(r.bytes());
+      if (feature !== 'OsmSchema-V0.6' && feature !== 'DenseNodes')
+        throw new Error(`Unsupported required OSM PBF feature: ${feature}`);
     } else if (f === 32) header.replicationTimestamp = r.varint();
     else r.skip(w);
   }
