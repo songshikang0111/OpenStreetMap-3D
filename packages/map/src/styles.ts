@@ -25,6 +25,10 @@ export class StyleError extends Error {
   }
 }
 
+function isStylePack(style: StyleSpec | StylePack): style is StylePack {
+  return Boolean(style && 'createMaterial' in style && typeof style.createMaterial === 'function');
+}
+
 export function resolveStyle(style: string | StyleSpec | StylePack, hosted = false): StyleResolution {
   if (typeof style === 'string') {
     const s = BUILTIN_STYLES[style];
@@ -36,8 +40,8 @@ export function resolveStyle(style: string | StyleSpec | StylePack, hosted = fal
       );
     return { spec: resolveStyleSpec(s, BUILTIN_STYLES), pack: null };
   }
-  const pack = style as unknown as TileStylePack & { createPipeline?: unknown };
-  if (typeof pack.createMaterial === 'function') {
+  if (isStylePack(style)) {
+    const pack = style;
     if (pack.supportsTiles !== true)
       throw new StyleError(
         'STYLE_UNSUPPORTED',
@@ -62,7 +66,7 @@ export function resolveStyle(style: string | StyleSpec | StylePack, hosted = fal
       result.errors,
     );
   }
-  const spec = resolveStyleSpec(style as unknown as SpecData, BUILTIN_STYLES);
+  const spec = resolveStyleSpec(style, BUILTIN_STYLES);
   if (hosted && !spec.hostCompatible)
     throw new StyleError(
       'STYLE_NOT_HOST_COMPATIBLE',

@@ -28,7 +28,7 @@ export async function section3(map: CityMap) {
     extends: 'light',
     roles: { wall: { color: '#f1c9a5', blend: 'multiply' } },
   });
-  await map.setStyle(comic as never);
+  await map.setStyle(comic);
 }
 
 export function section4(map: CityMap) {

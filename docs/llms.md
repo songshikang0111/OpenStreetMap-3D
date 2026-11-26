@@ -51,6 +51,8 @@ import { comic } from '@city-ink/styles-ink'; // optional package: outlines and 
 await map.setStyle(comic);
 ```
 
+TypeScript consumers can import `StyleSpec` and `StylePack` from `@city-ink/map`. The config type matches the StyleSpec schema. A code pack declares `supportsTiles: true` and implements `createMaterial`; its optional load/unload hooks receive the tile key and Three.js group. A load hook also receives the tile’s feature records.
+
 Invalid specs throw `code: 'STYLE_INVALID'` with `errors: [{ path, message }]`. Roles: `wall`, `glass`, `roof`,
 `structure`, `road`, `water`, `foliage`, `ground`, `facility`, `landmark` (sub-roles like `road.marking`). Schema:
 `schemas/style-spec.schema.json`.
