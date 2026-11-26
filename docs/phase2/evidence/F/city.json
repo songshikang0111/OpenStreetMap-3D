@@ -196,10 +196,75 @@
       "peakRssBytes": 1601744896
     },
     "checkpoint": {
-      "completedPlanningCells": 87,
+      "completedPlanningCells": 102,
       "planningCells": 288,
       "maxResidentAtCheckpointBytes": 2250522624,
-      "featureStoreBytes": 457573513
+      "featureStoreBytes": 457573513,
+      "status": "cancelled",
+      "cliExitCode": 130,
+      "elapsedSeconds": 2210.55,
+      "lastProgressCount": 101,
+      "planBytes": 979212081,
+      "inputHash": "208d48eafb9bf529b6d95d111efacc1fbe05fee99f402a373a6da1e5cfcacb14",
+      "planListSha256": "1a65a763ee637172f122fce7ec8a59418b2025cdf8d334382df4aba3e674aa61"
     }
+  },
+  "allExamples": {
+    "buildCommit": "7020ac9",
+    "inputAndOutputValidated": true,
+    "wallSeconds": 434.16,
+    "peakRssBytes": 1558519808,
+    "exitCode": 0,
+    "results": [
+      {
+        "id": "amsterdam-centrum",
+        "status": "match",
+        "tilesetHash": "ae404fd8cc900ee6de25ceca7d2d07613c47a038bea34ea33f7a865f37728543",
+        "tiles": 24,
+        "seconds": 79.1
+      },
+      {
+        "id": "enkhuizen",
+        "status": "match",
+        "tilesetHash": "3942cf08b6f58877e32f47a18edd2dbb5062d53acc51d54b75356546f4ecf319",
+        "tiles": 272,
+        "seconds": 159.3
+      },
+      {
+        "id": "beijing-cbd-grow-9",
+        "status": "match",
+        "tilesetHash": "d1b4d9771196b3d3250c6947331ac02425226c3bcc6a3e700284614b4f38247b",
+        "tiles": 20,
+        "seconds": 15.6
+      },
+      {
+        "id": "kyoto-gion-grow-9",
+        "status": "match",
+        "tilesetHash": "2907cd1bf08f5362af083ed748cb79531fc163619dec898a71715d02f2ebe32e",
+        "tiles": 7,
+        "seconds": 24.4
+      },
+      {
+        "id": "manhattan-financial",
+        "status": "match",
+        "tilesetHash": "c4967fc90bc6960ed1e8a48a9fda13087e450322a7b1d757b6a9082fc08c1a0e",
+        "tiles": 7,
+        "seconds": 108.6
+      },
+      {
+        "id": "shanghai-lujiazui",
+        "status": "match",
+        "tilesetHash": "721d6c54512fea78e09f341fbd74113164bda282bbb45ea11c8cc30229c5cbfd",
+        "tiles": 29,
+        "seconds": 15.5
+      },
+      {
+        "id": "amsterdam-canals",
+        "status": "match",
+        "tilesetHash": "afe19cdcff410a821a06a1467612d53b1ce170423f6321d572fc8a22b7f65dff",
+        "tiles": 13,
+        "seconds": 29.7
+      }
+    ]
   }
 }
