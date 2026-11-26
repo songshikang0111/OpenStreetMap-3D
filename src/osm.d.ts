@@ -12,3 +12,5 @@ export function heightInfo(
   seed?: number,
 ): { height: number; minHeight: number; levels: number; source: 'height' | 'levels' | 'estimated' };
 export function parseOSM(raw: unknown, seed?: number): Phase1Data;
+
+export function clipSegment(a: Point2, b: Point2, bounds: [number, number, number, number]): [Point2, Point2] | null;

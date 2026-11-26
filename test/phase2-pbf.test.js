@@ -237,3 +237,51 @@ test('PBF crop retains line crossings and enclosing polygons when every vertex i
     await rm(dir, { recursive: true, force: true });
   }
 });
+
+test('AC607: an oversized connected water mask and bridge group keep local geometry and report the fallback', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'city-group-'));
+  try {
+    const input = path.join(dir, 'long-water.json');
+    const nodes = [
+      [4.8, 52.0],
+      [5.15, 52.0],
+      [5.15, 52.002],
+      [4.8, 52.002],
+      [4.8, 52.0],
+    ];
+    const shape = nodes.map(([lon, lat]) => ({ lon, lat }));
+    const raw = {
+      metadata: { bbox: [51.999, 4.79, 52.003, 5.16] },
+      elements: [
+        { type: 'way', id: 10, tags: { natural: 'water' }, geometry: shape },
+        {
+          type: 'way',
+          id: 20,
+          tags: { highway: 'footway', bridge: 'yes' },
+          nodes: [1, 2],
+          geometry: [shape[0], shape[1]],
+        },
+      ],
+    };
+    await writeFile(input, JSON.stringify(raw));
+    // A coarse output zoom isolates the group fallback from normal urban L1 detail.
+    const { report } = await buildTiles({
+      input,
+      output: path.join(dir, 'tiles'),
+      ruleTrees: false,
+      landmarks: false,
+      cellZoom: 11,
+      levels: [
+        { id: 'L0', zoom: 12, profile: 'massing', geometricErrorMeters: 12 },
+        { id: 'L1', zoom: 13, profile: 'full', geometricErrorMeters: 1 },
+      ],
+    });
+    const diagnostics = report.diagnostics.filter((d) => d.code === 'GROUP_TOO_LARGE');
+    assert.equal(diagnostics.length, 2);
+    assert.ok(diagnostics.some((d) => d.featureId === 'way/20'));
+    assert.ok(diagnostics.some((d) => /water group/.test(d.message)));
+    assert.ok(report.counts.water > 0 && report.counts.road > 0);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
