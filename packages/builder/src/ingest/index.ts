@@ -1,11 +1,9 @@
-// PBF ingest (WP-F task F2): three streaming passes over the file (relations, then ways, then nodes; decision E12),
-// node coordinates in sorted typed arrays, output in the phase-one Overpass "out body geom" shape so the existing
-// normalisation, parsing and planning run unchanged.
+import { NodeCoordinates } from './nodes.js';
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { readPbf } from './pbf.js';
-import type { PbfRelation, PbfWay } from './pbf.js';
+import type { PbfRelation } from './pbf.js';
 import { wantedNode, wantedRelation, wantedWay } from './filter.js';
 
 /** Supported scale (03 section 2). Larger inputs are rejected with a hint to clip first. */
@@ -42,14 +40,15 @@ export class IngestError extends Error {
   }
 }
 
-/**
- * Reads the kept OSM features of `file` inside `bbox` (west, south, east, north; default: the file's header box).
- * Ways are kept when any node lies in the box (expanded by `marginDeg`), together with every member way of a kept
- * relation, so outlines that cross the box stay complete.
- */
+/** Stream node coordinates and relation memberships first, then resolve and spatially filter each way. */
 export async function ingestPbf(
   file: string,
-  options: { bbox?: [number, number, number, number]; marginDeg?: number; onProgress?(stage: string): void } = {},
+  options: {
+    bbox?: [number, number, number, number];
+    marginDeg?: number;
+    checkBudget?(): void;
+    onProgress?(stage: string): void;
+  } = {},
 ): Promise<PbfIngestResult> {
   const bytes = (await stat(file)).size;
   if (bytes > MAX_PBF_BYTES)
@@ -61,137 +60,119 @@ export async function ingestPbf(
   const stats: Record<string, number> = {};
   const count = (k: string, n = 1) => (stats[k] = (stats[k] ?? 0) + n);
 
-  // Pass 1: relations of interest and the ways they need.
-  options.onProgress?.('relations');
   const relations: PbfRelation[] = [];
   const memberWays = new Set<number>();
+  const nodes = new NodeCoordinates();
+  let bbox = options.bbox;
+  const elements: unknown[] = [];
+  const validateBounds = () => {
+    if (!bbox) throw new IngestError('TILES_BBOX_MISSING', 'The PBF has no header bbox.', 'Pass --bbox w,s,e,n.');
+    const [w, s, e, n] = bbox;
+    if (!bbox.every(Number.isFinite) || w < -180 || e > 180 || s < -80 || n > 80 || w >= e || s >= n)
+      throw new IngestError(
+        'TILES_BBOX_INVALID',
+        'Invalid WGS84 build bounds.',
+        'Pass west,south,east,north inside ±80° latitude and avoid crossing the antimeridian.',
+      );
+    const area = bboxAreaKm2(bbox);
+    if (area > MAX_AREA_KM2)
+      throw new IngestError(
+        'BUILD_AREA_TOO_LARGE',
+        `The build area is ${area.toFixed(0)} km²; the supported maximum is ${MAX_AREA_KM2} km².`,
+        'Pass a smaller --bbox, or clip the file with `osmium extract -b ...`.',
+      );
+  };
+  if (bbox) validateBounds();
+  options.onProgress?.('nodes and relations');
   const header = await readPbf(file, {
+    ...(options.checkBudget ? { onBlock: options.checkBudget } : {}),
+    header(h) {
+      bbox ??= h.bbox ?? undefined;
+      validateBounds();
+    },
+    wantNodeTags: true,
+    node(id, lat, lon, tags) {
+      nodes.add(id, lat, lon);
+      if (tags && wantedNode(tags) && bbox && lon >= bbox[0] && lat >= bbox[1] && lon <= bbox[2] && lat <= bbox[3]) {
+        elements.push({ type: 'node', id, lat, lon, tags });
+        count('nodes');
+      }
+    },
     relation(r) {
       if (!wantedRelation(r.tags)) return;
       relations.push(r);
       for (const m of r.members) if (m.type === 'way') memberWays.add(m.ref);
     },
   });
-  const bbox = options.bbox ?? header.bbox;
-  if (!bbox) throw new IngestError('TILES_BBOX_MISSING', 'The PBF has no header bbox.', 'Pass --bbox w,s,e,n.');
-  const area = bboxAreaKm2(bbox);
-  if (area > MAX_AREA_KM2)
-    throw new IngestError(
-      'BUILD_AREA_TOO_LARGE',
-      `The build area is ${area.toFixed(0)} km²; the supported maximum is ${MAX_AREA_KM2} km².`,
-      'Pass a smaller --bbox, or clip the file with `osmium extract -b ...`.',
-    );
-  count('relations', relations.length);
-
-  // Pass 2: ways (tag filter or relation member) and their node ids.
-  options.onProgress?.('ways');
-  const ways: PbfWay[] = [];
-  let refCount = 0;
-  await readPbf(file, {
-    way(w) {
-      if (!wantedWay(w.tags) && !memberWays.has(w.id)) return;
-      ways.push(w);
-      refCount += w.refs.length;
-    },
-  });
-  count('waysRead', ways.length);
-  const ids = new Float64Array(refCount);
-  let k = 0;
-  for (const w of ways) for (const r of w.refs) ids[k++] = r;
-  ids.sort();
-  let unique = 0;
-  for (let i = 0; i < ids.length; i++) if (!i || ids[i] !== ids[unique - 1]) ids[unique++] = ids[i]!;
-  const nodeIds = ids.subarray(0, unique);
-  const lat = new Float64Array(unique).fill(NaN);
-  const lon = new Float64Array(unique).fill(NaN);
-  const find = (id: number) => {
-    let lo = 0,
-      hi = unique - 1;
-    while (lo <= hi) {
-      const mid = (lo + hi) >> 1;
-      const v = nodeIds[mid]!;
-      if (v === id) return mid;
-      if (v < id) lo = mid + 1;
-      else hi = mid - 1;
-    }
-    return -1;
-  };
-
-  // Pass 3: node coordinates and tagged point features.
-  options.onProgress?.('nodes');
-  const [w0, s0, e0, n0] = bbox;
-  const inBox = (la: number, lo: number, m = 0) => lo >= w0 - m && lo <= e0 + m && la >= s0 - m && la <= n0 + m;
-  const elements: unknown[] = [];
-  await readPbf(file, {
-    wantNodeTags: true,
-    node(id, la, lo, tags) {
-      const i = find(id);
-      if (i >= 0) {
-        lat[i] = la;
-        lon[i] = lo;
-      }
-      if (tags && wantedNode(tags) && inBox(la, lo)) {
-        elements.push({ type: 'node', id, lat: la, lon: lo, tags });
-        count('nodes');
-      }
-    },
-  });
-
+  if (!bbox) throw new IngestError('TILES_BBOX_MISSING', 'No PBF bounds were supplied.', 'Pass --bbox w,s,e,n.');
+  type Extent = { minlat: number; minlon: number; maxlat: number; maxlon: number };
+  const emptyExtent = (): Extent => ({ minlat: Infinity, minlon: Infinity, maxlat: -Infinity, maxlon: -Infinity });
+  const [west, south, east, north] = bbox;
   const margin = options.marginDeg ?? 0.002;
-  const geometry = (w: PbfWay) => {
-    const g: { lat: number; lon: number }[] = [];
-    for (const r of w.refs) {
-      const i = find(r);
-      if (i < 0 || Number.isNaN(lat[i]!)) return null;
-      g.push({ lat: lat[i]!, lon: lon[i]! });
-    }
-    return g;
-  };
-  const bounds = (g: { lat: number; lon: number }[]) => {
-    let minlat = Infinity,
-      minlon = Infinity,
-      maxlat = -Infinity,
-      maxlon = -Infinity;
-    for (const p of g) {
-      minlat = Math.min(minlat, p.lat);
-      maxlat = Math.max(maxlat, p.lat);
-      minlon = Math.min(minlon, p.lon);
-      maxlon = Math.max(maxlon, p.lon);
-    }
-    return { minlat, minlon, maxlat, maxlon };
-  };
-  const wayGeometry = new Map<number, { lat: number; lon: number }[]>();
-  for (const w of ways) {
-    const g = geometry(w);
-    if (!g || g.length < 2) {
-      count('waysIncomplete');
-      continue;
-    }
-    if (memberWays.has(w.id)) wayGeometry.set(w.id, g);
-    if (!wantedWay(w.tags) || !g.some((p) => inBox(p.lat, p.lon, margin))) continue;
-    elements.push({ type: 'way', id: w.id, bounds: bounds(g), nodes: w.refs, geometry: g, tags: w.tags });
-    count('ways');
-  }
+  const overlaps = (b: Extent) =>
+    b.minlon <= east + margin && b.maxlon >= west - margin && b.minlat <= north + margin && b.maxlat >= south - margin;
+  const geometry = (refs: number[]) =>
+    refs.map((ref) => {
+      const p = { lat: 0, lon: 0 };
+      nodes.get(ref, p);
+      return p;
+    });
+  const members = new Map<number, { refs: number[]; bounds: Extent }>();
+  options.onProgress?.('ways');
+  await readPbf(file, {
+    ...(options.checkBudget ? { onBlock: options.checkBudget } : {}),
+    way(w) {
+      const wanted = wantedWay(w.tags);
+      if (!wanted && !memberWays.has(w.id)) return;
+      count('waysRead');
+      const bounds = emptyExtent();
+      const p = { lat: 0, lon: 0 };
+      if (w.refs.length < 2) return;
+      for (const id of w.refs) {
+        if (!nodes.get(id, p)) {
+          count('waysIncomplete');
+          return;
+        }
+        bounds.minlat = Math.min(bounds.minlat, p.lat);
+        bounds.maxlat = Math.max(bounds.maxlat, p.lat);
+        bounds.minlon = Math.min(bounds.minlon, p.lon);
+        bounds.maxlon = Math.max(bounds.maxlon, p.lon);
+      }
+      if (memberWays.has(w.id)) members.set(w.id, { refs: w.refs, bounds });
+      // A polygon can surround the box, or a road can cross it with every vertex outside. Phase-one parsing
+      // performs the exact clip. The conservative envelope test here preserves both cases.
+      if (!wanted || !overlaps(bounds)) return;
+      elements.push({ type: 'way', id: w.id, bounds, nodes: w.refs, geometry: geometry(w.refs), tags: w.tags });
+      count('ways');
+    },
+  });
   for (const r of relations) {
-    const members: unknown[] = [];
-    let inside = false,
-      missing = 0;
+    const bounds = emptyExtent();
     for (const m of r.members) {
       if (m.type !== 'way') continue;
-      const g = wayGeometry.get(m.ref);
-      if (!g) {
-        missing++;
-        continue;
-      }
-      if (!inside && g.some((p) => inBox(p.lat, p.lon, margin))) inside = true;
-      members.push({ type: 'way', ref: m.ref, role: m.role, geometry: g });
+      const b = members.get(m.ref)?.bounds;
+      if (!b) continue;
+      bounds.minlat = Math.min(bounds.minlat, b.minlat);
+      bounds.maxlat = Math.max(bounds.maxlat, b.maxlat);
+      bounds.minlon = Math.min(bounds.minlon, b.minlon);
+      bounds.maxlon = Math.max(bounds.maxlon, b.maxlon);
     }
-    if (!inside || !members.length) continue;
-    if (missing) count('relationsIncomplete');
-    elements.push({ type: 'relation', id: r.id, members, tags: r.tags });
-    count('relationsKept');
+    if (!overlaps(bounds)) continue;
+    let incomplete = false;
+    const ways = r.members
+      .filter((m) => m.type === 'way')
+      .map((m) => {
+        const entry = members.get(m.ref);
+        if (!entry) {
+          incomplete = true;
+          return m;
+        }
+        return { ...m, geometry: geometry(entry.refs) };
+      });
+    if (incomplete) count('relationsIncomplete');
+    elements.push({ type: 'relation', id: r.id, members: ways, tags: r.tags });
   }
-  ways.length = 0;
+  count('relations', relations.length);
   const timestamp = header.replicationTimestamp
     ? new Date(header.replicationTimestamp * 1000).toISOString().replace(/\.000Z$/, 'Z')
     : undefined;
@@ -212,6 +193,6 @@ export async function ingestPbf(
     sha256: await sha256File(file),
     bytes,
     timestamp,
-    stats: { ...stats, nodeRefs: unique },
+    stats: { ...stats, indexedNodes: nodes.size },
   };
 }

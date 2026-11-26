@@ -222,3 +222,18 @@ test('AC603: inputs beyond the supported scale are rejected with a clipping hint
     await rm(dir, { recursive: true, force: true });
   }
 });
+
+test('PBF crop retains line crossings and enclosing polygons when every vertex is outside', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'city-pbf-'));
+  try {
+    const file = path.join(dir, 'sample.osm.pbf');
+    await writeFile(file, samplePbf());
+    const ids = async (bbox) =>
+      (await ingestPbf(file, { bbox, marginDeg: 0 })).raw.elements.map((e) => e.type + '/' + e.id);
+    assert.ok((await ids([135.77495, 35.00279, 135.775, 35.00281])).includes('way/5'));
+    assert.ok((await ids([135.77502, 35.00302, 135.77505, 35.00305])).includes('way/1'));
+    assert.ok((await ids([135.77583, 35.00302, 135.77585, 35.00305])).includes('relation/77'));
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
