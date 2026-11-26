@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { createReadStream, readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildTiles } from '../packages/builder/dist/index.js';
+import { buildTiles, validateTilesetDir } from '../packages/builder/dist/index.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const arg = (n) => (process.argv.includes(n) ? process.argv[process.argv.indexOf(n) + 1] : null);
@@ -56,7 +56,14 @@ for (const city of manifest.cities) {
     continue;
   }
   const t0 = performance.now();
-  const { report } = await buildTiles({ input, output: path.join(outDir, city.id), name: city.id, ...city.build });
+  const output = path.join(outDir, city.id);
+  const { report } = await buildTiles({ input, output, name: city.id, ...city.build, resume: true });
+  const validation = await validateTilesetDir(output);
+  if (!validation.valid) {
+    console.error(JSON.stringify({ id: city.id, status: 'invalid', diagnostics: validation.diagnostics }));
+    failed++;
+    continue;
+  }
   const hash = tilesetHash(report.hashes);
   const tiles = report.tiles.reduce((total, level) => total + level.count, 0);
   const ok = hash === city.output.tilesetHash && tiles === city.output.tiles;

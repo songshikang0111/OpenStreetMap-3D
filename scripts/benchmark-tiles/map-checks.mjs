@@ -249,14 +249,21 @@ try {
     })()`);
     const { profile } = await page.send('Profiler.stop');
     const names = new Set(profile.nodes.map((n) => n.callFrame.functionName));
-    const banned = ['decodeTile', 'generateTile', 'writeBuildingBody', 'generateBuildings', 'planBuildingEnvelopes'];
+    const banned = [
+      'decodeTile',
+      'generateTile',
+      'writeBuildingBody',
+      'generateBuildings',
+      'planBuildingEnvelopes',
+      'prepareUpload',
+    ];
     const found = banned.filter((n) => names.has(n));
     const workerFrames = profile.nodes.filter((n) => /\/assets\/worker/.test(n.callFrame.url)).length;
-    record('AC409', found.length === 0 && workerFrames === 0 && names.has('buildTileObject'), {
+    record('AC409', found.length === 0 && workerFrames === 0 && names.has('prepareTileObject'), {
       mainThreadFunctions: names.size,
       bannedFound: found,
       workerChunkFramesOnMainThread: workerFrames,
-      sawUpload: names.has('buildTileObject'),
+      sawUpload: names.has('prepareTileObject'),
     });
   }
 

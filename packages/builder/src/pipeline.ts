@@ -322,7 +322,7 @@ async function runBuild(options: BuildOptions, out: string, region: RegionMask |
     sha256(
       canonicalStringify({
         // Change the cache revision whenever planning, tile encoding or report semantics change.
-        revision: '3-disk-features-v1',
+        revision: '4-pbf-offsets',
         massingRevision: MASSING_REVISION,
         wallRuleRevision: 1,
         version: BUILDER_VERSION,
@@ -421,7 +421,7 @@ async function runBuild(options: BuildOptions, out: string, region: RegionMask |
     ...(region ? { region: region.polygons } : {}),
   };
   const configHash = sha256(canonicalStringify(buildConfig));
-  const inputHash = sha256('3-disk-features-v1:' + input.sourceSha256 + configHash);
+  const inputHash = sha256('4-pbf-offsets:' + input.sourceSha256 + configHash);
   const ingestMarker = await readJSONIf<{ inputHash: string }>(path.join(cache, 'ingest.json'));
   if (ingestMarker && ingestMarker.inputHash !== inputHash)
     await rm(path.join(cache, 'plan'), { recursive: true, force: true });
