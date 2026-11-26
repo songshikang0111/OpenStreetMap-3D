@@ -1,0 +1,44 @@
+{
+  "balanced": {
+    "initial": [
+      "16/33730/21438",
+      "16/33731/21438"
+    ],
+    "final": [
+      "16/33730/21438",
+      "16/33731/21438"
+    ],
+    "emptyFrames": 0,
+    "additionalRequests": 0,
+    "diagnostics": [],
+    "budgetWarnings": 0
+  },
+  "minimum": {
+    "initial": [
+      "14/8432/5359"
+    ],
+    "final": [
+      "14/8432/5359"
+    ],
+    "emptyFrames": 0,
+    "additionalRequests": 0,
+    "diagnostics": [
+      "TILE_MINIMUM_COVER_OVER_BUDGET"
+    ],
+    "budgetWarnings": 1
+  },
+  "singleLevel": {
+    "initial": [
+      "14/8432/5359"
+    ],
+    "final": [
+      "14/8432/5359"
+    ],
+    "emptyFrames": 0,
+    "additionalRequests": 0,
+    "diagnostics": [
+      "TILE_MINIMUM_COVER_OVER_BUDGET"
+    ],
+    "budgetWarnings": 1
+  }
+}

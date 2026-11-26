@@ -1,0 +1,107 @@
+{
+  "date": "2026-11-26T06:48:29.133Z",
+  "browser": "Chrome/158.0.8127.36",
+  "machine": {
+    "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+    "platform": "linux 7.3.4-300.fc45.x86_64"
+  },
+  "results": {
+    "AC401": {
+      "pass": true,
+      "visible": 8,
+      "drawCalls": 56,
+      "triangles": 467064,
+      "errors": 0
+    },
+    "multi-pass-accounting": {
+      "pass": true,
+      "firstCalls": 41,
+      "bothCalls": 82,
+      "firstTris": 284930,
+      "bothTris": 569860,
+      "stable": true,
+      "counted": true,
+      "gpuAvailable": true,
+      "gpuSamples": 15,
+      "gpuReason": null,
+      "workerProfiles": [
+        "massing",
+        "full"
+      ]
+    },
+    "AC403": {
+      "pass": true,
+      "points": 1000,
+      "worstPx": 9.830286750942758e-9
+    },
+    "AC405": {
+      "pass": true,
+      "steps": 600,
+      "km": 60,
+      "anchorResets": 5,
+      "maxScreenJumpPx": 2.947372847339751e-9,
+      "anchorErrorMeters": 2.4158453015843406e-9
+    },
+    "AC406": {
+      "pass": true,
+      "frames": 681,
+      "holeFrames": 0,
+      "examples": []
+    },
+    "AC407": {
+      "pass": true,
+      "requestsWhileStill": 0,
+      "jitterRequests": 0,
+      "tileSwitches": 0
+    },
+    "AC408": {
+      "pass": true,
+      "cancelled": 6,
+      "started": 14,
+      "maxWorkerQueue": 2,
+      "budget": 12
+    },
+    "AC409": {
+      "pass": true,
+      "mainThreadFunctions": 256,
+      "bannedFound": [],
+      "workerChunkFramesOnMainThread": 0,
+      "sawUpload": true
+    },
+    "AC410": {
+      "pass": true,
+      "failing": "16/53967/24830",
+      "attempts": 3,
+      "tileerror": [
+        "16/53967/24830"
+      ],
+      "parentVisible": true,
+      "requested": 4,
+      "requestedOutsideCoverage": 0
+    },
+    "AC411": {
+      "pass": true,
+      "note": "textures <= 1: three.js global DFG_LUT singleton",
+      "residentFirst": 73198984,
+      "residentLast": 73198984,
+      "geometriesFirst": 15,
+      "geometriesLast": 15,
+      "after": {
+        "geometries": 0,
+        "textures": 1,
+        "programs": 0
+      },
+      "workers": 4,
+      "terminated": 4,
+      "disposedThrows": true
+    },
+    "AC412": {
+      "pass": true,
+      "platform": "emulated touch in desktop Chrome (not a real mobile device: unverified)",
+      "panMoved": true,
+      "zoomBefore": 16.5,
+      "zoomAfter": 18.084962500721154
+    }
+  },
+  "consoleErrors": []
+}
