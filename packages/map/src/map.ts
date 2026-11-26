@@ -1697,7 +1697,7 @@ export class CityMapImpl implements CityMap {
   // slices are ready. The index and small meshes use the renderer's ordinary first draw.
   private stageBuffers() {
     const job = this.uploads[0];
-    if (!job?.attributes || this.uploadLastMs >= this.budget.uploadMsPerFrame) return;
+    if (!job?.attributes || (this.uploadLastMs > 0 && this.uploadLastMs >= this.budget.uploadMsPerFrame)) return;
     this.staging ??= new BufferStaging();
     const start = performance.now();
     do {

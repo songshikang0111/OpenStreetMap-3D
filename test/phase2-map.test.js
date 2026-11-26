@@ -325,3 +325,25 @@ test('dense attribute staging uses the final geometry without drawing or retaini
   staging.dispose();
   geometry.dispose();
 });
+
+test('a zero-length custom upload slice still advances one pending dense attribute', async () => {
+  const { CityMapImpl } = await import('../packages/map/dist/map.js');
+  const { BufferGeometry, BufferAttribute, PerspectiveCamera } = await import('three');
+  const geometry = new BufferGeometry();
+  geometry.setAttribute('position', new BufferAttribute(new Float32Array(30000), 3));
+  const job = { attributes: { geometry, names: ['position'], next: 0 } };
+  const map = Object.create(CityMapImpl.prototype);
+  Object.assign(map, {
+    uploads: [job],
+    renderer: { autoClear: true, render() {} },
+    transform: { camera: new PerspectiveCamera() },
+    uploadLastMs: 0,
+    uploadMaxMs: 0,
+    budget: { uploadMsPerFrame: 0 },
+  });
+  map.stageBuffers();
+  assert.equal(job.attributes, undefined);
+  assert.equal(job.stagedBytes, 120000);
+  map.staging.dispose();
+  geometry.dispose();
+});
