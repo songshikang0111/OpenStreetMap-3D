@@ -81,5 +81,125 @@
     "json": 5277,
     "onlyPbf": [],
     "onlyJson": []
+  },
+  "municipality": {
+    "buildCommit": "11eef41",
+    "relationId": 296469,
+    "geographicBounds": [
+      5.2113376,
+      52.6757264,
+      5.3772598,
+      52.8406314
+    ],
+    "areaKm2Spherical": 115.8,
+    "geometrySha256": "05c0942a6739782b81600ca1c691ec8a679fc717781177338e57d1e3bd2e47d0",
+    "concurrency": 1,
+    "cellZoom": 14,
+    "planCells": 104,
+    "seconds": 735.91,
+    "peakRssBytes": 960237568,
+    "tilesetHash": "c7a624988c71d0a6fe118c5b947145ec14e8edc9da1816bca3c5ef024b839ab4",
+    "counts": {
+      "water": 218,
+      "green": 980,
+      "tree": 22482,
+      "building": 11788,
+      "road": 2402,
+      "ground": 132505,
+      "structure": 1659
+    },
+    "diagnostics": [
+      {
+        "code": "GROUP_TOO_LARGE",
+        "stage": "plan",
+        "featureId": "r945096-0",
+        "message": "Water group r945096-0 spans 21.5 km. Its intersections and unions are bounded to 2048 m squares."
+      },
+      {
+        "code": "INCOMPLETE_RELATIONS",
+        "stage": "parse",
+        "message": "4 incomplete multipolygons were omitted; missing rings were not invented."
+      }
+    ],
+    "validate": {
+      "schemaVersion": 1,
+      "status": "succeeded",
+      "artifacts": [],
+      "diagnostics": [],
+      "tiles": 1016,
+      "bytes": 8923360,
+      "gzipBytes": 3714687
+    },
+    "boundaries": {
+      "neighbours": 1791,
+      "checked": 200,
+      "samples": 12000,
+      "occupied": 3467,
+      "roadCrossings": 61,
+      "mismatches": 0,
+      "first": []
+    }
+  },
+  "c7Examples": {
+    "buildCommit": "b8ff4d6",
+    "content": {
+      "amsterdam-centrum": {
+        "tiles": 24,
+        "tilesetHash": "ae404fd8cc900ee6de25ceca7d2d07613c47a038bea34ea33f7a865f37728543"
+      },
+      "enkhuizen": {
+        "tiles": 272,
+        "tilesetHash": "3942cf08b6f58877e32f47a18edd2dbb5062d53acc51d54b75356546f4ecf319"
+      }
+    },
+    "enkhuizenValidate": {
+      "schemaVersion": 1,
+      "status": "succeeded",
+      "artifacts": [],
+      "diagnostics": [],
+      "tiles": 272,
+      "bytes": 11398628,
+      "gzipBytes": 4703134
+    },
+    "enkhuizenBoundaries": {
+      "neighbours": 472,
+      "checked": 200,
+      "samples": 12000,
+      "occupied": 2808,
+      "roadCrossings": 377,
+      "mismatches": 0,
+      "first": []
+    },
+    "repeat": {
+      "buildCommit": "5af2c34",
+      "outputDirectory": "fresh",
+      "enkhuizenSeconds": 186.0,
+      "resumeSeconds": 0.79,
+      "resumePeakRssBytes": 154226688,
+      "amsterdamCentrumSeconds": 77.0,
+      "matchesBoth": true
+    }
+  },
+  "amsterdamScaleTrial": {
+    "bbox": [
+      4.72,
+      52.28,
+      5.08,
+      52.48
+    ],
+    "bboxKm2": 540.97,
+    "builtUpAreaKm2": null,
+    "cellZoom": 14,
+    "sourceWaterFeatures": 16622,
+    "oldWaterUnion": {
+      "secondsToQueueLimit": 31.94,
+      "peakRssBytes": 1601744896
+    },
+    "checkpoint": {
+      "completedPlanningCells": 87,
+      "planningCells": 288,
+      "maxResidentAtCheckpointBytes": 2250522624,
+      "featureStoreBytes": 457573513
+    }
   }
 }
