@@ -32,6 +32,7 @@ test('AC306: tile-generated buildings match phase-one direct generation', async 
         rows.every((r) => !r.missing),
         `${name}: every phase-one building has tile geometry`,
       );
+      if (name === 'beijing-cbd') assert.ok(tiles.has('way/233513061'), 'independently tagged multipolygon member');
       total += rows.length;
       const a = rows.reduce((s, r) => s + r.triangles[0], 0),
         b = rows.reduce((s, r) => s + r.triangles[1], 0);
@@ -40,7 +41,7 @@ test('AC306: tile-generated buildings match phase-one direct generation', async 
         assert.ok(row.dBounds <= 0.1 && row.dTriangles <= 0.02, name + ' ' + JSON.stringify(row));
       }
     }
-    assert.equal(total, 888);
+    assert.equal(total, 889);
   } finally {
     await rm(base, { recursive: true, force: true });
   }

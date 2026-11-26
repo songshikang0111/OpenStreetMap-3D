@@ -11,6 +11,7 @@ export function heightInfo(
   id: string,
   seed?: number,
 ): { height: number; minHeight: number; levels: number; source: 'height' | 'levels' | 'estimated' };
+export function isWaterArea(tags: Record<string, string>): boolean;
 export function parseOSM(
   raw: unknown,
   seed?: number,

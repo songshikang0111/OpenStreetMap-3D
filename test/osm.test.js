@@ -89,6 +89,42 @@ test('multipolygon courtyard survives parsing and tagged member ways are not dup
   assert.equal(result.buildings[0].holes.length, 1);
   assert.ok(result.buildings[0].area < area(result.buildings[0].outer));
 });
+test('outer members keep area semantics that their multipolygon does not represent', () => {
+  const ring = [
+    [0, 0],
+    [0.002, 0],
+    [0.002, 0.002],
+    [0, 0.002],
+    [0, 0],
+  ].map(([lon, lat]) => ({ lon, lat }));
+  const member = { type: 'way', id: 1, geometry: ring, tags: { leisure: 'park', landuse: 'commercial' } };
+  const relation = {
+    type: 'relation',
+    id: 2,
+    tags: { type: 'multipolygon', leisure: 'park' },
+    members: [{ type: 'way', ref: 1, role: 'outer', geometry: ring }],
+  };
+  const parse = () => parseOSM({ metadata: { bbox: [-0.01, -0.01, 0.01, 0.01] }, elements: [member, relation] });
+  let data = parse();
+  assert.deepEqual(
+    data.greens.map((p) => p.id),
+    ['r2-0'],
+  );
+  assert.deepEqual(
+    data.landscapeContexts.map((p) => [p.id, p.context]),
+    [['w1', 'commercial']],
+  );
+  member.tags = { building: 'yes', height: '16' };
+  data = parse();
+  assert.deepEqual(
+    data.buildings.map((b) => [b.id, b.height]),
+    [['w1', 16]],
+  );
+  assert.deepEqual(
+    data.greens.map((p) => p.id),
+    ['r2-0'],
+  );
+});
 test('Beijing extract produces finite meshes, preserves real heights and elevated CCTV parts', () => {
   const raw = JSON.parse(fs.readFileSync(new URL('../public/data/beijing-cbd.json', import.meta.url), 'utf8'));
   const data = parseOSM(raw);

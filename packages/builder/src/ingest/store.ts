@@ -5,6 +5,7 @@ import path from 'node:path';
 import { serialize, deserialize } from 'node:v8';
 import { tilesInBounds, tileKey } from '@city-ink/tiles';
 import type { Bounds } from '@city-ink/tiles';
+import { isWaterArea } from '../../../../src/osm.js';
 import { boundsIntersect } from '../geo.js';
 
 interface OsmRow {
@@ -113,12 +114,7 @@ export class FeatureStore {
       ref.gradeNodes = row.nodes;
       for (const id of new Set(row.nodes)) add(this.gradeNodes, id);
     }
-    if (
-      t.natural === 'water' ||
-      t.amenity === 'fountain' ||
-      t.leisure === 'swimming_pool' ||
-      t.waterway === 'riverbank'
-    ) {
+    if (isWaterArea(t)) {
       this.water.push(index);
       if (row.type === 'way') this.waterWays.add(row.id);
     }

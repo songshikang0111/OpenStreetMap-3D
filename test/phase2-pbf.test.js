@@ -10,6 +10,7 @@ import path from 'node:path';
 import { readPbf } from '../packages/builder/dist/ingest/pbf.js';
 import { ingestPbf, bboxAreaKm2 } from '../packages/builder/dist/ingest/index.js';
 import { buildTiles } from '../packages/builder/dist/index.js';
+import { parseOSM } from '../src/osm.js';
 
 // --- a tiny protobuf writer ------------------------------------------------------------------------------------
 const varint = (n) => {
@@ -44,7 +45,7 @@ function block(type, payload) {
 }
 
 /** A 4-building block near Kyoto: dense nodes, one tagged way per building, one multipolygon with a hole. */
-function samplePbf(includeBuildingRelation = false) {
+function samplePbf({ includeBuildingRelation = false, riverbank = false } = {}) {
   const strings = [
     '',
     'building',
@@ -60,6 +61,9 @@ function samplePbf(includeBuildingRelation = false) {
     'building:levels',
     '12',
     'part',
+    'waterway',
+    'riverbank',
+    'water',
   ];
   const s = (x) => strings.indexOf(x);
   const nodes = [];
@@ -87,8 +91,8 @@ function samplePbf(includeBuildingRelation = false) {
       ],
     },
     { id: 2, refs: square(135.7754, 35.003, 0.0002), tags: [[s('building'), s('yes')]] },
-    { id: 3, refs: square(135.7758, 35.003, 0.0004), tags: [] },
-    { id: 4, refs: square(135.7759, 35.0031, 0.0001), tags: [] },
+    { id: 3, refs: square(135.7758, 35.003, 0.0004), tags: riverbank ? [[s('natural'), s('water')]] : [] },
+    { id: 4, refs: square(135.7759, 35.0031, 0.0001), tags: riverbank ? [[s('building'), s('yes')]] : [] },
   ];
   const road = [];
   for (let i = 0; i < 5; i++) {
@@ -154,8 +158,8 @@ function samplePbf(includeBuildingRelation = false) {
   );
   const relation = bytesField(4, [
     ...varField(1, 77),
-    ...packed(2, [s('type'), s('building')], false, false),
-    ...packed(3, [s('multipolygon'), s('yes')], false, false),
+    ...packed(2, [s('type'), s(riverbank ? 'waterway' : 'building')], false, false),
+    ...packed(3, [s('multipolygon'), s(riverbank ? 'riverbank' : 'yes')], false, false),
     ...packed(8, [s('outer'), s('inner')], false, false),
     ...packed(9, [3, 4], true, true),
     ...packed(10, [1, 1], false, false),
@@ -243,6 +247,46 @@ test('F1/F2: the streaming PBF reader decodes dense nodes, ways and relations', 
   }
 });
 
+test('PBF and JSON keep riverbank holes, independent member buildings, and only one outer water surface', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'city-member-'));
+  try {
+    const pbf = path.join(dir, 'members.osm.pbf'),
+      json = path.join(dir, 'members.json');
+    await writeFile(pbf, samplePbf({ riverbank: true }));
+    const elements = [];
+    const header = await readPbf(pbf, {
+      wantNodeTags: true,
+      node: (id, lat, lon, tags) => elements.push({ type: 'node', id, lat, lon, tags }),
+      way: ({ id, refs, tags }) => elements.push({ type: 'way', id, nodes: refs, tags }),
+      relation: (r) => elements.push({ type: 'relation', ...r }),
+    });
+    const [w, s, e, n] = header.bbox;
+    const raw = { metadata: { bbox: [s, w, n, e] }, elements };
+    await writeFile(json, JSON.stringify(raw));
+    // Check known source objects as well as equivalence: both encodings use the same parser.
+    for (const input of [raw, (await ingestPbf(pbf)).raw]) {
+      const parsed = parseOSM(input);
+      assert.deepEqual(parsed.buildings.map((b) => b.osmId).sort(), [1, 2, 4]);
+      assert.equal(parsed.water.length, 1);
+      assert.deepEqual(parsed.water[0].sourceIds, ['r77-0']);
+      assert.equal(parsed.water[0].holes.length, 1);
+    }
+    const fromPbf = await buildTiles({ input: pbf, output: path.join(dir, 'pbf') });
+    const fromJson = await buildTiles({ input: json, output: path.join(dir, 'json') });
+    assert.deepEqual(fromPbf.report.hashes, fromJson.report.hashes);
+    assert.equal(fromPbf.report.counts.water, 1);
+    assert.equal(fromPbf.report.counts.building, 3);
+    const buildings = [];
+    for (const file of Object.keys(fromPbf.report.hashes).filter((file) => file.startsWith('16/'))) {
+      const tile = decodeTile(await readFile(path.join(dir, 'pbf', file)));
+      if (tile.layers.building) buildings.push(...readFeatures(tile.layers.building).map((f) => f.id));
+    }
+    assert.deepEqual(buildings.sort(), ['way/1', 'way/2', 'way/4']);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test('AC603: inputs beyond the supported scale are rejected with a clipping hint', async () => {
   assert.ok(Math.abs(bboxAreaKm2([116, 39.9, 116.1, 40]) - 94.5) < 2);
   const dir = await mkdtemp(path.join(os.tmpdir(), 'city-pbf-'));
@@ -325,7 +369,7 @@ test('AC303/606: disk-indexed buffered PBF planning matches a single global cell
   const dir = await mkdtemp(path.join(os.tmpdir(), 'pbf-store-'));
   try {
     const input = path.join(dir, 'sample.osm.pbf');
-    await writeFile(input, samplePbf(true));
+    await writeFile(input, samplePbf({ includeBuildingRelation: true }));
     // Large envelope selects the disk-backed path, while the sparse input makes this suitable for CI.
     const config = { input, bbox: [135.734, 34.96, 135.83, 35.055], ruleTrees: false };
     const global = await buildTiles({ ...config, output: path.join(dir, 'global'), cellZoom: -1 });

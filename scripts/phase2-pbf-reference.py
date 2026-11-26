@@ -33,8 +33,8 @@ for area in areas:
     else:
         relation_ids.add(area.orig_id())
 
-# Restore the exact source IDs of all member ways. In particular a separately tagged inner building
-# must still be recognisable as a member by the phase-one suppression rule.
+# Keep member IDs and ring roles so the JSON parser can retain independent areas
+# and reconcile tagged outer ways with their multipolygon.
 relations = []
 for relation in osmium.FileProcessor(source, osmium.osm.RELATION).with_filter(osmium.filter.IdFilter(relation_ids)):
     members = [{"type": "way", "ref": m.ref, "role": m.role} for m in relation.members if m.type == "w"]

@@ -35,6 +35,8 @@ import type { CutResult, LevelSpec } from './cut.js';
 import { boundsContains, boundsIntersect, expandBounds } from './geo.js';
 
 export const BUILDER_VERSION = GENERATOR_VERSION;
+// Covers both completed outputs / indexed sources and interrupted cell plans.
+const BUILD_CACHE_REVISION = '5-multipolygon-members';
 const MASSING_REVISION = 2;
 export const DEFAULT_LEVELS: (LevelSpec & { geometricErrorMeters: number })[] = [
   { id: 'L0', zoom: 14, profile: 'massing', geometricErrorMeters: 12 },
@@ -322,7 +324,7 @@ async function runBuild(options: BuildOptions, out: string, region: RegionMask |
     sha256(
       canonicalStringify({
         // Change the cache revision whenever planning, tile encoding or report semantics change.
-        revision: '4-pbf-offsets',
+        revision: BUILD_CACHE_REVISION,
         massingRevision: MASSING_REVISION,
         wallRuleRevision: 1,
         version: BUILDER_VERSION,
@@ -421,7 +423,7 @@ async function runBuild(options: BuildOptions, out: string, region: RegionMask |
     ...(region ? { region: region.polygons } : {}),
   };
   const configHash = sha256(canonicalStringify(buildConfig));
-  const inputHash = sha256('4-pbf-offsets:' + input.sourceSha256 + configHash);
+  const inputHash = sha256(BUILD_CACHE_REVISION + ':' + input.sourceSha256 + configHash);
   const ingestMarker = await readJSONIf<{ inputHash: string }>(path.join(cache, 'ingest.json'));
   if (ingestMarker && ingestMarker.inputHash !== inputHash)
     await rm(path.join(cache, 'plan'), { recursive: true, force: true });
