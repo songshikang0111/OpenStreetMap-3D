@@ -1,4 +1,5 @@
 // Worker pool with a priority queue, cancellation of queued jobs and transferable results.
+import { RollingTimings } from './timings.js';
 import type { WorkerResponse } from './worker-core.js';
 
 export interface PoolJob {
@@ -23,7 +24,7 @@ export class WorkerPool {
   private readonly busy = new Map<WorkerLike, PoolJob>();
   private readonly queue: PoolJob[] = [];
   private nextJob = 1;
-  readonly timings: number[] = [];
+  readonly timings = new RollingTimings(2000);
   readonly samples: { tile: string; profile: string; time: number; ms: number }[] = [];
   terminated = false;
 
@@ -94,10 +95,7 @@ export class WorkerPool {
         const ms = response.decodeMs + response.generateMs;
         this.timings.push(ms);
         this.samples.push({ tile: response.tile, profile: response.profile, time: performance.now(), ms });
-        if (this.timings.length > 2000) {
-          this.timings.shift();
-          this.samples.shift();
-        }
+        if (this.samples.length > 2000) this.samples.shift();
       }
       if (job.cancelled) job.reject(Object.assign(new Error('Cancelled'), { name: 'AbortError' }));
       else job.resolve(response);

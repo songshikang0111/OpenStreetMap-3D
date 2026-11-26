@@ -44,6 +44,7 @@ import type { DesiredTile } from './selection.js';
 import { WorkerPool } from './pool.js';
 import type { WorkerLike } from './pool.js';
 import type { FeatureRecord, WorkerResponse } from './worker-core.js';
+import { RollingTimings } from './timings.js';
 import { MaterialLibrary, prepareTileObject } from './tile-object.js';
 import type { TileObject, TilePipeline, TileStylePack } from './tile-object.js';
 import { Controls } from './controls.js';
@@ -317,7 +318,7 @@ export class CityMapImpl implements CityMap {
   private idleWaiters: (() => void)[] = [];
   private wasIdle = false;
   private lastFrameTime = 0;
-  private readonly frameIntervals: number[] = [];
+  private readonly frameIntervals = new RollingTimings(600);
   private uploadLastMs = 0;
   private uploadMaxMs = 0;
   private readonly requestStats = { started: 0, completed: 0, cancelled: 0, failed: 0, bytes: 0 };
@@ -1942,7 +1943,6 @@ export class CityMapImpl implements CityMap {
     this.frame++;
     if (this.lastFrameTime) {
       this.frameIntervals.push(time - this.lastFrameTime);
-      if (this.frameIntervals.length > 600) this.frameIntervals.shift();
     }
     this.lastFrameTime = time;
     this.positionMarkers();
@@ -2065,14 +2065,11 @@ export class CityMapImpl implements CityMap {
       if (e.state === 'failed') counts.failed++;
       resident += e.bytes;
     }
-    const sorted = [...this.pool.timings].sort((a, b) => a - b);
-    const q = (p: number) =>
-      sorted.length ? sorted[Math.min(sorted.length - 1, Math.floor(p * sorted.length))]! : null;
-    const iv = [...this.frameIntervals].sort((a, b) => a - b);
+    const medianFrame = this.frameIntervals.percentile(0.5);
     const t = this.transform;
     const stats: MapStats = {
       frame: this.frame,
-      fps: iv.length ? 1000 / iv[Math.floor(iv.length / 2)]! : null,
+      fps: medianFrame === null ? null : 1000 / medianFrame,
       drawCalls: this.lastDrawCalls,
       triangles: this.lastRendered,
       tiles: counts,
@@ -2081,7 +2078,7 @@ export class CityMapImpl implements CityMap {
         size: this.pool.size,
         busy: this.pool.running,
         queued: this.pool.queued,
-        generateMs: { p50: q(0.5), p95: q(0.95) },
+        generateMs: { p50: this.pool.timings.percentile(0.5), p95: this.pool.timings.percentile(0.95) },
       },
       upload: { lastFrameMs: this.uploadLastMs, maxFrameMs: this.uploadMaxMs },
       residentBytes: resident,
@@ -2101,8 +2098,8 @@ export class CityMapImpl implements CityMap {
     if (o.raw)
       stats.raw = {
         gpu: this.gpuTimer.snapshot({ raw: true }),
-        frameIntervals: [...this.frameIntervals],
-        generateMs: [...this.pool.timings],
+        frameIntervals: [...this.frameIntervals.values],
+        generateMs: [...this.pool.timings.values],
         workerSamples: this.pool.samples.map((sample) => ({ ...sample })),
         desired: this.lastDesired.map((d) => d.key),
         tiles: [...this.tiles.values()].map((e) => ({
