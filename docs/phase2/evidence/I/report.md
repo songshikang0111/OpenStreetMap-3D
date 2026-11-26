@@ -40,3 +40,5 @@ CITY_BROWSER_FLAGS='--use-gl=angle --use-angle=gl-egl --ignore-gpu-blocklist' \
 ```
 
 手机基准页面位于构建目录的 `benchmark.html`，可选择单圈或十圈并复制结果或下载原始记录。
+
+并行构建压力下另跑了 `97a71b4` 及新版接缝瓦片。10 分钟无瓦片错误，完整收集 35,560 个 GPU 计时。RAF p95 16.8 ms、每分钟长帧 4.99 次、首个可用画面 869 ms、首屏 790,585 B、Worker p95 323.9 ms、单帧上传峰值 40.7 ms。期间本机同时运行 PBF 区域构建和其他测试，SDK、数据哈希和负载也有变化，无法由两次测量单独推导优化收益。见[并行构建时的真实浏览器摘要](enkhuizen-concurrent.json)。
