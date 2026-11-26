@@ -324,6 +324,7 @@ async function runBuild(options: BuildOptions, out: string, region: RegionMask |
         // Change the cache revision whenever planning, tile encoding or report semantics change.
         revision: '3-disk-features-v1',
         massingRevision: MASSING_REVISION,
+        wallRuleRevision: 1,
         version: BUILDER_VERSION,
         sourceHash,
         file: path.basename(source.file),
@@ -536,6 +537,7 @@ async function runBuild(options: BuildOptions, out: string, region: RegionMask |
   const sizes = new Map<string, { raw: number; gzip: number; hash: string; profile: string }>();
   const keys: string[] = [];
   const layers = new Set<string>();
+  let hasWallLengths = false;
   for (const d of [...waterDiagnostics, ...ctx.diagnostics]) groupDiagnostics.set(d.featureId ?? d.message, d);
   const cutDiagnostics: Diagnostic[] = [...groupDiagnostics.values()];
   if (store) {
@@ -579,6 +581,9 @@ async function runBuild(options: BuildOptions, out: string, region: RegionMask |
     for (const key of [...cut.tiles.keys()].filter(inside).sort()) {
       const tile = cut.tiles.get(key)!;
       for (const l of Object.keys(tile.layers)) layers.add(l);
+      const buildingLayer = tile.layers.building;
+      if (buildingLayer?.type === 'features' && buildingLayer.attributes?.some((a) => a.name === 'wallLengths'))
+        hasWallLengths = true;
       const bytes = encodeTile(tile);
       const hash = sha256(bytes);
       const out_ = path.join(out, `${key}.${TILE_EXTENSION}`);
@@ -630,7 +635,17 @@ async function runBuild(options: BuildOptions, out: string, region: RegionMask |
     generator: { id: 'city-ink-builder', version: BUILDER_VERSION, compatibleRuntime: '>=2.0.0 <3.0.0' },
     layers: [...layers].sort(),
     attributes: {
-      building: ['height', 'minHeight', 'levels', 'roofShape', 'roofHeight', 'facade', 'usage', 'provenance'],
+      building: [
+        'height',
+        'minHeight',
+        'levels',
+        'roofShape',
+        'roofHeight',
+        'facade',
+        'usage',
+        'provenance',
+        ...(hasWallLengths ? ['wallLengths'] : []),
+      ],
     },
     source: {
       kind: options.project ? 'project' : /\.pbf$/i.test(input.file) ? 'osm-pbf' : 'osm-json',

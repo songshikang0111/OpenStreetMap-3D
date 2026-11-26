@@ -5,6 +5,10 @@ import { MeshWriter, normalizedRing, polygon, addBox } from './generators/mesh-t
 import { facadeLayout } from './facade-layout.js';
 import { writeRoof } from './roofs.js';
 
+export const WALL_TRIM_MIN = 2;
+export const ENTRANCE_TIE = 0.1;
+export const ENTRANCE_MIN = 12;
+
 /**
  * Writes one ordinary (non-landmark) building: facade walls, trims, roof, underside, entrance and roof equipment.
  * Shared by the phase-one scene path (src/city.js) and the phase-two tile generators so that both produce the same
@@ -59,6 +63,7 @@ export function writeBuildingBody(
         const normal = [dz / len, 0, -dx / len],
           angle = Math.atan2(-dz, dx),
           mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+        const sourceLength = building.wallLengths?.[ringIndex]?.[i] ?? len;
         const layout = facadeLayout(len, topY - baseY, style);
         writer.layout = layout.attributes;
         grammarName = layout.name;
@@ -69,6 +74,7 @@ export function writeBuildingBody(
           const low = 0.45 + span.lo,
             high = 0.45 + span.hi,
             spanLen = len * (span.t1 - span.t0),
+            ruleLength = sourceLength * (span.t1 - span.t0),
             sm = [(sa[0] + sb[0]) / 2, (sa[1] + sb[1]) / 2];
           writer.quad(
             [
@@ -87,12 +93,22 @@ export function writeBuildingBody(
               [len * span.t0, high - baseY, len, floorHeight],
             ],
           );
-          // Near-ties (within 10 cm) keep the first wall, so centimetre-level coordinate quantisation in tiles
-          // cannot move the entrance to another facade.
-          if (!ringIndex && span.lo === 0 && (!longest || spanLen > longest.len + 0.1))
-            longest = { a: sa, b: sb, len: spanLen, normal, angle, mid: sm, dx: sb[0] - sa[0], dz: sb[1] - sa[1] };
+          // A later wall must win by more than 10 cm. Quantized buildings may supply the source length
+          // for this decision while retaining the decoded coordinates for the canopy itself.
+          if (!ringIndex && span.lo === 0 && (!longest || ruleLength > longest.ruleLength + ENTRANCE_TIE))
+            longest = {
+              a: sa,
+              b: sb,
+              len: spanLen,
+              ruleLength,
+              normal,
+              angle,
+              mid: sm,
+              dx: sb[0] - sa[0],
+              dz: sb[1] - sa[1],
+            };
           // Trim follows the exposed wall, never a buried podium/tower seam.
-          if (spanLen > 2 && building.height > 6) {
+          if (ruleLength > WALL_TRIM_MIN && building.height > 6) {
             if (span.hi === bodyHeight && !roof.supported) {
               addBox(
                 writer,
@@ -171,7 +187,7 @@ export function writeBuildingBody(
       for (const [outer, ...holes] of envelope.bottom) polygon(writer, { outer, holes }, baseY, wall, id, [0, -1, 0]);
       writer.materialRole = null;
     }
-    if (longest && building.minHeight === 0 && building.height > 10 && longest.len > 12) {
+    if (longest && building.minHeight === 0 && building.height > 10 && longest.ruleLength > ENTRANCE_MIN) {
       const { mid, normal, angle, len } = longest,
         w = Math.min(len * 0.28, 11),
         x = mid[0] + normal[0] * 0.32,
