@@ -1,0 +1,91 @@
+{
+  "referenceFixtures": "phase-one direct building generation, no landmark replacements",
+  "candidate": "2059f70",
+  "before": [
+    {
+      "name": "bibury-village",
+      "samples": 148,
+      "maxBounds": 0.011554996998455636,
+      "maxTriangles": 0.0049504950495049506,
+      "exceptions": []
+    },
+    {
+      "name": "beijing-cbd",
+      "samples": 477,
+      "maxBounds": 0.03190424178592366,
+      "maxTriangles": 0,
+      "exceptions": []
+    },
+    {
+      "name": "beijing-lingxiu-d",
+      "samples": 263,
+      "maxBounds": 0.018514091583170966,
+      "maxTriangles": 0.06976744186046512,
+      "exceptions": [
+        {
+          "id": "way/849169561",
+          "dBounds": 0.013248738711652663,
+          "dTriangles": 0.06976744186046512,
+          "triangles": [
+            172,
+            184
+          ]
+        }
+      ]
+    }
+  ],
+  "after": [
+    {
+      "name": "bibury-village",
+      "samples": 148,
+      "maxBounds": 0.011554996998455636,
+      "maxTriangles": 0.0049504950495049506,
+      "exceptions": []
+    },
+    {
+      "name": "beijing-cbd",
+      "samples": 477,
+      "maxBounds": 0.03190424178592366,
+      "maxTriangles": 0,
+      "exceptions": []
+    },
+    {
+      "name": "beijing-lingxiu-d",
+      "samples": 263,
+      "maxBounds": 0.018514091583170966,
+      "maxTriangles": 0,
+      "exceptions": []
+    }
+  ],
+  "marked": [
+    {
+      "name": "bibury-village",
+      "fullTilesWithBuildings": 5,
+      "hints": []
+    },
+    {
+      "name": "beijing-cbd",
+      "fullTilesWithBuildings": 20,
+      "hints": [
+        {
+          "tile": "16/53967/24832.c3t",
+          "profile": "full",
+          "id": "way/33459557",
+          "edges": 8
+        }
+      ]
+    },
+    {
+      "name": "beijing-lingxiu-d",
+      "fullTilesWithBuildings": 7,
+      "hints": [
+        {
+          "tile": "16/53940/24797.c3t",
+          "profile": "full",
+          "id": "way/849169561",
+          "edges": 1
+        }
+      ]
+    }
+  ]
+}
