@@ -21,6 +21,7 @@ const params = new URLSearchParams({
   plan: JSON.stringify(plan),
   quality: arg('quality', 'balanced'),
   loops: String(loops),
+  acceptance: process.argv.includes('--acceptance') ? '1' : '0',
   device: os.cpus()[0]?.model ?? os.arch(),
 });
 const headless = !process.argv.includes('--headful');
@@ -54,6 +55,7 @@ try {
     writeFileSync(arg('frames'), JSON.stringify({ ...log, summary }));
   }
   process.stdout.write(text);
+  if (!summary.verdict?.passed) process.exitCode = 1;
 } finally {
   await page?.close();
   await server.close();
