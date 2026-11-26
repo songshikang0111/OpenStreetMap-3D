@@ -203,3 +203,20 @@ test('cancel an unpublished upload between batches and release its materials', a
   complete.value.dispose();
   assert.equal([...materials.entries()].length, 0);
 });
+
+test('live timing distributions retain the original percentile definition through eviction', async () => {
+  const { RollingTimings } = await import('../packages/map/dist/timings.js');
+  const window = new RollingTimings(11),
+    values = [];
+  assert.equal(window.percentile(0.5), null);
+  const random = rng(4231);
+  for (let i = 0; i < 150; i++) {
+    const ms = Math.round(random() * 10) / 2;
+    window.push(ms);
+    values.push(ms);
+    const current = values.slice(-11).sort((a, b) => a - b);
+    for (const p of [0, 0.5, 0.95, 1])
+      assert.equal(window.percentile(p), current[Math.min(current.length - 1, Math.floor(p * current.length))]);
+    assert.deepEqual(window.values, values.slice(-11));
+  }
+});
