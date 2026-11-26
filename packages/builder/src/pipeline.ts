@@ -306,7 +306,7 @@ export async function buildTiles(
     sha256(
       canonicalStringify({
         // Change the cache revision whenever planning, tile encoding or report semantics change.
-        revision: 2,
+        revision: 3,
         version: BUILDER_VERSION,
         sourceHash,
         file: path.basename(source.file),
@@ -357,7 +357,7 @@ export async function buildTiles(
     ...(region ? { region: region.polygons } : {}),
   };
   const configHash = sha256(canonicalStringify(buildConfig));
-  const inputHash = sha256('2:' + input.sourceSha256 + configHash);
+  const inputHash = sha256('3:' + input.sourceSha256 + configHash);
   if (!options.resume) await rm(cache, { recursive: true, force: true });
   const ingestMarker = await readJSONIf<{ inputHash: string }>(path.join(cache, 'ingest.json'));
   if (ingestMarker && ingestMarker.inputHash !== inputHash) await rm(cache, { recursive: true, force: true });
@@ -439,7 +439,7 @@ export async function buildTiles(
   const sizes = new Map<string, { raw: number; gzip: number; hash: string; profile: string }>();
   const keys: string[] = [];
   const layers = new Set<string>();
-  const cutDiagnostics: Diagnostic[] = [];
+  const cutDiagnostics: Diagnostic[] = [...ctx.diagnostics];
   const fallbacks: CutResult['fallbacks'] = [];
   let cutSteps = 0;
   progress('cut', 0);
