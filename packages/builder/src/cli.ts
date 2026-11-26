@@ -1,5 +1,6 @@
 // `city tiles <build|validate|inspect|serve|pack>`; follows the phase-one CLI output contract: with --json the
 // result object goes to stdout and progress to stderr, with schemaVersion/status/artifacts/diagnostics.
+import { packTiles } from './archive/pack.js';
 import os from 'node:os';
 import path from 'node:path';
 import { buildTiles } from './pipeline.js';
@@ -13,6 +14,7 @@ export const TILES_HELP = `city tiles — build and check static 3D city tiles
                    [--seed n] [--config options.json] [--concurrency n] [--cell-zoom n] [--json]
   city tiles validate <dir> [--json]
   city tiles inspect <dir> --tile z/x/y [--json]
+  city tiles pack <dir> --output file.archive [--json]
   city tiles serve <dir> [--port 4181] [--json]
 
 Input: OSM JSON (Overpass / OSM Map), an .osm.pbf extract (<= 1 GB, build area <= 5,000 km2) or a phase-one project.
@@ -154,10 +156,13 @@ export async function runTilesCLI(
       stderr.write(`Serving ${resolve(target)} at ${server.url} (loopback only, Ctrl+C to stop)\n`);
       return { ...ok({ url: server.url, artifacts: [`${server.url}/tileset.json`] }), server };
     }
-    if (command === 'pack')
-      throw Object.assign(new Error('city tiles pack arrives with the single-file archive in M3 (WP-F).'), {
-        code: 'TILES_PACK_UNAVAILABLE',
-      });
+    if (command === 'pack') {
+      if (!target || !o.output)
+        throw Object.assign(new Error('city tiles pack <dir> --output file.archive'), { code: 'OPTION_MISSING' });
+      const output = resolve(o.output);
+      await packTiles(resolve(target), output, signal);
+      return ok({ artifacts: [output] });
+    }
     throw Object.assign(new Error(`Unknown tiles command ${command}.`), {
       code: 'UNKNOWN_COMMAND',
       hint: 'Run city tiles --help.',

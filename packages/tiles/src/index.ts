@@ -8,3 +8,4 @@ export * from './layers.js';
 export * from './codec.js';
 export * from './coverage.js';
 export * from './tileset.js';
+export * from './archive.js';

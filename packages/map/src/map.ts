@@ -1,3 +1,4 @@
+import { openTileArchive } from './archive.js';
 // createMap: map-style SDK over static City Ink tiles (04). Owns the camera and the render loop in standalone mode.
 import {
   AmbientLight,
@@ -307,7 +308,10 @@ export class CityMapImpl implements CityMap {
   private lastDesired: DesiredTile[] = [];
   private lastUpdate = 0;
 
-  constructor(private readonly options: MapOptions) {
+  private readonly options: MapOptions;
+
+  constructor(options: MapOptions) {
+    this.options = { ...options };
     const quality = options.quality ?? 'balanced';
     this.budget =
       typeof quality === 'string' ? { ...QUALITY_BUDGETS[quality] } : { ...QUALITY_BUDGETS.balanced, ...quality };
@@ -394,6 +398,13 @@ export class CityMapImpl implements CityMap {
 
   async init(): Promise<void> {
     const controller = new AbortController();
+    if (
+      typeof this.options.tiles === 'string' &&
+      !this.options.readAsset &&
+      new URL(this.options.tiles, globalThis.location?.href ?? 'http://localhost/').pathname.endsWith('.archive')
+    ) {
+      Object.assign(this.options, await openTileArchive(this.options.tiles, controller.signal));
+    }
     let json: unknown = this.options.tiles;
     if (typeof this.options.tiles === 'string') {
       this.tilesetUrl = new URL(this.options.tiles, globalThis.location?.href ?? 'http://localhost/').href;
