@@ -150,3 +150,20 @@ test('worker pool: priority order, cancellation of queued jobs, and no hang when
   );
   dead.terminate();
 });
+
+test('worker prepares per-role ink and bounded tree instances before transfer', async () => {
+  const { prepareUpload } = await import('../packages/map/dist/upload-data.js');
+  const { ROLE_LIST } = await import('@city-ink/generators');
+  const { Matrix4, Vector3 } = await import('three');
+  const roles = ['wall', 'roof', 'road', 'road.marking', 'water', 'ground.plaza'];
+  const { ink, crowns, trunks, bounds } = prepareUpload({
+    batches: [{ roleIndex: new Float32Array(roles.map((r) => ROLE_LIST.indexOf(r))), vertexCount: roles.length }],
+    trees: { count: 2, data: new Float32Array([5, 2, 7, 10, 3, 0, -9, 1, 6, 6, 2, 4]) },
+  });
+  assert.deepEqual(Array.from(ink[0]), Array.from(new Float32Array([1.25, 1, 3, 3.5, 6, 3.2])));
+  const top = (array, i) => new Vector3(0, 1, 0).applyMatrix4(new Matrix4().fromArray(array, 16 * i));
+  assert.ok(top(crowns, 0).distanceTo(new Vector3(5, 12, 7)) < 0.00001);
+  assert.ok(top(crowns, 1).distanceTo(new Vector3(-9, 7, 6)) < 0.00001);
+  assert.ok(Math.abs(top(trunks, 0).y - (2 + 10 - 4.8 * 0.9)) < 0.00001);
+  assert.deepEqual(bounds, [-10.1, 1, 4, 8, 12, 10]);
+});

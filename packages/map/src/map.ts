@@ -1562,7 +1562,7 @@ export class CityMapImpl implements CityMap {
         previous = entry.object;
       }
       const capacity = response.features.reduce((m, f) => Math.max(m, f.renderId), 0);
-      const object = buildTileObject(response.generated, this.materials, capacity);
+      const object = buildTileObject(response.generated, this.materials, capacity, response.upload);
       object.group.userData.tile = entry.key;
       if (this.hosted && this.hosted.ground === 'host')
         for (const mesh of object.meshes)
@@ -1605,7 +1605,10 @@ export class CityMapImpl implements CityMap {
   }
 
   /** Replacement rules (04 section 5.2): never show a region with neither a parent nor complete children. */
+  private selectionTime = 0;
+
   private updateTiles(now: number) {
+    this.selectionTime = now;
     const finest = this.tileset.levels[this.tileset.levels.length - 1]!;
     const maxDistance = Math.max(2000, this.transform.cameraToCenterDistance * this.transform.unitsPerPixel * 8);
     const desired = (this.lastDesired = selectTiles(
@@ -1698,7 +1701,6 @@ export class CityMapImpl implements CityMap {
       } else if (!visible && e.visible && e.object) e.object.group.removeFromParent();
       e.visible = visible && !!e.object;
     }
-    this.adaptToBudget(now);
     // Loads: cancel stale work, start the most important queued tiles within concurrency and queue budgets.
     for (const e of this.tiles.values())
       if (!wanted.has(e.key) && (e.state === 'loading' || e.state === 'generating')) {
@@ -1907,6 +1909,7 @@ export class CityMapImpl implements CityMap {
     for (const { built } of this.overlays.values()) built.update(size, this.renderer.getPixelRatio());
     this.scene.updateMatrixWorld();
     this.updateNearDetails();
+    this.adaptToBudget(this.selectionTime);
     this.renderer.info.reset();
     const sampled = this.gpuTimer.begin(time);
     try {
