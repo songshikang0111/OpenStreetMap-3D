@@ -172,7 +172,8 @@ function inflateBlob(blob: Uint8Array): Uint8Array {
     const [f, w] = r.key();
     if (f === 1) return r.bytes();
     if (f === 3) return inflateSync(r.bytes(), { maxOutputLength: MAX_BLOB });
-    if (f === 4 || f === 5 || f === 6 || f === 7) throw new Error('Unsupported PBF blob compression (only zlib or raw).');
+    if (f === 4 || f === 5 || f === 6 || f === 7)
+      throw new Error('Unsupported PBF blob compression (only zlib or raw).');
     r.skip(w);
   }
   throw new Error('Missing PBF blob payload');
