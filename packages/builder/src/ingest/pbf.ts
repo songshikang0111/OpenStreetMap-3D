@@ -81,6 +81,8 @@ export interface PbfRelation {
   members: { type: 'node' | 'way' | 'relation'; ref: number; role: string }[];
 }
 export interface PbfVisitor {
+  header?(header: PbfHeader): void;
+  onBlock?(): void;
   /** Called per dense or plain node; tags are only built when `wantNodeTags` is true. */
   node?(id: number, lat: number, lon: number, tags: Record<string, string> | null): void;
   way?(way: PbfWay): void;
@@ -101,6 +103,7 @@ export async function readPbf(file: string, visitor: PbfVisitor): Promise<PbfHea
     const lenBuf = Buffer.alloc(4);
     let offset = 0;
     for (;;) {
+      visitor.onBlock?.();
       const { bytesRead } = await fh.read(lenBuf, 0, 4, offset);
       if (bytesRead < 4) break;
       const headerLength = lenBuf.readUInt32BE(0);
@@ -121,8 +124,10 @@ export async function readPbf(file: string, visitor: PbfVisitor): Promise<PbfHea
       await fh.read(blob, 0, dataSize, offset);
       offset += dataSize;
       const data = inflateBlob(blob);
-      if (type === 'OSMHeader') readHeader(data, header);
-      else if (type === 'OSMData') readBlock(data, visitor);
+      if (type === 'OSMHeader') {
+        readHeader(data, header);
+        visitor.header?.(header);
+      } else if (type === 'OSMData') readBlock(data, visitor);
     }
   } finally {
     await fh.close();

@@ -30,7 +30,7 @@ test('CLI height inference preserves observed, derived and elevated base heights
   await writeFile(input, JSON.stringify({ metadata: { bbox: [0, 0, 0.005, 0.005] }, elements }));
   const args = ['build', '--input', input, '--config', config, '--output', path.join(out, 'tiles'), '--resume'];
   const run = () => runTilesCLI(args, { stderr: { write() {} } });
-  await writeFile(config, JSON.stringify({ inferHeights: true }));
+  await writeFile(config, JSON.stringify({ inferHeights: true, landmarks: false }));
   assert.equal((await run()).status, 'succeeded');
   await writeFile(config, JSON.stringify({ inferHeights: false, landmarks: false }));
   assert.equal((await run()).status, 'succeeded');

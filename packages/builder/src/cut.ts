@@ -1,4 +1,5 @@
 // Cut stage (03 section 5): ownership, clipping and quantisation of plan records into per-tile layers.
+import clipping from 'polygon-clipping';
 import {
   LAYER_SCHEMAS,
   defaultExtentLog2,
@@ -219,8 +220,8 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
 
       // Clipped layers: polygons and lines, restricted to tile ∩ owner cell.
       const owner = parseKey(r.cell);
-      const allPoints = r.geometry.flat(2);
-      const grid = allPoints.map((p) => toGrid(p, z, e));
+      const projected = r.geometry.map((part) => part.map((ring) => ring.map((p) => toGrid(p, z, e))));
+      const grid = projected.flat(2);
       const xs = grid.map((g) => g[0]),
         ys = grid.map((g) => g[1]);
       const span = 2 ** e;
@@ -285,14 +286,26 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
           // polygons
           const out: number[][][] = [];
           const heights: number[][][] = [];
-          for (const part of r.geometry) {
+          // A concave polygon can intersect a tile in several disconnected islands. Intersect its holes
+          // together with the shell to avoid artificial edges spanning water gaps at the tile boundary.
+          const robust = r.layer === 'water' || r.layer === 'green' || r.layer === 'landscape';
+          const [w, s, east, n] = rect;
+          const parts = robust
+            ? clipping.intersection(projected, [
+                [
+                  [w, s],
+                  [east, s],
+                  [east, n],
+                  [w, n],
+                  [w, s],
+                ],
+              ])
+            : projected.map((part) => part.map((ring) => clipRing(ring, rect)));
+          for (const part of parts) {
             const rings: number[][] = [];
             const ringHeights: number[][] = [];
             for (const [k, ring] of part.entries()) {
-              let clipped = clipRing(
-                ring.map((p) => toGrid(p, z, e)),
-                rect,
-              );
+              let clipped = ring;
               if (!full)
                 clipped = simplifyRing(
                   clipped,
