@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { buildRoadStructures } from './road-structures.js';
-import { planRoadGrades, roadHeightAt } from './road-grade.js';
+import { planRoadGrades, roadHeightAt, RoadSpatialGrid as Grid } from './road-grade.js';
 import { buildRoadStairs } from './road-stairs.js';
 
 // Local planar construction only. The source widths, topology and coordinates
@@ -101,31 +101,6 @@ function intersectConvex(subject, clip) {
   let p = subject;
   for (let i = 0; i < clip.length && p.length; i++) p = splitPolygon(p, clip[i], clip[(i + 1) % clip.length])[0];
   return p;
-}
-
-class Grid {
-  constructor(size = 40) {
-    this.size = size;
-    this.cells = new Map();
-  }
-  keys(b) {
-    const result = [],
-      s = this.size;
-    for (let x = Math.floor(b[0] / s); x <= Math.floor(b[2] / s); x++)
-      for (let z = Math.floor(b[1] / s); z <= Math.floor(b[3] / s); z++) result.push(`${x},${z}`);
-    return result;
-  }
-  add(item, box) {
-    for (const key of this.keys(box)) {
-      if (!this.cells.has(key)) this.cells.set(key, []);
-      this.cells.get(key).push(item);
-    }
-  }
-  query(box) {
-    const result = new Set();
-    for (const key of this.keys(box)) for (const item of this.cells.get(key) || []) result.add(item);
-    return result;
-  }
 }
 
 function strip(a, b, width) {
