@@ -15,6 +15,10 @@ const square = (x, y, r) => [
 const poly = (rings) => ({ type: 'Polygon', coordinates: rings });
 test('region holes split roads, interpolate elevations, preserve whole structures and clip filled areas', () => {
   const mask = new RegionMask(poly([square(0, 0, 4), square(0, 0, 1)]));
+  const source = poly([square(1, 2, 1).map((p) => [...p, 50])]);
+  const independent = new RegionMask({ type: 'Feature', properties: { name: 'mask' }, geometry: source });
+  source.coordinates[0][0][0] = 99;
+  assert.deepEqual(independent.polygons[0][0][0], [0, 1]);
   const road = {
     id: 'way/2',
     properties: {},

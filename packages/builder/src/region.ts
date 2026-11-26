@@ -3,10 +3,19 @@ import clipping from 'polygon-clipping';
 import type { LngLat, Bounds } from '@city-ink/tiles';
 import type { PlanRecord } from './plan.js';
 
+type Coordinates = ReadonlyArray<ReadonlyArray<readonly number[]>>;
 export type BuildRegion =
-  | { type: 'Polygon'; coordinates: LngLat[][] }
-  | { type: 'MultiPolygon'; coordinates: LngLat[][][] };
-export type BuildRegionInput = BuildRegion | { type: 'Feature'; geometry: BuildRegion };
+  | { type: 'Polygon'; coordinates: Coordinates; bbox?: readonly number[] }
+  | { type: 'MultiPolygon'; coordinates: readonly Coordinates[]; bbox?: readonly number[] };
+export type BuildRegionInput =
+  | BuildRegion
+  | {
+      type: 'Feature';
+      geometry: BuildRegion;
+      properties?: Record<string, unknown> | null;
+      id?: string | number;
+      bbox?: readonly number[];
+    };
 
 function invalid(message: string): never {
   throw Object.assign(new Error(message), { code: 'BUILD_REGION_INVALID' });
@@ -32,22 +41,27 @@ export class RegionMask {
     const geom = input?.type === 'Feature' ? input.geometry : input;
     if (!geom || !['Polygon', 'MultiPolygon'].includes(geom.type))
       invalid('Expected a GeoJSON Polygon or MultiPolygon, optionally wrapped in a Feature.');
-    this.polygons = geom.type === 'Polygon' ? [geom.coordinates] : geom.coordinates;
-    if (!Array.isArray(this.polygons) || !this.polygons.length) invalid('Build region is empty.');
-    for (const polygon of this.polygons) {
+    const polygons = geom.type === 'Polygon' ? [geom.coordinates] : geom.coordinates;
+    this.polygons = [];
+    if (!Array.isArray(polygons) || !polygons.length) invalid('Build region is empty.');
+    for (const polygon of polygons) {
+      const part: LngLat[][] = [];
+      this.polygons.push(part);
       if (!Array.isArray(polygon) || !polygon.length) invalid('Build region has an empty polygon.');
       for (const ring of polygon) {
         if (!Array.isArray(ring) || ring.length < 4) invalid('Each polygon ring needs at least four positions.');
+        const boundary: LngLat[] = [];
+        part.push(boundary);
         for (const p of ring) {
           if (
             !Array.isArray(p) ||
             p.length < 2 ||
-            !Number.isFinite(p[0]) ||
-            !Number.isFinite(p[1]) ||
+            !p.every(Number.isFinite) ||
             Math.abs(p[0]) > 180 ||
             Math.abs(p[1]) > 80
           )
             invalid('Build region coordinates must be finite WGS84 longitude and latitude within ±80° latitude.');
+          boundary.push([p[0], p[1]]);
           this.bounds[0] = Math.min(this.bounds[0], p[0]);
           this.bounds[1] = Math.min(this.bounds[1], p[1]);
           this.bounds[2] = Math.max(this.bounds[2], p[0]);
