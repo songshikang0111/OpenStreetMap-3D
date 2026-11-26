@@ -19,7 +19,8 @@ export const ROLE_LIST = [
   'landmark',
 ] as const;
 
-/** Material group of a role: building (facade shader), structure, ground (polygon offset, no shadow casting), landmark. */
+/** Material group of a role: building (facade shader), structure, ground (polygon offset, no shadow casting), landmark.
+ * Street furniture of the `detail` layer forms a fifth group, `detail`. */
 export function groupOf(role: string): 'building' | 'structure' | 'ground' | 'landmark' {
   if (/^(wall|glass|roof)(\.|$)/.test(role)) return 'building';
   if (/^(road|ground|water)(\.|$)/.test(role)) return 'ground';
@@ -255,7 +256,9 @@ export class BatchSet {
     const key = `${layer}:${role}`;
     let w = this.writers.get(key);
     if (!w) {
-      const group = groupOf(role);
+      // Street details get their own group so that budget tiers can drop roof plant and trims without them.
+      const materialGroup = groupOf(role);
+      const group = layer === 'detail' && materialGroup === 'structure' ? 'detail' : materialGroup;
       let g = this.groups.get(group);
       if (!g) this.groups.set(group, (g = new GroupBuilder(group)));
       w = new BatchBuilder(g, layer, role);

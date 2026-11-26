@@ -24,6 +24,7 @@ export class WorkerPool {
   private readonly queue: PoolJob[] = [];
   private nextJob = 1;
   readonly timings: number[] = [];
+  readonly samples: { tile: string; profile: string; time: number; ms: number }[] = [];
   terminated = false;
 
   constructor(
@@ -56,6 +57,7 @@ export class WorkerPool {
       job = { job: this.nextJob++, priority, buffer, options, resolve, reject, cancelled: false };
     });
     if (this.terminated) job.reject(new Error('Worker pool terminated'));
+    else if (this.dead === this.size) job.reject(this.unavailable());
     else {
       this.queue.push(job);
       this.queue.sort((a, b) => a.priority - b.priority);
@@ -88,8 +90,15 @@ export class WorkerPool {
     this.busy.delete(w);
     this.idle.push(w);
     if (job) {
-      if (response.type === 'result') this.timings.push(response.decodeMs + response.generateMs);
-      if (this.timings.length > 2000) this.timings.shift();
+      if (response.type === 'result') {
+        const ms = response.decodeMs + response.generateMs;
+        this.timings.push(ms);
+        this.samples.push({ tile: response.tile, profile: response.profile, time: performance.now(), ms });
+        if (this.timings.length > 2000) {
+          this.timings.shift();
+          this.samples.shift();
+        }
+      }
       if (job.cancelled) job.reject(Object.assign(new Error('Cancelled'), { name: 'AbortError' }));
       else job.resolve(response);
     }
@@ -107,20 +116,22 @@ export class WorkerPool {
     job?.reject(Object.assign(error, { permanent: false }));
     if (this.dead >= this.size) {
       // No worker left: fail everything still queued with a clear diagnostic instead of waiting forever.
-      for (const queued of this.queue.splice(0))
-        queued.reject(
-          Object.assign(new Error('All tile workers failed to start or crashed.'), {
-            diagnostic: {
-              code: 'WORKER_FAILED',
-              stage: 'generate',
-              message: `All tile workers failed: ${error.message}`,
-              hint: 'Check that the worker chunk is served next to the SDK and allowed by the Content-Security-Policy.',
-            },
-            permanent: true,
-          }),
-        );
+      for (const queued of this.queue.splice(0)) queued.reject(this.unavailable());
     }
     this.pump();
+  }
+
+  private unavailable() {
+    const message = 'All tile workers failed to start or crashed.';
+    return Object.assign(new Error(message), {
+      permanent: true,
+      diagnostic: {
+        code: 'WORKER_FAILED',
+        stage: 'generate',
+        message,
+        hint: 'Check that the worker chunk is served next to the SDK and allowed by the Content-Security-Policy.',
+      },
+    });
   }
 
   private dead = 0;

@@ -144,5 +144,9 @@ test('worker pool: priority order, cancellation of queued jobs, and no hang when
     errors.some((e) => e.diagnostic?.code === 'WORKER_FAILED'),
     'queued jobs fail with WORKER_FAILED',
   );
+  await assert.rejects(
+    dead.run(new ArrayBuffer(1), 0, {}).promise,
+    (error) => error.diagnostic?.code === 'WORKER_FAILED',
+  );
   dead.terminate();
 });

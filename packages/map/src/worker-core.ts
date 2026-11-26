@@ -35,6 +35,7 @@ export type WorkerResponse =
       type: 'result';
       job: number;
       tile: string;
+      profile: string;
       generated: GeneratedTile;
       features: FeatureRecord[];
       decodeMs: number;
@@ -114,6 +115,7 @@ export function handleRequest(request: WorkerRequest): { response: WorkerRespons
         type: 'result',
         job: request.job,
         tile: tileKey(tile.id),
+        profile: tile.profile,
         generated,
         features,
         decodeMs: t1 - t0,

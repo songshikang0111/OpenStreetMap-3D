@@ -75,7 +75,9 @@ function hostFov(map: HostMap): number {
 export function createMapLibreLayer(options: MapLibreLayerOptions): CityMapLibreLayer {
   let core: CityMapImpl | null = null;
   let host: HostMap | null = null;
-  let readyPromise: Promise<void> = new Promise(() => undefined);
+  // ready() can be awaited before the host adds the layer. Link those waiters to this attachment's init.
+  let readyPromise: Promise<void> | null = null;
+  let waitForAdd: ((result: Promise<void>) => void)[] = [];
   const pending: [MapEventType, (e: MapEvent) => void][] = [];
   const onClick = (e: {
     point: { x: number; y: number };
@@ -126,7 +128,20 @@ export function createMapLibreLayer(options: MapLibreLayerOptions): CityMapLibre
       };
       core = new CityMapImpl({ ...options, container: map.getContainer(), hosted } as HostedOptions);
       for (const [type, handler] of pending) core.on(type, handler);
-      readyPromise = core.init().then(() => map.triggerRepaint());
+      const attaching = core;
+      readyPromise = attaching
+        .init()
+        .then(() => map.triggerRepaint())
+        .catch(async (error) => {
+          if (core === attaching) {
+            core = null;
+            map.off('click', onClick);
+            await attaching.dispose();
+          }
+          throw error;
+        });
+      for (const resolve of waitForAdd) resolve(readyPromise);
+      waitForAdd = [];
       readyPromise.catch(() => undefined);
       map.on('click', onClick);
     },
@@ -138,8 +153,9 @@ export function createMapLibreLayer(options: MapLibreLayerOptions): CityMapLibre
       void core?.dispose();
       core = null;
       host = null;
+      readyPromise = null;
     },
-    ready: () => readyPromise,
+    ready: () => readyPromise ?? new Promise<void>((resolve) => waitForAdd.push(resolve)),
     queryFeatures: (point) => need().queryFeatures(point),
     project: (lngLat, altitude) => need().project(lngLat, altitude),
     getFeature: (id) => need().getFeature(id),
@@ -158,8 +174,8 @@ export function createMapLibreLayer(options: MapLibreLayerOptions): CityMapLibre
     getStats: (o) => need().getStats(o),
     whenIdle: (o) => need().whenIdle(o),
     on(type, handler) {
-      if (core) return core.on(type, handler);
-      pending.push([type, handler]);
+      if (!pending.some(([t, h]) => t === type && h === handler)) pending.push([type, handler]);
+      core?.on(type, handler);
       return () => this.off(type, handler);
     },
     off(type, handler) {

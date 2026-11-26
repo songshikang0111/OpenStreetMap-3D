@@ -32,16 +32,24 @@ try {
       const m = cityMap; const frame = () => new Promise((r) => requestAnimationFrame(() => r()));
       // Settle first: the triangle budget may still be showing or hiding detail groups (first upload of a hidden mesh).
       await m.whenIdle({ timeoutMs: 60000 }); await frame(); await frame();
+      // renderer.info.memory counts only geometries already submitted. A changed shadow pass can upload an
+      // existing mesh for the first time. Compare the actual tile BufferGeometry objects across every switch.
+      const geometryIds = () => {
+        const ids = [];
+        m.scene.traverse((object) => { if (object.geometry && object.parent?.userData.tile) ids.push(object.geometry.uuid); });
+        return ids.sort().join();
+      };
+      const geometries = geometryIds(); let sameGeometry = Boolean(geometries);
       const before = m.getStats(); const times = [];
       for (const id of ['dark', 'plain', 'light', 'dark', 'light']) {
-        const t0 = performance.now(); await m.setStyle(id); await frame(); times.push(performance.now() - t0);
+        const t0 = performance.now(); await m.setStyle(id); await frame(); times.push(performance.now() - t0); sameGeometry &&= geometries === geometryIds();
       }
       const after = m.getStats();
-      return { times, requests: after.requests.started - before.requests.started, geometriesBefore: before.renderer.geometries, geometriesAfter: after.renderer.geometries };
+      return { times, sameGeometry, requests: after.requests.started - before.requests.started, geometriesBefore: before.renderer.geometries, geometriesAfter: after.renderer.geometries };
     })()`);
     // The first switch to a style compiles its programs once; later switches reuse them.
     const warm = r.times.slice(2);
-    record('AC704', r.requests === 0 && r.geometriesAfter === r.geometriesBefore && Math.max(...warm) <= 100, {
+    record('AC704', r.requests === 0 && r.sameGeometry && Math.max(...warm) <= 100, {
       ...r,
       maxWarmMs: Math.max(...warm),
       note: 'setStyle + next frame; measured on the machine in the summary, not the reference device',
@@ -85,7 +93,9 @@ try {
       const el = document.createElement('div'); el.style.cssText = 'position:fixed;left:0;top:0;width:2600px;height:2600px';
       document.body.appendChild(el);
       globalThis.bigMap = await createCityMap({ container: el, tiles: './tiles/beijing-cbd-grow-9/tileset.json',
-        center: [116.4605, 39.9095], zoom: 16.4, pitch: 0, bearing: 0, interactive: false });
+        center: [116.4605, 39.9095], zoom: 16.4, pitch: 0, bearing: 0, interactive: false,
+        // Force full-sample residency for this census; the viewport LOD budget is tested separately.
+        quality: { residentBytes: 512 * 2**20, visibleTriangles: 4_000_000 } });
       await bigMap.whenIdle({ timeoutMs: 120000 }); return true;
     })()`);
     const big = () => page.evaluate('JSON.stringify(bigMap.getStats({ raw: true }))').then(JSON.parse);
@@ -119,15 +129,27 @@ try {
     );
     // trees and roofs switches (no new requests)
     const r = await page.evaluate(`(async () => {
-      const m = cityMap; const before = m.getStats();
+      const m = cityMap; await m.whenIdle({ timeoutMs: 60000 });
+      const before = m.getStats({raw:true});
       m.setFilter({ roofs: { inferred: false }, trees: { inferred: false }, details: false });
-      await new Promise((r) => setTimeout(r, 300)); await m.whenIdle({ timeoutMs: 60000 });
-      const mid = m.getStats();
-      m.setFilter({}); await new Promise((r) => setTimeout(r, 300)); await m.whenIdle({ timeoutMs: 60000 });
-      const after = m.getStats();
-      return { requests: after.requests.started - before.requests.started, trianglesBefore: before.triangles, trianglesFiltered: mid.triangles, trianglesAfter: after.triangles };
+      await m.whenIdle({ timeoutMs: 60000 });
+      const mid = m.getStats({raw:true});
+      m.setFilter({}); await m.whenIdle({ timeoutMs: 60000 });
+      const after = m.getStats({raw:true});
+      return { requests: after.requests.started - before.requests.started, before: before.raw.featureVisibility,
+        filtered: mid.raw.featureVisibility, restored: after.raw.featureVisibility,
+        idleWorkers: mid.workers.busy === 0 && mid.workers.queued === 0 && after.workers.busy === 0 && after.workers.queued === 0 };
     })()`);
-    record('AC706-switches', r.requests === 0 && r.trianglesFiltered < r.trianglesBefore, r);
+    record(
+      'AC706-switches',
+      r.requests === 0 &&
+        r.idleWorkers &&
+        r.filtered.hiddenTrees > r.before.hiddenTrees &&
+        r.filtered.hiddenDetails > r.before.hiddenDetails &&
+        r.restored.hiddenTrees === r.before.hiddenTrees &&
+        r.restored.hiddenDetails === r.before.hiddenDetails,
+      r,
+    );
   }
 
   // AC709: an independent custom StylePack draws tiles and tracks loads and unloads through its hooks.
