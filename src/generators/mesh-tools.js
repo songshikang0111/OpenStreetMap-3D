@@ -11,6 +11,20 @@ function parsedColor(value) {
   return color;
 }
 
+export function reverseTriangle(a, b, c, normal) {
+  // Same arithmetic as Vector3.subVectors/cross/dot, without per-triangle allocations.
+  const abx = b[0] - a[0],
+    aby = b[1] - a[1],
+    abz = b[2] - a[2],
+    acx = c[0] - a[0],
+    acy = c[1] - a[1],
+    acz = c[2] - a[2];
+  const cx = aby * acz - abz * acy,
+    cy = abz * acx - abx * acz,
+    cz = abx * acy - aby * acx;
+  return cx * normal[0] + cy * normal[1] + cz * normal[2] < 0;
+}
+
 export class MeshWriter {
   constructor() {
     this.materialRuns = [];
@@ -31,17 +45,7 @@ export class MeshWriter {
     return this.positions.length;
   }
   triangle(a, b, c, normal, color, id = 0, uv = null) {
-    // Same arithmetic as Vector3.subVectors/cross/dot, without per-triangle allocations.
-    const abx = b[0] - a[0],
-      aby = b[1] - a[1],
-      abz = b[2] - a[2],
-      acx = c[0] - a[0],
-      acy = c[1] - a[1],
-      acz = c[2] - a[2];
-    const cx = aby * acz - abz * acy,
-      cy = abz * acx - abx * acz,
-      cz = abx * acy - aby * acx;
-    if (cx * normal[0] + cy * normal[1] + cz * normal[2] < 0) {
+    if (reverseTriangle(a, b, c, normal)) {
       [b, c] = [c, b];
       if (uv) uv = [uv[0], uv[2], uv[1]];
     }
@@ -129,9 +133,13 @@ export class MeshWriter {
 }
 
 export function normalizedRing(ring, clockwise = false) {
-  const points = ring.map((p) => new THREE.Vector2(...p));
-  if (THREE.ShapeUtils.isClockWise(points) !== clockwise) points.reverse();
-  return points.map((p) => p.toArray());
+  // ShapeUtils.area's summation order, directly on coordinate pairs.
+  let twiceArea = 0;
+  const points = ring.map(([x, z]) => [x, z]);
+  for (let i = 0, j = points.length - 1; i < points.length; j = i++)
+    twiceArea += points[j][0] * points[i][1] - points[i][0] * points[j][1];
+  if (twiceArea * 0.5 < 0 !== clockwise) points.reverse();
+  return points;
 }
 
 export function polygon(writer, feature, y, color, id = 0, normal = [0, 1, 0]) {
@@ -155,7 +163,7 @@ const BOX_CORNERS = [
   [-1, 1, 1],
 ];
 // Four corner indices, the outward normal axis and its sign.
-const BOX_FACES = [
+export const BOX_FACES = [
   [0, 1, 2, 3, 2, -1],
   [4, 7, 6, 5, 2, 1],
   [0, 4, 5, 1, 1, -1],
@@ -175,12 +183,14 @@ function orientedBox(writer, center, axes, dimensions, color, id = 0) {
     center[1] + sx * halfAxes[0][1] + sy * halfAxes[1][1] + sz * halfAxes[2][1],
     center[2] + sx * halfAxes[0][2] + sy * halfAxes[1][2] + sz * halfAxes[2][2],
   ]);
-  for (const [a, b, c, d, axis, sign] of BOX_FACES) {
-    const n = axes[axis],
-      normal = [n[0] * sign, n[1] * sign, n[2] * sign];
-    writer.triangle(points[a], points[b], points[c], normal, color, id);
-    writer.triangle(points[a], points[c], points[d], normal, color, id);
-  }
+  if (writer.writeBox) writer.writeBox(points, axes, color.isColor ? color : parsedColor(color), id);
+  else
+    for (const [a, b, c, d, axis, sign] of BOX_FACES) {
+      const n = axes[axis],
+        normal = [n[0] * sign, n[1] * sign, n[2] * sign];
+      writer.triangle(points[a], points[b], points[c], normal, color, id);
+      writer.triangle(points[a], points[c], points[d], normal, color, id);
+    }
   writer.style = old;
   writer.materialRole = oldRole;
 }

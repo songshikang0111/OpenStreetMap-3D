@@ -39,8 +39,7 @@ export function facadeGrammar(family, variant = 0) {
   return { ...choices[index], index };
 }
 
-export function facadeLayout(length, height, style) {
-  const grammar = facadeGrammar(style.family, style.variant);
+export function facadeLayout(length, height, style, grammar = facadeGrammar(style.family, style.variant)) {
   const bays = Math.max(1, Math.floor(length / grammar.bay));
   const floor = Math.max(2.8, style.floor);
   return {

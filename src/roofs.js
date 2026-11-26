@@ -8,6 +8,22 @@ export function planRoof(building, { inferRoofs = false } = {}) {
     explicit = tags['roof:shape'];
   let shape = explicit,
     source = 'osm';
+  const inferCandidate =
+    !explicit &&
+    inferRoofs &&
+    building.minHeight === 0 &&
+    !building.part &&
+    !(building.holes || []).length &&
+    /^(yes|house|detached|semidetached_house|terrace|bungalow|cabin)$/.test(tags.building || '') &&
+    !tags.amenity &&
+    !tags.office &&
+    !tags.shop &&
+    building.height <= 12.5 &&
+    building.area >= 20 &&
+    building.area <= 350;
+  // Flat roofs need no axis or projected bounding box. Leave explicit unsupported shapes as recorded.
+  if (!inferCandidate && !['gabled', 'hipped', 'pyramidal', 'skillion'].includes(explicit))
+    return { shape: explicit || 'flat', source: explicit ? 'osm' : 'none', supported: false };
   let longest = [1, 0],
     length = 0;
   for (let i = 0; i < building.outer.length; i++) {
@@ -39,23 +55,7 @@ export function planRoof(building, { inferRoofs = false } = {}) {
     z1 = Math.max(...zs),
     w = x1 - x0,
     d = z1 - z0;
-  if (
-    !shape &&
-    inferRoofs &&
-    building.minHeight === 0 &&
-    !building.part &&
-    !(building.holes || []).length &&
-    /^(yes|house|detached|semidetached_house|terrace|bungalow|cabin)$/.test(tags.building || '') &&
-    !tags.amenity &&
-    !tags.office &&
-    !tags.shop &&
-    building.height <= 12.5 &&
-    building.area >= 20 &&
-    building.area <= 350 &&
-    Math.min(w, d) >= 3 &&
-    Math.max(w, d) <= 35 &&
-    building.area / (w * d) > 0.78
-  ) {
+  if (inferCandidate && Math.min(w, d) >= 3 && Math.max(w, d) <= 35 && building.area / (w * d) > 0.78) {
     shape = 'gabled';
     source = 'inferred';
   }
@@ -83,8 +83,12 @@ export function planRoof(building, { inferRoofs = false } = {}) {
     const end = shape === 'hipped' ? Math.min(w, d) / 2 : w / 2;
     planes.push([1 / end, 0, -x0 / end], [-1 / end, 0, x1 / end]);
   }
-  const height = (p) =>
-    eave + rise * Math.max(0, Math.min(...planes.map(([a, b, c]) => a * project(p)[0] + b * project(p)[1] + c)));
+  const height = (p) => {
+    const [x, z] = project(p);
+    let min = Infinity;
+    for (const [a, b, c] of planes) min = Math.min(min, a * x + b * z + c);
+    return eave + rise * Math.max(0, min);
+  };
   return {
     shape,
     source,
@@ -112,7 +116,7 @@ export function writeRoof(writer, building, plan, color, id, wallColor) {
   const world = (p) => [u[0] * p[0] + v[0] * p[1], u[1] * p[0] + v[1] * p[1]];
   const vectors = footprint.map((r) => r.map((p) => new THREE.Vector2(...p)));
   const sourceTriangles = THREE.ShapeUtils.triangulateShape(vectors[0], vectors.slice(1)),
-    vertices = vectors.flat();
+    vertices = vectors.flat().map((p) => project(p.toArray()));
   function halfPlane(poly, A, B, C) {
     const out = [];
     for (let i = 0; i < poly.length; i++) {
@@ -139,7 +143,7 @@ export function writeRoof(writer, building, plan, color, id, wallColor) {
     // Clip convex source triangles rather than boolean-sweeping coincident
     // footprint/ridge edges. This retains holes and avoids fragile ring joins.
     for (const triangle of sourceTriangles) {
-      let patch = triangle.map((k) => project(vertices[k].toArray()));
+      let patch = triangle.map((k) => vertices[k]);
       for (const other of plan.planes)
         if (other !== plane) patch = halfPlane(patch, plane[0] - other[0], plane[1] - other[1], plane[2] - other[2]);
       if (patch.length < 3 || area(patch) < 1e-7) continue;

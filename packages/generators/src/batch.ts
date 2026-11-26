@@ -2,6 +2,7 @@
 // per-vertex `roleIndex` tells the style which role each vertex has, so an L1 tile is a handful of draw calls
 // (06 section 3: <= 12 per L1 tile, <= 4 per L0 tile). All arrays are typed arrays transferable out of a Worker.
 
+import { BoxBlock } from './box-block.js';
 import { FaceBlock, type FacadeAttributes } from './face-block.js';
 
 /** Semantic roles written by generators, in roleIndex order (05 section 3). Append only. */
@@ -72,55 +73,43 @@ export interface WriterLike {
 }
 
 /** A growable typed array: amortised appends without number[] boxing or GC pressure (decision E5 follow-up). */
-class Grow<T extends Float32Array | Uint32Array> {
-  data: T;
+class Indices {
+  private data = new Uint32Array(256);
   length = 0;
-  constructor(
-    private readonly make: (n: number) => T,
-    capacity = 256,
-  ) {
-    this.data = make(capacity);
-  }
-  reserve(extra: number) {
-    const need = this.length + extra;
-    if (need <= this.data.length) return;
-    let cap = this.data.length * 2;
-    while (cap < need) cap *= 2;
-    const next = this.make(cap);
-    next.set(this.data.subarray(0, this.length));
+  private reserve(extra: number) {
+    if (this.length + extra <= this.data.length) return;
+    const next = new Uint32Array(this.data.length * 2);
+    next.set(this.data);
     this.data = next;
   }
   push3(a: number, b: number, c: number) {
     this.reserve(3);
-    const d = this.data,
-      n = this.length;
-    d[n] = a;
-    d[n + 1] = b;
-    d[n + 2] = c;
-    this.length = n + 3;
+    this.data[this.length++] = a;
+    this.data[this.length++] = b;
+    this.data[this.length++] = c;
   }
-  push(v: number) {
+  push(i: number) {
     this.reserve(1);
-    this.data[this.length++] = v;
+    this.data[this.length++] = i;
   }
-  view(): T {
-    return this.data.subarray(0, this.length) as T;
+  view() {
+    return this.data.subarray(0, this.length);
   }
 }
-const f32 = (n: number) => new Float32Array(n);
-const u32 = (n: number) => new Uint32Array(n);
 
 /** One material group's buffers. Direct vertices are indexed; phase-one writer runs are appended at build time. */
 class GroupBuilder {
-  readonly pos = new Grow(f32);
-  readonly nor = new Grow(f32);
-  readonly col = new Grow(f32);
-  readonly rid = new Grow(f32);
-  readonly role = new Grow(f32);
-  readonly idx = new Grow(u32);
+  private capacity = 0;
+  pos = new Float32Array(0);
+  nor = new Float32Array(0);
+  col = new Float32Array(0);
+  rid = new Float32Array(0);
+  role = new Float32Array(0);
+  readonly idx = new Indices();
   own = 0;
   readonly runs: (
     | FaceBlock
+    | BoxBlock
     | {
         writer: WriterLike;
         start: number;
@@ -133,6 +122,32 @@ class GroupBuilder {
   runVertices = 0;
   constructor(readonly group: string) {}
 
+  /** All direct attributes have the same vertex count. Grow and range-check them as one allocation. */
+  nextVertex(): number {
+    const v = this.own++;
+    if (v === this.capacity) {
+      const n = Math.max(256, v * 2);
+      const block = new Float32Array(n * 11);
+      const pos = block.subarray(0, n * 3),
+        nor = block.subarray(n * 3, n * 6),
+        col = block.subarray(n * 6, n * 9);
+      const rid = block.subarray(n * 9, n * 10),
+        role = block.subarray(n * 10, n * 11);
+      pos.set(this.pos);
+      nor.set(this.nor);
+      col.set(this.col);
+      rid.set(this.rid);
+      role.set(this.role);
+      this.pos = pos;
+      this.nor = nor;
+      this.col = col;
+      this.rid = rid;
+      this.role = role;
+      this.capacity = n;
+    }
+    return v;
+  }
+
   build(): MeshBatch {
     const own = this.own;
     const n = own + this.runVertices;
@@ -141,11 +156,11 @@ class GroupBuilder {
     const color = new Float32Array(n * 3);
     const renderId = new Float32Array(n);
     const roleIndex = new Float32Array(n);
-    position.set(this.pos.view());
-    normal.set(this.nor.view());
-    color.set(this.col.view());
-    renderId.set(this.rid.view());
-    roleIndex.set(this.role.view());
+    position.set(this.pos.subarray(0, own * 3));
+    normal.set(this.nor.subarray(0, own * 3));
+    color.set(this.col.subarray(0, own * 3));
+    renderId.set(this.rid.subarray(0, own));
+    roleIndex.set(this.role.subarray(0, own));
     const facade = this.runs.length
       ? {
           aFacade: new Float32Array(n * 4),
@@ -161,6 +176,11 @@ class GroupBuilder {
     let k = this.idx.length;
     let v = own;
     for (const run of this.runs) {
+      if (run instanceof BoxBlock) {
+        run.copyTo(v, position, normal, color, renderId, roleIndex, facade!);
+        for (let end = v + run.count * 36; v < end; v++) index[k++] = v;
+        continue;
+      }
       if (run instanceof FaceBlock) {
         const count = run.count;
         position.set(run.positions.subarray(0, count * 3), v * 3);
@@ -253,6 +273,24 @@ export class BatchBuilder {
     this.g.runVertices += count;
   }
 
+  writeBox(
+    points: number[][],
+    axes: number[][],
+    color: { r: number; g: number; b: number },
+    id: number,
+    yOffset: number,
+    attributes: FacadeAttributes,
+  ) {
+    const runs = this.g.runs;
+    let block = runs[runs.length - 1];
+    if (!(block instanceof BoxBlock) || block.count === block.capacity) {
+      block = new BoxBlock();
+      runs.push(block);
+    }
+    block.write(points, axes, color, id, this.roleIndex, yOffset, attributes);
+    this.g.runVertices += 36;
+  }
+
   writeBuildingFace(
     a: number[],
     b: number[],
@@ -291,12 +329,20 @@ export class BatchBuilder {
     renderId: number,
   ) {
     const group = this.g;
-    group.pos.push3(x, y, z);
-    group.nor.push3(nx, ny, nz);
-    group.col.push3(r, g, b);
-    group.rid.push(renderId);
-    group.role.push(this.roleIndex);
-    return group.own++;
+    const v = group.nextVertex(),
+      i = v * 3;
+    group.pos[i] = x;
+    group.pos[i + 1] = y;
+    group.pos[i + 2] = z;
+    group.nor[i] = nx;
+    group.nor[i + 1] = ny;
+    group.nor[i + 2] = nz;
+    group.col[i] = r;
+    group.col[i + 1] = g;
+    group.col[i + 2] = b;
+    group.rid[v] = renderId;
+    group.role[v] = this.roleIndex;
+    return v;
   }
 
   triangle(a: number, b: number, c: number) {

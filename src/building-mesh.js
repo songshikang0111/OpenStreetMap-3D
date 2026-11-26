@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { inside } from './osm.js';
 import { buildingStyle, roofEquipment } from './building-rules.js';
 import { MeshWriter, normalizedRing, polygon, addBox } from './generators/mesh-tools.js';
-import { facadeLayout } from './facade-layout.js';
+import { facadeLayout, facadeGrammar } from './facade-layout.js';
 import { writeRoof } from './roofs.js';
 
 export const WALL_TRIM_MIN = 2;
@@ -16,21 +16,24 @@ export const ENTRANCE_MIN = 12;
  */
 export function writeBuildingBody(
   building,
-  { renderId, seed = 1, roofPlan, envelopePlan, writer = new MeshWriter(), roofWriter = new MeshWriter(), counts = {} },
+  {
+    renderId,
+    seed = 1,
+    roofPlan,
+    envelopePlan,
+    writer = new MeshWriter(),
+    roofWriter = new MeshWriter(),
+    counts,
+    nearWalls: wallCollector,
+  },
 ) {
-  const familyCounts = (counts.familyCounts ||= {}),
-    surfaceCounts = (counts.surfaceCounts ||= {}),
-    grammarCounts = (counts.grammarCounts ||= {}),
-    roofStats = (counts.roofStats ||= { tagged: 0, inferred: 0, unsupported: 0 }),
-    nearWalls = (counts.nearWalls ||= []),
-    roofDetails = (counts.roofDetails ||= []);
+  const nearWalls = wallCollector ?? (counts && (counts.nearWalls ||= []));
+  const roofDetails = counts && (counts.roofDetails ||= []);
   const id = renderId,
     style = buildingStyle(building, seed || 1);
   writer.style = style.code;
   writer.variant = style.variant;
-  familyCounts[style.family] = (familyCounts[style.family] || 0) + 1;
   writer.surface = [style.surface, style.surfaceScale];
-  surfaceCounts[style.surfaceName] = (surfaceCounts[style.surfaceName] || 0) + 1;
   const roof = roofPlan,
     bodyHeight = roof.supported ? roof.eave - 0.45 : building.height;
   const wall = new THREE.Color(style.color),
@@ -43,8 +46,16 @@ export function writeBuildingBody(
     supported: roof.supported,
     dimensionsInferred: roof.dimensionsInferred || false,
   };
-  if (roof.supported) roofStats[roof.source === 'osm' ? 'tagged' : 'inferred']++;
-  else if (roof.source === 'osm' && roof.shape !== 'flat') roofStats.unsupported++;
+  if (counts) {
+    const families = (counts.familyCounts ||= {}),
+      surfaces = (counts.surfaceCounts ||= {});
+    families[style.family] = (families[style.family] || 0) + 1;
+    surfaces[style.surfaceName] = (surfaces[style.surfaceName] || 0) + 1;
+    const roofStats = (counts.roofStats ||= { tagged: 0, inferred: 0, unsupported: 0 });
+    if (roof.supported) roofStats[roof.source === 'osm' ? 'tagged' : 'inferred']++;
+    else if (roof.source === 'osm' && roof.shape !== 'flat') roofStats.unsupported++;
+  }
+  const grammar = facadeGrammar(style.family, style.variant);
   const trim = style.family === 'curtain' ? '#c9d5d7' : '#e5e1d6';
   let profile = null;
   {
@@ -61,10 +72,9 @@ export function writeBuildingBody(
           len = Math.hypot(dx, dz);
         if (len < 0.03) continue;
         const normal = [dz / len, 0, -dx / len],
-          angle = Math.atan2(-dz, dx),
-          mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+          angle = Math.atan2(-dz, dx);
         const sourceLength = building.wallLengths?.[ringIndex]?.[i] ?? len;
-        const layout = facadeLayout(len, topY - baseY, style);
+        const layout = facadeLayout(len, topY - baseY, style, grammar);
         writer.layout = layout.attributes;
         grammarName = layout.name;
         const spans = envelope.wall(a, b, normal);
@@ -158,6 +168,7 @@ export function writeBuildingBody(
         // Fine frame grammar is valid on a complete original wall only.
         // Clipped partial walls keep the same shader panes without stray frames.
         if (
+          nearWalls &&
           !ringIndex &&
           len > 7 &&
           spans.length === 1 &&
@@ -168,7 +179,10 @@ export function writeBuildingBody(
         )
           nearWalls.push({ key: `${building.id}:${i}`, a, dx, dz, len, normal, angle, layout, baseY, style });
       }
-    grammarCounts[grammarName] = (grammarCounts[grammarName] || 0) + 1;
+    if (counts) {
+      const grammars = (counts.grammarCounts ||= {});
+      grammars[grammarName] = (grammars[grammarName] || 0) + 1;
+    }
     writer.style = 0;
     writer.materialRole = 'roof';
     if (roof.supported) {
@@ -214,7 +228,7 @@ export function writeBuildingBody(
           '#6b7e7c',
           id,
         );
-      roofDetails.push({
+      roofDetails?.push({
         start,
         end: roofWriter.positionLength,
         anchor: [box.x, topY, box.z],
