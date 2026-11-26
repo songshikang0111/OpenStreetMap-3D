@@ -6,8 +6,10 @@ export interface TileCost {
   bytes: number;
   triangles: number;
   draws: number;
+  /** The source is resident, but the first Worker result has not supplied the full geometry cost yet. */
+  sourceOnly?: boolean;
 }
-const unknown: TileCost = { bytes: 0, triangles: 0, draws: 0 };
+const unknown: TileCost = { bytes: 0, triangles: 0, draws: 0, sourceOnly: true };
 
 export function fitRefinements(
   leaves: DesiredTile[],
@@ -64,6 +66,7 @@ export function fitRefinements(
       for (const c of group) {
         const cost = costs.get(c.key) ?? unknown;
         // Parent data remains resident as the fallback even after it stops drawing.
+        // A first fetch already retains its input while its worker is still measuring the geometry.
         extraBytes += cost.bytes;
         extraTriangles += cost.triangles;
         extraDraws += cost.draws;
@@ -77,7 +80,7 @@ export function fitRefinements(
         continue;
       // Probe one incomplete group at a time when a parent supplies cover. Learning the near
       // group's actual cost may rule out farther groups before their workers start.
-      const unknownChildren = group.some((c) => !costs.has(c.key) && !unavailable(c.key));
+      const unknownChildren = group.some((c) => (costs.get(c.key) ?? unknown).sourceOnly && !unavailable(c.key));
       if (unknownChildren && ready(parent.key)) {
         if (probing) continue;
         probing = true;

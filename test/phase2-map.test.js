@@ -249,3 +249,28 @@ test('refinement reserves complete sibling groups and pinned ancestors before sp
     target.map((d) => d.key),
   );
 });
+
+test('first-generation input buffers count toward sibling admission while geometry costs are unknown', async () => {
+  const { fitRefinements } = await import('../packages/map/dist/refinement-budget.js');
+  const leaves = [0, 1].map((x) => ({
+    key: `16/${x}/0`,
+    id: { z: 16, x, y: 0 },
+    level: 1,
+    priority: x,
+    sse: 100,
+  }));
+  const costs = new Map([
+    ['14/0/0', { bytes: 10, triangles: 1, draws: 1 }],
+    ['16/0/0', { bytes: 85, triangles: 1, draws: 1 }],
+  ]);
+  const select = (inputBytes) => {
+    costs.set('16/1/0', { bytes: inputBytes, triangles: 0, draws: 0, sourceOnly: true });
+    return fitRefinements(leaves, [14, 16], costs, () => true, new Set(), {
+      bytes: 100,
+      triangles: 10,
+      draws: 10,
+    }).leaves.map((tile) => tile.key);
+  };
+  assert.deepEqual(select(5), ['16/0/0', '16/1/0']);
+  assert.deepEqual(select(6), ['14/0/0']);
+});
