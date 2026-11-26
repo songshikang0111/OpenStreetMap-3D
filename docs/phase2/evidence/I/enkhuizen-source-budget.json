@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-26T07:04:38.564Z",
+  "status": "local-device run",
+  "environment": {
+    "browser": "Chrome/158.0.8127.36",
+    "device": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+    "gpu": "ANGLE (AMD, AMD Radeon 780M Graphics (radeonsi phoenix ACO), OpenGL ES 3.2)",
+    "cores": 16,
+    "viewport": [
+      1280,
+      720
+    ],
+    "devicePixelRatio": 1,
+    "rendererPixelRatio": 1,
+    "quality": "balanced",
+    "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+    "platform": "linux 7.3.4-300.fc45.x86_64",
+    "headless": true
+  },
+  "tileset": {
+    "name": "enkhuizen",
+    "buildReportSha256": "5efbcf2619fb4747b1f03bad95d7ee5a31b076f33c19826721d88e93d9c6b5b4"
+  },
+  "sdkCommit": "846c084f9f33a67d3dc1869237f77b23af6983a3",
+  "durationMs": 60127,
+  "frames": 3531,
+  "frameIntervalMs": {
+    "count": 3530,
+    "p50": 16.69999999999709,
+    "p95": 16.799999999995634,
+    "p99": 33.299999999995634,
+    "max": 183.1999999999971
+  },
+  "longFramesOver50ms": 9,
+  "longFramesPerMinute": 8.98094542745187,
+  "firstUsableMs": 1471,
+  "firstScreenEncodedBytes": 782537,
+  "maxDrawCalls": 95,
+  "maxTriangles": 568058,
+  "maxResidentBytesEstimate": 134186000,
+  "maxUploadMsPerFrame": 24.200000002980232,
+  "maxWorkerQueue": 7,
+  "workerDecodeGenerateMs": {
+    "count": 213,
+    "p50": 46.30000001192093,
+    "p95": 295.40000000596046,
+    "p99": 479.20000000298023,
+    "max": 533.7000000029802
+  },
+  "requests": {
+    "started": 167,
+    "bytes": 12865592
+  },
+  "gpuTimer": {
+    "available": true,
+    "reason": null,
+    "count": 3530,
+    "p50": 3.196753,
+    "p95": 4.56335,
+    "p99": 4.876224,
+    "max": 5.390481
+  },
+  "tileErrors": [],
+  "path": "scripts/benchmark-tiles/paths/enkhuizen.json"
+}

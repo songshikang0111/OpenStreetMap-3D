@@ -15,8 +15,8 @@
       "name": "beijing-cbd-grow-9",
       "tiles": 20,
       "maxTriangles": 97331,
-      "decodeP95Ms": 0.47848999999999364,
-      "generateP95Ms": 37.93961100000001,
+      "decodeP95Ms": 1.8961430000000519,
+      "generateP95Ms": 98.10197100000028,
       "maxDraws": {
         "L0": 2,
         "L1": 7
@@ -37,8 +37,8 @@
       "name": "kyoto-gion-grow-9",
       "tiles": 7,
       "maxTriangles": 250531,
-      "decodeP95Ms": 2.2452210000001287,
-      "generateP95Ms": 245.63624500000014,
+      "decodeP95Ms": 1.0210909999996147,
+      "generateP95Ms": 316.79842499999995,
       "maxDraws": {
         "L0": 2,
         "L1": 6
@@ -55,7 +55,7 @@
       }
     }
   ],
-  "bundleGzip": 51617,
+  "bundleGzip": 51732,
   "problems": [],
   "status": "pass"
 }
