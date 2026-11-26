@@ -167,3 +167,39 @@ test('worker prepares per-role ink and bounded tree instances before transfer', 
   assert.ok(Math.abs(top(trunks, 0).y - (2 + 10 - 4.8 * 0.9)) < 0.00001);
   assert.deepEqual(bounds, [-10.1, 1, 4, 8, 12, 10]);
 });
+
+test('cancel an unpublished upload between batches and release its materials', async () => {
+  const { prepareTileObject, MaterialLibrary } = await import('../packages/map/dist/tile-object.js');
+  const { prepareUpload } = await import('../packages/map/dist/upload-data.js');
+  const batch = {
+    layer: 'ground',
+    role: 'ground',
+    vertexCount: 3,
+    position: new Float32Array(9),
+    normal: new Float32Array(9),
+    color: new Float32Array(9),
+    roleIndex: new Float32Array(3),
+    renderId: new Float32Array(3),
+    index: new Uint32Array([0, 1, 2]),
+    bounds: [0, 0, 0, 1, 0, 1],
+  };
+  const generated = {
+    batches: [batch, batch],
+    trees: { count: 0, data: new Float32Array(), renderId: new Float32Array() },
+  };
+  const materials = new MaterialLibrary();
+  const prepare = () => prepareTileObject(generated, materials, 1, prepareUpload(generated));
+  const first = prepare();
+  assert.equal(first.next().done, false);
+  assert.equal([...materials.entries()].length, 1);
+  first.return();
+  assert.equal([...materials.entries()].length, 0);
+  const second = prepare();
+  second.next();
+  second.next();
+  const complete = second.next();
+  assert.equal(complete.done, true);
+  assert.equal(complete.value.group.children.length, 2);
+  complete.value.dispose();
+  assert.equal([...materials.entries()].length, 0);
+});
