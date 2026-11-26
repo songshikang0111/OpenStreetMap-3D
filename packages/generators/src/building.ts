@@ -47,13 +47,17 @@ function ringToMeters(layer: FeatureLayer, ring: number, step: number): Ring {
 }
 
 /** Rebuilds the phase-one building record (local metres of the tile) for feature i. */
-export function phase1Building(layer: FeatureLayer, i: number, step: number): Phase1Building {
+export function phase1Building(
+  layer: FeatureLayer,
+  i: number,
+  step: number,
+  part = layer.partStart[i]!,
+): Phase1Building {
   const meta = readFeatureMetaAt(layer, i);
   const props = meta.properties ?? {};
   const tags = meta.tags ?? {};
-  const firstPart = layer.partStart[i]!;
-  const firstRing = layer.ringStart[firstPart]!;
-  const lastRing = layer.ringStart[firstPart + 1]!;
+  const firstRing = layer.ringStart[part]!;
+  const lastRing = layer.ringStart[part + 1]!;
   const outer = ringToMeters(layer, firstRing, step);
   const holes: Ring[] = [];
   for (let r = firstRing + 1; r < lastRing; r++) holes.push(ringToMeters(layer, r, step));

@@ -25,6 +25,7 @@ import {
 } from '@city-ink/tiles';
 import type { Bounds, Diagnostic, Provenance, TileId, TileInput, Tileset, FeatureLayerInput } from '@city-ink/tiles';
 import { GENERATOR_VERSION } from '@city-ink/generators';
+import { assignBuildingRelations } from './building-relations.js';
 import { PlanContext, cellKey } from './plan.js';
 import type { CellPlan, PlanOptions, PlanRecord } from './plan.js';
 import { planQueuedCells } from './planning-queue.js';
@@ -311,6 +312,7 @@ export async function buildTiles(
       canonicalStringify({
         // Change the cache revision whenever planning, tile encoding or report semantics change.
         revision: '3-disk-features-v1',
+        massingRevision: 1,
         version: BUILDER_VERSION,
         sourceHash,
         file: path.basename(source.file),
@@ -361,6 +363,7 @@ export async function buildTiles(
   };
   const cellZoom = options.cellZoom ?? 12;
   const buildConfig = {
+    massingRevision: 1,
     planOptions,
     levels,
     cellZoom,
@@ -381,15 +384,11 @@ export async function buildTiles(
   const waterDiagnostics: Diagnostic[] = [];
   const shape: Bounds = [input.area.west, input.area.south, input.area.east, input.area.north];
   const regional = /\.pbf$/i.test(source.file) && bboxAreaKm2(shape) >= 48;
-  const data = parseOSM(
-    store ? raw(store.waterInput()) : input.raw,
-    input.seed,
-    regional
-      ? {
-          mergeWater: (polygons) => regionalWater(polygons, waterDiagnostics),
-        }
-      : undefined,
-  );
+  const globalInput = store ? raw(store.waterInput()) : input.raw;
+  const data = parseOSM(globalInput, input.seed, {
+    onBuildingFootprints: (buildings) => assignBuildingRelations(buildings, globalInput.elements),
+    ...(regional ? { mergeWater: (polygons) => regionalWater(polygons, waterDiagnostics) } : {}),
+  });
   const context = (parsed: typeof data) => {
     if (options.inferHeights === false) {
       for (const building of parsed.buildings) {
@@ -446,8 +445,10 @@ export async function buildTiles(
       if (!store || !bounds) return { data: bounds ? ctx.crop(bounds) : ctx.data };
       const relationErrors: { id: number; incomplete: boolean }[] = [];
       const waterMask = ctx.water.filter((r) => boundsIntersect(r.bounds, bounds)).map((r) => r.item);
+      const localInput = raw(store.neighbourhood(bounds));
       const local = context(
-        parseOSM(raw(store.neighbourhood(bounds)), input.seed, {
+        parseOSM(localInput, input.seed, {
+          onBuildingFootprints: (buildings) => assignBuildingRelations(buildings, localInput.elements),
           waterMask,
           onRelationError: (id, incomplete) => relationErrors.push({ id, incomplete }),
         }),
@@ -464,11 +465,18 @@ export async function buildTiles(
     options.signal,
   );
 
+  // Only source cell names are needed in RAM to fetch distant siblings of cross-cell compounds.
+  const compoundFiles = new Map<string, Set<string>>();
   // Reduce plans in cell order independently of worker completion order.
   for (const { file } of planFiles) {
     const plan = (await readJSONIf<CellPlan>(file))!;
     for (const r of plan.records) {
       summary.add(r);
+      if (r.compoundId) {
+        const files = compoundFiles.get(r.compoundId) ?? new Set<string>();
+        files.add(file);
+        compoundFiles.set(r.compoundId, files);
+      }
     }
     await writeAtomic(file + '.buildings', JSON.stringify(plan.records.filter((r) => r.layer === 'building')));
     for (const issue of plan.relationErrors ?? []) relationErrors.set(issue.id, issue.incomplete);
@@ -493,15 +501,23 @@ export async function buildTiles(
   for (const { cell, file } of planFiles) {
     const plan = (await readJSONIf<CellPlan>(file))!;
     const own = new Set(plan.records.map((r) => r.id));
+    const compounds = new Set(plan.records.flatMap((r) => (r.compoundId ? [r.compoundId] : [])));
+    const siblingFiles = new Set([...compounds].flatMap((id) => [...compoundFiles.get(id)!]));
     const cellRect = cell ? tileToLngLatBounds(cell) : null;
     const near = cellRect ? expandBounds(cellRect, 400) : null;
     const context: PlanRecord[] = [];
     if (near)
       for (const neighbour of planFiles) {
-        if (neighbour.file === file || !neighbour.cell || !boundsIntersect(near, tileToLngLatBounds(neighbour.cell)))
+        if (
+          neighbour.file === file ||
+          !neighbour.cell ||
+          (!siblingFiles.has(neighbour.file) && !boundsIntersect(near, tileToLngLatBounds(neighbour.cell)))
+        )
           continue;
         const buildings = await readJSONIf<PlanRecord[]>(neighbour.file + '.buildings');
-        for (const r of buildings!) if (!own.has(r.id) && boundsContains(near, r.anchor)) context.push(r);
+        for (const r of buildings!)
+          if (!own.has(r.id) && (boundsContains(near, r.anchor) || (r.compoundId && compounds.has(r.compoundId))))
+            context.push(r);
       }
     const cut = cutTiles(context.length ? [...plan.records, ...context] : plan.records, { levels, data });
     const inside = (k: string) => {

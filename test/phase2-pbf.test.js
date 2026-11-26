@@ -2,7 +2,8 @@
 // by the streaming reader, filtered, and built into tiles; oversize inputs are rejected with a clipping hint.
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { decodeTile, readFeatures } from '@city-ink/tiles';
 import { deflateSync } from 'node:zlib';
 import os from 'node:os';
 import path from 'node:path';
@@ -43,7 +44,7 @@ function block(type, payload) {
 }
 
 /** A 4-building block near Kyoto: dense nodes, one tagged way per building, one multipolygon with a hole. */
-function samplePbf() {
+function samplePbf(includeBuildingRelation = false) {
   const strings = [
     '',
     'building',
@@ -58,6 +59,7 @@ function samplePbf() {
     'residential',
     'building:levels',
     '12',
+    'part',
   ];
   const s = (x) => strings.indexOf(x);
   const nodes = [];
@@ -158,11 +160,21 @@ function samplePbf() {
     ...packed(9, [3, 4], true, true),
     ...packed(10, [1, 1], false, false),
   ]);
+  // The building relation has no direct way members. Its spatial index must use its child multipolygon.
+  const buildingRelation = bytesField(4, [
+    ...varField(1, 78),
+    ...packed(2, [s('type')], false, false),
+    ...packed(3, [s('building')], false, false),
+    ...packed(8, [s('part')], false, false),
+    ...packed(9, [77], true, true),
+    ...packed(10, [2], false, false),
+  ]);
   const data = [
     ...stringTable,
     ...bytesField(2, dense),
     ...bytesField(2, wayGroup),
     ...bytesField(2, relation),
+    ...(includeBuildingRelation ? bytesField(2, buildingRelation) : []),
     ...varField(17, 100),
   ];
   return Buffer.concat([block('OSMHeader', header), block('OSMData', data)]);
@@ -290,13 +302,21 @@ test('AC303/606: disk-indexed buffered PBF planning matches a single global cell
   const dir = await mkdtemp(path.join(os.tmpdir(), 'pbf-store-'));
   try {
     const input = path.join(dir, 'sample.osm.pbf');
-    await writeFile(input, samplePbf());
+    await writeFile(input, samplePbf(true));
     // Large envelope selects the disk-backed path, while the sparse input makes this suitable for CI.
     const config = { input, bbox: [135.734, 34.96, 135.83, 35.055], ruleTrees: false };
     const global = await buildTiles({ ...config, output: path.join(dir, 'global'), cellZoom: -1 });
     const tiled = await buildTiles({ ...config, output: path.join(dir, 'cells'), cellZoom: 12, concurrency: 2 });
     assert.deepEqual(tiled.report.hashes, global.report.hashes);
     assert.deepEqual(tiled.report.counts, global.report.counts);
+    const full = [];
+    for (const file of Object.keys(tiled.report.hashes).filter((k) => k.startsWith('16/'))) {
+      const tile = decodeTile(await readFile(path.join(dir, 'cells', file)));
+      if (tile.layers.building) full.push(...readFeatures(tile.layers.building));
+    }
+    const part = full.find((f) => f.id === 'relation/77#0');
+    assert.equal(part.properties.partOf, 'relation/78');
+    assert.equal(part.provenance.partOf, 'observed');
     assert.deepEqual(tiled.report.incompleteRelations, global.report.incompleteRelations);
   } finally {
     await rm(dir, { recursive: true, force: true });

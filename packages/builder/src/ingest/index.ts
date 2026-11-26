@@ -152,18 +152,35 @@ export async function ingestPbf(
       count('ways');
     },
   });
+  const extend = (bounds: Extent, part: Extent | undefined) => {
+    if (!part) return;
+    bounds.minlat = Math.min(bounds.minlat, part.minlat);
+    bounds.maxlat = Math.max(bounds.maxlat, part.maxlat);
+    bounds.minlon = Math.min(bounds.minlon, part.minlon);
+    bounds.maxlon = Math.max(bounds.maxlon, part.maxlon);
+  };
+  const polygonBounds = new Map<number, Extent>();
   for (const r of relations) {
+    if (r.tags.type !== 'multipolygon') continue;
     const bounds = emptyExtent();
-    for (const m of r.members) {
-      if (m.type !== 'way') continue;
-      const b = members.get(m.ref)?.bounds;
-      if (!b) continue;
-      bounds.minlat = Math.min(bounds.minlat, b.minlat);
-      bounds.maxlat = Math.max(bounds.maxlat, b.maxlat);
-      bounds.minlon = Math.min(bounds.minlon, b.minlon);
-      bounds.maxlon = Math.max(bounds.maxlon, b.maxlon);
+    for (const m of r.members) if (m.type === 'way') extend(bounds, members.get(m.ref)?.bounds);
+    polygonBounds.set(r.id, bounds);
+  }
+  for (const r of relations) {
+    const bounds = polygonBounds.get(r.id) ?? emptyExtent();
+    if (r.tags.type === 'building') {
+      for (const m of r.members) {
+        if (m.type === 'way') extend(bounds, members.get(m.ref)?.bounds);
+        else if (m.type === 'relation') extend(bounds, polygonBounds.get(m.ref));
+      }
     }
     if (!overlaps(bounds)) continue;
+    if (r.tags.type === 'building') {
+      const row = { type: 'relation', id: r.id, members: r.members, tags: r.tags };
+      if (options.store) options.store.add(row, [bounds.minlon, bounds.minlat, bounds.maxlon, bounds.maxlat], bbox);
+      else elements.push(row);
+      continue;
+    }
     let incomplete = false;
     const ways = r.members
       .filter((m) => m.type === 'way')

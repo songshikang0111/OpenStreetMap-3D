@@ -28,7 +28,8 @@ export function wantedWay(t: Record<string, string>): boolean {
 
 /** Relations kept: multipolygons and buildings carrying one of the kept area tags. */
 export function wantedRelation(t: Record<string, string>): boolean {
-  if (t.type !== 'multipolygon' && t.type !== 'building') return false;
+  if (t.type === 'building') return true;
+  if (t.type !== 'multipolygon') return false;
   return Boolean(
     t.building ||
       t['building:part'] ||

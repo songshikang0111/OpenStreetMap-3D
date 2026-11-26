@@ -161,54 +161,55 @@ export function generateBands(layer: FeatureLayer, name: string, step: number, b
  */
 export function generateMassing(layer: FeatureLayer, name: string, step: number, batches: BatchSet, seed = 1): number {
   let triangles = 0;
-  for (let i = 0; i < layer.featureCount; i++) {
-    const building = phase1Building(layer, i, step);
-    const top = building.height;
-    const bottom = building.minHeight;
-    if (!(top > bottom)) continue;
-    const style = buildingStyle(building, seed);
-    const renderId = layer.renderId[i]!;
-    const writer = new MeshWriter();
-    writer.style = style.code;
-    writer.variant = style.variant as number;
-    writer.surface = [style.surface as number, style.surfaceScale as number];
-    const floor = style.floor;
-    const rings = [normalizedRing(building.outer), ...building.holes.map((h) => normalizedRing(h, true))];
-    for (const ring of rings)
-      for (let v = 0; v < ring.length; v++) {
-        const a = ring[v]!,
-          b = ring[(v + 1) % ring.length]!;
-        const dx = b[0] - a[0],
-          dz = b[1] - a[1],
-          len = Math.hypot(dx, dz);
-        if (len < 0.03) continue;
-        writer.layout = facadeLayout(len, top - bottom, style).attributes;
-        writer.quad(
-          [
-            [a[0], bottom, a[1]],
-            [b[0], bottom, b[1]],
-            [b[0], top, b[1]],
-            [a[0], top, a[1]],
-          ],
-          [dz / len, 0, -dx / len],
-          style.color,
-          renderId,
-          [
-            [0, 0, len, floor],
-            [len, 0, len, floor],
-            [len, top - bottom, len, floor],
-            [0, top - bottom, len, floor],
-          ],
-        );
+  for (let i = 0; i < layer.featureCount; i++)
+    for (let part = layer.partStart[i]!; part < layer.partStart[i + 1]!; part++) {
+      const building = phase1Building(layer, i, step, part);
+      const top = building.height;
+      const bottom = building.minHeight;
+      if (!(top > bottom)) continue;
+      const style = buildingStyle(building, seed);
+      const renderId = layer.renderId[i]!;
+      const writer = new MeshWriter();
+      writer.style = style.code;
+      writer.variant = style.variant as number;
+      writer.surface = [style.surface as number, style.surfaceScale as number];
+      const floor = style.floor;
+      const rings = [normalizedRing(building.outer), ...building.holes.map((h) => normalizedRing(h, true))];
+      for (const ring of rings)
+        for (let v = 0; v < ring.length; v++) {
+          const a = ring[v]!,
+            b = ring[(v + 1) % ring.length]!;
+          const dx = b[0] - a[0],
+            dz = b[1] - a[1],
+            len = Math.hypot(dx, dz);
+          if (len < 0.03) continue;
+          writer.layout = facadeLayout(len, top - bottom, style).attributes;
+          writer.quad(
+            [
+              [a[0], bottom, a[1]],
+              [b[0], bottom, b[1]],
+              [b[0], top, b[1]],
+              [a[0], top, a[1]],
+            ],
+            [dz / len, 0, -dx / len],
+            style.color,
+            renderId,
+            [
+              [0, 0, len, floor],
+              [len, 0, len, floor],
+              [len, top - bottom, len, floor],
+              [0, top - bottom, len, floor],
+            ],
+          );
+        }
+      writer.style = 0;
+      writer.materialRole = 'roof';
+      polygon(writer, { outer: building.outer, holes: building.holes }, top, ROOF_COLOR, renderId);
+      for (const run of writer.materialRuns) {
+        batches.get(name, run.role).addWriterRun(writer, run.start, run.count, renderId, 0);
+        triangles += run.count / 3;
       }
-    writer.style = 0;
-    writer.materialRole = 'roof';
-    polygon(writer, { outer: building.outer, holes: building.holes }, top, ROOF_COLOR, renderId);
-    for (const run of writer.materialRuns) {
-      batches.get(name, run.role).addWriterRun(writer, run.start, run.count, renderId, 0);
-      triangles += run.count / 3;
     }
-  }
   return triangles;
 }
 
