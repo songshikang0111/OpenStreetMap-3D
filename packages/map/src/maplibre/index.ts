@@ -24,7 +24,7 @@ export interface HostMap {
   getZoom(): number;
   getPitch(): number;
   getBearing(): number;
-  getPadding?(): { left: number; right: number; top: number; bottom: number };
+  getPadding?(): { left?: number; right?: number; top?: number; bottom?: number };
   getVerticalFieldOfView?(): number;
   transform?: { fov?: number };
   triggerRepaint(): void;
@@ -132,8 +132,8 @@ export function createMapLibreLayer(options: MapLibreLayerOptions): CityMapLibre
             fov: hostFov(map),
             width,
             height,
-            offsetX: padding ? Math.max(-width, Math.min(width, padding.left - padding.right)) / 2 : 0,
-            offsetY: padding ? Math.max(-height, Math.min(height, padding.top - padding.bottom)) / 2 : 0,
+            offsetX: Math.max(-width, Math.min(width, (padding?.left ?? 0) - (padding?.right ?? 0))) / 2,
+            offsetY: Math.max(-height, Math.min(height, (padding?.top ?? 0) - (padding?.bottom ?? 0))) / 2,
           };
         },
         repaint: () => map.triggerRepaint(),
