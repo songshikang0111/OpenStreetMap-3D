@@ -9,6 +9,18 @@
 | AC1103 | 代码、测试、类型与生产构建在本地集成分支验证。main 的发布验收未执行。 |
 | AC1104 | 新增证据只保存文本和摘要。通过 `git diff --name-only --diff-filter=AM d2d5d5b HEAD -- docs/phase2/evidence` 枚举后逐文件检查 200 KB 上限。数据、生成瓦片和逐帧记录保存在仓库外或忽略目录。 |
 
+### 本机集成复验
+
+| 范围 | 实测结果 |
+| --- | --- |
+| 回归测试 | 在独立检出的 `b6147e4` 运行 `npm test`，394 项全部通过，无跳过。工作区另有 32 项测试全部通过，生产构建、示例类型、格式与 lint 检查通过。后续 `3358629` 修正取消统计，复跑地图专项 9 项全部通过。 |
+| 安装与 CLI | 根包和 8 个工作区包打成本地 tarball，在仓库外的空目录安装。消费者生成了 15 块瓦片，安装版 CLI 校验成功，Chrome 显示 9 块可见瓦片，控制台错误 0。根包清单共 169 个文件。 |
+| 静态预算 | 北京与京都共 27 块，L0 最多 2 次绘制，L1 最多 7 次，最大瓦片 gzip 为 251,237 B，地图库入口 gzip 为 51,617 B。仅含 L0 的样本通过单独的预算归类回归，故意降低上限时正确返回 1。见[静态摘要](static-budget.json)。 |
+| 真数据与跨端一致性 | 七个示例的 372 块瓦片从空目录重建通过，全部指纹匹配。北京与京都另取 27 块，在 Node 与 Chrome Worker 逐项对比 2,784,540 个顶点的位置、全部索引和树实例，[结果完全一致](worker-parity.json)。 |
+| 桌面运行时 | 五城静态 demo、样式、点选和 MapLibre 宿主见[浏览器记录](demo-browser.json)。相同数据与机位的 60 秒优化对照中，3,578 帧均有可见瓦片，三角数和驻留估算均在 balanced 预算内，见 [D3](../D3/report.md)。 |
+
+最新十分钟城区回放共 35,868 帧。首屏传输 782,537 B，1,149 ms 出现首个可用画面，全程无空白、无瓦片错误。帧间隔 p95、Worker p95、上传峰值和 1 帧的驻留估算超出对应目标。参见 [I 测量](../I/report.md) 和[桌面原始摘要](../I/enkhuizen-final.json)。
+
 ### 复跑
 
 ```sh
@@ -18,8 +30,10 @@ npm run test:packages
 npm run test:types
 npm run build
 npm run format:check
+npm run lint
 npm run check:package
 node scripts/phase2-pack-check.mjs
+node scripts/pack-install-check.mjs
 node scripts/check-links.mjs
 npm run demo:tiles && npm run build:demo && npm run build:map-bundle
 npm run check:static-budget
