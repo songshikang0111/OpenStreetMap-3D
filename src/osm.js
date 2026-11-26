@@ -150,6 +150,26 @@ export function mergeOSMOverlay(raw, overlay, name) {
   return raw;
 }
 
+// Water polygons accepted by the parser and the builder's PBF feature index.
+export function isWaterArea(tags) {
+  return (
+    tags.natural === 'water' ||
+    tags.amenity === 'fountain' ||
+    tags.waterway === 'riverbank' ||
+    tags.leisure === 'swimming_pool'
+  );
+}
+
+// The same ring can bound several mapped objects. Only an outer way's matching area
+// semantics belong to the multipolygon. Tagged inner ways describe the area in the hole.
+function polygonUses(tags = {}) {
+  if (tags['building:part'] && tags['building:part'] !== 'no') return { building: 'building:part' };
+  if (tags.building && tags.building !== 'no') return { building: 'building' };
+  if (!isSurfaceLandscape(tags)) return {};
+  if (isWaterArea(tags)) return { water: 'water' };
+  return { landscape: classifyLandscape(tags), context: classifyLandscapeContext(tags) };
+}
+
 export function parseOSM(raw, seed = 1, { waterMask, mergeWater, onRelationError, onBuildingFootprints } = {}) {
   if (!raw?.metadata?.bbox || !Array.isArray(raw.elements))
     throw new Error('需要包含 metadata.bbox 和 elements 的 Overpass 数据文件。');
@@ -164,7 +184,7 @@ export function parseOSM(raw, seed = 1, { waterMask, mergeWater, onRelationError
   const ways = new Map(raw.elements.filter((e) => e.type === 'way').map((e) => [e.id, e]));
   const geometry = (e) => e.geometry || (e.nodes || []).map((id) => nodes.get(id)).filter(Boolean);
   const polygons = [],
-    relationMembers = new Set();
+    outerUses = new Map();
   let invalidRings = 0,
     incompleteRelations = 0;
   for (const e of raw.elements.filter((e) => e.type === 'relation')) {
@@ -200,7 +220,13 @@ export function parseOSM(raw, seed = 1, { waterMask, mergeWater, onRelationError
       onRelationError?.(e.id, false);
       continue;
     }
-    for (const member of members) if (member.type === 'way') relationMembers.add(member.ref);
+    const uses = Object.values(polygonUses(e.tags)).filter(Boolean);
+    for (const member of members) {
+      if (!uses.length || member.type !== 'way' || member.role === 'inner' || !ways.get(member.ref)?.tags) continue;
+      const represented = outerUses.get(member.ref) ?? new Set();
+      for (const use of uses) represented.add(use);
+      outerUses.set(member.ref, represented);
+    }
     outer.forEach((r, i) => {
       const ring = r.map(project.point);
       polygons.push({
@@ -214,7 +240,6 @@ export function parseOSM(raw, seed = 1, { waterMask, mergeWater, onRelationError
     });
   }
   for (const e of ways.values()) {
-    if (relationMembers.has(e.id)) continue;
     const g = geometry(e);
     if (g.length >= 4 && equalPoint(g[0], g.at(-1)))
       polygons.push({
@@ -252,34 +277,25 @@ export function parseOSM(raw, seed = 1, { waterMask, mergeWater, onRelationError
     p.area = area(p.outer) - p.holes.reduce((s, h) => s + area(h), 0);
     if (p.area < 4 || extent[2] < bounds[0] || extent[0] > bounds[2] || extent[3] < bounds[1] || extent[1] > bounds[3])
       continue;
-    if (
-      (p.tags.building && p.tags.building !== 'no') ||
-      (p.tags['building:part'] && p.tags['building:part'] !== 'no')
-    ) {
-      if (!contains(p.center)) continue;
+    const uses = polygonUses(p.tags);
+    const represented = p.osmType === 'way' ? outerUses.get(p.osmId) : undefined;
+    if (uses.building) {
+      if (represented?.has(uses.building) || !contains(p.center)) continue;
       if (p.tags.location === 'underground' || Number(p.tags.level) < 0) continue;
       Object.assign(p, heightInfo(p.tags, p.area, p.id, seed));
-      p.part = Boolean(p.tags['building:part'] && p.tags['building:part'] !== 'no');
+      p.part = uses.building === 'building:part';
       buildings.push(p);
+    } else if (uses.water) {
+      if (!waterMask && !represented?.has(uses.water)) water.push(...cropSurface(p));
     } else {
-      if (!isSurfaceLandscape(p.tags)) continue;
-      if (
-        p.tags.natural === 'water' ||
-        p.tags.amenity === 'fountain' ||
-        p.tags.waterway === 'riverbank' ||
-        p.tags.leisure === 'swimming_pool'
-      ) {
-        if (!waterMask) water.push(...cropSurface(p));
-        continue;
-      }
-      const kind = classifyLandscape(p.tags);
-      if (kind) {
+      const { landscape: kind, context } = uses;
+      if (kind && !represented?.has(kind)) {
         const pieces = cropSurface(p);
         landscapes.push(...pieces.map((part) => ({ ...part, kind, source: 'osm' })));
         if (['lawn', 'wood', 'garden', 'park'].includes(kind)) greens.push(...pieces);
       }
-      const context = classifyLandscapeContext(p.tags);
-      if (context) landscapeContexts.push(...cropSurface(p).map((part) => ({ ...part, context, source: 'osm' })));
+      if (context && !represented?.has(context))
+        landscapeContexts.push(...cropSurface(p).map((part) => ({ ...part, context, source: 'osm' })));
     }
   }
   onBuildingFootprints?.(buildings);
