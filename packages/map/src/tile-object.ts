@@ -472,7 +472,7 @@ export function* prepareTileObject(
   materials: MaterialLibrary,
   capacity?: number,
   upload: UploadData = prepareUpload(generated),
-): Generator<void, TileObject | undefined, void> {
+): Generator<BufferGeometry, TileObject | undefined, void> {
   const group = new Group();
   group.matrixAutoUpdate = false;
   let bytes = 0;
@@ -522,7 +522,7 @@ export function* prepareTileObject(
         bytes += (a.array as ArrayLike<number> & { byteLength: number }).byteLength;
       if (geometry.index) bytes += (geometry.index.array as Uint32Array).byteLength;
       triangles += batch.index.length / 3;
-      yield;
+      yield geometry;
     }
     const trees = generated.trees;
     if (trees.count) {

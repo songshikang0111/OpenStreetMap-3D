@@ -80,6 +80,7 @@ async function replay(plan, quality, loops) {
     let last = null;
     function collect(t) {
       const s = map.getStats();
+      const { insideSliceMs, ...stores } = buffers.take(s.upload.completedAtMs);
       frames.push({
         t,
         dt: last === null ? null : t - last,
@@ -87,8 +88,8 @@ async function replay(plan, quality, loops) {
         tris: s.triangles,
         resident: s.residentBytes,
         upload: s.upload.lastFrameMs,
-        prepareMs: s.upload.lastFrameMs,
-        ...buffers.take(),
+        prepareMs: Math.max(0, s.upload.lastFrameMs - insideSliceMs),
+        ...stores,
         loading: s.tiles.loading,
         visible: s.tiles.visible,
         workerQueue: s.workers.queued,

@@ -1,3 +1,4 @@
+import { BufferStaging, denseAttributes, type AttributeUpload } from './buffer-staging.js';
 import { openTileArchive } from './archive.js';
 // createMap: map-style SDK over static City Ink tiles (04). Owns the camera and the render loop in standalone mode.
 import {
@@ -215,6 +216,8 @@ interface PendingUpload {
   entry: TileEntry;
   token: number;
   preparation?: ReturnType<typeof prepareTileObject>;
+  attributes?: AttributeUpload;
+  stagedBytes?: number;
   response: Extract<WorkerResponse, { type: 'result' }>;
 }
 
@@ -275,6 +278,7 @@ export class CityMapImpl implements CityMap {
   private readonly anchors = new Set<{ group: Group; lngLat: LngLat; altitude: number; originScale: number }>();
   private readonly tiles = new Map<string, TileEntry>();
   private readonly uploads: PendingUpload[] = [];
+  private staging?: BufferStaging;
   private readonly refined = new Set<string>();
   private readonly sourceCache = new Map<string, ArrayBuffer>();
   private sourceCacheBytes = 0;
@@ -332,6 +336,7 @@ export class CityMapImpl implements CityMap {
   private readonly frameIntervals = new RollingTimings(600);
   private uploadLastMs = 0;
   private uploadMaxMs = 0;
+  private uploadCompletedAtMs = 0;
   private readonly requestStats = { started: 0, completed: 0, cancelled: 0, failed: 0, bytes: 0 };
   private emptyNotified = false;
   private filter: ProvenanceFilter = {};
@@ -580,6 +585,7 @@ export class CityMapImpl implements CityMap {
     this.admitted.clear();
     for (const o of this.overlays.values()) o.built.dispose();
     this.overlays.clear();
+    this.staging?.dispose();
     this.picker.dispose();
     this.pipeline?.dispose();
     this.pipeline = null;
@@ -1585,6 +1591,13 @@ export class CityMapImpl implements CityMap {
 
   private cancel(entry: TileEntry) {
     entry.loadToken = (entry.loadToken ?? 0) + 1;
+    // Cancel any partial GPU allocation while the original geometry still owns all its attributes.
+    for (let i = this.uploads.length - 1; i >= 0; i--) {
+      const job = this.uploads[i]!;
+      if (job.entry !== entry) continue;
+      job.preparation?.return(undefined);
+      this.uploads.splice(i, 1);
+    }
     entry.controller?.abort();
     entry.controller = null;
     entry.cancelWork?.();
@@ -1625,11 +1638,16 @@ export class CityMapImpl implements CityMap {
         spent = performance.now() - start;
         continue;
       }
+      if (job.attributes) break;
       const previous = entry.object;
       job.preparation ??= prepareTileObject(response.generated, this.materials, response.maxRenderId, response.upload);
       const result = job.preparation.next();
       spent = performance.now() - start;
-      if (!result.done) continue;
+      if (!result.done) {
+        if (!this.hosted && !previous) job.attributes = denseAttributes(result.value);
+        if (job.attributes) break;
+        continue;
+      }
       this.uploads.shift();
       const object = result.value;
       if (!object) continue;
@@ -1669,9 +1687,30 @@ export class CityMapImpl implements CityMap {
       this.fire({ type: 'tileload', tile: entry.key });
       spent = performance.now() - start;
     }
+    this.uploadCompletedAtMs = performance.now();
     this.uploadLastMs = spent;
     this.uploadMaxMs = Math.max(this.uploadMaxMs, spent);
     void now;
+  }
+
+  // Warm dense vertex attributes before publishing the tile. Retain parent coverage until all
+  // slices are ready. The index and small meshes use the renderer's ordinary first draw.
+  private stageBuffers() {
+    const job = this.uploads[0];
+    if (!job?.attributes || this.uploadLastMs >= this.budget.uploadMsPerFrame) return;
+    this.staging ??= new BufferStaging();
+    const start = performance.now();
+    do {
+      job.stagedBytes =
+        (job.stagedBytes ?? 0) + this.staging.submit(this.renderer, this.transform.camera, job.attributes);
+      if (job.attributes.next === job.attributes.names.length) {
+        job.attributes = undefined;
+        break;
+      }
+    } while (performance.now() - start + this.uploadLastMs < this.budget.uploadMsPerFrame);
+    this.uploadCompletedAtMs = performance.now();
+    this.uploadLastMs += this.uploadCompletedAtMs - start;
+    this.uploadMaxMs = Math.max(this.uploadMaxMs, this.uploadLastMs);
   }
 
   /** Replacement rules (04 section 5.2): never show a region with neither a parent nor complete children. */
@@ -2007,6 +2046,7 @@ export class CityMapImpl implements CityMap {
     const now = performance.now();
     if (this.costsChanged) this.updateTiles(now);
     this.processUploads(now);
+    this.stageBuffers();
     const loading = this.busy();
     if (this.dirty || loading || this.budgetPending) {
       this.updateTiles(now);
@@ -2199,7 +2239,7 @@ export class CityMapImpl implements CityMap {
     this.assertAlive();
     const info = this.renderer.info;
     const counts = { visible: 0, loaded: 0, loading: 0, queued: 0, failed: 0 };
-    let resident = this.sourceCacheBytes;
+    let resident = this.sourceCacheBytes + this.uploads.reduce((sum, job) => sum + (job.stagedBytes ?? 0), 0);
     for (const e of this.tiles.values()) {
       if (e.visible) counts.visible++;
       if (e.state === 'ready') counts.loaded++;
@@ -2223,7 +2263,7 @@ export class CityMapImpl implements CityMap {
         queued: this.pool.queued,
         generateMs: { p50: this.pool.timings.percentile(0.5), p95: this.pool.timings.percentile(0.95) },
       },
-      upload: { lastFrameMs: this.uploadLastMs, maxFrameMs: this.uploadMaxMs },
+      upload: { lastFrameMs: this.uploadLastMs, maxFrameMs: this.uploadMaxMs, completedAtMs: this.uploadCompletedAtMs },
       residentBytes: resident,
       renderer: {
         geometries: info.memory.geometries,

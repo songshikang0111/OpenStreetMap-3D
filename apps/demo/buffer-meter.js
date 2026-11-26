@@ -5,10 +5,14 @@ export function measureBufferCreation(gl) {
   let ms = 0,
     bytes = 0,
     calls = 0;
+  const samples = [];
   gl.bufferData = function (target, data, usage, ...range) {
     const t = performance.now();
     const result = original.call(this, target, data, usage, ...range);
-    ms += performance.now() - t;
+    const end = performance.now();
+    const duration = end - t;
+    ms += duration;
+    samples.push([end, duration]);
     calls++;
     const stride = data?.BYTES_PER_ELEMENT ?? 1;
     bytes +=
@@ -20,8 +24,10 @@ export function measureBufferCreation(gl) {
     return result;
   };
   return {
-    take() {
-      const result = { firstBufferMs: ms, firstBufferBytes: bytes, firstBufferCalls: calls };
+    take(uploadEnd = 0) {
+      const insideSliceMs = samples.reduce((n, [end, duration]) => n + (end <= uploadEnd ? duration : 0), 0);
+      const result = { firstBufferMs: ms, firstBufferBytes: bytes, firstBufferCalls: calls, insideSliceMs };
+      samples.length = 0;
       ms = bytes = calls = 0;
       return result;
     },

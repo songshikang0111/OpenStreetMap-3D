@@ -291,3 +291,37 @@ test('first-generation input buffers count toward sibling admission while geomet
   assert.deepEqual(select(5), ['16/0/0', '16/1/0']);
   assert.deepEqual(select(6), ['14/0/0']);
 });
+
+test('dense attribute staging uses the final geometry without drawing or retaining a partial attribute table', async () => {
+  const { BufferStaging, denseAttributes } = await import('../packages/map/dist/buffer-staging.js');
+  const { BufferGeometry, BufferAttribute, PerspectiveCamera } = await import('three');
+  const geometry = new BufferGeometry();
+  for (const key of ['position', 'color', 'normal'])
+    geometry.setAttribute(key, new BufferAttribute(new Float32Array(3 * 150000), 3));
+  const original = geometry.attributes;
+  const job = denseAttributes(geometry);
+  const staging = new BufferStaging();
+  const seen = [];
+  const renderer = {
+    autoClear: true,
+    render(scene) {
+      const mesh = scene.children[0];
+      assert.equal(this.autoClear, false);
+      assert.equal(mesh.material.visible, false);
+      assert.equal(mesh.geometry, geometry);
+      for (const [name, attribute] of Object.entries(mesh.geometry.attributes)) {
+        seen.push(name);
+        assert.equal(attribute, original[name]);
+      }
+    },
+  };
+  const camera = new PerspectiveCamera();
+  while (job.next < job.names.length) {
+    staging.submit(renderer, camera, job);
+    assert.equal(geometry.attributes, original);
+    assert.equal(renderer.autoClear, true);
+  }
+  assert.deepEqual(seen, Object.keys(original));
+  staging.dispose();
+  geometry.dispose();
+});

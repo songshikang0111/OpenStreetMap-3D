@@ -150,7 +150,12 @@ export interface MapStats {
   tiles: { visible: number; loaded: number; loading: number; queued: number; failed: number };
   requests: { started: number; completed: number; cancelled: number; failed: number; bytes: number };
   workers: { size: number; busy: number; queued: number; generateMs: { p50: number | null; p95: number | null } };
-  upload: { lastFrameMs: number; maxFrameMs: number };
+  upload: {
+    lastFrameMs: number;
+    maxFrameMs: number;
+    /** End of the most recent upload time slice, in performance.now() time, before the visible render. */
+    completedAtMs?: number;
+  };
   residentBytes: number;
   renderer: { geometries: number; textures: number; programs: number };
   camera: { center: LngLat; zoom: number; pitch: number; bearing: number; anchor: LngLat };
