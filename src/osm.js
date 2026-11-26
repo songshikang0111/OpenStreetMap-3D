@@ -150,7 +150,7 @@ export function mergeOSMOverlay(raw, overlay, name) {
   return raw;
 }
 
-export function parseOSM(raw, seed = 1) {
+export function parseOSM(raw, seed = 1, { waterMask, mergeWater, onRelationError } = {}) {
   if (!raw?.metadata?.bbox || !Array.isArray(raw.elements))
     throw new Error('需要包含 metadata.bbox 和 elements 的 Overpass 数据文件。');
   const [south, west, north, east] = raw.metadata.bbox;
@@ -182,6 +182,7 @@ export function parseOSM(raw, seed = 1) {
     ) {
       invalidRings++;
       incompleteRelations++;
+      onRelationError?.(e.id, true);
       continue;
     }
     const outer = stitchRings(
@@ -196,6 +197,7 @@ export function parseOSM(raw, seed = 1) {
     ).map((r) => r.map(project.point));
     if (!outer.length) {
       invalidRings++;
+      onRelationError?.(e.id, false);
       continue;
     }
     for (const member of members) if (member.type === 'way') relationMembers.add(member.ref);
@@ -267,7 +269,7 @@ export function parseOSM(raw, seed = 1) {
         p.tags.waterway === 'riverbank' ||
         p.tags.leisure === 'swimming_pool'
       ) {
-        water.push(...cropSurface(p));
+        if (!waterMask) water.push(...cropSurface(p));
         continue;
       }
       const kind = classifyLandscape(p.tags);
@@ -344,7 +346,9 @@ export function parseOSM(raw, seed = 1) {
   }
   // Named harbour/bay relations may overlap. Use a single water mask in every
   // consumer so surfaces cannot depth-fight or double-count their coverage.
-  if (water.length) {
+  if (waterMask) water = waterMask;
+  else if (mergeWater) water = mergeWater(water);
+  else if (water.length) {
     const sourceIds = water.map((p) => p.id);
     water = clipping.union(...water.map((p) => [p.outer, ...p.holes])).map(([outer, ...holes], i) => ({
       id: `water:${i}`,

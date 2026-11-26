@@ -11,6 +11,14 @@ export function heightInfo(
   id: string,
   seed?: number,
 ): { height: number; minHeight: number; levels: number; source: 'height' | 'levels' | 'estimated' };
-export function parseOSM(raw: unknown, seed?: number): Phase1Data;
+export function parseOSM(
+  raw: unknown,
+  seed?: number,
+  options?: {
+    waterMask?: Phase1Data['water'];
+    mergeWater?(polygons: Phase1Data['water']): Phase1Data['water'];
+    onRelationError?(id: number, incomplete: boolean): void;
+  },
+): Phase1Data;
 
 export function clipSegment(a: Point2, b: Point2, bounds: [number, number, number, number]): [Point2, Point2] | null;

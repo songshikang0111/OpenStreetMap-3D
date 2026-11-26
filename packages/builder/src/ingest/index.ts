@@ -1,3 +1,4 @@
+import type { FeatureStore } from './store.js';
 import { NodeCoordinates } from './nodes.js';
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
@@ -46,6 +47,7 @@ export async function ingestPbf(
   options: {
     bbox?: [number, number, number, number];
     marginDeg?: number;
+    store?: FeatureStore;
     checkBudget?(): void;
     onProgress?(stage: string): void;
   } = {},
@@ -94,7 +96,9 @@ export async function ingestPbf(
     node(id, lat, lon, tags) {
       nodes.add(id, lat, lon);
       if (tags && wantedNode(tags) && bbox && lon >= bbox[0] && lat >= bbox[1] && lon <= bbox[2] && lat <= bbox[3]) {
-        elements.push({ type: 'node', id, lat, lon, tags });
+        const row = { type: 'node', id, lat, lon, tags };
+        if (options.store) options.store.add(row, [lon, lat, lon, lat], bbox);
+        else elements.push(row);
         count('nodes');
       }
     },
@@ -142,7 +146,9 @@ export async function ingestPbf(
       // A polygon can surround the box, or a road can cross it with every vertex outside. Phase-one parsing
       // performs the exact clip. The conservative envelope test here preserves both cases.
       if (!wanted || !overlaps(bounds)) return;
-      elements.push({ type: 'way', id: w.id, bounds, nodes: w.refs, geometry: geometry(w.refs), tags: w.tags });
+      const row = { type: 'way', id: w.id, bounds, nodes: w.refs, geometry: geometry(w.refs), tags: w.tags };
+      if (options.store) options.store.add(row, [bounds.minlon, bounds.minlat, bounds.maxlon, bounds.maxlat], bbox!);
+      else elements.push(row);
       count('ways');
     },
   });
@@ -170,7 +176,9 @@ export async function ingestPbf(
         return { ...m, geometry: geometry(entry.refs) };
       });
     if (incomplete) count('relationsIncomplete');
-    elements.push({ type: 'relation', id: r.id, members: ways, tags: r.tags });
+    const row = { type: 'relation', id: r.id, members: ways, tags: r.tags };
+    if (options.store) options.store.add(row, [bounds.minlon, bounds.minlat, bounds.maxlon, bounds.maxlat], bbox);
+    else elements.push(row);
   }
   count('relations', relations.length);
   const timestamp = header.replicationTimestamp
