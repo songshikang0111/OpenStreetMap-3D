@@ -1,0 +1,452 @@
+{
+  "commit": "1619134",
+  "AC312": {
+    "date": "2026-11-26T06:11:12.085Z",
+    "machine": {
+      "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+      "cores": 16,
+      "node": "v24.18.0",
+      "platform": "linux 7.3.4-300.fc45.x86_64"
+    },
+    "method": "decodeTile + generateTile per L1 tile, Node single thread, warm-up pass then median of 3 runs per tile",
+    "overall": {
+      "tiles": 167,
+      "p50": 4.2,
+      "p95": 85.3,
+      "max": 143.1
+    },
+    "layerShareMs": {
+      "building": 1664,
+      "ground": 212,
+      "road": 0,
+      "structure": 503,
+      "water": 2,
+      "green": 16,
+      "tree": 2,
+      "landmark": 15
+    },
+    "rows": [
+      {
+        "name": "amsterdam-canals",
+        "tiles": 12,
+        "p50": 21.3,
+        "p95": 99.8,
+        "max": 99.8,
+        "slowest": {
+          "tile": "16/33658/21537.c3t",
+          "ms": 99.8,
+          "triangles": 91281,
+          "buildings": 356,
+          "msByLayer": {
+            "building": 87.4,
+            "green": 0.1,
+            "ground": 2.9,
+            "road": 0,
+            "structure": 3.7,
+            "tree": 0,
+            "water": 0.1
+          }
+        }
+      },
+      {
+        "name": "beijing-cbd",
+        "tiles": 24,
+        "p50": 5.7,
+        "p95": 16.9,
+        "max": 19.4,
+        "slowest": {
+          "tile": "16/53968/24833.c3t",
+          "ms": 19.4,
+          "triangles": 47213,
+          "buildings": 23,
+          "msByLayer": {
+            "building": 2,
+            "green": 0,
+            "ground": 3,
+            "road": 0,
+            "structure": 14.3,
+            "tree": 0,
+            "water": 0.1
+          }
+        }
+      },
+      {
+        "name": "beijing-cbd-grow-9",
+        "tiles": 16,
+        "p50": 5.5,
+        "p95": 16.5,
+        "max": 16.5,
+        "slowest": {
+          "tile": "16/53968/24831.c3t",
+          "ms": 16.5,
+          "triangles": 31201,
+          "buildings": 6,
+          "msByLayer": {
+            "building": 0.7,
+            "green": 0,
+            "ground": 0.9,
+            "landmark": 7.2,
+            "road": 0,
+            "structure": 3.1,
+            "tree": 0
+          }
+        }
+      },
+      {
+        "name": "beijing-lingxiu-d",
+        "tiles": 12,
+        "p50": 2.5,
+        "p95": 13.5,
+        "max": 13.5,
+        "slowest": {
+          "tile": "16/53939/24798.c3t",
+          "ms": 13.5,
+          "triangles": 42542,
+          "buildings": 11,
+          "msByLayer": {
+            "building": 1.2,
+            "green": 0,
+            "ground": 2,
+            "road": 0,
+            "structure": 7.3,
+            "tree": 0
+          }
+        }
+      },
+      {
+        "name": "bibury-village",
+        "tiles": 12,
+        "p50": 0.2,
+        "p95": 12.5,
+        "max": 12.5,
+        "slowest": {
+          "tile": "16/32433/21718.c3t",
+          "ms": 12.5,
+          "triangles": 40690,
+          "buildings": 63,
+          "msByLayer": {
+            "building": 4,
+            "green": 0.1,
+            "ground": 1.4,
+            "road": 0,
+            "structure": 5.3,
+            "tree": 0,
+            "water": 0.1
+          }
+        }
+      },
+      {
+        "name": "kyoto-gion",
+        "tiles": 12,
+        "p50": 6.9,
+        "p95": 143.1,
+        "max": 143.1,
+        "slowest": {
+          "tile": "16/57484/25957.c3t",
+          "ms": 143.1,
+          "triangles": 286121,
+          "buildings": 1283,
+          "msByLayer": {
+            "building": 69.2,
+            "green": 0.1,
+            "ground": 6.5,
+            "road": 0,
+            "structure": 46.4,
+            "tree": 0.1,
+            "water": 0.1
+          }
+        }
+      },
+      {
+        "name": "kyoto-gion-grow-9",
+        "tiles": 6,
+        "p50": 68.9,
+        "p95": 124.2,
+        "max": 124.2,
+        "slowest": {
+          "tile": "16/57484/25957.c3t",
+          "ms": 124.2,
+          "triangles": 251193,
+          "buildings": 1125,
+          "msByLayer": {
+            "building": 59.3,
+            "green": 0.1,
+            "ground": 6.3,
+            "road": 0,
+            "structure": 44,
+            "tree": 0.1,
+            "water": 0.1
+          }
+        }
+      },
+      {
+        "name": "landscape-details",
+        "tiles": 14,
+        "p50": 0,
+        "p95": 0.1,
+        "max": 0.1,
+        "slowest": {
+          "tile": "16/53967/24833.c3t",
+          "ms": 0.1,
+          "triangles": 38,
+          "buildings": 0,
+          "msByLayer": {
+            "green": 0,
+            "tree": 0
+          }
+        }
+      },
+      {
+        "name": "lijiang-shuhe",
+        "tiles": 6,
+        "p50": 3,
+        "p95": 36.9,
+        "max": 36.9,
+        "slowest": {
+          "tile": "16/51009/27676.c3t",
+          "ms": 36.9,
+          "triangles": 66058,
+          "buildings": 488,
+          "msByLayer": {
+            "building": 27.3,
+            "green": 0,
+            "ground": 1.5,
+            "road": 0,
+            "structure": 4,
+            "tree": 0,
+            "water": 0
+          }
+        }
+      },
+      {
+        "name": "manhattan-financial",
+        "tiles": 6,
+        "p50": 45.8,
+        "p95": 119.6,
+        "max": 119.6,
+        "slowest": {
+          "tile": "16/19295/24641.c3t",
+          "ms": 119.6,
+          "triangles": 90355,
+          "buildings": 463,
+          "msByLayer": {
+            "building": 102.1,
+            "green": 1.3,
+            "ground": 10,
+            "road": 0,
+            "structure": 0.1,
+            "tree": 0,
+            "water": 0
+          }
+        }
+      },
+      {
+        "name": "marrakech-medina",
+        "tiles": 9,
+        "p50": 22.7,
+        "p95": 56.8,
+        "max": 56.8,
+        "slowest": {
+          "tile": "16/31313/26694.c3t",
+          "ms": 56.8,
+          "triangles": 64543,
+          "buildings": 493,
+          "msByLayer": {
+            "building": 48.2,
+            "green": 0.2,
+            "ground": 4.6,
+            "road": 0,
+            "tree": 0,
+            "water": 0
+          }
+        }
+      },
+      {
+        "name": "shanghai-lujiazui",
+        "tiles": 25,
+        "p50": 3.8,
+        "p95": 36.1,
+        "max": 37.7,
+        "slowest": {
+          "tile": "16/54885/26776.c3t",
+          "ms": 37.7,
+          "triangles": 99864,
+          "buildings": 38,
+          "msByLayer": {
+            "building": 6.6,
+            "green": 0.1,
+            "ground": 3.6,
+            "road": 0,
+            "structure": 24.4,
+            "tree": 0,
+            "water": 0
+          }
+        }
+      },
+      {
+        "name": "street-details",
+        "tiles": 0,
+        "p50": 0,
+        "p95": 0,
+        "max": 0,
+        "slowest": null
+      },
+      {
+        "name": "sydney-circular-quay",
+        "tiles": 9,
+        "p50": 17.1,
+        "p95": 63.6,
+        "max": 63.6,
+        "slowest": {
+          "tile": "16/60294/39325.c3t",
+          "ms": 63.6,
+          "triangles": 149090,
+          "buildings": 233,
+          "msByLayer": {
+            "building": 23.4,
+            "green": 0.3,
+            "ground": 7.1,
+            "road": 0,
+            "structure": 26.4,
+            "tree": 0,
+            "water": 0
+          }
+        }
+      },
+      {
+        "name": "sydney-harbour",
+        "tiles": 4,
+        "p50": 6.8,
+        "p95": 24.6,
+        "max": 24.6,
+        "slowest": {
+          "tile": "16/60295/39325.c3t",
+          "ms": 24.6,
+          "triangles": 21568,
+          "buildings": 103,
+          "msByLayer": {
+            "building": 20.5,
+            "green": 0.2,
+            "ground": 1.3,
+            "road": 0,
+            "structure": 2.3,
+            "tree": 0,
+            "water": 0
+          }
+        }
+      }
+    ]
+  },
+  "nodeKyotoWorkerOptions": {
+    "tileset": "kyoto-gion",
+    "tiles": 6,
+    "p50": 74.7,
+    "p95": 132.2,
+    "max": 132.2,
+    "msByLayerTotal": {
+      "building": 236,
+      "green": 1,
+      "ground": 24,
+      "road": 0,
+      "structure": 63,
+      "tree": 0,
+      "water": 0
+    },
+    "slowest": [
+      {
+        "tile": "16/57484/25957.c3t",
+        "ms": 132.16953399999989,
+        "buildings": 1125,
+        "triangles": 251193
+      },
+      {
+        "tile": "16/57485/25957.c3t",
+        "ms": 113.41962300000023,
+        "buildings": 1097,
+        "triangles": 216824
+      },
+      {
+        "tile": "16/57485/25958.c3t",
+        "ms": 74.68856800000003,
+        "buildings": 971,
+        "triangles": 92927
+      }
+    ],
+    "node": "v24.18.0"
+  },
+  "isolatedKyotoBrowserWorker": {
+    "browser": "Chrome/158.0.8127.36",
+    "tileset": "kyoto-gion-grow-9",
+    "runs": 5,
+    "p50": 89.70000000298023,
+    "p95": 165.09999999403954,
+    "rows": [
+      {
+        "tile": "16/57484/25956.c3t",
+        "ms": [
+          3,
+          3.2000000029802322,
+          3.2000000029802322,
+          3.7000000029802322,
+          4.299999997019768
+        ],
+        "median": 3.2000000029802322
+      },
+      {
+        "tile": "16/57484/25957.c3t",
+        "ms": [
+          156.5,
+          158.79999999701977,
+          165.09999999403954,
+          178,
+          185.29999999701977
+        ],
+        "median": 165.09999999403954
+      },
+      {
+        "tile": "16/57484/25958.c3t",
+        "ms": [
+          66.70000000298023,
+          69,
+          81.19999998807907,
+          84.5,
+          87.29999999701977
+        ],
+        "median": 81.19999998807907
+      },
+      {
+        "tile": "16/57485/25956.c3t",
+        "ms": [
+          3.7000000029802322,
+          4.399999991059303,
+          4.9000000059604645,
+          6.5999999940395355,
+          6.799999997019768
+        ],
+        "median": 4.9000000059604645
+      },
+      {
+        "tile": "16/57485/25957.c3t",
+        "ms": [
+          141.70000000298023,
+          153.29999999701977,
+          154,
+          163.59999999403954,
+          170.1000000089407
+        ],
+        "median": 154
+      },
+      {
+        "tile": "16/57485/25958.c3t",
+        "ms": [
+          88.70000000298023,
+          89.59999999403954,
+          89.70000000298023,
+          97.79999999701977,
+          133.6000000089407
+        ],
+        "median": 89.70000000298023
+      }
+    ]
+  }
+}
