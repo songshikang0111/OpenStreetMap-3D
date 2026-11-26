@@ -1,0 +1,210 @@
+{
+  "date": "2026-11-26T09:26:52.833Z",
+  "status": "local-device run",
+  "environment": {
+    "browser": "Chrome/158.0.8127.36",
+    "device": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+    "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+    "gpu": "ANGLE (AMD, AMD Radeon 780M Graphics (radeonsi phoenix ACO), OpenGL ES 3.2)",
+    "cores": 16,
+    "viewport": [
+      1280,
+      720
+    ],
+    "devicePixelRatio": 1,
+    "rendererPixelRatio": 1,
+    "quality": "balanced",
+    "platform": "linux 7.3.4-300.fc45.x86_64",
+    "headless": true
+  },
+  "tileset": {
+    "name": "enkhuizen",
+    "buildReportSha256": "5efbcf2619fb4747b1f03bad95d7ee5a31b076f33c19826721d88e93d9c6b5b4",
+    "servedReportSha256": "5efbcf2619fb4747b1f03bad95d7ee5a31b076f33c19826721d88e93d9c6b5b4"
+  },
+  "route": {
+    "loops": 1,
+    "lapMs": 60000,
+    "plannedMs": 60000
+  },
+  "contextLost": false,
+  "frameViolations": {
+    "invalidSamples": 0,
+    "blank": 0,
+    "triangles": 0,
+    "drawCalls": 0,
+    "resident": 0,
+    "workerQueue": 0,
+    "upload": 32
+  },
+  "uploadLimitMs": 4,
+  "sdkCommit": "80bc1d5dfa45bc534adf69f3e23dd416fd8d2417",
+  "durationMs": 60146,
+  "frames": 3600,
+  "frameIntervalMs": {
+    "count": 3599,
+    "p50": 16.69999999999709,
+    "p95": 16.700000000004366,
+    "p99": 16.80000000000291,
+    "max": 50
+  },
+  "longFramesOver50ms": 0,
+  "longFramesPerMinute": 0,
+  "firstUsableMs": 769,
+  "firstScreenEncodedBytes": 782537,
+  "maxDrawCalls": 91,
+  "maxTriangles": 569126,
+  "maxResidentBytesEstimate": 134216028,
+  "maxUploadMsPerFrame": 32.099999994039536,
+  "maxPrepareMsPerFrame": 8.599999994039536,
+  "maxFirstBufferMsPerFrame": 31.099999994039536,
+  "maxFirstBufferBytesPerFrame": 69814812,
+  "firstBufferCalls": 4635,
+  "maxWorkerQueue": 8,
+  "workerDecodeGenerateMs": {
+    "count": 209,
+    "p50": 20.700000002980232,
+    "p95": 195.79999999701977,
+    "p99": 307.29999999701977,
+    "max": 318.3999999910593
+  },
+  "requests": {
+    "started": 143,
+    "bytes": 11065904
+  },
+  "gpuTimer": {
+    "available": true,
+    "reason": null,
+    "count": 3599,
+    "p50": 3.234465,
+    "p95": 4.627151,
+    "p99": 4.803246,
+    "max": 4.954253
+  },
+  "tileErrors": [],
+  "verdict": {
+    "mode": "diagnostic",
+    "passed": false,
+    "failures": [
+      "uploadFrames",
+      "workerP95Ms"
+    ],
+    "checks": {
+      "invalidSamplesFrames": {
+        "pass": true,
+        "value": 0,
+        "limit": 0
+      },
+      "blankFrames": {
+        "pass": true,
+        "value": 0,
+        "limit": 0
+      },
+      "trianglesFrames": {
+        "pass": true,
+        "value": 0,
+        "limit": 0
+      },
+      "drawCallsFrames": {
+        "pass": true,
+        "value": 0,
+        "limit": 0
+      },
+      "residentFrames": {
+        "pass": true,
+        "value": 0,
+        "limit": 0
+      },
+      "workerQueueFrames": {
+        "pass": true,
+        "value": 0,
+        "limit": 0
+      },
+      "uploadFrames": {
+        "pass": false,
+        "value": 32,
+        "limit": 0
+      },
+      "tileErrors": {
+        "pass": true,
+        "value": 0,
+        "limit": 0
+      },
+      "context": {
+        "pass": true,
+        "value": false,
+        "limit": false
+      },
+      "frameSamples": {
+        "pass": true,
+        "value": 3600,
+        "limit": "at least 2 consecutive RAF samples"
+      },
+      "gpuEvidence": {
+        "pass": true,
+        "value": 3599,
+        "limit": "timings or unavailable reason"
+      },
+      "environment": {
+        "pass": true,
+        "value": [
+          "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+          "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+          "ANGLE (AMD, AMD Radeon 780M Graphics (radeonsi phoenix ACO), OpenGL ES 3.2)",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36"
+        ],
+        "limit": "identified device, CPU, GPU, browser, viewport and pixel ratios"
+      },
+      "dataIdentity": {
+        "pass": true,
+        "value": {
+          "name": "enkhuizen",
+          "buildReportSha256": "5efbcf2619fb4747b1f03bad95d7ee5a31b076f33c19826721d88e93d9c6b5b4",
+          "servedReportSha256": "5efbcf2619fb4747b1f03bad95d7ee5a31b076f33c19826721d88e93d9c6b5b4"
+        },
+        "limit": "build-time and served report hashes match"
+      },
+      "duration": {
+        "pass": true,
+        "value": 60146,
+        "limit": "entire planned path"
+      },
+      "frameIntervalP95Ms": {
+        "pass": true,
+        "value": 16.7,
+        "limit": 16.7
+      },
+      "longFramesPerMinute": {
+        "pass": true,
+        "value": 0,
+        "limit": 3
+      },
+      "firstUsableMs": {
+        "pass": true,
+        "value": 769,
+        "limit": 1500
+      },
+      "workerSamples": {
+        "pass": true,
+        "value": 209,
+        "limit": "L1 samples"
+      },
+      "workerP95Ms": {
+        "pass": false,
+        "value": 195.79999999701977,
+        "limit": 120
+      },
+      "pixelRatio": {
+        "pass": true,
+        "value": 1,
+        "limit": 2
+      },
+      "firstScreenBytes": {
+        "pass": true,
+        "value": 782537,
+        "limit": "1–3000000 encoded bytes"
+      }
+    }
+  },
+  "path": "scripts/benchmark-tiles/paths/enkhuizen.json"
+}
