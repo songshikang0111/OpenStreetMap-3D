@@ -1,21 +1,54 @@
 {
   "schemaVersion": 1,
-  "description": "Example cities reproducible from public OSM extracts (WP-F, AC609). Inputs are not stored in the repository; download them, check the SHA-256, then run scripts/build-example-cities.mjs. Data © OpenStreetMap contributors, ODbL-1.0.",
+  "description": "Pinned local builder examples. Download the dated OSM extract once, then run node scripts/build-example-cities.mjs --pbf-dir INPUTS --out OUTPUT. Data © OpenStreetMap contributors, ODbL-1.0.",
   "cities": [
     {
       "id": "amsterdam-centrum",
-      "name": "Amsterdam Centrum (1.4 × 1.3 km)",
+      "name": "Amsterdam Centrum",
       "input": {
-        "file": "Amsterdam.osm.pbf",
-        "url": "https://download.bbbike.org/osm/bbbike/Amsterdam/Amsterdam.osm.pbf",
-        "sha256": "8528f2ba1b1901b35ae1ddfcd39ffa689e23ea49819e4d2e20c1d104516f5c9a",
-        "bytes": 144467832,
-        "osmTimestamp": "2026-11-07T00:00:00Z",
-        "retrieved": "2026-11-12T18:28:43Z",
-        "note": "BBBike regenerates this file weekly; an older snapshot is needed to reproduce the hash once it changes."
+        "file": "noord-holland-260101.osm.pbf",
+        "url": "https://download.geofabrik.de/europe/netherlands/noord-holland/noord-holland-260101.osm.pbf",
+        "sha256": "741cdc458aa356e6914b32ac383f950a6a5e5b4901a3176c5b043069f91e27c9",
+        "bytes": 184846938,
+        "osmTimestamp": "2026-01-01T21:21:30Z",
+        "retrieved": "2026-11-26"
       },
-      "build": { "bbox": [4.885, 52.368, 4.905, 52.38] },
-      "output": { "tilesetHash": "3f4f929cf35aef04e30d658f6c00586b9432fcbb202b9e19199cef28a6e823d8", "tiles": 25 }
+      "build": {
+        "bbox": [
+          4.885,
+          52.368,
+          4.905,
+          52.38
+        ]
+      },
+      "output": {
+        "tilesetHash": "28fe917ff339accd40ee7f1de1e8a4403aba7a29070bd16d0c6fd0a0c36e2736",
+        "tiles": 24
+      }
+    },
+    {
+      "id": "enkhuizen",
+      "name": "Enkhuizen and adjoining shore",
+      "input": {
+        "file": "noord-holland-260101.osm.pbf",
+        "url": "https://download.geofabrik.de/europe/netherlands/noord-holland/noord-holland-260101.osm.pbf",
+        "sha256": "741cdc458aa356e6914b32ac383f950a6a5e5b4901a3176c5b043069f91e27c9",
+        "bytes": 184846938,
+        "osmTimestamp": "2026-01-01T21:21:30Z",
+        "retrieved": "2026-11-26"
+      },
+      "build": {
+        "bbox": [
+          5.245,
+          52.675,
+          5.315,
+          52.731
+        ]
+      },
+      "output": {
+        "tilesetHash": "46746d10ee4b4f56acfe71a405d639029d4abde42b21927fa6766a0f15b71b6d",
+        "tiles": 272
+      }
     }
   ]
 }

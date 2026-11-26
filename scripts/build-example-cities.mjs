@@ -28,6 +28,11 @@ export const tilesetHash = (hashes) =>
     .update(JSON.stringify(Object.entries(hashes).sort(([a], [b]) => (a < b ? -1 : 1))))
     .digest('hex');
 
+const unknown = wanted.filter((id) => !manifest.cities.some((city) => city.id === id));
+if (unknown.length) {
+  console.error('Unknown example city: ' + unknown.join(', '));
+  process.exit(2);
+}
 let failed = 0;
 for (const city of manifest.cities) {
   if (wanted.length && !wanted.includes(city.id)) continue;
@@ -46,14 +51,15 @@ for (const city of manifest.cities) {
   const t0 = performance.now();
   const { report } = await buildTiles({ input, output: path.join(outDir, city.id), name: city.id, ...city.build });
   const hash = tilesetHash(report.hashes);
-  const ok = hash === city.output.tilesetHash;
+  const tiles = report.tiles.reduce((total, level) => total + level.count, 0);
+  const ok = hash === city.output.tilesetHash && tiles === city.output.tiles;
   if (!ok) failed++;
   console.log(
     JSON.stringify({
       id: city.id,
       status: ok ? 'match' : 'hash-mismatch',
       tilesetHash: hash,
-      tiles: Object.keys(report.hashes).length,
+      tiles,
       seconds: +((performance.now() - t0) / 1000).toFixed(1),
     }),
   );

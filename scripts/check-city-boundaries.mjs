@@ -1,7 +1,7 @@
 // Compare the exact grid edge and all stacked surface heights across 200 reproducibly sampled neighbours (AC605).
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { decodeTile, parseTileKey } from '@city-ink/tiles';
+import { decodeTile, parseTileKey, readFeatures } from '@city-ink/tiles';
 import { boundaryCoverage, sampleAt } from '../test/helpers/tile-boundary.js';
 
 const dir = process.argv[2];
@@ -26,9 +26,38 @@ for (const key of [...keys].sort()) {
 if (pairs.length < 200) throw new Error(`Only ${pairs.length} neighbouring L1 tile pairs.`);
 let rng = 605;
 const random = () => (rng = (Math.imul(rng, 1664525) + 1013904223) >>> 0) / 2 ** 32;
-const result = { neighbours: pairs.length, checked: 200, samples: 0, occupied: 0, mismatches: 0, first: [] };
+const result = {
+  neighbours: pairs.length,
+  checked: 200,
+  samples: 0,
+  occupied: 0,
+  roadCrossings: 0,
+  mismatches: 0,
+  first: [],
+};
 async function tile(key) {
   return decodeTile(await readFile(path.join(dir, key + '.c3t')));
+}
+function roadEnds(tile, axis, edge) {
+  const index = axis === 'x' ? 0 : 1;
+  const span = 2 ** tile.extentLog2;
+  const origin = [(tile.id.x + 0.5) * span, (tile.id.y + 0.5) * span];
+  const ends = new Set();
+  if (!tile.layers.road) return ends;
+  for (const f of readFeatures(tile.layers.road))
+    for (const [pi, part] of f.geometry.entries())
+      for (const [ri, ring] of part.entries())
+        for (let v = 0; v < ring.length; v += 2) {
+          if (ring[v + index] + origin[index] === edge)
+            ends.add(
+              f.id +
+                '@' +
+                (ring[v + 1 - index] + origin[1 - index]) +
+                ':' +
+                Math.round(f.elevation[pi][ri][v / 2] * 100),
+            );
+        }
+  return ends;
 }
 for (let i = 0; i < 200; ++i) {
   const j = i + Math.floor(random() * (pairs.length - i));
@@ -38,6 +67,14 @@ for (let i = 0; i < 200; ++i) {
   const e = 2 ** a.extentLog2;
   const edge = (a.id[axis] + 1) * e;
   const start = (axis === 'x' ? a.id.y : a.id.x) * e;
+  const ra = roadEnds(a, axis, edge),
+    rb = roadEnds(b, axis, edge);
+  result.roadCrossings += ra.size;
+  for (const end of new Set([...ra, ...rb]))
+    if (ra.has(end) !== rb.has(end)) {
+      result.mismatches++;
+      if (result.first.length < 8) result.first.push({ key, other, axis, layer: 'road', endpoint: end });
+    }
   for (const layer of ['water', 'green', 'ground']) {
     const sa = boundaryCoverage(a, layer, axis, edge);
     const sb = boundaryCoverage(b, layer, axis, edge);

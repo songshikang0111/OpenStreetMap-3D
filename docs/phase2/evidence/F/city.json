@@ -1,0 +1,85 @@
+{
+  "date": "2026-11-26",
+  "source": {
+    "kind": "osm-pbf",
+    "file": "noord-holland-260101.osm.pbf",
+    "sha256": "741cdc458aa356e6914b32ac383f950a6a5e5b4901a3176c5b043069f91e27c9",
+    "timestamp": "2026-01-01T21:21:30Z"
+  },
+  "bytes": 184846938,
+  "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+  "logicalCPUs": 16,
+  "memoryBytes": 14389837824,
+  "node": "v24.18.0",
+  "bbox": [
+    5.245,
+    52.675,
+    5.315,
+    52.731
+  ],
+  "bboxKm2": 29.24,
+  "build": {
+    "commit": "f08ea82",
+    "concurrency": 1,
+    "seconds": 97.25,
+    "km2PerMinute": 18.04,
+    "peakRss": 1826320384,
+    "counts": {
+      "building": 15053,
+      "green": 1976,
+      "ground": 160553,
+      "road": 3271,
+      "structure": 2347,
+      "tree": 28822,
+      "water": 184
+    },
+    "incompleteRelations": 4,
+    "invalidRings": 4,
+    "tiles": [
+      {
+        "level": "L0",
+        "zoom": 14,
+        "count": 20,
+        "totalBytes": 2168080,
+        "totalGzipBytes": 717476,
+        "medianGzipBytes": 10235,
+        "p95GzipBytes": 189743,
+        "maxGzipBytes": 189743,
+        "overBudget": []
+      },
+      {
+        "level": "L1",
+        "zoom": 16,
+        "count": 252,
+        "totalBytes": 9265536,
+        "totalGzipBytes": 4010308,
+        "medianGzipBytes": 2942,
+        "p95GzipBytes": 82814,
+        "maxGzipBytes": 137822,
+        "overBudget": []
+      }
+    ]
+  },
+  "parallel": {
+    "concurrency": 8,
+    "planningCells": 4,
+    "seconds": 79.97,
+    "peakRss": 2434674688,
+    "publishedDifferenceCount": 0
+  },
+  "boundaries": {
+    "neighbours": 472,
+    "checked": 200,
+    "samples": 12000,
+    "occupied": 2808,
+    "roadCrossings": 377,
+    "mismatches": 0,
+    "first": []
+  },
+  "amsterdamIdentities": {
+    "pbf": 5277,
+    "json": 5277,
+    "onlyPbf": [],
+    "onlyJson": []
+  }
+}
