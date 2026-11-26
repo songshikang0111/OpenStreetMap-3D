@@ -1,27 +1,18 @@
 # Roadmap
 
-Status on 2026-11-13. Milestones and acceptance criteria are defined in
-[docs/phase2/09-work-packages.md](docs/phase2/09-work-packages.md); evidence per work package is in
-`docs/phase2/evidence/`.
+Local integration status on 2026-11-26. The milestone reports link each acceptance criterion to its verification and record the remaining gaps.
 
-| Milestone | Content | Status |
-| --- | --- | --- |
-| M0 Foundation | Workspaces, formatting, positioning, naming candidates | Done (WP-A) |
-| M1 Tiles | Tile format 1.0, generators, small-area builds | Done except generation time (AC312, see E5/E11) |
-| M2 Map runtime | `createMap`, camera, streaming, workers, picking, overlays | Done on a non-reference device; reference devices pending (D5) |
-| M3 Whole city | PBF ingest, whole-city builds, MapLibre layer | MapLibre layer done; PBF ingest done; whole-city build too slow (WP-F) |
-| M4 Styles | StyleSpec, plain/light/dark, ink looks, provenance filter | Done (WP-G) |
-| M5 Release | Mobile performance, npm packages, hosted demo, English docs | Docs drafted; publishing, hosting and device tests wait for decisions D1, D2, D5, D8 |
+| Milestone | Current result |
+| --- | --- |
+| [M0 · Foundation](docs/phase2/evidence/M0-acceptance.md) | Local Linux tooling, package installation, types and builds verified. Hosted Windows and Linux CI runs remain unverified. |
+| [M1 · Tiles](docs/phase2/evidence/M1-acceptance.md) | OSM inputs, deterministic tiling, building massing and cross-runtime geometry checks implemented. Dense tiles exceed the 60 ms Node generation target. |
+| [M2 · Map runtime](docs/phase2/evidence/M2-acceptance.md) | Camera, streaming, picking, cancellation, markers, overlays and resource round trips verified on the local desktop. |
+| [M3 · Whole city](docs/phase2/evidence/M3-acceptance.md) | PBF indexing, parallel neighbourhood planning, checkpointed builds, polygon regions, single-file HTTP range archives and MapLibre layers implemented. City measurements and regional scale limits are recorded separately. |
+| [M4 · Styles](docs/phase2/evidence/M4-acceptance.md) | Default, ink and external styles, provenance filters and material switching verified on the local desktop. |
+| [M5 · Release](docs/phase2/evidence/M5-acceptance.md) | Five local city samples, static demo, empty-directory package installs and onboarding verified. Desktop performance gaps, mobile device tests and release decisions remain open. |
 
-## Next
+The [performance summary](docs/phase2/evidence/perf-summary.md) records whole-frame measurements. Publishing, public hosting and the archive of historical repository data require the decisions in [phase-two risks and decisions](docs/phase2/08-risks-and-decisions.md).
 
-1. Whole-city builds: per-cell ingest from a PBF feature store (no global parse), parallel cells, archive format.
-2. Generation time: typed phase-one mesh writer, near-only facade trims, worker scheduling (target 120 ms p95 on
-   desktop).
-3. Reference-device performance runs (desktop and two phones) once devices are chosen (D5).
-4. Visual parity with phase one: detailed tree crowns, roof-equipment LOD, parking and court markings.
-5. Release: package names (D1), demo hosting (D2), prebuilt example cities (D7), publishing (D8).
+## Later
 
-## Later (not promised in phase two)
-
-Text labels, terrain (DEM), external building-height datasets, native mobile wrappers, WebGPU.
+Text labels in the standalone map, terrain (DEM), external height datasets, native mobile wrappers and WebGPU are outside the phase-two plan.
