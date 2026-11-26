@@ -1,0 +1,34 @@
+{
+  "gradingCommit": "95138e8",
+  "sdkCommit": "b5e0bb7ba2dc658b1fb3ea884e9f1567ba4680df",
+  "rawFramesSha256": "66af9e25bd3183680526bdb2fd064d2af550feb95c9a1972b28442faacaec7ab",
+  "sampledFrames": 35978,
+  "nonOverlapping60sLongFrameCounts": [
+    2,
+    0,
+    1,
+    2,
+    2,
+    2,
+    3,
+    3,
+    4,
+    0,
+    0
+  ],
+  "frameViolations": {
+    "invalidSamples": 0,
+    "blank": 0,
+    "triangles": 0,
+    "drawCalls": 0,
+    "resident": 0,
+    "workerQueue": 0,
+    "upload": 244,
+    "maxLongFramesInMinute": 4
+  },
+  "failedChecks": [
+    "uploadFrames",
+    "longFramesInWorstMinute",
+    "workerP95Ms"
+  ]
+}

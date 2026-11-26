@@ -66,6 +66,7 @@ export function gradeReplay(s, budget, { acceptance, mobile, canonicalRoute, who
     mobile ? 33.3 : 16.7,
   );
   atMost('longFramesPerMinute', s.longFramesPerMinute, mobile ? 6 : 3);
+  atMost('longFramesInWorstMinute', counts.maxLongFramesInMinute, mobile ? 6 : 3);
   atMost('firstUsableMs', s.firstUsableMs, mobile ? 3000 : 1500);
   check('workerSamples', s.workerDecodeGenerateMs.count > 0, s.workerDecodeGenerateMs.count, 'L1 samples');
   atMost('workerP95Ms', s.workerDecodeGenerateMs.p95, mobile ? 500 : 120);
@@ -88,8 +89,16 @@ export function gradeReplay(s, budget, { acceptance, mobile, canonicalRoute, who
 
 export function countFrameViolations(frames, budget, uploadLimitMs) {
   const counts = { invalidSamples: 0, blank: 0, triangles: 0, drawCalls: 0, resident: 0, workerQueue: 0, upload: 0 };
+  const longFramesByMinute = [];
+  let worstMinute = 0;
   for (let i = 0; i < frames.length; i++) {
     const f = frames[i];
+    if (Number.isFinite(f.t) && f.dt > 50) {
+      const minute = Math.floor((f.t - frames[0].t) / 60000);
+      const count = (longFramesByMinute[minute] ?? 0) + 1;
+      longFramesByMinute[minute] = count;
+      worstMinute = Math.max(worstMinute, count);
+    }
     const values = [f.t, f.tris, f.draws, f.resident, f.workerQueue, f.visible, f.prepareMs, f.firstBufferMs];
     if (values.some((n) => !Number.isFinite(n) || n < 0) || (i && (!Number.isFinite(f.dt) || f.dt <= 0)))
       counts.invalidSamples++;
@@ -100,5 +109,5 @@ export function countFrameViolations(frames, budget, uploadLimitMs) {
     if (f.workerQueue > budget.workerQueue) counts.workerQueue++;
     if (f.prepareMs + f.firstBufferMs > uploadLimitMs) counts.upload++;
   }
-  return counts;
+  return { ...counts, maxLongFramesInMinute: worstMinute };
 }

@@ -112,3 +112,12 @@ test('the WebGL meter forwards the original call and separates stores inside and
   meter.dispose();
   assert.equal(gl.bufferData, original);
 });
+
+test('a long-frame burst in one replay minute cannot pass on a ten-minute average', () => {
+  const s = summary();
+  const frames = [sample, ...[61000, 61100, 61200, 61300].map((t) => ({ ...sample, t, dt: 100 }))];
+  s.frameViolations = countFrameViolations(frames, budget, 4);
+  s.longFramesPerMinute = 0.4;
+  assert.equal(s.frameViolations.maxLongFramesInMinute, 4);
+  assert.deepEqual(gradeReplay(s, budget, options).failures, ['longFramesInWorstMinute']);
+});
