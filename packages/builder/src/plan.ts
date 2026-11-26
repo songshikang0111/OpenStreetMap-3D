@@ -184,12 +184,17 @@ export function cellKey(cell: TileId | null): string {
 
 /** Plans one cell. `cell = null` plans the whole input as one cell. */
 export async function planCell(ctx: PlanContext, cell: TileId | null, options: PlanOptions): Promise<CellPlan> {
+  const data = cell ? ctx.crop(expandBounds(tileToLngLatBounds(cell), options.bufferMeters)) : ctx.data;
+  return planCellData(data, cell, options);
+}
+
+/** Plans a cell from its buffered neighbourhood. This is also the worker entry point. */
+export async function planCellData(data: Phase1Data, cell: TileId | null, options: PlanOptions): Promise<CellPlan> {
   const key = cellKey(cell);
-  const project = ctx.data.project;
+  const project = data.project;
   const ll = (q: Point2) => toLngLat(project, q);
   const cellBounds: Bounds = cell ? tileToLngLatBounds(cell) : [-180, -85, 180, 85];
   const owns = (p: LngLat) => !cell || boundsContains(cellBounds, p);
-  const data = cell ? ctx.crop(expandBounds(cellBounds, options.bufferMeters)) : ctx.data;
   const intersects = (b: Bounds) => !cell || boundsIntersect(b, cellBounds);
   const records: PlanRecord[] = [];
   const stats: Record<string, number> = {};

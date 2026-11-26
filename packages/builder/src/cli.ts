@@ -2,7 +2,7 @@
 // result object goes to stdout and progress to stderr, with schemaVersion/status/artifacts/diagnostics.
 import os from 'node:os';
 import path from 'node:path';
-import { buildTiles } from './pipeline.js';
+import { buildTiles, DEFAULT_LEVELS } from './pipeline.js';
 import { validateTilesetDir, inspectTile } from './validate.js';
 import { serveTiles } from './serve.js';
 import type { Diagnostic } from '@city-ink/tiles';
@@ -10,7 +10,7 @@ import type { Diagnostic } from '@city-ink/tiles';
 export const TILES_HELP = `city tiles — build and check static 3D city tiles
 
   city tiles build (--input file.json|city.osm.pbf | --project dir) --output dir [--bbox w,s,e,n] [--resume]
-                   [--seed n] [--config options.json] [--concurrency n] [--cell-zoom n] [--json]
+                   [--seed n] [--config options.json] [--concurrency n] [--max-memory MiB] [--levels 14,16] [--cell-zoom n] [--json]
   city tiles validate <dir> [--json]
   city tiles inspect <dir> --tile z/x/y [--json]
   city tiles serve <dir> [--port 4181] [--json]
@@ -107,7 +107,17 @@ export async function runTilesCLI(
       const config = o.config
         ? JSON.parse(await (await import('node:fs/promises')).readFile(resolve(o.config), 'utf8'))
         : {};
-      const concurrency = o.concurrency ? Math.max(1, Number(o.concurrency)) : Math.max(1, os.cpus().length - 1);
+      const concurrency =
+        o.concurrency !== undefined ? Number(o.concurrency) : Math.max(1, os.availableParallelism() - 1);
+      const zooms = o.levels !== undefined ? String(o.levels).split(',').map(Number) : undefined;
+      if (
+        zooms &&
+        (zooms.length !== 2 || zooms.some((z) => !Number.isInteger(z) || z < 0 || z > 20) || zooms[0]! >= zooms[1]!)
+      ) {
+        throw Object.assign(new Error('--levels expects two ascending zoom levels, e.g. 14,16.'), {
+          code: 'OPTION_INVALID',
+        });
+      }
       const { report, output } = await buildTiles({
         ...(o.input ? { input: resolve(o.input) } : {}),
         ...(o.project ? { project: resolve(o.project) } : {}),
@@ -122,6 +132,8 @@ export async function runTilesCLI(
         ...(config.landscape !== undefined ? { landscape: Boolean(config.landscape) } : {}),
         resume: Boolean(o.resume),
         concurrency,
+        ...(zooms ? { levels: DEFAULT_LEVELS.map((l, i) => ({ ...l, zoom: zooms[i]! })) } : {}),
+        ...(o['max-memory'] !== undefined ? { maxMemoryMiB: Number(o['max-memory']) } : {}),
         ...(signal ? { signal } : {}),
         onProgress: (p) => stderr.write(`${JSON.stringify({ type: 'progress', ...p })}\n`),
       });
