@@ -17,3 +17,26 @@
 | 其余（AC901、AC902、AC905、AC907、AC908） | 未验证 | — | 依赖参考设备（D5） |
 
 CI 现在直接使用 06 的上限（L1 12、L0 4），单块 gzip 256 KB，主包 180 KB。单块 gzip 最大值：北京 176 KB、京都 244 KB、曼哈顿 188 KB；地图主包 gzip 41,683 B。
+
+## 本机整城路径（2026-11-26）
+
+采用用户指定的本机 Ryzen 7 7840S / Radeon 780M 核显。Linux + Chrome 158、1280 × 720、DPR 1、balanced。完整浏览器从冷导航开始请求 gzip 压缩的静态文件。恢复默认视角后预热，再运行包含码头、住宅区、高低空转换及返回起点的固定路径。SDK 和瓦片数据的版本见[原始基线摘要](enkhuizen-desktop.json)。
+
+| 验收项 | 实测 |
+| --- | --- |
+| AC901 整帧与首屏 | 10 分钟基线的 RAF p95 为 16.7 ms（按 0.1 ms 精度），>50 ms 长帧每分钟 1.70 次，首个可用画面 667 ms。逐帧最大调用 91 次、三角形 688,088 个、驻留估算 243,693,388 B。平衡档 600,000 三角形和 128 MiB 预算有瞬间超限。 |
+| AC901 Worker 与上传 | 基线 L1 解码加生成 p95 265.2 ms（目标 120 ms）；主线程上传最大 20 ms（目标 4 ms）。 |
+| AC902、AC905 | 本机连续 601.2 秒没有崩溃或瓦片错误。Android 和 iPhone 未验证。 |
+| AC904 | 整城默认视角首屏瓦片、清单和覆盖位图共 790,518 B，低于 3 MB。 |
+| AC907、AC908 | 摘要包含 CPU、GPU、浏览器版本、视口、像素比、档位、数据与 SDK 哈希。GPU 基线统计使用最后 18,000 次计时，RAF 统计覆盖全程。参见[支持矩阵](../../../support.md)。 |
+
+复跑使用 `examples/cities.json` 中的恩克赫伊曾 PBF 及边界，先构建到仓库外、校验后将目录的数字 zoom 子目录、tileset.json、coverage.bin、report.json 复制到 `apps/demo/public/tiles/enkhuizen/`。同一数据和 SDK 版本可用如下命令重放。
+
+```sh
+npm run build:packages && npm run build:demo
+CITY_BROWSER_FLAGS='--use-gl=angle --use-angle=gl-egl --ignore-gpu-blocklist' \
+  node scripts/benchmark-tiles/path-run.mjs scripts/benchmark-tiles/paths/enkhuizen.json \
+  --loops 10 --json /tmp/enkhuizen.json --frames /tmp/enkhuizen-frames.json
+```
+
+手机基准页面位于构建目录的 `benchmark.html`，可选择单圈或十圈并复制结果或下载原始记录。

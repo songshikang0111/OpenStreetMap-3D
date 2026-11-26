@@ -39,3 +39,15 @@ PNG 是当前相机及已加载 LOD 的渲染结果，带署名。GLB 完整范�
 Studio 的“地图数据服务”设置会同时设置端点与 GET/POST，并显示区域覆盖；也可输入自托管 HTTP(S) 端点。保存后项目定位和下载使用同一来源配置。故障回退必须显式打开并填写最多两个端点，只适用于网络、超时与 HTTP 502/503/504；不会绕过 429 限流或 406 拒绝。具体可用性以真实下载证据为准。
 数据服务预设、端点、传输和回退设置只控制下一次获取；保存这些设置不使已有几何失效。现有场景仍保留其实际数据文件的来源、时间与哈希。重新获取后文件内容变化，或更改 source.kind / source.file，仍须重新构建并通过锁校验。
 SDK 的 getStats({raw:true}) 另返回 rendering.initialFrame（intervalMs 为 null），保存 reset 后首帧的实际绘制与资源成本；rendering.frames 保留具有帧间隔的后续记录。整段绘制/驻留/近景预算需合并这两部分，FPS 仍按非空 intervalMs 计算。GPU rawSamples 的时间戳对应这些提交帧，收集数加有界在途查询数应等于 frameCount。
+
+## 二期流式地图的本机支持矩阵（2026-11-26）
+
+| 环境 | 已验证范围 | 状态 |
+| --- | --- | --- |
+| Fedora Linux、Chrome 158、Radeon 780M 核显 | 真实 OSM 的目录及归档加载、Worker、拾取、风格切换、资源往返、10 分钟整城路径 | 功能通过。逐项性能结果见[性能摘要](phase2/evidence/perf-summary.md) |
+| Linux、Chrome 158、MapLibre GL JS 6.16.0 | 自定义三维图层、宿主文字顺序、图层移除后恢复底图 | 本机通过，见[浏览器报告](phase2/evidence/D2/report.md) |
+| Android / Chrome | 真实触控、内存、帧率和稳定性 | 未验证 |
+| iPhone / Safari | 真实触控、内存、帧率和稳定性 | 未验证 |
+| Windows、RTX 4090 | 二期固定路径与整帧预算 | 未验证；上面的一期报告针对场景包 |
+
+`city tiles build` 可直接读取 OSM JSON 和 PBF。在浏览器通过同源或正确配置 CORS 的 HTTP 服务加载文件。地图收到超时或 `tileerror` 时，可用 `city tiles validate <瓦片目录> --json` 校验内容。详见[构建手册](phase2/03-build-pipeline.md)。

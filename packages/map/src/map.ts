@@ -44,7 +44,7 @@ import type { DesiredTile } from './selection.js';
 import { WorkerPool } from './pool.js';
 import type { WorkerLike } from './pool.js';
 import type { FeatureRecord, WorkerResponse } from './worker-core.js';
-import { MaterialLibrary, buildTileObject } from './tile-object.js';
+import { MaterialLibrary, prepareTileObject } from './tile-object.js';
 import type { TileObject, TilePipeline, TileStylePack } from './tile-object.js';
 import { Controls } from './controls.js';
 import { Picker } from './picking/picker.js';
@@ -209,6 +209,7 @@ interface PendingUpload {
   replace?: boolean;
   entry: TileEntry;
   token: number;
+  preparation?: ReturnType<typeof prepareTileObject>;
   response: Extract<WorkerResponse, { type: 'result' }>;
 }
 
@@ -588,6 +589,7 @@ export class CityMapImpl implements CityMap {
     this.anchorsRoot.clear();
     this.anchors.clear();
     this.featureState.clear();
+    for (const upload of this.uploads) upload.preparation?.return(undefined);
     this.uploads.length = 0;
     this.listeners.clear();
     for (const w of this.idleWaiters) w();
@@ -1395,13 +1397,14 @@ export class CityMapImpl implements CityMap {
   }
 
   /** Applies the ProvenanceFilter to one loaded tile without refetching or regenerating it (05 section 5). */
-  private applyFilter(entry: TileEntry) {
+  private applyFilter(entry: TileEntry, fresh = false) {
     if (!entry.object) return;
     const details = this.filter.details !== false;
     // Buildings whose height is less certain than required are drawn as footprints; inferred trees can be hidden.
     const rank = { observed: 0, derived: 1, inferred: 2 } as const;
     const min = this.filter.buildings?.minHeightProvenance;
     const hideTrees = this.filter.trees?.inferred === false;
+    if (fresh && !min && !hideTrees && details) return;
     if (entry.features)
       for (const f of entry.features) {
         let flags = 0;
@@ -1550,19 +1553,25 @@ export class CityMapImpl implements CityMap {
     const start = performance.now();
     let spent = 0;
     while (this.uploads.length && (spent < this.budget.uploadMsPerFrame || spent === 0)) {
-      const { entry, response, replace, token } = this.uploads.shift()!;
-      if (entry.loadToken !== token) continue;
-      let previous: TileObject | null = null;
-      if (entry.object && !replace) {
-        entry.state = 'ready';
+      const job = this.uploads[0]!;
+      const { entry, response, replace, token } = job;
+      if (entry.loadToken !== token || !!entry.object !== !!replace) {
+        job.preparation?.return(undefined);
+        this.uploads.shift();
+        spent = performance.now() - start;
         continue;
       }
-      if (replace) {
-        if (!entry.object) continue;
-        previous = entry.object;
+      const previous = entry.object;
+      if (!job.preparation) {
+        const capacity = response.features.reduce((m, f) => Math.max(m, f.renderId), 0);
+        job.preparation = prepareTileObject(response.generated, this.materials, capacity, response.upload);
       }
-      const capacity = response.features.reduce((m, f) => Math.max(m, f.renderId), 0);
-      const object = buildTileObject(response.generated, this.materials, capacity, response.upload);
+      const result = job.preparation.next();
+      spent = performance.now() - start;
+      if (!result.done) continue;
+      this.uploads.shift();
+      const object = result.value;
+      if (!object) continue;
       object.group.userData.tile = entry.key;
       if (this.hosted && this.hosted.ground === 'host')
         for (const mesh of object.meshes)
@@ -1587,7 +1596,7 @@ export class CityMapImpl implements CityMap {
       entry.nearWalls = response.generated.nearWalls ?? null;
       this.nearKey = '';
       this.applyStates(entry);
-      this.applyFilter(entry);
+      this.applyFilter(entry, true);
       this.applyRules(entry);
       entry.bytes = object.bytes + (entry.buffer?.byteLength ?? 0) + object.state.data.byteLength;
       entry.state = 'ready';

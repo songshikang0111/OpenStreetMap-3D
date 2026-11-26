@@ -20,6 +20,7 @@ interface Ref {
   bounds: Bounds;
   name?: string;
   gradeNodes?: number[];
+  buildingKind?: 'outline' | 'part';
 }
 
 interface Index {
@@ -102,6 +103,8 @@ export class FeatureStore {
     ];
     for (const key of this.keys(box)) add(this.buckets, key);
     const t = row.tags;
+    if (t['building:part'] && t['building:part'] !== 'no') ref.buildingKind = 'part';
+    else if (t.building && t.building !== 'no') ref.buildingKind = 'outline';
     if (t.highway && t.name) {
       ref.name = t.name;
       add(this.names, t.name);
@@ -162,18 +165,33 @@ export class FeatureStore {
   neighbourhood(bounds: Bounds) {
     const indices = new Set<number>();
     if (!this.region || !boundsIntersect(this.region, bounds)) return [];
-    const region: Bounds = [
-      Math.max(bounds[0], this.region[0]),
-      Math.max(bounds[1], this.region[1]),
-      Math.min(bounds[2], this.region[2]),
-      Math.min(bounds[3], this.region[3]),
-    ];
-    for (const key of this.keys(region))
+    const region = this.region;
+    const boundedKeys = (box: Bounds) =>
+      this.keys([
+        Math.max(box[0], region[0]),
+        Math.max(box[1], region[1]),
+        Math.min(box[2], region[2]),
+        Math.min(box[3], region[3]),
+      ]);
+    for (const key of boundedKeys(bounds))
       for (const i of this.buckets.get(key) ?? []) if (boundsIntersect(bounds, this.refs[i]!.bounds)) indices.add(i);
     const names = new Set<string>(),
       queue: number[] = [];
     for (const i of indices) {
       const r = this.refs[i]!;
+      // Phase-one outline suppression uses all tagged parts within the outline, even beyond the
+      // active halo. Read those candidates when a retained outline extends outside the query.
+      if (
+        r.buildingKind === 'outline' &&
+        (r.bounds[0] < bounds[0] || r.bounds[1] < bounds[1] || r.bounds[2] > bounds[2] || r.bounds[3] > bounds[3]) &&
+        boundsIntersect(r.bounds, region)
+      ) {
+        for (const key of boundedKeys(r.bounds))
+          for (const j of this.buckets.get(key) ?? []) {
+            const candidate = this.refs[j]!;
+            if (candidate.buildingKind === 'part' && boundsIntersect(r.bounds, candidate.bounds)) indices.add(j);
+          }
+      }
       if (r.name) names.add(r.name);
       if (r.gradeNodes) queue.push(i);
     }

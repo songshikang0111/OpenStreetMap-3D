@@ -38,3 +38,5 @@
 | AC1004、AC1005 | `CITY_BROWSER_FLAGS="--use-gl=angle --use-angle=gl-egl --ignore-gpu-blocklist" node scripts/demo-smoke.mjs`。Chrome 158 在 `/nested/demo/` 使用 README 的静态服务器完成五城切换，各有可见瓦片和标记。暗色风格、实测高度过滤、实际鼠标点击建筑、叠加层和 MapLibre 页面均通过。MapLibre 显示 9 块瓦片，外部请求和浏览器错误均为 0。原始摘要见 [subpath-smoke.json](subpath-smoke.json)。 |
 
 提交为 `1ece57e`（demo、复验脚本与静态托管文档）、`c745321`（使真实风格类型能直接在示例中使用）。此次针对二期工作树复验，根测试、全库链接以及各分支合并后的结果以 WP-K 的记录为准。AC1001、AC1002、AC1009 仍需独立走查。公网托管、npm 发布、主流移动设备实测仍待相应决定和环境。
+
+2026-11-26 补验。AC1001、AC1002 和 AC1009 的独立操作记录见[首次接入与贡献者走查](../K/onboarding.md)。J7 的问题模板、PR 模板、行为准则与私下报告安全问题的入口已在 `cb2cf26` 提交。

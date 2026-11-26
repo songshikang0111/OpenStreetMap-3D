@@ -430,12 +430,12 @@ export interface TileObject {
   dispose(): void;
 }
 
-export function buildTileObject(
+export function* prepareTileObject(
   generated: GeneratedTile,
   materials: MaterialLibrary,
   capacity?: number,
   upload: UploadData = prepareUpload(generated),
-): TileObject {
+): Generator<void, TileObject | undefined, void> {
   const group = new Group();
   group.matrixAutoUpdate = false;
   let bytes = 0;
@@ -449,84 +449,92 @@ export function buildTileObject(
   const state = new FeatureStateTexture(maxId);
   const pickable: Mesh[] = [];
   const disposables: { dispose(): void }[] = [];
-  for (const [index, batch] of generated.batches.entries()) {
-    const geometry = geometryOf(batch, upload.ink[index]!);
-    disposables.push(geometry);
-    const mesh = new Mesh(geometry);
-    mesh.name = `${batch.layer}:${batch.role}`;
-    // Semantics read by code style packs and the ink pipeline (phase-one conventions).
-    if (batch.layer === 'building') {
-      mesh.userData.city = { shader: 'facade-v6' };
-      mesh.userData.generatedFacade = true;
-    }
-    mesh.userData.inkClass = inkClassOf(batch.layer, batch.role);
-    mesh.userData.perVertexInkClass = true;
-    const material = materials.acquire(batch.role, state, mesh);
-    mesh.material = material;
-    disposables.push({ dispose: () => materials.release(mesh.material as Material) });
-    mesh.name = `${batch.layer}:${batch.role}`;
-    mesh.userData.layer = batch.layer;
-    mesh.userData.role = batch.role;
-    mesh.matrixAutoUpdate = false;
-    // Trims, roof plant and parapets add little to shadows and a lot to the depth pass.
-    mesh.castShadow = batch.layer === 'building' || batch.layer === 'landmark';
-    mesh.receiveShadow = true;
-    group.add(mesh);
-    meshes.push(mesh);
-    pickable.push(mesh);
-    for (const a of Object.values(geometry.attributes))
-      bytes += (a.array as ArrayLike<number> & { byteLength: number }).byteLength;
-    if (geometry.index) bytes += (geometry.index.array as Uint32Array).byteLength;
-    triangles += batch.index.length / 3;
-  }
-  const trees = generated.trees;
-  if (trees.count) {
-    const crowns = new InstancedMesh(crownGeometry(), undefined, 0);
-    crowns.name = 'tree crowns';
-    crowns.userData.inkClass = 2;
-    crowns.userData.city = { shader: 'foliage-v1' };
-    const trunks = new InstancedMesh(trunkGeometry(), undefined, 0);
-    crowns.material = materials.acquire('tree.crown', state, crowns);
-    trunks.material = materials.acquire('tree.trunk', state, trunks);
-    disposables.push({
-      dispose: () => (materials.release(crowns.material as Material), materials.release(trunks.material as Material)),
-    });
-    crowns.count = trunks.count = trees.count;
-    crowns.instanceMatrix = new InstancedBufferAttribute(upload.crowns, 16);
-    trunks.instanceMatrix = new InstancedBufferAttribute(upload.trunks, 16);
-    const [x0, y0, z0, x1, y1, z1] = upload.bounds;
-    const bounds = new Box3(new Vector3(x0, y0, z0), new Vector3(x1, y1, z1));
-    crowns.boundingSphere = bounds.getBoundingSphere(new Sphere());
-    trunks.boundingSphere = crowns.boundingSphere.clone();
-    crowns.userData.layer = trunks.userData.layer = 'tree';
-    crowns.userData.renderIds = trees.renderId;
-    crowns.castShadow = true;
-    trunks.castShadow = true;
-    const instanceIds = new InstancedBufferAttribute(trees.renderId, 1);
-    crowns.geometry.setAttribute('instanceRenderId', instanceIds);
-    trunks.geometry.setAttribute('instanceRenderId', instanceIds);
-    pickable.push(crowns);
-    group.add(crowns, trunks);
-    disposables.push(crowns.geometry, trunks.geometry, { dispose: () => (crowns.dispose(), trunks.dispose()) });
-    bytes += trees.count * 16 * 4 * 2 + trees.data.byteLength;
-    triangles +=
-      trees.count *
-      (crowns.geometry.index ? crowns.geometry.index.count / 3 : crowns.geometry.attributes.position!.count / 3);
-  }
-  return {
-    group,
-    bytes,
-    triangles,
-    drawCalls: meshes.length + (trees.count ? 2 : 0),
-    meshes,
-    state,
-    pickable,
-    dispose() {
-      for (const d of disposables) d.dispose();
-      state.dispose();
-      group.clear();
-    },
+  let completed = false;
+  const dispose = () => {
+    for (const d of disposables) d.dispose();
+    state.dispose();
+    group.clear();
   };
+  try {
+    for (const [index, batch] of generated.batches.entries()) {
+      const geometry = geometryOf(batch, upload.ink[index]!);
+      disposables.push(geometry);
+      const mesh = new Mesh(geometry);
+      mesh.name = `${batch.layer}:${batch.role}`;
+      // Semantics read by code style packs and the ink pipeline (phase-one conventions).
+      if (batch.layer === 'building') {
+        mesh.userData.city = { shader: 'facade-v6' };
+        mesh.userData.generatedFacade = true;
+      }
+      mesh.userData.inkClass = inkClassOf(batch.layer, batch.role);
+      mesh.userData.perVertexInkClass = true;
+      const material = materials.acquire(batch.role, state, mesh);
+      mesh.material = material;
+      disposables.push({ dispose: () => materials.release(mesh.material as Material) });
+      mesh.name = `${batch.layer}:${batch.role}`;
+      mesh.userData.layer = batch.layer;
+      mesh.userData.role = batch.role;
+      mesh.matrixAutoUpdate = false;
+      // Trims, roof plant and parapets add little to shadows and a lot to the depth pass.
+      mesh.castShadow = batch.layer === 'building' || batch.layer === 'landmark';
+      mesh.receiveShadow = true;
+      group.add(mesh);
+      meshes.push(mesh);
+      pickable.push(mesh);
+      for (const a of Object.values(geometry.attributes))
+        bytes += (a.array as ArrayLike<number> & { byteLength: number }).byteLength;
+      if (geometry.index) bytes += (geometry.index.array as Uint32Array).byteLength;
+      triangles += batch.index.length / 3;
+      yield;
+    }
+    const trees = generated.trees;
+    if (trees.count) {
+      const crowns = new InstancedMesh(crownGeometry(), undefined, 0);
+      crowns.name = 'tree crowns';
+      crowns.userData.inkClass = 2;
+      crowns.userData.city = { shader: 'foliage-v1' };
+      const trunks = new InstancedMesh(trunkGeometry(), undefined, 0);
+      crowns.material = materials.acquire('tree.crown', state, crowns);
+      trunks.material = materials.acquire('tree.trunk', state, trunks);
+      disposables.push({
+        dispose: () => (materials.release(crowns.material as Material), materials.release(trunks.material as Material)),
+      });
+      crowns.count = trunks.count = trees.count;
+      crowns.instanceMatrix = new InstancedBufferAttribute(upload.crowns, 16);
+      trunks.instanceMatrix = new InstancedBufferAttribute(upload.trunks, 16);
+      const [x0, y0, z0, x1, y1, z1] = upload.bounds;
+      const bounds = new Box3(new Vector3(x0, y0, z0), new Vector3(x1, y1, z1));
+      crowns.boundingSphere = bounds.getBoundingSphere(new Sphere());
+      trunks.boundingSphere = crowns.boundingSphere.clone();
+      crowns.userData.layer = trunks.userData.layer = 'tree';
+      crowns.userData.renderIds = trees.renderId;
+      crowns.castShadow = true;
+      trunks.castShadow = true;
+      const instanceIds = new InstancedBufferAttribute(trees.renderId, 1);
+      crowns.geometry.setAttribute('instanceRenderId', instanceIds);
+      trunks.geometry.setAttribute('instanceRenderId', instanceIds);
+      pickable.push(crowns);
+      group.add(crowns, trunks);
+      disposables.push(crowns.geometry, trunks.geometry, { dispose: () => (crowns.dispose(), trunks.dispose()) });
+      bytes += trees.count * 16 * 4 * 2 + trees.data.byteLength;
+      triangles +=
+        trees.count *
+        (crowns.geometry.index ? crowns.geometry.index.count / 3 : crowns.geometry.attributes.position!.count / 3);
+    }
+    completed = true;
+    return {
+      group,
+      bytes,
+      triangles,
+      drawCalls: meshes.length + (trees.count ? 2 : 0),
+      meshes,
+      state,
+      pickable,
+      dispose,
+    };
+  } finally {
+    if (!completed) dispose();
+  }
 }
 
 export type { Material };

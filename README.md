@@ -60,7 +60,9 @@ const map = await createMap({
   bearing: -20,
   style: 'light',
 });
-map.addMarker({ lngLat: [116.4602, 39.9115], element: document.createElement('div') });
+const label = document.createElement('span');
+label.textContent = 'Beijing CBD';
+map.addMarker({ lngLat: [116.4602, 39.9115], element: label });
 map.on('click', (e) => console.log(e.feature)); // OSM id, layer, kept tags, provenance
 ```
 
@@ -86,13 +88,13 @@ node bin/city.js tiles build --input area.json --output tiles/my-area --json
 # a city from a .osm.pbf extract (<= 1 GB input, <= 5,000 km² build area)
 node bin/city.js tiles build --input city.osm.pbf --bbox 4.885,52.368,4.905,52.380 --output tiles/my-city --json
 node bin/city.js tiles validate tiles/my-city --json
+node bin/city.js tiles pack tiles/my-city --output tiles/my-city.archive --json
 node bin/city.js tiles serve tiles/my-city --port 4181
 ```
 
-Options (`--config options.json`): `inferRoofs` (off), `ruleTrees` (on), `details` (street furniture, off),
-`landscape` (site completion, off). Builds are deterministic and resumable (`--resume`). Large PBF extracts must be
-clipped first, for example `osmium extract -b west,south,east,north in.osm.pbf -o city.osm.pbf`. Known limit: whole-city
-builds are currently slow (see [WP-F report](docs/phase2/evidence/F/report.md)).
+For an irregular boundary, replace `--bbox` with `--polygon boundary.geojson`. The builder accepts polygons, holes and multiple islands. The map can load either the directory manifest or the packed archive URL on a host that supports HTTP byte ranges. See the [build options and example region](docs/phase2/03-build-pipeline.md) and [archive serving requirements](docs/phase2/tile-archive.md).
+
+The default build enables height inference and rule-based trees. Roof inference, street furniture and landscape completion can be enabled in `--config options.json`. Use `--resume` to verify and reuse completed work. For input above the supported limits, crop the extract first with `osmium extract -b west,south,east,north in.osm.pbf -o city.osm.pbf`. See the [whole-city build measurements](docs/phase2/evidence/F/report.md).
 
 ## Restyle
 

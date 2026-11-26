@@ -9,6 +9,8 @@ import { decodeTile, defaultExtentLog2, encodeTile, gridStepMeters, lngLatToTile
 import { assignBuildingRelations } from '../packages/builder/dist/building-relations.js';
 import { cutTiles } from '../packages/builder/dist/cut.js';
 import { fromGrid } from '../packages/builder/dist/geo.js';
+import { FeatureStore } from '../packages/builder/dist/ingest/store.js';
+import { parseOSM } from '../src/osm.js';
 import { wantedRelation } from '../packages/builder/dist/ingest/filter.js';
 
 const box = (x, y, w, h) => [
@@ -172,4 +174,34 @@ test('compound tiers keep the top and elevated base across a planning-cell bound
   assert.equal(Math.min(...far.map((r) => r.properties.minHeight)), 5);
   assert.equal(Math.max(...far.map((r) => r.properties.height)), 40);
   assert.equal(far.at(-1).provenance.height, 'observed');
+});
+
+test('disk neighbourhood retains distant tagged parts for outline suppression at a cell edge', async (t) => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'city-outline-store-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const region = [4, 52, 4.01, 52.01];
+  const store = new FeatureStore(dir);
+  const ways = [];
+  const insert = (id, x, width, tags) => {
+    const bounds = [x, 52.002, x + width, 52.003];
+    const outer = box(x, 52.002, width, 0.001);
+    const geometry = [...outer, outer[0]].map(([lon, lat]) => ({ lon, lat }));
+    const row = { type: 'way', id, tags, geometry };
+    ways.push(row);
+    store.add(row, bounds, region);
+  };
+  try {
+    insert(1, 4.001, 0.008, { building: 'yes' });
+    insert(2, 4.001, 0.003, { 'building:part': 'yes' });
+    insert(3, 4.0055, 0.0035, { 'building:part': 'yes' });
+  } finally {
+    store.close();
+  }
+  const parse = (elements) =>
+    parseOSM({ metadata: { bbox: [52, 4, 52.01, 4.01] }, elements })
+      .buildings.map((b) => b.id)
+      .sort();
+  const neighbourhood = store.neighbourhood([4.0049, 52.002, 4.0051, 52.003]);
+  assert.deepEqual(parse(ways), ['w2', 'w3']);
+  assert.deepEqual(parse(neighbourhood), parse(ways));
 });
