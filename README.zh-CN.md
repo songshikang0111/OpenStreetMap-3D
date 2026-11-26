@@ -50,7 +50,9 @@ const map = await createMap({
   bearing: -20,
   style: 'light',
 });
-map.addMarker({ lngLat: [116.4602, 39.9115], element: document.createElement('div') });
+const label = document.createElement('span');
+label.textContent = '北京国贸';
+map.addMarker({ lngLat: [116.4602, 39.9115], element: label });
 map.on('click', (e) => console.log(e.feature)); // OSM 身份、图层、保留标签、来源等级
 ```
 
@@ -73,10 +75,11 @@ node bin/city.js tiles build --input area.json --output tiles/my-area --json
 # 城市级 .osm.pbf（输入不超过 1 GB，构建范围不超过 5,000 km²）
 node bin/city.js tiles build --input city.osm.pbf --bbox 4.885,52.368,4.905,52.380 --output tiles/my-city --json
 node bin/city.js tiles validate tiles/my-city --json
+node bin/city.js tiles pack tiles/my-city --output tiles/my-city.archive --json
 node bin/city.js tiles serve tiles/my-city --port 4181
 ```
 
-选项（`--config options.json`）：`inferRoofs`（默认关）、`ruleTrees`（默认开）、`details`（街道小品，默认关）、`landscape`（场地补全，默认关）。构建结果确定且可恢复（`--resume`）。过大的 PBF 先裁剪，例如 `osmium extract -b 西,南,东,北 in.osm.pbf -o city.osm.pbf`。已知限制：整城构建目前很慢（见 [WP-F 报告](docs/phase2/evidence/F/report.md)）。
+不规则选区可以使用 `--polygon boundary.geojson`，支持孔洞和多块区域。地图可直接加载目录清单，或从支持 HTTP 字节范围请求的服务器加载归档。构建默认推断缺失高度并生成规则树木。屋顶推断、街道小品和场地补全可在 `--config options.json` 中开启。用 `--resume` 校验并复用已有产物。超过输入上限可先用 `osmium extract` 裁剪。见[构建手册](docs/phase2/03-build-pipeline.md)、[单文件归档](docs/phase2/tile-archive.md)和[整城实测](docs/phase2/evidence/F/report.md)。
 
 ## 换风格
 
