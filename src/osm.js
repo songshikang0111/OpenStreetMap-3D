@@ -150,7 +150,7 @@ export function mergeOSMOverlay(raw, overlay, name) {
   return raw;
 }
 
-export function parseOSM(raw, seed = 1) {
+export function parseOSM(raw, seed = 1, options = {}) {
   if (!raw?.metadata?.bbox || !Array.isArray(raw.elements))
     throw new Error('需要包含 metadata.bbox 和 elements 的 Overpass 数据文件。');
   const [south, west, north, east] = raw.metadata.bbox;
@@ -280,6 +280,7 @@ export function parseOSM(raw, seed = 1) {
       if (context) landscapeContexts.push(...cropSurface(p).map((part) => ({ ...part, context, source: 'osm' })));
     }
   }
+  options.onBuildingFootprints?.(buildings);
   // A fully represented building outline must not overlap its 3D parts.
   const parts = buildings.filter((b) => b.part);
   let suppressed = 0;

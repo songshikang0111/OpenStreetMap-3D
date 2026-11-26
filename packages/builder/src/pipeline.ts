@@ -22,6 +22,7 @@ import {
 import type { Bounds, Diagnostic, Provenance, TileId, TileInput, Tileset, FeatureLayerInput } from '@city-ink/tiles';
 import { GENERATOR_VERSION } from '@city-ink/generators';
 import { PlanContext, cellKey } from './plan.js';
+import { assignBuildingRelations } from './building-relations.js';
 import type { CellPlan, PlanOptions, PlanRecord } from './plan.js';
 import { planQueuedCells } from './planning-queue.js';
 import { cutTiles } from './cut.js';
@@ -297,6 +298,7 @@ export async function buildTiles(
       canonicalStringify({
         // Change the cache revision whenever planning, tile encoding or report semantics change.
         revision: 2,
+        massingRevision: 1,
         version: BUILDER_VERSION,
         sourceHash,
         file: path.basename(source.file),
@@ -337,6 +339,7 @@ export async function buildTiles(
   };
   const cellZoom = options.cellZoom ?? 12;
   const buildConfig = {
+    massingRevision: 1,
     planOptions,
     levels,
     cellZoom,
@@ -351,7 +354,9 @@ export async function buildTiles(
   if (ingestMarker && ingestMarker.inputHash !== inputHash) await rm(cache, { recursive: true, force: true });
   await writeAtomic(path.join(cache, 'ingest.json'), JSON.stringify({ inputHash, configHash, source: input.file }));
   step('ingest');
-  const data = parseOSM(input.raw, input.seed);
+  const data = parseOSM(input.raw, input.seed, {
+    onBuildingFootprints: (buildings) => assignBuildingRelations(buildings, input.raw.elements),
+  });
   if (options.inferHeights === false) {
     for (const building of data.buildings) {
       if (building.source !== 'estimated') continue;
@@ -435,8 +440,12 @@ export async function buildTiles(
     const own = new Set(plan.records.map((r) => r.id));
     const cellRect = cell ? tileToLngLatBounds(cell) : null;
     const near = cellRect ? expandBounds(cellRect, 400) : null;
+    const compounds = new Set(plan.records.flatMap((r) => (r.compoundId ? [r.compoundId] : [])));
     const context = buildingRecords.filter(
-      (r) => r.cell !== plan.cell && !own.has(r.id) && (!near || boundsContains(near, r.anchor)),
+      (r) =>
+        r.cell !== plan.cell &&
+        !own.has(r.id) &&
+        (!near || boundsContains(near, r.anchor) || (r.compoundId && compounds.has(r.compoundId))),
     );
     const cut = cutTiles(context.length ? [...plan.records, ...context] : plan.records, { levels, data });
     const inside = (k: string) => {

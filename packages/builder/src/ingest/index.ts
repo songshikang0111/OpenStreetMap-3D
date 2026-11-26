@@ -146,6 +146,15 @@ export async function ingestPbf(
       count('ways');
     },
   });
+  const nearbyPolygons = new Set(
+    relations
+      .filter(
+        (r) =>
+          r.tags.type === 'multipolygon' &&
+          r.members.some((m) => m.type === 'way' && members.has(m.ref) && overlaps(members.get(m.ref)!.bounds)),
+      )
+      .map((r) => r.id),
+  );
   for (const r of relations) {
     const bounds = emptyExtent();
     for (const m of r.members) {
@@ -157,7 +166,14 @@ export async function ingestPbf(
       bounds.minlon = Math.min(bounds.minlon, b.minlon);
       bounds.maxlon = Math.max(bounds.maxlon, b.maxlon);
     }
-    if (!overlaps(bounds)) continue;
+    const building = r.tags.type === 'building';
+    if (!overlaps(bounds) && !(building && r.members.some((m) => m.type === 'relation' && nearbyPolygons.has(m.ref))))
+      continue;
+    // Membership is sufficient here: the tagged ways/multipolygons carry their own geometry.
+    if (building) {
+      elements.push({ type: 'relation', id: r.id, members: r.members, tags: r.tags });
+      continue;
+    }
     let incomplete = false;
     const ways = r.members
       .filter((m) => m.type === 'way')
