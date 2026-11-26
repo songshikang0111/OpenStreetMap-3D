@@ -285,3 +285,20 @@ test('AC607: an oversized connected water mask and bridge group keep local geome
     await rm(dir, { recursive: true, force: true });
   }
 });
+
+test('AC303/606: disk-indexed buffered PBF planning matches a single global cell', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'pbf-store-'));
+  try {
+    const input = path.join(dir, 'sample.osm.pbf');
+    await writeFile(input, samplePbf());
+    // Large envelope selects the disk-backed path, while the sparse input makes this suitable for CI.
+    const config = { input, bbox: [135.734, 34.96, 135.83, 35.055], ruleTrees: false };
+    const global = await buildTiles({ ...config, output: path.join(dir, 'global'), cellZoom: -1 });
+    const tiled = await buildTiles({ ...config, output: path.join(dir, 'cells'), cellZoom: 12, concurrency: 2 });
+    assert.deepEqual(tiled.report.hashes, global.report.hashes);
+    assert.deepEqual(tiled.report.counts, global.report.counts);
+    assert.deepEqual(tiled.report.incompleteRelations, global.report.incompleteRelations);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});

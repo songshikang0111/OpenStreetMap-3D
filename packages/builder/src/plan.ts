@@ -90,6 +90,8 @@ export interface PlanRecord {
 }
 
 export interface CellPlan {
+  relationErrors?: { id: number; incomplete: boolean }[];
+  diagnostics?: Diagnostic[];
   cell: string;
   records: PlanRecord[];
   stats: Record<string, number>;
