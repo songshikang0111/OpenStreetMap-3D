@@ -15,7 +15,7 @@ import {
   RGBADepthPacking,
   Vector3,
 } from 'three';
-import type { DataTexture, Material, Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import type { Material, Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { prepareUpload, type UploadData } from './upload-data.js';
 import type { FeatureRecord } from './worker-core.js';
 import { installFacadeShader, extendFacadeShader, facadeAttributeDefaults } from '@city-ink/styles/facade-shader';
@@ -23,7 +23,7 @@ import { roleStyle } from '@city-ink/styles/spec';
 import type { ResolvedStyleSpec, RoleStyle } from '@city-ink/styles/spec';
 import { builtinStyle } from '@city-ink/styles/defaults';
 import type { GeneratedTile, MeshBatch } from '@city-ink/generators';
-import { EMPTY_RULES, FeatureStateTexture, STATE_WIDTH, patchFeatureState } from './picking/feature-state.js';
+import { FeatureStyle, FeatureStateTexture, STATE_WIDTH, patchFeatureState } from './picking/feature-state.js';
 import { ROLE_LIST, groupOf } from '@city-ink/generators';
 
 export type { RoleStyle } from '@city-ink/styles/spec';
@@ -86,6 +86,7 @@ interface Copy {
  * Wall and glass materials carry the phase-one procedural facade shader (windows, finishes, glass) on L0 and L1.
  */
 export class MaterialLibrary {
+  readonly featureStyle = new FeatureStyle();
   spec: ResolvedStyleSpec;
   pack: TileStylePack | null = null;
   /** Shared facade uniforms (src/facade-shader.js contract) and the tile-mode extras. */
@@ -119,14 +120,14 @@ export class MaterialLibrary {
   acquire(role: string, state: FeatureStateTexture, mesh: Object3D | null = null): Material {
     const replace = { value: 0 };
     const m = this.create(role, mesh, replace);
-    patchFeatureState(m, state.texture);
+    patchFeatureState(m, state.texture, this.featureStyle);
     if (GROUPS.has(role)) this.patchRoles(m);
     else this.patchReplace(m, replace);
     // Shadow depth pass with the same hidden/flatten state (the default depth material would ignore it).
     let depth: Material | null = null;
     if (mesh) {
       depth = new MeshDepthMaterial({ depthPacking: RGBADepthPacking });
-      patchFeatureState(depth, state.texture);
+      patchFeatureState(depth, state.texture, this.featureStyle);
       (mesh as Mesh).customDepthMaterial = depth;
     }
     this.copies.set(m, { role, mesh, state, replace, depth });
@@ -160,7 +161,10 @@ export class MaterialLibrary {
    * opacity from the shared table, and style-rule overrides apply only to the roles named by the rule (rule mask).
    */
   private patchRoles(m: Material) {
-    const rule = { ruleColor: { value: EMPTY_RULES as DataTexture }, ruleMask: { value: EMPTY_RULES as DataTexture } };
+    const rule = {
+      ruleColor: { value: this.featureStyle.emptyRules },
+      ruleMask: { value: this.featureStyle.emptyRules },
+    };
     m.userData.cityRuleUniforms = rule;
     const previous = m.onBeforeCompile;
     m.onBeforeCompile = (shader, renderer) => {
@@ -376,6 +380,7 @@ varying vec4 vCityRuleMask;`,
   dispose() {
     for (const m of [...this.copies.keys()]) this.release(m);
     this.copies.clear();
+    this.featureStyle.emptyRules.dispose();
   }
 }
 

@@ -30,6 +30,9 @@ export function wrapBearing(b: number): number {
 }
 
 export class Transform {
+  /** CSS pixel offset of the padded host centre from the viewport centre. */
+  offsetX = 0;
+  offsetY = 0;
   width = 1;
   height = 1;
   center: LngLat = [0, 0];
@@ -124,13 +127,15 @@ export class Transform {
     cam.fov = this.fov;
     cam.aspect = this.width / this.height;
     // MapLibre near and far planes (in pixels), scaled to world units; far is extended for fog/horizon tiles.
-    const halfFov = (this.fov * DEG) / 2;
+    const halfFov = Math.atan((this.height / 2 + this.offsetY) / D);
     const groundAngle = Math.PI / 2 + p;
     const topHalf = (Math.sin(halfFov) * D) / Math.sin(Math.max(1e-3, Math.PI - groundAngle - halfFov));
     const furthest = Math.cos(Math.PI / 2 - p) * topHalf + D;
     cam.near = Math.max(0.05, (this.height / 50) * k * 0.25);
     cam.far = Math.max(cam.near * 10, Math.min(furthest * 1.01, D * 40) * k);
-    cam.updateProjectionMatrix();
+    if (this.offsetX || this.offsetY)
+      cam.setViewOffset(this.width, this.height, -this.offsetX, -this.offsetY, this.width, this.height);
+    else cam.clearViewOffset();
     cam.updateMatrixWorld(true);
     this.viewProjection.multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse);
   }

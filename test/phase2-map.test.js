@@ -49,6 +49,30 @@ test('the centre projects to the viewport centre and the camera height follows M
   assert.ok(eastUp.y < 400, 'bearing 90 puts east at the top');
 });
 
+test('padded camera projection and ground rays follow the CSS viewport when resized', () => {
+  const t = new Transform();
+  t.anchor = [116.46, 39.91];
+  t.set({ center: t.anchor, zoom: 16, pitch: 60, bearing: 30 });
+  const footprint = [116.461, 39.911];
+  for (const [width, height, dx, dy] of [
+    [800, 600, 100, 50],
+    [601, 451, -75, -25],
+    [800, 600, 0, 0],
+  ]) {
+    t.offsetX = t.offsetY = 0;
+    t.resize(width, height);
+    const centered = t.project(footprint);
+    t.offsetX = dx;
+    t.offsetY = dy;
+    t.update();
+    const projected = t.project(footprint);
+    assert.ok(Math.hypot(projected.x - centered.x - dx, projected.y - centered.y - dy) < 1e-7);
+    const [lng, lat] = t.unproject(projected);
+    assert.ok(Math.hypot(lng - footprint[0], lat - footprint[1]) < 1e-9);
+    assert.equal(!!t.camera.view?.enabled, !!(dx || dy));
+  }
+});
+
 test('re-anchoring changes world coordinates but not screen positions', () => {
   const t = new Transform();
   t.resize(800, 600);

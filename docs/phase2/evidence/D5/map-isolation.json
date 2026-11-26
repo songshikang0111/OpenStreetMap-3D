@@ -1,0 +1,182 @@
+{
+  "browser": "Chrome/158.0.8127.36",
+  "host": {
+    "cameras": [
+      {
+        "width": 800,
+        "height": 600,
+        "dpr": 1,
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedBuffer": [
+          800,
+          600
+        ],
+        "actualBuffer": [
+          800,
+          600
+        ],
+        "picked": "way/599547918",
+        "repicked": "way/599547918",
+        "kind": "landmark",
+        "visible": 660,
+        "worst": 8.031663340702245e-9
+      },
+      {
+        "width": 800,
+        "height": 600,
+        "dpr": 1,
+        "padding": [
+          200,
+          0,
+          0,
+          0
+        ],
+        "expectedBuffer": [
+          800,
+          600
+        ],
+        "actualBuffer": [
+          800,
+          600
+        ],
+        "picked": "way/599547918",
+        "repicked": "way/599547918",
+        "kind": "landmark",
+        "visible": 587,
+        "worst": 8.33801153538841e-9
+      },
+      {
+        "width": 800,
+        "height": 600,
+        "dpr": 1,
+        "padding": [
+          0,
+          100,
+          0,
+          0
+        ],
+        "expectedBuffer": [
+          800,
+          600
+        ],
+        "actualBuffer": [
+          800,
+          600
+        ],
+        "picked": "way/599547918",
+        "repicked": "way/599547918",
+        "kind": "landmark",
+        "visible": 654,
+        "worst": 8.05134549864962e-9
+      },
+      {
+        "width": 681,
+        "height": 451,
+        "dpr": 1.5,
+        "padding": [
+          0,
+          10,
+          150,
+          60
+        ],
+        "expectedBuffer": [
+          1022,
+          677
+        ],
+        "actualBuffer": [
+          1022,
+          677
+        ],
+        "picked": "way/599547918",
+        "repicked": "way/599547918",
+        "kind": "landmark",
+        "visible": 579,
+        "worst": 6.579069691383094e-9
+      },
+      {
+        "width": 712,
+        "height": 510,
+        "dpr": 2,
+        "padding": [
+          200,
+          100,
+          30,
+          20
+        ],
+        "expectedBuffer": [
+          1424,
+          1020
+        ],
+        "actualBuffer": [
+          1424,
+          1020
+        ],
+        "picked": "way/599547918",
+        "repicked": "way/599547918",
+        "kind": "landmark",
+        "visible": 562,
+        "worst": 1.0567510934113617e-8
+      },
+      {
+        "width": 800,
+        "height": 600,
+        "dpr": 1,
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedBuffer": [
+          800,
+          600
+        ],
+        "actualBuffer": [
+          800,
+          600
+        ],
+        "picked": "way/599547918",
+        "repicked": "way/599547918",
+        "kind": "landmark",
+        "visible": 660,
+        "worst": 8.031663340702245e-9
+      }
+    ],
+    "retry": {
+      "rejected": true,
+      "rejectedReady": true,
+      "unchanged": true,
+      "sameContext": true
+    }
+  },
+  "standalone": {
+    "rejected": true,
+    "childrenAfterFailure": 0,
+    "positionAfterFailure": "",
+    "before": [
+      [
+        255,
+        17,
+        17,
+        255
+      ],
+      [
+        17,
+        255,
+        17,
+        255
+      ]
+    ],
+    "after": [
+      255,
+      17,
+      17,
+      255
+    ]
+  }
+}
