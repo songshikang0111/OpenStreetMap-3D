@@ -27,12 +27,14 @@ OSM 在中国大陆的建筑覆盖稀疏。在中国大陆上线的应用需要�
 
 ```sh
 npm ci
-npm run demo:tiles      # 用 public/data 构建北京国贸和京都祇园样本瓦片
+npm run demo:tiles -- beijing-cbd-grow-9     # 用内置 OSM 数据先构建一个片区
 npm run build:demo
 node scripts/serve-static.mjs apps/demo/dist --port 5180
 ```
 
-打开 `http://127.0.0.1:5180/`：可切换风格（`light`、`plain`、`dark` 以及漫画类 `comic`、`line`、`color`、`white`、`cel`），开关街道细节、"仅真实高度"、推断屋顶，点击建筑。其他页面：`overlays.html`（标记、线、面、拉伸）和 `maplibre.html`（MapLibre 图层）。
+打开 `http://127.0.0.1:5180/`。运行不带参数的 `npm run demo:tiles` 并重新构建 demo，即可切换五个样本片区。见[静态站点与样本指南](docs/demo.md)。
+
+可切换风格（`light`、`plain`、`dark` 以及漫画类 `comic`、`line`、`color`、`white`、`cel`），开关街道细节、"仅真实高度"、推断屋顶，点击建筑。其他页面：`overlays.html`（标记、线、面、拉伸）和 `maplibre.html`（MapLibre 图层）。
 
 ## 在自己的页面中使用
 
@@ -52,7 +54,7 @@ map.addMarker({ lngLat: [116.4602, 39.9115], element: document.createElement('di
 map.on('click', (e) => console.log(e.feature)); // OSM 身份、图层、保留标签、来源等级
 ```
 
-包发布前，请在本仓库构建（`npm run build:packages`），使用 workspace 包或单文件构建 `packages/map/bundle/city-map.js`（`three` 通过导入映射提供）。完整接口见 [04 地图运行时 SDK](docs/phase2/04-runtime-sdk.md)；[docs/llms.md](docs/llms.md) 是给编程 agent 的单文件接入说明。
+包发布前，请在本仓库构建（`npm run build:packages`），使用 workspace 包或再运行 `npm run build:map-bundle` 生成 `packages/map/bundle/`（保留旁边的 Worker，`three` 通过导入映射提供）。完整接口见 [04 地图运行时 SDK](docs/phase2/04-runtime-sdk.md)；[docs/llms.md](docs/llms.md) 是给编程 agent 的单文件接入说明。
 
 ### 叠加在 MapLibre 上
 

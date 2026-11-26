@@ -17,7 +17,7 @@ node bin/city.js tiles validate public/tiles/my-city --json
 
 `--json` prints one result line on stdout (`status: "succeeded" | "failed"`, `diagnostics[]` with `code`, `message`,
 `hint`); progress goes to stderr. Exit code 0 or 1. The sample tiles of the demo come from `npm run demo:tiles`
-(`apps/demo/public/tiles/{beijing-cbd-grow-9,kyoto-gion-grow-9}`).
+in `apps/demo/public/tiles/`. Its `catalog.json` lists the built districts, source URL, retrieval date and license. For a single district use `npm run demo:tiles -- beijing-cbd-grow-9`.
 
 ## 2. Show the city
 
