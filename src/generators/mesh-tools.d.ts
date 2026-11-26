@@ -1,5 +1,8 @@
+export const BOX_FACES: readonly (readonly [number, number, number, number, number, number])[];
+export function reverseTriangle(a: number[], b: number[], c: number[], normal: number[]): boolean;
 export class MeshWriter {
   get positionLength(): number;
+  writeBox?(points: number[][], axes: number[][], color: { r: number; g: number; b: number }, id: number): void;
   writeFace(
     a: number[],
     b: number[],

@@ -137,6 +137,11 @@ class TileBuildingWriter extends MeshWriter {
   override get positionLength() {
     return this.count * 3;
   }
+  override writeBox(points: number[][], axes: number[][], color: { r: number; g: number; b: number }, id: number) {
+    const batch = this.batches.get(this.layer, this.overrideRole ?? 'structure');
+    batch.writeBox(points, axes, color, id, PHASE1_GROUND_OFFSET, this);
+    this.count += 36;
+  }
   override writeFace(
     a: number[],
     b: number[],
@@ -224,10 +229,10 @@ export function generateBuildings(
       seed: options.seed ?? 1,
       roofPlan: roofPlans.get(building.id)!,
       envelopePlan: envelopes.get(building.id)!,
-      ...(options.collectNearWalls ? { counts: { nearWalls } } : {}),
+      ...(options.collectNearWalls ? { nearWalls } : {}),
     });
     if (options.collectNearWalls)
-      for (const w of nearWalls.splice(0) as unknown as (NearWall & { style: Record<string, unknown> })[])
+      for (const w of nearWalls as unknown as (NearWall & { style: Record<string, unknown> })[])
         result.nearWalls.push({
           renderId,
           key: w.key,
@@ -241,6 +246,7 @@ export function generateBuildings(
           layout: w.layout,
           style: { family: String(w.style.family), balcony: Boolean(w.style.balcony) },
         });
+    nearWalls.length = 0;
     const triangles = collect
       ? appendWriter(batches, writer, renderId, null, layerName) +
         appendWriter(batches, roofWriter, renderId, 'facility', layerName)

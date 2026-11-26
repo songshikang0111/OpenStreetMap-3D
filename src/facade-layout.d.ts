@@ -7,6 +7,7 @@ export function facadeLayout(
   length: number,
   height: number,
   style: { family: string; variant?: unknown; floor: number; [key: string]: unknown },
+  grammar?: ReturnType<typeof facadeGrammar>,
 ): { name: string; bays: number; floor: number; levels: number; attributes: [number, number, number, number] };
 export function nearbyFacadeFrames(
   walls: unknown[],

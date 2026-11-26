@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { Worker } from 'node:worker_threads';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { MeshWriter, addBox } from '../src/generators/mesh-tools.js';
 import { buildTiles } from '../packages/builder/dist/index.js';
 import { decodeTile, gridStepMeters } from '../packages/tiles/dist/index.js';
 import { generateTile, generateBuildings, BatchSet } from '../packages/generators/dist/index.js';
@@ -43,6 +44,34 @@ test('AC306: tile-generated buildings match phase-one direct generation', async 
   } finally {
     await rm(base, { recursive: true, force: true });
   }
+});
+
+test('compact boxes preserve winding, facade attributes and feature IDs across block boundaries', () => {
+  const collected = new BatchSet(),
+    streamed = new BatchSet();
+  const ordinary = new MeshWriter(),
+    compact = new MeshWriter();
+  const baseline = collected.get('building', 'structure'),
+    candidate = streamed.get('building', 'structure');
+  const offset = 0.45;
+  compact.writeBox = (points, axes, color, id) => candidate.writeBox(points, axes, color, id, offset, compact);
+  const dimensions = [
+    [3, 4, 2],
+    [0, 3, 6],
+    [-3, 4, 2],
+    [3, -4, -2],
+  ];
+  for (let i = 0; i < 135; i++) {
+    const start = ordinary.positionLength / 3;
+    for (const writer of [ordinary, compact]) {
+      writer.variant = i / 135;
+      writer.surface = [i % 4, 1 + i / 135];
+      writer.layout = [2, 0.35, 0.45, 1];
+      addBox(writer, [i, 5, -i], dimensions[i % dimensions.length], '#bba099', i + 1, i / 12);
+    }
+    baseline.addWriterRun(ordinary, start, 36, i + 1, offset);
+  }
+  assert.deepEqual(streamed.build(), collected.build());
 });
 
 function flatten(g) {

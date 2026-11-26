@@ -26,6 +26,7 @@ export function writeBuildingBody(
     writer?: MeshWriter;
     roofWriter?: MeshWriter;
     counts?: BuildingCounts;
+    nearWalls?: unknown[];
   },
 ): {
   writer: MeshWriter;

@@ -1,7 +1,7 @@
 // Bridge decks, parapets, piers and stair flights from the `structure` layer (WP-C task C4). Parapet, pier and stair
 // meshes are written by the phase-one modules (src/road-structures.js, src/road-stairs.js) so both paths share one
 // implementation (decision E4); positions are converted between the phase-one 0.45 m slab and the tile ground.
-import { HEIGHT_STEPS_PER_METER, readFeatureMetaAt } from '@city-ink/tiles';
+import { HEIGHT_STEPS_PER_METER } from '@city-ink/tiles';
 import type { FeatureLayer } from '@city-ink/tiles';
 import { writeRoadStructures } from '../../../src/road-structures.js';
 import type { BridgePier, BridgeRail, PlainWriter, StructureFace } from '../../../src/road-structures.js';
@@ -171,10 +171,12 @@ export function generateStructures(layer: FeatureLayer, step: number, batches: B
     triangles++;
   };
   const col = (name: string) => layer.attributes.find((a) => a.name === name);
+  const kinds = col('kind');
   const width = col('width');
   const thickness = col('thickness');
   for (let i = 0; i < layer.featureCount; i++) {
-    const kind = String(readFeatureMetaAt(layer, i).properties?.kind ?? 'deck');
+    const value = kinds?.values[i];
+    const kind = kinds?.type === 'string' && value !== undefined ? (layer.strings[value] ?? 'deck') : 'deck';
     const renderId = layer.renderId[i]!;
     currentId = renderId;
     extendPier = kind === 'pier';
