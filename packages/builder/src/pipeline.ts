@@ -1,3 +1,4 @@
+import { ownOutput } from './output-lock.js';
 import { regionalWater } from './ingest/water.js';
 import { FeatureStore } from './ingest/store.js';
 import { ingestPbf, bboxAreaKm2 } from './ingest/index.js';
@@ -256,6 +257,15 @@ export async function buildTiles(
   options: BuildOptions,
 ): Promise<{ report: BuildReport; tileset: Tileset; output: string }> {
   const out = path.resolve(options.output);
+  const release = await ownOutput(out);
+  try {
+    return await runBuild(options, out);
+  } finally {
+    await release();
+  }
+}
+
+async function runBuild(options: BuildOptions, out: string): Promise<BuildOutput> {
   const cache = path.join(out, '.build');
   const concurrency = options.concurrency ?? 1;
   const memoryMiB = options.maxMemoryMiB ?? 8192;
@@ -327,12 +337,48 @@ export async function buildTiles(
   if (!options.resume) await rm(cache, { recursive: true, force: true });
   const useStore =
     /\.pbf$/i.test(source.file) && (options.cellZoom ?? 12) >= 0 && (!options.bbox || bboxAreaKm2(options.bbox) >= 48);
-  const store = useStore ? new FeatureStore(cache) : undefined;
-  let input: LoadedInput;
-  try {
-    input = await readInput(options, source, checkBudget, store);
-  } finally {
-    store?.close();
+  let store: FeatureStore | undefined;
+  let input: LoadedInput | undefined;
+  const sourceMarker = path.join(cache, 'source.json');
+  const featureIndex = path.join(cache, 'features-index.bin');
+  const featuresFile = path.join(cache, 'features.ndjson');
+  if (useStore && options.resume) {
+    const saved = await readJSONIf<{ key: string; indexHash: string; featuresHash: string; input: LoadedInput }>(
+      sourceMarker,
+    );
+    if (saved && saved.key === requestKey(await hashFile(source.file))) {
+      try {
+        const bytes = await readFile(featureIndex);
+        if (sha256(bytes) === saved.indexHash && (await hashFile(featuresFile)) === saved.featuresHash) {
+          store = new FeatureStore(cache, bytes);
+          input = saved.input;
+          progress('ingest', 1, 'verified feature store');
+        }
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+      }
+    }
+  }
+  if (!input) {
+    store = useStore ? new FeatureStore(cache) : undefined;
+    try {
+      input = await readInput(options, source, checkBudget, store);
+    } finally {
+      store?.close();
+    }
+    if (store) {
+      const index = store.index();
+      await writeAtomic(featureIndex, index);
+      await writeAtomic(
+        sourceMarker,
+        JSON.stringify({
+          key: requestKey(input.sourceSha256),
+          input,
+          indexHash: sha256(index),
+          featuresHash: await hashFile(featuresFile),
+        }),
+      );
+    }
   }
   const levels = options.levels ?? DEFAULT_LEVELS;
   const planOptions: PlanOptions = {

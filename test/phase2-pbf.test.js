@@ -298,6 +298,35 @@ test('AC303/606: disk-indexed buffered PBF planning matches a single global cell
     assert.deepEqual(tiled.report.hashes, global.report.hashes);
     assert.deepEqual(tiled.report.counts, global.report.counts);
     assert.deepEqual(tiled.report.incompleteRelations, global.report.incompleteRelations);
+    const interrupted = path.join(dir, 'interrupted');
+    await assert.rejects(
+      buildTiles({ ...config, output: interrupted, cellZoom: 12, failAfter: { stage: 'partition', count: 1 } }),
+    );
+    const stages = [];
+    const resumed = await buildTiles({
+      ...config,
+      output: interrupted,
+      cellZoom: 12,
+      resume: true,
+      onProgress: (p) => stages.push(p),
+    });
+    assert.ok(stages.some((p) => p.detail === 'verified feature store'));
+    assert.deepEqual(resumed.report.hashes, tiled.report.hashes);
+    let overlapping;
+    await buildTiles({
+      ...config,
+      output: interrupted,
+      cellZoom: 12,
+      resume: true,
+      onProgress: (p) => {
+        if (!overlapping)
+          overlapping = assert.rejects(
+            buildTiles({ ...config, output: interrupted }),
+            (e) => e.code === 'TILES_OUTPUT_BUSY',
+          );
+      },
+    });
+    await overlapping;
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

@@ -2,6 +2,7 @@
 // Cell queries read neighbouring objects from disk with the full project's projection and crop.
 import { openSync, closeSync, writeSync, readSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
+import { serialize, deserialize } from 'node:v8';
 import { tilesInBounds, tileKey } from '@city-ink/tiles';
 import type { Bounds } from '@city-ink/tiles';
 import { boundsIntersect } from '../geo.js';
@@ -21,6 +22,16 @@ interface Ref {
   gradeNodes?: number[];
 }
 
+interface Index {
+  region?: Bounds;
+  refs: Ref[];
+  buckets: Map<string, number[]>;
+  names: Map<string, number[]>;
+  gradeNodes: Map<number, number[]>;
+  water: number[];
+  waterWays: Set<number>;
+  memberships: { index: number; ways: number[] }[];
+}
 export class FeatureStore {
   private readonly file: string;
   private writer: number;
@@ -33,10 +44,33 @@ export class FeatureStore {
   private readonly water: number[] = [];
   private readonly waterWays = new Set<number>();
   private readonly memberships: { index: number; ways: number[] }[] = [];
-  constructor(cache: string) {
+  constructor(cache: string, index?: Buffer) {
     mkdirSync(cache, { recursive: true });
     this.file = path.join(cache, 'features.ndjson');
-    this.writer = openSync(this.file, 'w');
+    if (index) {
+      const saved: Index = deserialize(index);
+      if (saved.region) this.region = saved.region;
+      this.refs = saved.refs;
+      this.buckets = saved.buckets;
+      this.names = saved.names;
+      this.gradeNodes = saved.gradeNodes;
+      this.water = saved.water;
+      this.waterWays = saved.waterWays;
+      this.memberships = saved.memberships;
+      this.writer = -1;
+    } else this.writer = openSync(this.file, 'w');
+  }
+  index(): Buffer {
+    return serialize({
+      ...(this.region ? { region: this.region } : {}),
+      refs: this.refs,
+      buckets: this.buckets,
+      names: this.names,
+      gradeNodes: this.gradeNodes,
+      water: this.water,
+      waterWays: this.waterWays,
+      memberships: this.memberships,
+    } satisfies Index);
   }
   close() {
     if (this.writer >= 0) {
@@ -144,12 +178,14 @@ export class FeatureStore {
       if (r.gradeNodes) queue.push(i);
     }
     // Preserve the deterministic named-road planting stream and complete connected grade groups.
+    const visitedGrades = new Set(queue);
     for (const name of names) for (const i of this.names.get(name)!) indices.add(i);
     for (let i = 0; i < queue.length; i++)
       for (const node of this.refs[queue[i]!]!.gradeNodes!)
         for (const j of this.gradeNodes.get(node)!)
-          if (!indices.has(j)) {
+          if (!visitedGrades.has(j)) {
             indices.add(j);
+            visitedGrades.add(j);
             queue.push(j);
           }
     return this.read(indices);
