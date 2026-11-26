@@ -77,7 +77,7 @@ export async function everyMethod(map: CityMap): Promise<void> {
 
 export async function exportView(map: CityMap) {
   await map.whenIdle();
-  const {blob: png} = await map.exportPNG();
-  const {blob: glb, tileIds} = await map.exportGLB({scope:'loaded'});
-  return {png,glb,tileIds};
+  const { blob: png } = await map.exportPNG();
+  const { blob: glb, tileIds } = await map.exportGLB({ scope: 'loaded' });
+  return { png, glb, tileIds };
 }

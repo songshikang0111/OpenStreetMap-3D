@@ -51,3 +51,32 @@ test('full GLB matches the finest tile cover, positioning and tree geometry; a f
   assert.equal((await run()).status, 'failed');
   assert.deepEqual(await readFile(out), bytes);
 });
+
+test('loaded GLB omits hidden vertices from its bounds and flattens filtered buildings', async () => {
+  const { BufferGeometry, BufferAttribute, Mesh, MeshBasicMaterial, Group } = await import('three');
+  const { loadedTileGLB } = await import('../packages/map/dist/exports.js');
+  const { FLAG_HIDDEN, FLAG_FLATTEN } = await import('../packages/map/dist/picking/feature-state.js');
+  const geometry = new BufferGeometry();
+  geometry.setAttribute(
+    'position',
+    new BufferAttribute(new Float32Array([0, 10, 0, 3, 10, 0, 3, 10, 1, 99, 80, 99, 98, 80, 99, 98, 80, 98]), 3),
+  );
+  geometry.setAttribute('renderId', new BufferAttribute(new Uint32Array([1, 1, 1, 2, 2, 2]), 1));
+  geometry.setIndex([0, 1, 2, 3, 4, 5]);
+  const group = new Group();
+  group.add(new Mesh(geometry, new MeshBasicMaterial()));
+  const data = new Uint8Array(12);
+  data[7] = FLAG_FLATTEN;
+  data[11] = FLAG_HIDDEN;
+  const attribution = {
+    text: '© OpenStreetMap contributors',
+    license: 'ODbL',
+    url: 'https://www.openstreetmap.org/copyright',
+  };
+  const glb = loadedTileGLB({ name: 'test', attribution }, [0, 0], [['16/1/1', { group, state: { data } }]], 65536);
+  const { scene } = await new GLTFLoader().parseAsync(await glb.arrayBuffer(), '');
+  const result = scene.children[0].children[0].geometry;
+  assert.equal(result.getAttribute('position').count, 3);
+  assert.deepEqual(result.boundingBox.max.toArray(), [3, Math.fround(0.3), 1]);
+  assert.equal(geometry.getAttribute('position').getY(0), 10);
+});
