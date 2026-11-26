@@ -12,12 +12,22 @@ try {
   await page.evaluate('cityMap.dispose()');
   const result = await page.evaluate(`(async()=>{
     const cases={};
-    for(const [name,quality] of Object.entries({balanced:'balanced',minimum:{visibleTriangles:1,residentBytes:1}})){
+    const tiny={visibleTriangles:1,residentBytes:1};
+    for(const [name,quality] of Object.entries({balanced:'balanced',minimum:tiny,singleLevel:tiny})){
       const container=document.createElement('div');
       container.style.cssText='position:fixed;inset:0';
       document.body.append(container);
       const diagnostics=[];
-      const m=await createCityMap({container,tiles:${JSON.stringify(tiles)},center:[5.291,52.702],zoom:18.5,pitch:35,bearing:0,quality,
+      const readAsset=name==='singleLevel'?async(url,options)=>{
+        const response=await fetch(url,{signal:options.signal});
+        if(!response.ok)throw Error('HTTP '+response.status+' for '+url);
+        if(options.responseType!=='json')return response.arrayBuffer();
+        const manifest=await response.json();
+        manifest.levels=manifest.levels.slice(0,1);
+        manifest.coverage.zoom=manifest.levels[0].zoom;
+        return manifest;
+      }:undefined;
+      const m=await createCityMap({container,readAsset,tiles:${JSON.stringify(tiles)},center:[5.291,52.702],zoom:18.5,pitch:35,bearing:0,quality,
         onDiagnostic:d=>diagnostics.push(d.code)});
       try{
         await m.whenIdle({timeoutMs:60000});
@@ -39,6 +49,8 @@ try {
   assert.ok(result.balanced.initial.some((key) => key.startsWith('16/')));
   assert.ok(result.minimum.initial.length && result.minimum.initial.every((key) => key.startsWith('14/')));
   assert.equal(result.minimum.budgetWarnings, 1);
+  assert.deepEqual(result.singleLevel.initial, result.minimum.initial);
+  assert.equal(result.singleLevel.budgetWarnings, 1);
   for (const entry of Object.values(result)) {
     assert.deepEqual(entry.initial, entry.final);
     assert.equal(entry.additionalRequests, 0);
