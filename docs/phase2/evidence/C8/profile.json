@@ -1,0 +1,136 @@
+{
+  "browser": "Chrome/158.0.8127.36",
+  "method": "CDP Profiler attached to the production module Worker with source maps; 500 microsecond sampling interval; six passes through six Kyoto L1 tiles after one warm-up pass. Counts are samples, not per-function milliseconds.",
+  "before": [
+    {
+      "location": "batch.js:96 build",
+      "samples": 1420
+    },
+    {
+      "location": "(idle)",
+      "samples": 719
+    },
+    {
+      "location": "face-block.js:15 write",
+      "samples": 623
+    },
+    {
+      "location": "worker.js:4 event",
+      "samples": 590
+    },
+    {
+      "location": "face-block.js:4 Qi",
+      "samples": 565
+    },
+    {
+      "location": "batch.js:232 vertexCoordinates",
+      "samples": 517
+    },
+    {
+      "location": "(garbage collector)",
+      "samples": 514
+    },
+    {
+      "location": "building-mesh.js:17 writeBuildingBody",
+      "samples": 451
+    },
+    {
+      "location": "batch.js:52 reserve",
+      "samples": 403
+    },
+    {
+      "location": "building-envelope.js:61 d",
+      "samples": 340
+    },
+    {
+      "location": "building.js:146 ",
+      "samples": 310
+    },
+    {
+      "location": "batch.js:63 push3",
+      "samples": 239
+    },
+    {
+      "location": "building-envelope.js:15 planBuildingEnvelopes",
+      "samples": 223
+    },
+    {
+      "location": "mesh-tools.js:33 triangle",
+      "samples": 196
+    },
+    {
+      "location": "mesh-tools.js:167 orientedBox",
+      "samples": 195
+    },
+    {
+      "location": "road-structures.js:315 box",
+      "samples": 178
+    }
+  ],
+  "after": [
+    {
+      "location": "box-block.js:53 copyTo",
+      "samples": 706
+    },
+    {
+      "location": "batch.js:107 build",
+      "samples": 650
+    },
+    {
+      "location": "(idle)",
+      "samples": 580
+    },
+    {
+      "location": "worker.js:4 event",
+      "samples": 484
+    },
+    {
+      "location": "batch.js:86 nextVertex",
+      "samples": 412
+    },
+    {
+      "location": "batch.js:259 vertexCoordinates",
+      "samples": 396
+    },
+    {
+      "location": "(garbage collector)",
+      "samples": 304
+    },
+    {
+      "location": "building-mesh.js:17 writeBuildingBody",
+      "samples": 268
+    },
+    {
+      "location": "box-block.js:23 write",
+      "samples": 236
+    },
+    {
+      "location": "building-envelope.js:61 d",
+      "samples": 211
+    },
+    {
+      "location": "face-block.js:15 write",
+      "samples": 210
+    },
+    {
+      "location": "polygon-clipping.esm.js:385 compare",
+      "samples": 170
+    },
+    {
+      "location": "building.js:151 ",
+      "samples": 153
+    },
+    {
+      "location": "building-envelope.js:15 planBuildingEnvelopes",
+      "samples": 151
+    },
+    {
+      "location": "upload-data.js:20 batch",
+      "samples": 118
+    },
+    {
+      "location": "road-structures.js:315 box",
+      "samples": 115
+    }
+  ]
+}
