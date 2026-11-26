@@ -24,3 +24,9 @@ examples/
 packages/styles/
 packages/landmarks/
 index.html
+
+# Local worktrees and generated demo / SDK output
+.claude/worktrees/
+apps/demo/public/tiles/
+apps/demo/public/maplibre-gl.css
+packages/map/bundle/
