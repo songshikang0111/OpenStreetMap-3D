@@ -34,6 +34,7 @@ import type { CutResult, LevelSpec } from './cut.js';
 import { boundsContains, boundsIntersect, expandBounds } from './geo.js';
 
 export const BUILDER_VERSION = GENERATOR_VERSION;
+const MASSING_REVISION = 2;
 export const DEFAULT_LEVELS: (LevelSpec & { geometricErrorMeters: number })[] = [
   { id: 'L0', zoom: 14, profile: 'massing', geometricErrorMeters: 12 },
   { id: 'L1', zoom: 16, profile: 'full', geometricErrorMeters: 0.5 },
@@ -312,7 +313,7 @@ export async function buildTiles(
       canonicalStringify({
         // Change the cache revision whenever planning, tile encoding or report semantics change.
         revision: '3-disk-features-v1',
-        massingRevision: 1,
+        massingRevision: MASSING_REVISION,
         version: BUILDER_VERSION,
         sourceHash,
         file: path.basename(source.file),
@@ -363,7 +364,7 @@ export async function buildTiles(
   };
   const cellZoom = options.cellZoom ?? 12;
   const buildConfig = {
-    massingRevision: 1,
+    massingRevision: MASSING_REVISION,
     planOptions,
     levels,
     cellZoom,
