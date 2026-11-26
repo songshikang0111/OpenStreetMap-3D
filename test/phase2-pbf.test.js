@@ -180,6 +180,27 @@ function samplePbf(includeBuildingRelation = false) {
   return Buffer.concat([block('OSMHeader', header), block('OSMData', data)]);
 }
 
+test('PBF decodes signed int64 offsets and rejects truncated or oversized framing', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'city-pbf-offsets-'));
+  const file = path.join(dir, 'offset.osm.pbf');
+  try {
+    // int64 -1_000_000_000 as a ten-byte two's-complement varint.
+    const negative = [128, 236, 148, 163, 252, 255, 255, 255, 255, 1];
+    const node = bytesField(1, [...varField(1, zz(1)), ...varField(8, zz(25)), ...varField(9, zz(-50))]);
+    const data = block('OSMData', [...bytesField(2, node), ...varField(19, 2e9), ...key(20, 0), ...negative]);
+    await writeFile(file, data);
+    const nodes = [];
+    await readPbf(file, { node: (id, lat, lon) => nodes.push([id, lat, lon]) });
+    assert.deepEqual(nodes, [[1, 2.0000025, -1.000005]]);
+    for (const bad of [data.subarray(0, -1), data.subarray(0, 3), Buffer.from([255, 255, 255, 255])]) {
+      await writeFile(file, bad);
+      await assert.rejects(readPbf(file, {}), /Truncated PBF|Invalid PBF/);
+    }
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test('F1/F2: the streaming PBF reader decodes dense nodes, ways and relations', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'city-pbf-'));
   try {

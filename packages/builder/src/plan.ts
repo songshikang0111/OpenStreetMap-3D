@@ -561,6 +561,7 @@ export async function planCellData(data: Phase1Data, cell: TileId | null, option
     const life = planStreetLife(data, {
       seed: options.seed,
       maxTrees: 1e9,
+      ...(options.details ? {} : { treeMode: options.ruleTrees ? ('all' as const) : ('observed' as const) }),
       roadPlan: road,
       landscapeTrees: landscapeTrees as never,
     }) as ReturnType<typeof planStreetLife> & {

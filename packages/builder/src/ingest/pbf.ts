@@ -4,6 +4,9 @@
 import { open } from 'node:fs/promises';
 import { inflateSync } from 'node:zlib';
 
+const MAX_HEADER = 64 * 1024;
+const MAX_BLOB = 32 * 1024 * 1024;
+
 class Reader {
   pos = 0;
   constructor(
@@ -18,11 +21,27 @@ class Reader {
       shift = 1,
       b: number;
     do {
+      if (this.pos >= this.end || shift > 2 ** 63) throw new Error('Invalid PBF varint');
       b = this.buf[this.pos++]!;
       result += (b & 0x7f) * shift;
       shift *= 128;
     } while (b & 0x80);
     return result;
+  }
+  // PrimitiveBlock coordinate offsets are int64 (two’s complement), unlike zig-zag node coordinates.
+  int64(): number {
+    let value = 0n;
+    for (let shift = 0n; shift < 64n && this.more(); shift += 7n) {
+      const byte = this.buf[this.pos++]!;
+      value |= BigInt(byte & 127) << shift;
+      if (byte < 128) return Number(BigInt.asIntN(64, value));
+    }
+    throw new Error('Invalid PBF int64');
+  }
+  length(): number {
+    const n = this.varint();
+    if (n > this.end - this.pos) throw new Error('Truncated PBF field');
+    return n;
   }
   svarint(): number {
     const n = this.varint();
@@ -33,13 +52,13 @@ class Reader {
     return [Math.floor(k / 8), k & 7];
   }
   bytes(): Uint8Array {
-    const n = this.varint();
+    const n = this.length();
     const out = this.buf.subarray(this.pos, this.pos + n);
     this.pos += n;
     return out;
   }
   sub(): Reader {
-    const n = this.varint();
+    const n = this.length();
     const r = new Reader(this.buf, this.pos + n);
     r.pos = this.pos;
     this.pos += n;
@@ -50,10 +69,11 @@ class Reader {
     else if (wire === 1) this.pos += 8;
     else if (wire === 2) {
       // read the length first: `this.pos += this.varint()` would add to the position before the length byte
-      const n = this.varint();
+      const n = this.length();
       this.pos += n;
     } else if (wire === 5) this.pos += 4;
     else throw new Error(`Unsupported protobuf wire type ${wire}`);
+    if (this.pos > this.end) throw new Error('Truncated PBF field');
   }
   packed(signed: boolean, delta: boolean): number[] {
     const r = this.sub();
@@ -102,15 +122,26 @@ export async function readPbf(file: string, visitor: PbfVisitor): Promise<PbfHea
   try {
     const lenBuf = Buffer.alloc(4);
     let offset = 0;
+    const read = async (buffer: Buffer, allowEnd = false) => {
+      let filled = 0;
+      while (filled < buffer.length) {
+        const { bytesRead } = await fh.read(buffer, filled, buffer.length - filled, offset);
+        if (bytesRead === 0) {
+          if (allowEnd && filled === 0) return false;
+          throw new Error('Truncated PBF file block');
+        }
+        filled += bytesRead;
+        offset += bytesRead;
+      }
+      return true;
+    };
     for (;;) {
       visitor.onBlock?.();
-      const { bytesRead } = await fh.read(lenBuf, 0, 4, offset);
-      if (bytesRead < 4) break;
+      if (!(await read(lenBuf, true))) break;
       const headerLength = lenBuf.readUInt32BE(0);
-      offset += 4;
+      if (!headerLength || headerLength >= MAX_HEADER) throw new Error('Invalid PBF BlobHeader size');
       const hb = Buffer.alloc(headerLength);
-      await fh.read(hb, 0, headerLength, offset);
-      offset += headerLength;
+      await read(hb);
       const hr = new Reader(hb);
       let type = '',
         dataSize = 0;
@@ -120,9 +151,9 @@ export async function readPbf(file: string, visitor: PbfVisitor): Promise<PbfHea
         else if (f === 3) dataSize = hr.varint();
         else hr.skip(w);
       }
+      if (!dataSize || dataSize > MAX_BLOB) throw new Error('Invalid PBF Blob size');
       const blob = Buffer.alloc(dataSize);
-      await fh.read(blob, 0, dataSize, offset);
-      offset += dataSize;
+      await read(blob);
       const data = inflateBlob(blob);
       if (type === 'OSMHeader') {
         readHeader(data, header);
@@ -140,11 +171,11 @@ function inflateBlob(blob: Uint8Array): Uint8Array {
   while (r.more()) {
     const [f, w] = r.key();
     if (f === 1) return r.bytes();
-    if (f === 3) return inflateSync(r.bytes());
-    if (f === 4 || f === 6 || f === 7) throw new Error('Unsupported PBF blob compression (only zlib or raw).');
+    if (f === 3) return inflateSync(r.bytes(), { maxOutputLength: MAX_BLOB });
+    if (f === 4 || f === 5 || f === 6 || f === 7) throw new Error('Unsupported PBF blob compression (only zlib or raw).');
     r.skip(w);
   }
-  return new Uint8Array(0);
+  throw new Error('Missing PBF blob payload');
 }
 
 function readHeader(data: Uint8Array, header: PbfHeader) {
@@ -184,8 +215,8 @@ function readBlock(data: Uint8Array, v: PbfVisitor) {
       }
     } else if (f === 2) groups.push(r.sub());
     else if (f === 17) granularity = r.varint();
-    else if (f === 19) latOffset = r.svarint();
-    else if (f === 20) lonOffset = r.svarint();
+    else if (f === 19) latOffset = r.int64();
+    else if (f === 20) lonOffset = r.int64();
     else r.skip(w);
   }
   const coord = (raw: number, off: number) => (off + granularity * raw) / 1e9;
