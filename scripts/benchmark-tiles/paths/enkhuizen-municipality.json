@@ -1,0 +1,102 @@
+{
+  "tileset": "enkhuizen-municipality",
+  "description": "Cold start at the full municipal tileset default, fly from the IJsselmeer to the town centre, harbour and residential area, and return to the default view.",
+  "start": {
+    "center": [5.294298700000001, 52.758178900000004],
+    "zoom": 16,
+    "pitch": 0,
+    "bearing": 0
+  },
+  "keyframes": [
+    {
+      "type": "flyTo",
+      "duration": 8500,
+      "camera": {
+        "center": [5.286, 52.708],
+        "zoom": 16.5,
+        "pitch": 45,
+        "bearing": 30
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 8000,
+      "camera": {
+        "center": [5.291, 52.702],
+        "zoom": 18.2,
+        "pitch": 70,
+        "bearing": 50
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 7500,
+      "camera": {
+        "center": [5.294, 52.701],
+        "zoom": 18.2,
+        "pitch": 70,
+        "bearing": 120
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 3000,
+      "camera": {
+        "center": [5.267, 52.706],
+        "zoom": 17.5,
+        "pitch": 60,
+        "bearing": 200
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 3000,
+      "camera": {
+        "center": [5.267, 52.706],
+        "zoom": 14.5,
+        "pitch": 40,
+        "bearing": 220
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 5000,
+      "camera": {
+        "center": [5.269, 52.708],
+        "zoom": 17.8,
+        "pitch": 68,
+        "bearing": 260
+      }
+    },
+    {
+      "type": "flyTo",
+      "duration": 8000,
+      "camera": {
+        "center": [5.286, 52.708],
+        "zoom": 16.5,
+        "pitch": 55,
+        "bearing": 300
+      }
+    },
+    {
+      "type": "easeTo",
+      "duration": 8000,
+      "camera": {
+        "center": [5.291, 52.702],
+        "zoom": 18,
+        "pitch": 65,
+        "bearing": 340
+      }
+    },
+    {
+      "type": "flyTo",
+      "duration": 9000,
+      "camera": {
+        "center": [5.294298700000001, 52.758178900000004],
+        "zoom": 16,
+        "pitch": 0,
+        "bearing": 0
+      }
+    }
+  ]
+}

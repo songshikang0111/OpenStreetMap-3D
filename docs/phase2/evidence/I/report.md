@@ -42,3 +42,5 @@ CITY_BROWSER_FLAGS='--use-gl=angle --use-angle=gl-egl --ignore-gpu-blocklist' \
 手机基准页面位于构建目录的 `benchmark.html`，可选择单圈或十圈并复制结果或下载原始记录。
 
 并行构建压力下另跑了 `97a71b4` 及新版接缝瓦片。10 分钟无瓦片错误，完整收集 35,560 个 GPU 计时。RAF p95 16.8 ms、每分钟长帧 4.99 次、首个可用画面 869 ms、首屏 790,585 B、Worker p95 323.9 ms、单帧上传峰值 40.7 ms。期间本机同时运行 PBF 区域构建和其他测试，SDK、数据哈希和负载也有变化，无法由两次测量单独推导优化收益。见[并行构建时的真实浏览器摘要](enkhuizen-concurrent.json)。
+
+完整行政边界另有一条 60 秒路线。1,016 块瓦片的清单默认中心在湖上，冷启动首屏为 3,661 B，626 ms 出现首个可用画面。路线随后飞入市中心、港口和住宅区，累计再请求 17,477,240 B，其中瓦片错误 0。城区起点的约 791 KB 数据给出了更接近日常街区使用的首屏样本。两者均通过 AC904 的 3 MB 上限。复跑时将 [F 报告](../F/report.md) 的完整市界产物放在 demo 的 `tiles/enkhuizen-municipality`，使用 `scripts/benchmark-tiles/paths/enkhuizen-municipality.json` 运行同一 path-run 命令。见[完整市界浏览器记录](municipality-desktop.json)。
