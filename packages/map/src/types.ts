@@ -1,6 +1,8 @@
 // Public types of @city-ink/map (04 section 3, frozen contract; optional fields may be added).
 import type { Group, Object3D, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three';
 import type { Diagnostic, LngLat, Tileset, Provenance } from '@city-ink/tiles';
+import type { StyleSpec } from '@city-ink/styles/spec';
+import type { TileStylePack as StylePack } from './tile-object.js';
 
 export type { LngLat, Tileset, Diagnostic, Provenance };
 
@@ -38,16 +40,7 @@ export type ReadAsset = (
   options: { signal?: AbortSignal; responseType: 'json' | 'arraybuffer' },
 ) => Promise<unknown>;
 
-export interface StyleSpec {
-  schemaVersion: number;
-  id: string;
-  [key: string]: unknown;
-}
-
-export interface StylePack {
-  id: string;
-  [key: string]: unknown;
-}
+export type { StyleSpec, StylePack };
 
 export interface MapOptions {
   container: HTMLElement;

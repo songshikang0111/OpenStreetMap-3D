@@ -19,7 +19,8 @@ import {
   RGBADepthPacking,
   Vector3,
 } from 'three';
-import type { DataTexture, Material, Object3D } from 'three';
+import type { DataTexture, Material, Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import type { FeatureRecord } from './worker-core.js';
 import { installFacadeShader, extendFacadeShader, facadeAttributeDefaults } from '@city-ink/styles/facade-shader';
 import { roleStyle } from '@city-ink/styles/spec';
 import type { ResolvedStyleSpec, RoleStyle } from '@city-ink/styles/spec';
@@ -33,7 +34,8 @@ export type { RoleStyle } from '@city-ink/styles/spec';
 /** A code style pack usable in tile mode (05 section 8): materials per role plus optional streaming hooks. */
 export interface TileStylePack {
   id: string;
-  supportsTiles?: boolean;
+  version?: string;
+  supportsTiles: true;
   hostCompatible?: boolean;
   parametersSchema?: { properties?: Record<string, { default?: unknown }> };
   createMaterial(context: {
@@ -48,13 +50,13 @@ export interface TileStylePack {
   /** Facade materials keep the phase-one ink signal in alpha (packs with an ink post-processing pipeline). */
   inkAlpha?: boolean;
   createPipeline?(context: {
-    renderer: unknown;
-    scene: unknown;
-    camera: unknown;
+    renderer: WebGLRenderer;
+    scene: Scene;
+    camera: PerspectiveCamera;
     shared: Record<string, { value: unknown }>;
     parameters: Record<string, unknown>;
   }): TilePipeline;
-  onTileLoad?(event: { tile: string; group: Group; features: unknown[] }): void;
+  onTileLoad?(event: { tile: string; group: Group; features: readonly FeatureRecord[] }): void;
   onTileUnload?(event: { tile: string; group: Group }): void;
 }
 
