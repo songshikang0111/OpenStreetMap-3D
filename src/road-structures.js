@@ -275,7 +275,8 @@ function cachedColor(value) {
 }
 
 class StructureWriter {
-  constructor() {
+  constructor(emitFace) {
+    this.emitFace = emitFace;
     this.positions = [];
     this.normals = [];
     this.colors = [];
@@ -297,6 +298,10 @@ class StructureWriter {
     ny *= inv;
     nz *= inv;
     const rgb = cachedColor(color);
+    if (this.emitFace) {
+      this.emitFace(a, b, c, nx, ny, nz, rgb);
+      return;
+    }
     for (const p of [a, b, c]) {
       this.positions.push(p[0], p[1], p[2]);
       this.normals.push(nx, ny, nz);
@@ -365,10 +370,10 @@ class StructureWriter {
  * Renderer-free: shared by the phase-one scene path below and the phase-two tile generators (piers, rails and decks
  * planned at build time, written in a Worker).
  */
-export function writeRoadStructures(plan) {
-  const deckWriter = new StructureWriter(),
-    railWriter = new StructureWriter(),
-    pierWriter = new StructureWriter();
+export function writeRoadStructures(plan, emitFace) {
+  const deckWriter = new StructureWriter(emitFace),
+    railWriter = new StructureWriter(emitFace),
+    pierWriter = new StructureWriter(emitFace);
   for (const d of plan.decks) {
     const top = (q) => roadHeightAt(d, q),
       bottom = (q) => Math.max(0.18, roadHeightAt(d, q) - d.thickness),

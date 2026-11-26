@@ -12,7 +12,7 @@ import { writeRoof } from './roofs.js';
  */
 export function writeBuildingBody(
   building,
-  { renderId, seed = 1, roofPlan, envelopePlan, roofWriter = new MeshWriter(), counts = {} },
+  { renderId, seed = 1, roofPlan, envelopePlan, writer = new MeshWriter(), roofWriter = new MeshWriter(), counts = {} },
 ) {
   const familyCounts = (counts.familyCounts ||= {}),
     surfaceCounts = (counts.surfaceCounts ||= {}),
@@ -20,8 +20,7 @@ export function writeBuildingBody(
     roofStats = (counts.roofStats ||= { tagged: 0, inferred: 0, unsupported: 0 }),
     nearWalls = (counts.nearWalls ||= []),
     roofDetails = (counts.roofDetails ||= []);
-  const writer = new MeshWriter(),
-    id = renderId,
+  const id = renderId,
     style = buildingStyle(building, seed || 1);
   writer.style = style.code;
   writer.variant = style.variant;
@@ -167,16 +166,10 @@ export function writeBuildingBody(
     } else for (const [outer, ...holes] of envelope.roof) polygon(writer, { outer, holes }, topY, '#e1e3dd', id);
     writer.materialRole = null;
     if (building.minHeight > 0) {
-      const start = writer.positions.length;
-      for (const [outer, ...holes] of envelope.bottom) polygon(writer, { outer, holes }, baseY, wall, id);
-      for (let i = start; i < writer.positions.length; i += 9) {
-        for (let c = 0; c < 3; c++)
-          [writer.positions[i + 3 + c], writer.positions[i + 6 + c]] = [
-            writer.positions[i + 6 + c],
-            writer.positions[i + 3 + c],
-          ];
-        for (let c = 0; c < 3; c++) writer.normals[i + c * 3 + 1] = -1;
-      }
+      // Keep the underside's existing roof material while emitting its downward-facing winding directly.
+      writer.materialRole = 'roof';
+      for (const [outer, ...holes] of envelope.bottom) polygon(writer, { outer, holes }, baseY, wall, id, [0, -1, 0]);
+      writer.materialRole = null;
     }
     if (longest && building.minHeight === 0 && building.height > 10 && longest.len > 12) {
       const { mid, normal, angle, len } = longest,
@@ -194,7 +187,7 @@ export function writeBuildingBody(
         )
       )
         continue;
-      const start = roofWriter.positions.length;
+      const start = roofWriter.positionLength;
       addBox(roofWriter, [box.x, topY + box.h / 2, box.z], [box.w, box.h, box.d], '#aeb7b4', id);
       addBox(roofWriter, [box.x, topY + box.h + 0.1, box.z], [box.w + 0.3, 0.2, box.d + 0.3], '#d6dbd8', id);
       for (let j = 0; j < 3; j++)
@@ -207,7 +200,7 @@ export function writeBuildingBody(
         );
       roofDetails.push({
         start,
-        end: roofWriter.positions.length,
+        end: roofWriter.positionLength,
         anchor: [box.x, topY, box.z],
         size: Math.max(box.w, box.d),
         weight: 1,

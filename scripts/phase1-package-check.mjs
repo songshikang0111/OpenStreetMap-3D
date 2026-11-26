@@ -69,6 +69,9 @@ try {
       '--ignore-scripts',
       '--no-audit',
       '--no-fund',
+      // Resolve the supported type peer from the same lockfile as the offline test environment.
+      '@types/node@' +
+        JSON.parse(await readFile(path.join(root, 'node_modules/@types/node/package.json'), 'utf8')).version,
       path.join(temporary, packed.filename),
     ],
     consumer,

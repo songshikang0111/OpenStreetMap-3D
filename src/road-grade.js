@@ -159,8 +159,17 @@ export function planRoadGrades(data, options = {}) {
   // Crossing footprints constrain clearance, not exact deck elevations. An
   // ascending slip road may be higher than its nominal layer at an underpass.
   const crossingConstraints = [];
+  // Enumerate only spatially neighbouring segments, retaining the original pair order for the grade solver.
+  const segmentBounds = sources.map((s) => [
+    Math.min(s.a[0], s.b[0]),
+    Math.min(s.a[1], s.b[1]),
+    Math.max(s.a[0], s.b[0]),
+    Math.max(s.a[1], s.b[1]),
+  ]);
+  const grid = new RoadSpatialGrid(64);
+  for (const [i, b] of segmentBounds.entries()) grid.add(i, b);
   for (let i = 0; i < sources.length; i++)
-    for (let j = i + 1; j < sources.length; j++) {
+    for (const j of [...grid.query(segmentBounds[i])].filter((j) => j > i).sort((a, b) => a - b)) {
       const a = sources[i],
         b = sources[j];
       if (
@@ -470,4 +479,30 @@ export function planRoadGrades(data, options = {}) {
     nodes: ordered.map((n) => ({ key: n.key, point: n.point, y: n.y, fixed: n.fixed, nominals: n.nominals })),
     settings,
   };
+}
+
+// Metre-space broad phase shared by road planning passes. Exact tests stay with each caller.
+export class RoadSpatialGrid {
+  constructor(size = 40) {
+    this.size = size;
+    this.cells = new Map();
+  }
+  keys(b) {
+    const result = [],
+      s = this.size;
+    for (let x = Math.floor(b[0] / s); x <= Math.floor(b[2] / s); x++)
+      for (let z = Math.floor(b[1] / s); z <= Math.floor(b[3] / s); z++) result.push(`${x},${z}`);
+    return result;
+  }
+  add(item, box) {
+    for (const key of this.keys(box)) {
+      if (!this.cells.has(key)) this.cells.set(key, []);
+      this.cells.get(key).push(item);
+    }
+  }
+  query(box) {
+    const result = new Set();
+    for (const key of this.keys(box)) for (const item of this.cells.get(key) || []) result.add(item);
+    return result;
+  }
 }

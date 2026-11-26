@@ -9,5 +9,5 @@ export interface EnvelopePlan {
 
 export function planBuildingEnvelopes(
   buildings: Phase1Building[],
-  options?: { exclude?: (b: Phase1Building) => boolean },
+  options?: { exclude?: (b: Phase1Building) => boolean; lazyCaps?: boolean },
 ): Map<string, EnvelopePlan>;

@@ -14,5 +14,12 @@ export function heightInfo(
 export function parseOSM(
   raw: unknown,
   seed?: number,
-  options?: { onBuildingFootprints?(buildings: Phase1Building[]): void },
+  options?: {
+    waterMask?: Phase1Data['water'];
+    onBuildingFootprints?(buildings: Phase1Building[]): void;
+    mergeWater?(polygons: Phase1Data['water']): Phase1Data['water'];
+    onRelationError?(id: number, incomplete: boolean): void;
+  },
 ): Phase1Data;
+
+export function clipSegment(a: Point2, b: Point2, bounds: [number, number, number, number]): [Point2, Point2] | null;

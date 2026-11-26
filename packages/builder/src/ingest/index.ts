@@ -1,3 +1,4 @@
+import type { FeatureStore } from './store.js';
 import { NodeCoordinates } from './nodes.js';
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
@@ -46,6 +47,7 @@ export async function ingestPbf(
   options: {
     bbox?: [number, number, number, number];
     marginDeg?: number;
+    store?: FeatureStore;
     checkBudget?(): void;
     onProgress?(stage: string): void;
   } = {},
@@ -94,7 +96,9 @@ export async function ingestPbf(
     node(id, lat, lon, tags) {
       nodes.add(id, lat, lon);
       if (tags && wantedNode(tags) && bbox && lon >= bbox[0] && lat >= bbox[1] && lon <= bbox[2] && lat <= bbox[3]) {
-        elements.push({ type: 'node', id, lat, lon, tags });
+        const row = { type: 'node', id, lat, lon, tags };
+        if (options.store) options.store.add(row, [lon, lat, lon, lat], bbox);
+        else elements.push(row);
         count('nodes');
       }
     },
@@ -142,36 +146,39 @@ export async function ingestPbf(
       // A polygon can surround the box, or a road can cross it with every vertex outside. Phase-one parsing
       // performs the exact clip. The conservative envelope test here preserves both cases.
       if (!wanted || !overlaps(bounds)) return;
-      elements.push({ type: 'way', id: w.id, bounds, nodes: w.refs, geometry: geometry(w.refs), tags: w.tags });
+      const row = { type: 'way', id: w.id, bounds, nodes: w.refs, geometry: geometry(w.refs), tags: w.tags };
+      if (options.store) options.store.add(row, [bounds.minlon, bounds.minlat, bounds.maxlon, bounds.maxlat], bbox!);
+      else elements.push(row);
       count('ways');
     },
   });
-  const nearbyPolygons = new Set(
-    relations
-      .filter(
-        (r) =>
-          r.tags.type === 'multipolygon' &&
-          r.members.some((m) => m.type === 'way' && members.has(m.ref) && overlaps(members.get(m.ref)!.bounds)),
-      )
-      .map((r) => r.id),
-  );
+  const extend = (bounds: Extent, part: Extent | undefined) => {
+    if (!part) return;
+    bounds.minlat = Math.min(bounds.minlat, part.minlat);
+    bounds.maxlat = Math.max(bounds.maxlat, part.maxlat);
+    bounds.minlon = Math.min(bounds.minlon, part.minlon);
+    bounds.maxlon = Math.max(bounds.maxlon, part.maxlon);
+  };
+  const polygonBounds = new Map<number, Extent>();
   for (const r of relations) {
+    if (r.tags.type !== 'multipolygon') continue;
     const bounds = emptyExtent();
-    for (const m of r.members) {
-      if (m.type !== 'way') continue;
-      const b = members.get(m.ref)?.bounds;
-      if (!b) continue;
-      bounds.minlat = Math.min(bounds.minlat, b.minlat);
-      bounds.maxlat = Math.max(bounds.maxlat, b.maxlat);
-      bounds.minlon = Math.min(bounds.minlon, b.minlon);
-      bounds.maxlon = Math.max(bounds.maxlon, b.maxlon);
+    for (const m of r.members) if (m.type === 'way') extend(bounds, members.get(m.ref)?.bounds);
+    polygonBounds.set(r.id, bounds);
+  }
+  for (const r of relations) {
+    const bounds = polygonBounds.get(r.id) ?? emptyExtent();
+    if (r.tags.type === 'building') {
+      for (const m of r.members) {
+        if (m.type === 'way') extend(bounds, members.get(m.ref)?.bounds);
+        else if (m.type === 'relation') extend(bounds, polygonBounds.get(m.ref));
+      }
     }
-    const building = r.tags.type === 'building';
-    if (!overlaps(bounds) && !(building && r.members.some((m) => m.type === 'relation' && nearbyPolygons.has(m.ref))))
-      continue;
-    // Membership is sufficient here: the tagged ways/multipolygons carry their own geometry.
-    if (building) {
-      elements.push({ type: 'relation', id: r.id, members: r.members, tags: r.tags });
+    if (!overlaps(bounds)) continue;
+    if (r.tags.type === 'building') {
+      const row = { type: 'relation', id: r.id, members: r.members, tags: r.tags };
+      if (options.store) options.store.add(row, [bounds.minlon, bounds.minlat, bounds.maxlon, bounds.maxlat], bbox);
+      else elements.push(row);
       continue;
     }
     let incomplete = false;
@@ -186,7 +193,9 @@ export async function ingestPbf(
         return { ...m, geometry: geometry(entry.refs) };
       });
     if (incomplete) count('relationsIncomplete');
-    elements.push({ type: 'relation', id: r.id, members: ways, tags: r.tags });
+    const row = { type: 'relation', id: r.id, members: ways, tags: r.tags };
+    if (options.store) options.store.add(row, [bounds.minlon, bounds.minlat, bounds.maxlon, bounds.maxlat], bbox);
+    else elements.push(row);
   }
   count('relations', relations.length);
   const timestamp = header.replicationTimestamp

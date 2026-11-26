@@ -11,3 +11,4 @@ export * from './validate.js';
 export * from './serve.js';
 export * from './cli.js';
 export * from './archive/pack.js';
+export type { BuildRegion, BuildRegionInput } from './region.js';

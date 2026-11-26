@@ -1,5 +1,8 @@
 // Plan stage (03 sections 3-6): phase-one parsing and planning rules applied per planning cell with a buffer ring.
 // Output records are JSON-serialisable and carry WGS84 geometry plus planned attributes and provenance.
+import clipping from 'polygon-clipping';
+import { GradeGroups, MAX_GROUP_KM, oversizedDiagnostic, spanKm } from './groups.js';
+import { clipSegment } from '../../../src/osm.js';
 import { planRoof } from '../../../src/roofs.js';
 import { buildingStyle } from '../../../src/building-rules.js';
 import { planRoadSurface } from '../../../src/road-surface.js';
@@ -12,7 +15,7 @@ import type { StairFlight } from '../../../src/road-stairs.js';
 import type { Phase1Building, Phase1Data, Phase1Polygon, Point2 } from '../../../src/phase1-types.js';
 import { phase1IdToFeatureId } from '@city-ink/generators';
 import { tileToLngLatBounds, DEFAULT_KEPT_TAGS } from '@city-ink/tiles';
-import type { Bounds, LngLat, Provenance, TileId } from '@city-ink/tiles';
+import type { Bounds, LngLat, Provenance, TileId, Diagnostic } from '@city-ink/tiles';
 import { planLandmarks } from './landmarks.js';
 import type { LandmarkBake } from './landmarks.js';
 import { boundsContains, boundsIntersect, expandBounds, ringBounds, toLngLat } from './geo.js';
@@ -90,6 +93,8 @@ export interface PlanRecord {
 }
 
 export interface CellPlan {
+  relationErrors?: { id: number; incomplete: boolean }[];
+  diagnostics?: Diagnostic[];
   cell: string;
   records: PlanRecord[];
   stats: Record<string, number>;
@@ -141,6 +146,9 @@ export class PlanContext {
   readonly water: Indexed<Phase1Polygon>[];
   readonly greens: Indexed<Phase1Polygon>[];
   readonly roads: Indexed<Phase1Data['roads'][number]>[];
+  readonly gradeGroups: GradeGroups;
+  readonly oversizedWater = new Set<string>();
+  readonly diagnostics: Diagnostic[] = [];
   constructor(readonly data: Phase1Data) {
     const p = data.project;
     const polyBounds = (outer: Point2[]) => ringBounds(outer.map((q) => toLngLat(p, q)));
@@ -152,6 +160,15 @@ export class PlanContext {
       item,
       bounds: ringBounds(item.segments.flat().map((q) => toLngLat(p, q))),
     }));
+    this.gradeGroups = new GradeGroups(this.roads);
+    this.diagnostics.push(...this.gradeGroups.diagnostics);
+    for (const { item, bounds } of this.water) {
+      const span = spanKm(bounds);
+      if (span > MAX_GROUP_KM) {
+        this.oversizedWater.add(item.id);
+        this.diagnostics.push(oversizedDiagnostic('water', item.id, span));
+      }
+    }
   }
 
   /** Phase-one data restricted to objects that intersect the bounds; global bounds and projection are kept. */
@@ -166,11 +183,41 @@ export class PlanContext {
     const roads = new Set(pick(this.roads));
     const names = new Set([...roads].map((r) => r.name).filter(Boolean));
     for (const r of this.data.roads) if (r.name && names.has(r.name)) roads.add(r);
+    this.gradeGroups.addContext(roads, this.roads, bounds);
+    const [w, s, e, n] = bounds;
+    const nw = p.point({ lat: n, lon: w }),
+      se = p.point({ lat: s, lon: e });
+    const frame: Bounds = [nw[0], nw[1], se[0], se[1]];
+    const water = pick(this.water).flatMap((item) => {
+      if (!this.oversizedWater.has(item.id)) return [item];
+      const pieces = clipping.intersection([item.outer, ...item.holes], [[nw, [se[0], nw[1]], se, [nw[0], se[1]], nw]]);
+      return pieces.map(([outer, ...holes], i) => ({ ...item, id: `${item.id}:halo:${i}`, outer: outer!, holes }));
+    });
+    const localRoads = this.data.roads
+      .filter((r) => roads.has(r))
+      .map((r) => {
+        if (!this.gradeGroups.oversized.has(r.id)) return r;
+        const segments: typeof r.segments = [],
+          segmentNodes: typeof r.segmentNodes = [];
+        for (const [i, [a, b]] of r.segments.entries()) {
+          const clipped = clipSegment(a, b, frame);
+          if (!clipped) continue;
+          segments.push(clipped);
+          segmentNodes.push(
+            clipped.map((q, j) => {
+              const v = j ? b : a;
+              return Math.hypot(q[0] - v[0], q[1] - v[1]) < 1e-5 ? (r.segmentNodes[i]?.[j] ?? null) : null;
+            }),
+          );
+        }
+        return { ...r, segments, segmentNodes };
+      })
+      .filter((r) => r.segments.length);
     return {
       ...this.data,
       buildings: pick(this.buildings),
-      roads: this.data.roads.filter((r) => roads.has(r)),
-      water: pick(this.water),
+      roads: localRoads,
+      water,
       landscapes,
       greens: pick(this.greens),
       landscapeContexts: this.data.landscapeContexts.filter((l) => l.outer.some(inside)),
