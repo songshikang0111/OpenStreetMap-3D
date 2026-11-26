@@ -6,8 +6,8 @@ import { writeBuildingBody } from '../../../src/building-mesh.js';
 import { planRoof } from '../../../src/roofs.js';
 import { area as ringArea } from '../../../src/osm.js';
 import type { Phase1Building, Ring } from '../../../src/phase1-types.js';
-import type { MeshWriter } from '../../../src/generators/mesh-tools.js';
-import { featureIdAt, readProvenance, readFeatureMetaAt } from '@city-ink/tiles';
+import { MeshWriter } from '../../../src/generators/mesh-tools.js';
+import { featureIdAt, readFeatureMetaAt } from '@city-ink/tiles';
 import type { FeatureLayer } from '@city-ink/tiles';
 import { BatchSet } from './batch.js';
 import { featureIdToPhase1Id } from './ids.js';
@@ -68,7 +68,7 @@ export function phase1Building(layer: FeatureLayer, i: number, step: number): Ph
     z1 = Math.max(z1, z);
   }
   const id = featureIdToPhase1Id(meta.id);
-  const provenance = readProvenance(layer, i);
+  const provenance = meta.provenance ?? {};
   const footprint =
     typeof props.area === 'number' ? props.area : ringArea(outer) - holes.reduce((s, h) => s + ringArea(h), 0);
   return {
@@ -86,6 +86,41 @@ export function phase1Building(layer: FeatureLayer, i: number, step: number): Ph
     source: SOURCE_BY_PROVENANCE[provenance.height ?? 'inferred'],
     part: Boolean(tags['building:part'] && tags['building:part'] !== 'no'),
   };
+}
+
+/** Shares the phase-one winding/role calculation and writes final triangles straight into typed tile batches. */
+class TileBuildingWriter extends MeshWriter {
+  private count = 0;
+  private lastRole = '';
+  private batch!: ReturnType<BatchSet['get']>;
+  constructor(
+    private readonly batches: BatchSet,
+    private readonly layer: string,
+    private readonly overrideRole?: string,
+  ) {
+    super();
+  }
+  override get positionLength() {
+    return this.count * 3;
+  }
+  override writeFace(
+    a: number[],
+    b: number[],
+    c: number[],
+    normal: number[],
+    color: { r: number; g: number; b: number },
+    id: number,
+    uv: number[][] | null,
+    role: string,
+  ) {
+    role = this.overrideRole ?? role;
+    if (role !== this.lastRole) {
+      this.batch = this.batches.get(this.layer, role);
+      this.lastRole = role;
+    }
+    this.batch.writeBuildingFace(a, b, c, normal, color, id, PHASE1_GROUND_OFFSET, uv, this);
+    this.count += 3;
+  }
 }
 
 function appendWriter(
@@ -137,6 +172,7 @@ export function generateBuildings(
       const roof = roofPlans.get(b.id)!;
       return roof.supported ? { ...b, height: roof.eave - PHASE1_GROUND_OFFSET } : b;
     }),
+    { lazyCaps: true },
   );
   const result: BuildingResult = { buildings: own.length, triangles: 0, perFeature: new Map(), nearWalls: [] };
   const nearWalls: Record<string, unknown>[] = [];
@@ -145,6 +181,12 @@ export function generateBuildings(
     const before = collect ? batchBounds(batches, layerName) : null;
     const { writer, roofWriter } = writeBuildingBody(building, {
       renderId,
+      ...(collect
+        ? {}
+        : {
+            writer: new TileBuildingWriter(batches, layerName),
+            roofWriter: new TileBuildingWriter(batches, layerName, 'facility'),
+          }),
       seed: options.seed ?? 1,
       roofPlan: roofPlans.get(building.id)!,
       envelopePlan: envelopes.get(building.id)!,
@@ -165,8 +207,10 @@ export function generateBuildings(
           layout: w.layout,
           style: { family: String(w.style.family), balcony: Boolean(w.style.balcony) },
         });
-    let triangles = appendWriter(batches, writer, renderId, null, layerName);
-    triangles += appendWriter(batches, roofWriter, renderId, 'facility', layerName);
+    const triangles = collect
+      ? appendWriter(batches, writer, renderId, null, layerName) +
+        appendWriter(batches, roofWriter, renderId, 'facility', layerName)
+      : (writer.positionLength + roofWriter.positionLength) / 9;
     result.triangles += triangles;
     if (collect)
       result.perFeature.set(featureIdAt(layer, i), { triangles, bounds: writerBounds([writer, roofWriter], before) });
