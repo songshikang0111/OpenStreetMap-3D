@@ -7,7 +7,7 @@ import {
   isTileError,
   tileKey,
 } from '@city-ink/tiles';
-import type { DecodedTile, Diagnostic, FeatureLayer, LngLat, Provenance } from '@city-ink/tiles';
+import type { DecodedTile, Diagnostic, MeshLayer, LngLat, Provenance } from '@city-ink/tiles';
 import { generateTile, batchTransferables } from '@city-ink/generators';
 import type { GeneratedTile } from '@city-ink/generators';
 import { DETAIL_GENERATORS } from '@city-ink/details';
@@ -41,50 +41,68 @@ export type WorkerResponse =
       generated: GeneratedTile;
       upload: UploadData;
       features: FeatureRecord[];
+      maxRenderId: number;
       decodeMs: number;
       generateMs: number;
     }
   | { type: 'error'; job: number; diagnostic: Diagnostic };
 
-function featureRecords(tile: DecodedTile): FeatureRecord[] {
+type MeshBounds = [number, number, number, number];
+
+function meshFeatureBounds(layer: MeshLayer): MeshBounds[] {
+  const bounds: MeshBounds[] = [];
+  for (let v = 0; v < layer.vertexCount; v++) {
+    // Without explicit ownership every feature describes the same mesh extent.
+    const owner = layer.vertexFeature?.[v] ?? 0;
+    const x = layer.position[v * 3]!;
+    const z = layer.position[v * 3 + 2]!;
+    const box = bounds[owner];
+    if (box) {
+      box[0] = Math.min(box[0], x);
+      box[1] = Math.min(box[1], z);
+      box[2] = Math.max(box[2], x);
+      box[3] = Math.max(box[3], z);
+    } else bounds[owner] = [x, z, x, z];
+  }
+  return bounds;
+}
+
+function featureRecords(tile: DecodedTile) {
   const step = gridStepMeters(tile.id, tile.extentLog2);
-  const out: FeatureRecord[] = [];
+  const features: FeatureRecord[] = [];
+  let maxRenderId = 0;
   for (const [name, layer] of Object.entries(tile.layers)) {
     if (name === 'buildingContext') continue;
     const table = layer.type === 'features' ? layer : layer.features;
+    if (!table.featureCount) continue;
+    const meshBounds = layer.type === 'mesh' ? meshFeatureBounds(layer) : undefined;
     for (let i = 0; i < table.featureCount; i++) {
-      const meta = readFeatureMetaAt(table, i);
       let x0 = Infinity,
         z0 = Infinity,
         x1 = -Infinity,
         z1 = -Infinity;
       if (layer.type === 'features') {
-        const f = layer as FeatureLayer;
-        const v0 = f.vertexStart[f.ringStart[f.partStart[i]!]!]!;
-        const v1 = f.vertexStart[f.ringStart[f.partStart[i + 1]!]!]!;
-        for (let v = v0; v < Math.max(v1, v0 + 1); v++) {
-          const x = f.positions[v * 2]! * step,
-            z = f.positions[v * 2 + 1]! * step;
+        const v0 = layer.vertexStart[layer.ringStart[layer.partStart[i]!]!]!;
+        const v1 = layer.vertexStart[layer.ringStart[layer.partStart[i + 1]!]!]!;
+        for (let v = v0; v < v1; v++) {
+          const x = layer.positions[v * 2]! * step,
+            z = layer.positions[v * 2 + 1]! * step;
           x0 = Math.min(x0, x);
           x1 = Math.max(x1, x);
           z0 = Math.min(z0, z);
           z1 = Math.max(z1, z);
         }
       } else {
-        for (let v = 0; v < layer.vertexCount; v++) {
-          if (layer.vertexFeature && layer.vertexFeature[v] !== i) continue;
-          const x = layer.position[v * 3]!,
-            z = layer.position[v * 3 + 2]!;
-          x0 = Math.min(x0, x);
-          x1 = Math.max(x1, x);
-          z0 = Math.min(z0, z);
-          z1 = Math.max(z1, z);
-        }
+        const box = meshBounds![layer.vertexFeature ? i : 0];
+        if (!box) continue;
+        [x0, z0, x1, z1] = box;
       }
       if (!Number.isFinite(x0)) continue;
+      const meta = readFeatureMetaAt(table, i);
+      maxRenderId = Math.max(maxRenderId, meta.renderId);
       const sw = tileMetersToLngLat(tile.id, x0, z1);
       const ne = tileMetersToLngLat(tile.id, x1, z0);
-      out.push({
+      features.push({
         renderId: meta.renderId,
         id: meta.id,
         layer: name,
@@ -96,7 +114,7 @@ function featureRecords(tile: DecodedTile): FeatureRecord[] {
       });
     }
   }
-  return out;
+  return { features, maxRenderId };
 }
 
 export function handleRequest(request: WorkerRequest): { response: WorkerResponse; transfer: ArrayBuffer[] } {
@@ -109,7 +127,7 @@ export function handleRequest(request: WorkerRequest): { response: WorkerRespons
       layerGenerators: DETAIL_GENERATORS,
       collectNearWalls: true,
     });
-    const features = featureRecords(tile);
+    const { features, maxRenderId } = featureRecords(tile);
     const upload = prepareUpload(generated);
     const t2 = performance.now();
     const transfer = batchTransferables(generated.batches);
@@ -124,6 +142,7 @@ export function handleRequest(request: WorkerRequest): { response: WorkerRespons
         generated,
         upload,
         features,
+        maxRenderId,
         decodeMs: t1 - t0,
         generateMs: t2 - t1,
       },

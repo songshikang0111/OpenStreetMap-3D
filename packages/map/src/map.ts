@@ -87,6 +87,8 @@ export const RUNTIME_VERSION = '2.0.0';
 /** Inferred decorations hidden by `ProvenanceFilter.details = false`; kerbs, crossings, lamps and signals stay. */
 const OPTIONAL_DETAILS = new Set(['car', 'person', 'bench']);
 const HOST_GROUND_LAYERS = new Set(['ground', 'water', 'green', 'road', 'landscape']);
+const ROLES_BY_GROUP: Record<string, [string, number][]> = Object.create(null);
+for (const [index, role] of ROLE_LIST.entries()) (ROLES_BY_GROUP[groupOf(role)] ??= []).push([role, index]);
 
 /** Internal options used by the MapLibre layer adapter. */
 export interface HostedOptions extends MapOptions {
@@ -1385,9 +1387,7 @@ export class CityMapImpl implements CityMap {
         .userData.cityRuleUniforms;
       if (!uniforms) continue;
       const group = String(mesh.userData.layer);
-      const groupRoles = ROLE_LIST.map((r, i) => [r, i] as const).filter(
-        ([r]) => groupOf(r) === (group === 'detail' ? 'structure' : group),
-      );
+      const groupRoles = ROLES_BY_GROUP[group === 'detail' ? 'structure' : group] ?? [];
       const applicable = rules.filter((rule) =>
         Object.keys(rule.set).some((k) => groupRoles.some(([r]) => ruleRoleApplies(k, r))),
       );
@@ -1476,9 +1476,13 @@ export class CityMapImpl implements CityMap {
   }
 
   private rememberCost(entry: TileEntry, response: Extract<WorkerResponse, { type: 'result' }>) {
-    const capacity = response.features.reduce((n, f) => Math.max(n, f.renderId), 0);
+    // A separately hosted workerUrl may still serve the previous response format.
+    response.maxRenderId ??= response.features.reduce((n, f) => Math.max(n, f.renderId), 0);
     const hostGround = this.hosted?.ground === 'host' ? HOST_GROUND_LAYERS : undefined;
-    this.storeCost(entry, tileCost(response.generated, capacity, entry.buffer?.byteLength ?? 0, hostGround));
+    this.storeCost(
+      entry,
+      tileCost(response.generated, response.maxRenderId, entry.buffer?.byteLength ?? 0, hostGround),
+    );
   }
 
   private storeCost(entry: TileEntry, cost: TileCost) {
@@ -1622,10 +1626,7 @@ export class CityMapImpl implements CityMap {
         continue;
       }
       const previous = entry.object;
-      if (!job.preparation) {
-        const capacity = response.features.reduce((m, f) => Math.max(m, f.renderId), 0);
-        job.preparation = prepareTileObject(response.generated, this.materials, capacity, response.upload);
-      }
+      job.preparation ??= prepareTileObject(response.generated, this.materials, response.maxRenderId, response.upload);
       const result = job.preparation.next();
       spent = performance.now() - start;
       if (!result.done) continue;
