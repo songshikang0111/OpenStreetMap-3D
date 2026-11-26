@@ -1,0 +1,61 @@
+{
+  "limits": {
+    "l1Draws": 12,
+    "l0Draws": 4,
+    "tileTriangles": 600000,
+    "decodeP95Ms": 5,
+    "generateP95Ms": null,
+    "tileGzip": 262144,
+    "bundleGzip": 184320
+  },
+  "node": "v24.18.0",
+  "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+  "tilesets": [
+    {
+      "name": "beijing-cbd-grow-9",
+      "tiles": 20,
+      "maxTriangles": 97331,
+      "decodeP95Ms": 0.47848999999999364,
+      "generateP95Ms": 37.93961100000001,
+      "maxDraws": {
+        "L0": 2,
+        "L1": 7
+      },
+      "maxGzip": 179760,
+      "worst": {
+        "tile": "16/53968/24830.c3t",
+        "batches": [
+          "building:building",
+          "detail:detail",
+          "ground:ground",
+          "landmark:landmark",
+          "structure:structure"
+        ]
+      }
+    },
+    {
+      "name": "kyoto-gion-grow-9",
+      "tiles": 7,
+      "maxTriangles": 250531,
+      "decodeP95Ms": 2.2452210000001287,
+      "generateP95Ms": 245.63624500000014,
+      "maxDraws": {
+        "L0": 2,
+        "L1": 6
+      },
+      "maxGzip": 251237,
+      "worst": {
+        "tile": "16/57484/25957.c3t",
+        "batches": [
+          "building:building",
+          "detail:detail",
+          "ground:ground",
+          "structure:structure"
+        ]
+      }
+    }
+  ],
+  "bundleGzip": 51617,
+  "problems": [],
+  "status": "pass"
+}

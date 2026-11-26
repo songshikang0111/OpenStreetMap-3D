@@ -8,7 +8,7 @@
 | AC605、606 | 完整市界从 1,791 对相邻候选中抽验 200 对，12,000 个地表采样、61 个道路穿界点均一致。较小城区样本并发 1 和 8 的瓦片一致。见 [原始 F 测量](F/city.json)。 |
 | AC607 | 通过。超大连通水域和坡度组保留局部几何并在报告中记录，执行 `node --test test/phase2-pbf.test.js`。 |
 | AC608 | 通过。目录及归档分别在真实 Chrome 加载，北京可见瓦片相同。归档服务处理 13 次 Range 请求并保留署名，见 [K 原始结果](K/archive-browser.json)。运行 `node --test test/phase2-archive.test.js` 和 `node scripts/benchmark-tiles/archive-check.mjs`。 |
-| AC609 | 以 [城市清单](../../../examples/cities.json) 的提取时间、输入 SHA-256、选项、输出瓦片数和内容哈希重建。命令见 [demo 手册](../../demo.md) 和 [F 报告](F/report.md)。 |
+| AC609 | 通过。单命令从空目录构建七个示例，372 块瓦片通过校验，全部输出指纹匹配，耗时 434.16 秒。以 [城市清单](../../../examples/cities.json) 的提取时间、输入 SHA-256、选项、输出瓦片数和内容哈希重建。命令见 [demo 手册](../../demo.md) 和 [F 报告](F/report.md)。 |
 | AC801–806 | 本机通过。实测 MapLibre GL JS 6.16.0，50 组机位、3,980 个点，独立宿主文字图层位于城市之上。两次添加移除后画面逐像素恢复。见 [H](H/report.md)、[D2](D2/report.md)。 |
 
 AC1101–1104 的整体验证见 [K 集成记录](K/report.md)。
