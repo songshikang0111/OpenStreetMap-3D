@@ -1,0 +1,116 @@
+{
+  "standalone": {
+    "browser": "Chrome/158.0.8127.36",
+    "before": {
+      "name": "DFG_LUT",
+      "dimensions": [
+        16,
+        16
+      ],
+      "sameTexture": true,
+      "sameContext": false,
+      "listeners": 2,
+      "first": {
+        "geometries": 42,
+        "textures": 13,
+        "programs": 10
+      },
+      "second": {
+        "geometries": 20,
+        "textures": 9,
+        "programs": 10
+      },
+      "secondPixel": [
+        177,
+        194,
+        155,
+        255
+      ]
+    },
+    "after": {
+      "first": {
+        "geometries": 0,
+        "textures": 1,
+        "programs": 0
+      },
+      "second": {
+        "geometries": 20,
+        "textures": 9,
+        "programs": 10
+      },
+      "listeners": 2,
+      "firstContextLost": true,
+      "secondContextLost": false,
+      "secondPixel": [
+        177,
+        194,
+        155,
+        255
+      ],
+      "secondTriangles": 266488
+    },
+    "afterRequestedGC": {
+      "rendererAlive": false,
+      "contextWrapperAlive": true,
+      "listeners": 2
+    },
+    "strictZero": false
+  },
+  "mapLibre": {
+    "browser": "Chrome/158.0.8127.36",
+    "before": {
+      "name": "DFG_LUT",
+      "dimensions": [
+        16,
+        16
+      ],
+      "sameTexture": true,
+      "sameContext": true,
+      "listeners": 2,
+      "first": {
+        "geometries": 15,
+        "textures": 10,
+        "programs": 8
+      },
+      "second": {
+        "geometries": 15,
+        "textures": 10,
+        "programs": 8
+      },
+      "secondPixel": [
+        238,
+        241,
+        244,
+        255
+      ]
+    },
+    "after": {
+      "first": {
+        "geometries": 0,
+        "textures": 1,
+        "programs": 0
+      },
+      "second": {
+        "geometries": 15,
+        "textures": 10,
+        "programs": 8
+      },
+      "listeners": 2,
+      "firstContextLost": false,
+      "secondContextLost": false,
+      "secondPixel": [
+        238,
+        241,
+        244,
+        255
+      ],
+      "secondTriangles": 254804
+    },
+    "afterRequestedGC": {
+      "rendererAlive": false,
+      "contextWrapperAlive": true,
+      "listeners": 2
+    },
+    "strictZero": false
+  }
+}
