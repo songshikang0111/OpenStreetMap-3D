@@ -1,0 +1,51 @@
+{
+  "reference": "61c0e34",
+  "candidate": "1619134",
+  "representativeTiles": {
+    "tilesets": [
+      "amsterdam-canals",
+      "beijing-cbd",
+      "beijing-cbd-grow-9",
+      "beijing-lingxiu-d",
+      "bibury-village",
+      "kyoto-gion",
+      "kyoto-gion-grow-9",
+      "landscape-details",
+      "lijiang-shuhe",
+      "manhattan-financial",
+      "marrakech-medina",
+      "shanghai-lujiazui",
+      "street-details",
+      "sydney-circular-quay",
+      "sydney-harbour"
+    ],
+    "tiles": 199,
+    "vertices": 13191297,
+    "triangles": 4710432,
+    "allAttributeBytesIdentical": true,
+    "treeAndNearWallRecordsIdentical": true
+  },
+  "demoTilesWithDetails": {
+    "tilesets": [
+      "beijing-cbd-grow-9",
+      "kyoto-gion-grow-9",
+      "manhattan-financial"
+    ],
+    "tiles": 34,
+    "vertices": 3670316,
+    "triangles": 1370588,
+    "allAttributeBytesIdentical": true,
+    "treeAndNearWallRecordsIdentical": true
+  },
+  "chromeVsNode": {
+    "browser": "Chrome/158.0.8127.36",
+    "node": "v24.18.0",
+    "samples": [
+      "kyoto-gion-grow-9"
+    ],
+    "tiles": 7,
+    "vertices": 2026448,
+    "positionAndIndexBytes": "identical",
+    "treeInstanceBytes": "identical"
+  }
+}
