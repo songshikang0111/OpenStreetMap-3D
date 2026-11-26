@@ -46,6 +46,8 @@ export interface BuildOptions {
   bbox?: Bounds;
   name?: string;
   seed?: number;
+  /** Use 3 m above the known base when height and floors are missing. Defaults to inference. */
+  inferHeights?: boolean;
   inferRoofs?: boolean;
   ruleTrees?: boolean;
   /** Street details: lamps, signals, crossings, kerbs, parked cars, pedestrians (default off, decision E10). */
@@ -214,6 +216,7 @@ export async function buildTiles(
   const levels = options.levels ?? DEFAULT_LEVELS;
   const planOptions: PlanOptions = {
     seed: input.seed,
+    ...(options.inferHeights === false ? { inferHeights: false } : {}),
     inferRoofs: input.inferRoofs,
     ruleTrees: options.ruleTrees ?? true,
     ...(options.details ? { details: true } : {}),
@@ -238,6 +241,13 @@ export async function buildTiles(
   await writeAtomic(path.join(cache, 'ingest.json'), JSON.stringify({ inputHash, configHash, source: input.file }));
   step('ingest');
   const data = parseOSM(input.raw, input.seed);
+  if (options.inferHeights === false) {
+    for (const building of data.buildings) {
+      if (building.source !== 'estimated') continue;
+      building.height = building.minHeight + 3;
+      building.levels = 1;
+    }
+  }
   const ctx = new PlanContext(data);
 
   // partition
@@ -382,6 +392,7 @@ export async function buildTiles(
     build: {
       seed: input.seed,
       options: {
+        ...(planOptions.inferHeights === false ? { inferHeights: false } : {}),
         inferRoofs: planOptions.inferRoofs,
         ruleTrees: planOptions.ruleTrees,
         landscape: Boolean(planOptions.landscape),

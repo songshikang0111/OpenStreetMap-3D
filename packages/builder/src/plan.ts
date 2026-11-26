@@ -38,6 +38,7 @@ export const RULE_TAGS = [
 ];
 
 export interface PlanOptions {
+  inferHeights?: boolean;
   seed: number;
   inferRoofs: boolean;
   ruleTrees: boolean;

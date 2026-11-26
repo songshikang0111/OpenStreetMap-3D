@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "City Ink tile build configuration",
+  "type": "object",
+  "properties": {
+    "inferHeights": { "type": "boolean", "default": true },
+    "inferRoofs": { "type": "boolean", "default": false },
+    "ruleTrees": { "type": "boolean", "default": true },
+    "details": { "type": "boolean", "default": false },
+    "landscape": { "type": "boolean", "default": false },
+    "landmarks": { "type": "boolean", "default": true }
+  }
+}

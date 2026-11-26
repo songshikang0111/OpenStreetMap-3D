@@ -1,6 +1,7 @@
 // `city tiles <build|validate|inspect|serve|pack>`; follows the phase-one CLI output contract: with --json the
 // result object goes to stdout and progress to stderr, with schemaVersion/status/artifacts/diagnostics.
 import { packTiles } from './archive/pack.js';
+import { readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { buildTiles } from './pipeline.js';
@@ -18,7 +19,7 @@ export const TILES_HELP = `city tiles — build and check static 3D city tiles
   city tiles serve <dir> [--port 4181] [--json]
 
 Input: OSM JSON (Overpass / OSM Map), an .osm.pbf extract (<= 1 GB, build area <= 5,000 km2) or a phase-one project.
-Options file (--config): {"inferRoofs": false, "ruleTrees": true, "details": false, "landscape": false}. Output is ODbL data; keep the attribution.`;
+Options file (--config): {"inferHeights": true, "inferRoofs": false, "ruleTrees": true, "details": false, "landscape": false, "landmarks": true}. Output is ODbL data; keep the attribution.`;
 
 export interface TilesCLIResult {
   schemaVersion: 1;
@@ -74,6 +75,22 @@ function parse(args: string[]): Parsed {
   return out;
 }
 
+const BUILD_FLAGS = ['inferHeights', 'inferRoofs', 'ruleTrees', 'details', 'landscape', 'landmarks'] as const;
+
+function buildFlags(config: unknown): Partial<Record<(typeof BUILD_FLAGS)[number], boolean>> {
+  if (!config || typeof config !== 'object' || Array.isArray(config))
+    throw Object.assign(new Error('--config expects a JSON object.'), { code: 'OPTION_INVALID' });
+  const flags: Partial<Record<(typeof BUILD_FLAGS)[number], boolean>> = {};
+  for (const name of BUILD_FLAGS) {
+    if (!Object.hasOwn(config, name)) continue;
+    const value = (config as Record<string, unknown>)[name];
+    if (typeof value !== 'boolean')
+      throw Object.assign(new Error(`--config ${name} expects a boolean.`), { code: 'OPTION_INVALID' });
+    flags[name] = value;
+  }
+  return flags;
+}
+
 const ok = (extra: Partial<TilesCLIResult> = {}): TilesCLIResult => ({
   schemaVersion: 1,
   status: 'succeeded',
@@ -106,9 +123,7 @@ export async function runTilesCLI(
       const bbox = o.bbox ? String(o.bbox).split(',').map(Number) : undefined;
       if (bbox && (bbox.length !== 4 || bbox.some((v) => !Number.isFinite(v))))
         throw Object.assign(new Error('--bbox expects west,south,east,north.'), { code: 'OPTION_INVALID' });
-      const config = o.config
-        ? JSON.parse(await (await import('node:fs/promises')).readFile(resolve(o.config), 'utf8'))
-        : {};
+      const config = o.config ? buildFlags(JSON.parse(await readFile(resolve(o.config), 'utf8'))) : {};
       const concurrency = o.concurrency ? Math.max(1, Number(o.concurrency)) : Math.max(1, os.cpus().length - 1);
       const { report, output } = await buildTiles({
         ...(o.input ? { input: resolve(o.input) } : {}),
@@ -118,10 +133,7 @@ export async function runTilesCLI(
         ...(o.seed ? { seed: Number(o.seed) } : {}),
         ...(o.name ? { name: String(o.name) } : {}),
         ...(o['cell-zoom'] !== undefined ? { cellZoom: Number(o['cell-zoom']) } : {}),
-        ...(config.inferRoofs !== undefined ? { inferRoofs: Boolean(config.inferRoofs) } : {}),
-        ...(config.ruleTrees !== undefined ? { ruleTrees: Boolean(config.ruleTrees) } : {}),
-        ...(config.details !== undefined ? { details: Boolean(config.details) } : {}),
-        ...(config.landscape !== undefined ? { landscape: Boolean(config.landscape) } : {}),
+        ...config,
         resume: Boolean(o.resume),
         concurrency,
         ...(signal ? { signal } : {}),

@@ -154,3 +154,5 @@ city tiles serve ./out/beijing --port 4181
 ## 10. 验收要点
 
 对应 09 中的 AC301–AC312（WP-C）和 AC601–AC609（WP-F）。
+
+`--config` 的 JSON 文件遵循 [瓦片构建选项 Schema](../../schemas/tile-build-options.schema.json)。例如 `{"inferHeights":false,"landmarks":false}` 会保留 OSM 实测高度和由已知层数换算的高度。缺少两者时，建筑从已知底高向上使用 3 米单层并标记为 inferred，地标使用普通建筑路径。
