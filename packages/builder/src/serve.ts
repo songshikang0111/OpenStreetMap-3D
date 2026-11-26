@@ -1,9 +1,11 @@
 // `city tiles serve`: loopback-only static server with range requests, gzip and CORS, for local preview only.
+import { createReadStream } from 'node:fs';
+import { pipeline } from 'node:stream/promises';
 import { createServer } from 'node:http';
 import type { Server } from 'node:http';
-import { readFile, stat } from 'node:fs/promises';
+import { realpath, stat } from 'node:fs/promises';
 import path from 'node:path';
-import { gzipSync } from 'node:zlib';
+import { createGzip } from 'node:zlib';
 
 const TYPES: Record<string, string> = {
   '.json': 'application/json',
@@ -26,7 +28,7 @@ export async function serveTiles(dir: string, { port = 4181, host = '127.0.0.1' 
     throw Object.assign(new Error('city tiles serve only binds to a loopback address.'), {
       code: 'SERVE_LOOPBACK_ONLY',
     });
-  const root = path.resolve(dir);
+  const root = await realpath(dir);
   const server: Server = createServer(async (req, res) => {
     try {
       res.setHeader('Access-Control-Allow-Origin', '*');
@@ -35,36 +37,44 @@ export async function serveTiles(dir: string, { port = 4181, host = '127.0.0.1' 
       if (req.method === 'OPTIONS') return void res.writeHead(204).end();
       if (req.method !== 'GET' && req.method !== 'HEAD') return void res.writeHead(405).end();
       const pathname = decodeURIComponent(new URL(req.url ?? '/', 'http://local').pathname);
-      const file = path.resolve(root, '.' + pathname);
+      const file = await realpath(path.resolve(root, '.' + pathname)).catch(() => null);
+      if (!file) return void res.writeHead(404).end();
       if (!file.startsWith(root + path.sep) && file !== root) return void res.writeHead(403).end();
       if (file.split(path.sep).includes('.build')) return void res.writeHead(404).end();
       const info = await stat(file).catch(() => null);
       if (!info?.isFile()) return void res.writeHead(404).end();
-      const body = await readFile(file);
       res.setHeader('Content-Type', TYPES[path.extname(file)] ?? 'application/octet-stream');
       res.setHeader('Accept-Ranges', 'bytes');
       res.setHeader('Cache-Control', 'no-cache');
       const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range ?? '');
+      if (req.headers.range && (!range || (!range[1] && !range[2]))) {
+        return void res.writeHead(416, { 'Content-Range': `bytes */${info.size}` }).end();
+      }
       if (range) {
-        const start = range[1] ? Number(range[1]) : Math.max(0, body.length - Number(range[2]));
-        const end = range[1] && range[2] ? Math.min(Number(range[2]), body.length - 1) : body.length - 1;
-        if (start > end || start >= body.length) {
-          res.writeHead(416, { 'Content-Range': `bytes */${body.length}` }).end();
+        const start = range[1] ? Number(range[1]) : Math.max(0, info.size - Number(range[2]));
+        const end = range[1] && range[2] ? Math.min(Number(range[2]), info.size - 1) : info.size - 1;
+        if (start > end || start >= info.size) {
+          res.writeHead(416, { 'Content-Range': `bytes */${info.size}` }).end();
           return;
         }
         res.writeHead(206, {
-          'Content-Range': `bytes ${start}-${end}/${body.length}`,
+          'Content-Range': `bytes ${start}-${end}/${info.size}`,
           'Content-Length': end - start + 1,
         });
-        return void res.end(req.method === 'HEAD' ? undefined : body.subarray(start, end + 1));
+        if (req.method === 'HEAD') return void res.end();
+        await pipeline(createReadStream(file, { start, end }), res);
+        return;
       }
-      if (/\bgzip\b/.test(String(req.headers['accept-encoding'] ?? ''))) {
-        const gz = gzipSync(body, { level: 6 });
-        res.writeHead(200, { 'Content-Encoding': 'gzip', 'Content-Length': gz.length, Vary: 'Accept-Encoding' });
-        return void res.end(req.method === 'HEAD' ? undefined : gz);
+      res.setHeader('Vary', 'Accept-Encoding');
+      if (path.extname(file) !== '.archive' && /\bgzip\b/.test(String(req.headers['accept-encoding'] ?? ''))) {
+        res.writeHead(200, { 'Content-Encoding': 'gzip' });
+        if (req.method === 'HEAD') return void res.end();
+        await pipeline(createReadStream(file), createGzip({ level: 6 }), res);
+        return;
       }
-      res.writeHead(200, { 'Content-Length': body.length });
-      res.end(req.method === 'HEAD' ? undefined : body);
+      res.writeHead(200, { 'Content-Length': info.size });
+      if (req.method === 'HEAD') return void res.end();
+      await pipeline(createReadStream(file), res);
     } catch {
       if (!res.headersSent) res.writeHead(500);
       res.end();

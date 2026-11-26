@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>City Ink · Device benchmark</title>
+    <style>
+      body {
+        margin: 0;
+        font:
+          15px/1.45 system-ui,
+          sans-serif;
+        color: #172c31;
+      }
+      #map {
+        position: fixed;
+        inset: 0;
+      }
+      section {
+        position: relative;
+        width: fit-content;
+        max-width: min(32rem, 90vw);
+        margin: 12px;
+        padding: 12px;
+        background: #fffffff0;
+        border-radius: 5px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.1rem;
+      }
+      label,
+      textarea {
+        display: block;
+        margin-top: 6px;
+      }
+      textarea {
+        width: min(28rem, 78vw);
+        height: 25vh;
+      }
+      form button {
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <section>
+      <h1>Device benchmark</h1>
+      <form>
+        <label
+          >Route
+          <select name="sample">
+            <option value="beijing-cbd-grow-9">Beijing CBD</option>
+            <option value="kyoto-gion-grow-9">Kyoto Gion</option>
+          </select></label
+        >
+        <label
+          >Quality
+          <select name="quality">
+            <option>balanced</option>
+            <option>low</option>
+            <option>high</option>
+          </select></label
+        >
+        <label
+          >Duration
+          <select name="loops">
+            <option value="1">1 minute</option>
+            <option value="10">10 minutes</option>
+          </select></label
+        >
+        <label>Device and CPU <input name="device" placeholder="Model and processor" /></label>
+        <button name="run" value="1">Start benchmark</button>
+      </form>
+      <p id="status" role="status"></p>
+      <div id="results" hidden>
+        <label>Result JSON <textarea readonly></textarea></label>
+        <button id="copy">Copy result</button>
+        <button id="download">Save frame log</button>
+        <a href="./benchmark.html">New run</a>
+      </div>
+    </section>
+    <script type="module" src="./benchmark.js"></script>
+  </body>
+</html>

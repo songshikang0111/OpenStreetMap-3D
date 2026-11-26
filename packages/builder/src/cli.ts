@@ -1,5 +1,7 @@
 // `city tiles <build|validate|inspect|serve|pack>`; follows the phase-one CLI output contract: with --json the
 // result object goes to stdout and progress to stderr, with schemaVersion/status/artifacts/diagnostics.
+import { packTiles } from './archive/pack.js';
+import { readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { buildTiles, DEFAULT_LEVELS } from './pipeline.js';
@@ -9,14 +11,15 @@ import type { Diagnostic } from '@city-ink/tiles';
 
 export const TILES_HELP = `city tiles — build and check static 3D city tiles
 
-  city tiles build (--input file.json|city.osm.pbf | --project dir) --output dir [--bbox w,s,e,n] [--resume]
+  city tiles build (--input file.json|city.osm.pbf | --project dir) --output dir [--bbox w,s,e,n | --polygon mask.geojson] [--resume]
                    [--seed n] [--config options.json] [--concurrency n] [--max-memory MiB] [--levels 14,16] [--cell-zoom n] [--json]
   city tiles validate <dir> [--json]
   city tiles inspect <dir> --tile z/x/y [--json]
+  city tiles pack <dir> --output file.archive [--json]
   city tiles serve <dir> [--port 4181] [--json]
 
 Input: OSM JSON (Overpass / OSM Map), an .osm.pbf extract (<= 1 GB, build area <= 5,000 km2) or a phase-one project.
-Options file (--config): {"inferRoofs": false, "ruleTrees": true, "details": false, "landscape": false}. Output is ODbL data; keep the attribution.`;
+Options file (--config): {"inferHeights": true, "inferRoofs": false, "ruleTrees": true, "details": false, "landscape": false, "landmarks": true}. Output is ODbL data; keep the attribution.`;
 
 export interface TilesCLIResult {
   schemaVersion: 1;
@@ -36,6 +39,7 @@ const VALUE_OPTIONS = new Set([
   'project',
   'output',
   'bbox',
+  'polygon',
   'seed',
   'config',
   'concurrency',
@@ -72,6 +76,22 @@ function parse(args: string[]): Parsed {
   return out;
 }
 
+const BUILD_FLAGS = ['inferHeights', 'inferRoofs', 'ruleTrees', 'details', 'landscape', 'landmarks'] as const;
+
+function buildFlags(config: unknown): Partial<Record<(typeof BUILD_FLAGS)[number], boolean>> {
+  if (!config || typeof config !== 'object' || Array.isArray(config))
+    throw Object.assign(new Error('--config expects a JSON object.'), { code: 'OPTION_INVALID' });
+  const flags: Partial<Record<(typeof BUILD_FLAGS)[number], boolean>> = {};
+  for (const name of BUILD_FLAGS) {
+    if (!Object.hasOwn(config, name)) continue;
+    const value = (config as Record<string, unknown>)[name];
+    if (typeof value !== 'boolean')
+      throw Object.assign(new Error(`--config ${name} expects a boolean.`), { code: 'OPTION_INVALID' });
+    flags[name] = value;
+  }
+  return flags;
+}
+
 const ok = (extra: Partial<TilesCLIResult> = {}): TilesCLIResult => ({
   schemaVersion: 1,
   status: 'succeeded',
@@ -104,9 +124,7 @@ export async function runTilesCLI(
       const bbox = o.bbox ? String(o.bbox).split(',').map(Number) : undefined;
       if (bbox && (bbox.length !== 4 || bbox.some((v) => !Number.isFinite(v))))
         throw Object.assign(new Error('--bbox expects west,south,east,north.'), { code: 'OPTION_INVALID' });
-      const config = o.config
-        ? JSON.parse(await (await import('node:fs/promises')).readFile(resolve(o.config), 'utf8'))
-        : {};
+      const config = o.config ? buildFlags(JSON.parse(await readFile(resolve(o.config), 'utf8'))) : {};
       const concurrency =
         o.concurrency !== undefined ? Number(o.concurrency) : Math.max(1, os.availableParallelism() - 1);
       const zooms = o.levels !== undefined ? String(o.levels).split(',').map(Number) : undefined;
@@ -126,10 +144,8 @@ export async function runTilesCLI(
         ...(o.seed ? { seed: Number(o.seed) } : {}),
         ...(o.name ? { name: String(o.name) } : {}),
         ...(o['cell-zoom'] !== undefined ? { cellZoom: Number(o['cell-zoom']) } : {}),
-        ...(config.inferRoofs !== undefined ? { inferRoofs: Boolean(config.inferRoofs) } : {}),
-        ...(config.ruleTrees !== undefined ? { ruleTrees: Boolean(config.ruleTrees) } : {}),
-        ...(config.details !== undefined ? { details: Boolean(config.details) } : {}),
-        ...(config.landscape !== undefined ? { landscape: Boolean(config.landscape) } : {}),
+        ...(o.polygon ? { region: JSON.parse(await readFile(resolve(o.polygon), 'utf8')) } : {}),
+        ...config,
         resume: Boolean(o.resume),
         concurrency,
         ...(zooms ? { levels: DEFAULT_LEVELS.map((l, i) => ({ ...l, zoom: zooms[i]! })) } : {}),
@@ -166,10 +182,13 @@ export async function runTilesCLI(
       stderr.write(`Serving ${resolve(target)} at ${server.url} (loopback only, Ctrl+C to stop)\n`);
       return { ...ok({ url: server.url, artifacts: [`${server.url}/tileset.json`] }), server };
     }
-    if (command === 'pack')
-      throw Object.assign(new Error('city tiles pack arrives with the single-file archive in M3 (WP-F).'), {
-        code: 'TILES_PACK_UNAVAILABLE',
-      });
+    if (command === 'pack') {
+      if (!target || !o.output)
+        throw Object.assign(new Error('city tiles pack <dir> --output file.archive'), { code: 'OPTION_MISSING' });
+      const output = resolve(o.output);
+      await packTiles(resolve(target), output, signal);
+      return ok({ artifacts: [output] });
+    }
     throw Object.assign(new Error(`Unknown tiles command ${command}.`), {
       code: 'UNKNOWN_COMMAND',
       hint: 'Run city tiles --help.',

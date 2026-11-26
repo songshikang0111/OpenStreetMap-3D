@@ -1,4 +1,6 @@
 import { ownOutput } from './output-lock.js';
+import { RegionMask } from './region.js';
+import type { BuildRegionInput } from './region.js';
 import { regionalWater } from './ingest/water.js';
 import { FeatureStore } from './ingest/store.js';
 import { ingestPbf, bboxAreaKm2 } from './ingest/index.js';
@@ -24,6 +26,7 @@ import {
 } from '@city-ink/tiles';
 import type { Bounds, Diagnostic, Provenance, TileId, TileInput, Tileset, FeatureLayerInput } from '@city-ink/tiles';
 import { GENERATOR_VERSION } from '@city-ink/generators';
+import { assignBuildingRelations } from './building-relations.js';
 import { PlanContext, cellKey } from './plan.js';
 import type { CellPlan, PlanOptions, PlanRecord } from './plan.js';
 import { planQueuedCells } from './planning-queue.js';
@@ -49,8 +52,12 @@ export interface BuildOptions {
   project?: string;
   output: string;
   bbox?: Bounds;
+  /** GeoJSON polygonal mask, mutually exclusive with bbox. */
+  region?: BuildRegionInput;
   name?: string;
   seed?: number;
+  /** Use 3 m above the known base when height and floors are missing. Defaults to inference. */
+  inferHeights?: boolean;
   inferRoofs?: boolean;
   ruleTrees?: boolean;
   /** Street details: lamps, signals, crossings, kerbs, parked cars, pedestrians (default off, decision E10). */
@@ -256,16 +263,22 @@ async function readComplete(out: string, marker: CompleteBuild): Promise<BuildOu
 export async function buildTiles(
   options: BuildOptions,
 ): Promise<{ report: BuildReport; tileset: Tileset; output: string }> {
+  const region = options.region ? new RegionMask(options.region) : null;
+  if (region) {
+    if (options.bbox)
+      throw Object.assign(new Error('Choose either bbox or a polygon region.'), { code: 'BUILD_REGION_INVALID' });
+    options = { ...options, bbox: region.bounds };
+  }
   const out = path.resolve(options.output);
   const release = await ownOutput(out);
   try {
-    return await runBuild(options, out);
+    return await runBuild(options, out, region);
   } finally {
     await release();
   }
 }
 
-async function runBuild(options: BuildOptions, out: string): Promise<BuildOutput> {
+async function runBuild(options: BuildOptions, out: string, region: RegionMask | null): Promise<BuildOutput> {
   const cache = path.join(out, '.build');
   const concurrency = options.concurrency ?? 1;
   const memoryMiB = options.maxMemoryMiB ?? 8192;
@@ -309,14 +322,17 @@ async function runBuild(options: BuildOptions, out: string): Promise<BuildOutput
       canonicalStringify({
         // Change the cache revision whenever planning, tile encoding or report semantics change.
         revision: '3-disk-features-v1',
+        massingRevision: 1,
         version: BUILDER_VERSION,
         sourceHash,
         file: path.basename(source.file),
         config: source.config,
         project: Boolean(options.project),
         bbox: options.bbox ?? null,
+        ...(region ? { region: region.polygons } : {}),
         name: options.name ?? null,
         seed: options.seed ?? null,
+        ...(options.inferHeights === false ? { inferHeights: false } : {}),
         inferRoofs: options.inferRoofs ?? null,
         ruleTrees: options.ruleTrees ?? true,
         details: options.details ?? false,
@@ -383,6 +399,7 @@ async function runBuild(options: BuildOptions, out: string): Promise<BuildOutput
   const levels = options.levels ?? DEFAULT_LEVELS;
   const planOptions: PlanOptions = {
     seed: input.seed,
+    ...(options.inferHeights === false ? { inferHeights: false } : {}),
     inferRoofs: input.inferRoofs,
     ruleTrees: options.ruleTrees ?? true,
     ...(options.details ? { details: true } : {}),
@@ -392,12 +409,14 @@ async function runBuild(options: BuildOptions, out: string): Promise<BuildOutput
   };
   const cellZoom = options.cellZoom ?? 12;
   const buildConfig = {
+    massingRevision: 1,
     planOptions,
     levels,
     cellZoom,
     version: BUILDER_VERSION,
     area: input.area,
     origin: input.origin,
+    ...(region ? { region: region.polygons } : {}),
   };
   const configHash = sha256(canonicalStringify(buildConfig));
   const inputHash = sha256('3-disk-features-v1:' + input.sourceSha256 + configHash);
@@ -411,16 +430,22 @@ async function runBuild(options: BuildOptions, out: string): Promise<BuildOutput
   const waterDiagnostics: Diagnostic[] = [];
   const shape: Bounds = [input.area.west, input.area.south, input.area.east, input.area.north];
   const regional = /\.pbf$/i.test(source.file) && bboxAreaKm2(shape) >= 48;
-  const data = parseOSM(
-    store ? raw(store.waterInput()) : input.raw,
-    input.seed,
-    regional
-      ? {
-          mergeWater: (polygons) => regionalWater(polygons, waterDiagnostics),
-        }
-      : undefined,
-  );
-  const ctx = new PlanContext(data);
+  const globalInput = store ? raw(store.waterInput()) : input.raw;
+  const data = parseOSM(globalInput, input.seed, {
+    onBuildingFootprints: (buildings) => assignBuildingRelations(buildings, globalInput.elements),
+    ...(regional ? { mergeWater: (polygons) => regionalWater(polygons, waterDiagnostics) } : {}),
+  });
+  const context = (parsed: typeof data) => {
+    if (options.inferHeights === false) {
+      for (const building of parsed.buildings) {
+        if (building.source !== 'estimated') continue;
+        building.height = building.minHeight + 3;
+        building.levels = 1;
+      }
+    }
+    return new PlanContext(parsed);
+  };
+  const ctx = context(data);
 
   // partition
   progress('partition', 0);
@@ -466,8 +491,10 @@ async function runBuild(options: BuildOptions, out: string): Promise<BuildOutput
       if (!store || !bounds) return { data: bounds ? ctx.crop(bounds) : ctx.data };
       const relationErrors: { id: number; incomplete: boolean }[] = [];
       const waterMask = ctx.water.filter((r) => boundsIntersect(r.bounds, bounds)).map((r) => r.item);
-      const local = new PlanContext(
-        parseOSM(raw(store.neighbourhood(bounds)), input.seed, {
+      const localInput = raw(store.neighbourhood(bounds));
+      const local = context(
+        parseOSM(localInput, input.seed, {
+          onBuildingFootprints: (buildings) => assignBuildingRelations(buildings, localInput.elements),
           waterMask,
           onRelationError: (id, incomplete) => relationErrors.push({ id, incomplete }),
         }),
@@ -477,17 +504,25 @@ async function runBuild(options: BuildOptions, out: string): Promise<BuildOutput
     planOptions,
     Math.min(concurrency, Math.max(1, Math.floor(memoryMiB / 1024))),
     async (job, plan) => {
+      if (region) plan.records = plan.records.flatMap((r) => region.clip(r));
       await writeAtomic(job.file, JSON.stringify({ ...plan, inputHash }));
       complete(job.cell);
     },
     options.signal,
   );
 
+  // Only source cell names are needed in RAM to fetch distant siblings of cross-cell compounds.
+  const compoundFiles = new Map<string, Set<string>>();
   // Reduce plans in cell order independently of worker completion order.
   for (const { file } of planFiles) {
     const plan = (await readJSONIf<CellPlan>(file))!;
     for (const r of plan.records) {
       summary.add(r);
+      if (r.compoundId) {
+        const files = compoundFiles.get(r.compoundId) ?? new Set<string>();
+        files.add(file);
+        compoundFiles.set(r.compoundId, files);
+      }
     }
     await writeAtomic(file + '.buildings', JSON.stringify(plan.records.filter((r) => r.layer === 'building')));
     for (const issue of plan.relationErrors ?? []) relationErrors.set(issue.id, issue.incomplete);
@@ -512,15 +547,23 @@ async function runBuild(options: BuildOptions, out: string): Promise<BuildOutput
   for (const { cell, file } of planFiles) {
     const plan = (await readJSONIf<CellPlan>(file))!;
     const own = new Set(plan.records.map((r) => r.id));
+    const compounds = new Set(plan.records.flatMap((r) => (r.compoundId ? [r.compoundId] : [])));
+    const siblingFiles = new Set([...compounds].flatMap((id) => [...compoundFiles.get(id)!]));
     const cellRect = cell ? tileToLngLatBounds(cell) : null;
     const near = cellRect ? expandBounds(cellRect, 400) : null;
     const context: PlanRecord[] = [];
     if (near)
       for (const neighbour of planFiles) {
-        if (neighbour.file === file || !neighbour.cell || !boundsIntersect(near, tileToLngLatBounds(neighbour.cell)))
+        if (
+          neighbour.file === file ||
+          !neighbour.cell ||
+          (!siblingFiles.has(neighbour.file) && !boundsIntersect(near, tileToLngLatBounds(neighbour.cell)))
+        )
           continue;
         const buildings = await readJSONIf<PlanRecord[]>(neighbour.file + '.buildings');
-        for (const r of buildings!) if (!own.has(r.id) && boundsContains(near, r.anchor)) context.push(r);
+        for (const r of buildings!)
+          if (!own.has(r.id) && (boundsContains(near, r.anchor) || (r.compoundId && compounds.has(r.compoundId))))
+            context.push(r);
       }
     const cut = cutTiles(context.length ? [...plan.records, ...context] : plan.records, { levels, data });
     const inside = (k: string) => {
@@ -602,6 +645,7 @@ async function runBuild(options: BuildOptions, out: string): Promise<BuildOutput
     build: {
       seed: input.seed,
       options: {
+        ...(planOptions.inferHeights === false ? { inferHeights: false } : {}),
         inferRoofs: planOptions.inferRoofs,
         ruleTrees: planOptions.ruleTrees,
         landscape: Boolean(planOptions.landscape),

@@ -1,4 +1,4 @@
-import type { Phase1Data, Point2, Ring } from './phase1-types.js';
+import type { Phase1Building, Phase1Data, Point2, Ring } from './phase1-types.js';
 
 export function projection(lat: number, lon: number): Phase1Data['project'];
 export function area(ring: Ring): number;
@@ -16,6 +16,7 @@ export function parseOSM(
   seed?: number,
   options?: {
     waterMask?: Phase1Data['water'];
+    onBuildingFootprints?(buildings: Phase1Building[]): void;
     mergeWater?(polygons: Phase1Data['water']): Phase1Data['water'];
     onRelationError?(id: number, incomplete: boolean): void;
   },

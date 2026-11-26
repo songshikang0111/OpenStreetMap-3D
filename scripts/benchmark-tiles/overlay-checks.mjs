@@ -114,6 +114,10 @@ try {
         if (f && f.layer === 'building') { target = f; point = p; }
       }
       const ll = m.unproject(point);
+      const el = document.createElement('div');
+      const marker = m.addMarker({ lngLat: ll, element: el, occlude: true });
+      await m.whenIdle({ timeoutMs: 60000 });
+      const occluded = el.style.display === 'none';
       const geometriesBefore = m.renderer.info.memory.geometries;
       m.setFeatureState(target.id, { highlight: true, color: '#ff0000' });
       await T.frame(); await T.frame();
@@ -126,6 +130,8 @@ try {
       m.setFeatureState(target.id, { hidden: true });
       await T.frame();
       const hiddenPick = m.queryFeatures(point)?.id === target.id;
+      const passThrough = el.style.display !== 'none';
+      marker.remove();
       const geometriesAfter = m.renderer.info.memory.geometries;
       // L0: same building id appears in the massing tile
       m.jumpTo({ zoom: 13.6 });
@@ -141,8 +147,9 @@ try {
       m.setFeatureState(target.id, { hidden: false, highlight: false, color: null });
       await T.frame();
       const visibleAgain = m.queryFeatures(m.project(ll))?.id === target.id;
-      return { feature: target.id, renderedRed, pixel: Array.from(px), highlightPickable: stillPickable, hiddenNotPicked: !hiddenPick, geometriesBefore, geometriesAfter, hiddenAtL0, hiddenAfterReload, visibleAgain };
+      return { feature: target.id, occluded, passThrough, renderedRed, pixel: Array.from(px), highlightPickable: stillPickable, hiddenNotPicked: !hiddenPick, geometriesBefore, geometriesAfter, hiddenAtL0, hiddenAfterReload, visibleAgain };
     })()`);
+    record('marker-occlusion', r.occluded && r.passThrough, { occluded: r.occluded, passThrough: r.passThrough });
     record(
       'AC503',
       r.renderedRed &&

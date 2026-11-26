@@ -20,15 +20,15 @@ export async function withSpec(container: HTMLElement): Promise<CityMap> {
 
 /** 2. The phase-one ink looks, imported explicitly (not part of the default createMap bundle). */
 export async function withInk(container: HTMLElement): Promise<CityMap> {
-  const map = await createMap({ container, tiles, style: comic as never });
-  await map.setStyle(cel as never);
+  const map = await createMap({ container, tiles, style: comic });
+  await map.setStyle(cel);
   return map;
 }
 
 /** 3. A custom code pack with streaming hooks. */
 export async function withPack(container: HTMLElement): Promise<CityMap> {
   const pack = toonPack(THREE);
-  const map = await createMap({ container, tiles, style: pack as never });
+  const map = await createMap({ container, tiles, style: pack });
   await map.whenIdle();
   console.log('tiles drawn by the pack', pack.loaded.size);
   return map;

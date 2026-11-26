@@ -2,6 +2,8 @@
 // per-vertex `roleIndex` tells the style which role each vertex has, so an L1 tile is a handful of draw calls
 // (06 section 3: <= 12 per L1 tile, <= 4 per L0 tile). All arrays are typed arrays transferable out of a Worker.
 
+import { FaceBlock, type FacadeAttributes } from './face-block.js';
+
 /** Semantic roles written by generators, in roleIndex order (05 section 3). Append only. */
 export const ROLE_LIST = [
   'wall',
@@ -19,7 +21,8 @@ export const ROLE_LIST = [
   'landmark',
 ] as const;
 
-/** Material group of a role: building (facade shader), structure, ground (polygon offset, no shadow casting), landmark. */
+/** Material group of a role: building (facade shader), structure, ground (polygon offset, no shadow casting), landmark.
+ * Street furniture of the `detail` layer forms a fifth group, `detail`. */
 export function groupOf(role: string): 'building' | 'structure' | 'ground' | 'landmark' {
   if (/^(wall|glass|roof)(\.|$)/.test(role)) return 'building';
   if (/^(road|ground|water)(\.|$)/.test(role)) return 'ground';
@@ -116,14 +119,17 @@ class GroupBuilder {
   readonly role = new Grow(f32);
   readonly idx = new Grow(u32);
   own = 0;
-  readonly runs: {
-    writer: WriterLike;
-    start: number;
-    count: number;
-    renderId: number;
-    yOffset: number;
-    roleIndex: number;
-  }[] = [];
+  readonly runs: (
+    | FaceBlock
+    | {
+        writer: WriterLike;
+        start: number;
+        count: number;
+        renderId: number;
+        yOffset: number;
+        roleIndex: number;
+      }
+  )[] = [];
   runVertices = 0;
   constructor(readonly group: string) {}
 
@@ -155,6 +161,20 @@ class GroupBuilder {
     let k = this.idx.length;
     let v = own;
     for (const run of this.runs) {
+      if (run instanceof FaceBlock) {
+        const count = run.count;
+        position.set(run.positions.subarray(0, count * 3), v * 3);
+        color.set(run.colors.subarray(0, count * 3), v * 3);
+        normal.set(run.normals.subarray(0, count * 3), v * 3);
+        roleIndex.set(run.roles.subarray(0, count), v);
+        renderId.set(run.renderIds.subarray(0, count), v);
+        facade!.aFacade.set(run.facades.subarray(0, count * 4), v * 4);
+        facade!.aLayout.set(run.layouts.subarray(0, count * 4), v * 4);
+        facade!.aStyle.set(run.styles.subarray(0, count * 2), v * 2);
+        facade!.aSurface.set(run.surfaces.subarray(0, count * 2), v * 2);
+        for (let end = v + count; v < end; v++) index[k++] = v;
+        continue;
+      }
       const w = run.writer;
       for (let i = run.start, end = run.start + run.count; i < end; i++, v++) {
         const s3 = i * 3,
@@ -233,14 +253,50 @@ export class BatchBuilder {
     this.g.runVertices += count;
   }
 
+  writeBuildingFace(
+    a: number[],
+    b: number[],
+    c: number[],
+    normal: number[],
+    color: { r: number; g: number; b: number },
+    id: number,
+    yOffset: number,
+    uv: number[][] | null,
+    attributes: FacadeAttributes,
+  ) {
+    const runs = this.g.runs;
+    let block = runs[runs.length - 1];
+    if (!(block instanceof FaceBlock) || block.count === block.capacity) {
+      block = new FaceBlock();
+      runs.push(block);
+    }
+    block.write(a, b, c, normal, color, id, this.roleIndex, yOffset, uv, attributes);
+    this.g.runVertices += 3;
+  }
+
   vertex(p: ArrayLike<number>, n: ArrayLike<number>, c: ArrayLike<number>, renderId: number): number {
-    const g = this.g;
-    g.pos.push3(p[0]!, p[1]!, p[2]!);
-    g.nor.push3(n[0]!, n[1]!, n[2]!);
-    g.col.push3(c[0]!, c[1]!, c[2]!);
-    g.rid.push(renderId);
-    g.role.push(this.roleIndex);
-    return g.own++;
+    return this.vertexCoordinates(p[0]!, p[1]!, p[2]!, n[0]!, n[1]!, n[2]!, c[0]!, c[1]!, c[2]!, renderId);
+  }
+
+  vertexCoordinates(
+    x: number,
+    y: number,
+    z: number,
+    nx: number,
+    ny: number,
+    nz: number,
+    r: number,
+    g: number,
+    b: number,
+    renderId: number,
+  ) {
+    const group = this.g;
+    group.pos.push3(x, y, z);
+    group.nor.push3(nx, ny, nz);
+    group.col.push3(r, g, b);
+    group.rid.push(renderId);
+    group.role.push(this.roleIndex);
+    return group.own++;
   }
 
   triangle(a: number, b: number, c: number) {
@@ -255,7 +311,9 @@ export class BatchSet {
     const key = `${layer}:${role}`;
     let w = this.writers.get(key);
     if (!w) {
-      const group = groupOf(role);
+      // Street details get their own group so that budget tiers can drop roof plant and trims without them.
+      const materialGroup = groupOf(role);
+      const group = layer === 'detail' && materialGroup === 'structure' ? 'detail' : materialGroup;
       let g = this.groups.get(group);
       if (!g) this.groups.set(group, (g = new GroupBuilder(group)));
       w = new BatchBuilder(g, layer, role);

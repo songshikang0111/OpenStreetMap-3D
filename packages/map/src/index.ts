@@ -8,3 +8,4 @@ export { BUILTIN_STYLES } from './styles.js';
 export { validateStyleSpec } from '@city-ink/styles/spec';
 export type { StyleSpec as StyleSpecDocument, ResolvedStyleSpec, StyleRule } from '@city-ink/styles/spec';
 export type * from './types.js';
+export { openTileArchive } from './archive.js';

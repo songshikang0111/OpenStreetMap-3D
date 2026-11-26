@@ -1,0 +1,90 @@
+{
+  "date": "2026-11-26T05:57:07.009Z",
+  "gpuFlags": "--use-gl=angle --use-angle=gl-egl --ignore-gpu-blocklist",
+  "results": {
+    "AC704": {
+      "pass": true,
+      "times": [
+        24.200000002980232,
+        17.599999994039536,
+        21.599999994039536,
+        11.900000005960464,
+        12.100000008940697
+      ],
+      "sameGeometry": true,
+      "requests": 0,
+      "geometriesBefore": 59,
+      "geometriesAfter": 59,
+      "maxWarmMs": 21.599999994039536,
+      "note": "setStyle + next frame; measured on the machine in the summary, not the reference device"
+    },
+    "AC703-browser": {
+      "pass": true,
+      "threw": true,
+      "code": "STYLE_INVALID",
+      "path": "$.roles.wall.color",
+      "style": "light"
+    },
+    "AC705-browser": {
+      "pass": true,
+      "redPixelsWithRule": 86207,
+      "redPixelsWithout": 0
+    },
+    "AC706": {
+      "pass": true,
+      "reportHeight": {
+        "observed": 21,
+        "derived": 132,
+        "inferred": 128
+      },
+      "loadedL1Buildings": 281,
+      "observedOnly": {
+        "total": 281,
+        "flattened": 260,
+        "shown": 21
+      },
+      "derivedOrBetter": {
+        "total": 281,
+        "flattened": 128,
+        "shown": 153
+      },
+      "all": {
+        "total": 281,
+        "flattened": 0,
+        "shown": 281
+      },
+      "newRequests": 0
+    },
+    "AC706-switches": {
+      "pass": true,
+      "requests": 0,
+      "before": {
+        "hiddenTrees": 0,
+        "hiddenDetails": 0
+      },
+      "filtered": {
+        "hiddenTrees": 3229,
+        "hiddenDetails": 2516
+      },
+      "restored": {
+        "hiddenTrees": 0,
+        "hiddenDetails": 0
+      },
+      "idleWorkers": true
+    },
+    "AC709": {
+      "pass": true,
+      "pack": "toon-example",
+      "loadedAfterLoad": 19,
+      "readyAfterLoad": 19,
+      "sameAfterLoad": true,
+      "loadedAway": 3,
+      "readyAway": 3,
+      "sameAway": true
+    },
+    "console": {
+      "pass": true,
+      "errors": []
+    }
+  }
+}

@@ -59,3 +59,5 @@ command that proves it works.
 - Commit each substantial change with a clear message (conventional commits, English) after running the matching
   checks; stage only your own files. `git config blame.ignoreRevsFile .git-blame-ignore-revs` hides the formatting
   commit in blame.
+
+Use the repository issue forms for reproducible bugs, map data discrepancies and feature requests. Community expectations are in [Contributor conduct](CODE_OF_CONDUCT.md). Report sensitive issues through the [private reporting process](SECURITY.md).

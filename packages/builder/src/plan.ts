@@ -41,6 +41,7 @@ export const RULE_TAGS = [
 ];
 
 export interface PlanOptions {
+  inferHeights?: boolean;
   seed: number;
   inferRoofs: boolean;
   ruleTrees: boolean;
@@ -73,6 +74,8 @@ export interface PlanRecord {
     | 'detail'
     | 'landscape';
   id: string;
+  /** Explicit OSM building relation that owns an outline or part. */
+  compoundId?: string;
   /** Owner planning cell key (z/x/y), or "all" for a single global cell. */
   cell: string;
   /** Polygons: parts → rings → [lng, lat]. Lines: parts → [ring] → [lng, lat]. Points: [[[lng, lat]]]. */
@@ -274,6 +277,7 @@ export async function planCellData(data: Phase1Data, cell: TileId | null, option
     records.push({
       layer: 'building',
       id: phase1IdToFeatureId(b.id),
+      ...(typeof b.compoundId === 'string' ? { compoundId: b.compoundId } : {}),
       cell: key,
       geometry: [[b.outer.map(ll), ...b.holes.map((h) => h.map(ll))]],
       anchor,
@@ -288,7 +292,7 @@ export async function planCellData(data: Phase1Data, cell: TileId | null, option
         facade: style.family,
         facadeSeed: options.seed,
         usage: b.tags.building ?? b.tags['building:part'] ?? null,
-        partOf: null,
+        partOf: b.compoundRole === 'part' && typeof b.compoundId === 'string' ? b.compoundId : null,
         materialHint: b.tags['building:material'] ?? null,
         colour: b.tags['building:colour'] ?? null,
         roofColour: b.tags['roof:colour'] ?? b.tags['roof:color'] ?? null,
@@ -296,7 +300,12 @@ export async function planCellData(data: Phase1Data, cell: TileId | null, option
         // Claimed by a landmark recipe: replaced by the landmark mesh at full detail, kept as massing at L0.
         landmark: landmarks?.claimed.has(b.id) ? 'claimed' : null,
       },
-      provenance: buildingProvenance(b, roof.supported ? roof.source : null),
+      provenance: {
+        ...buildingProvenance(b, roof.supported ? roof.source : null),
+        ...(b.compoundRole === 'part' && (b.membershipSource === 'observed' || b.membershipSource === 'derived')
+          ? { partOf: b.membershipSource }
+          : {}),
+      },
       tags: keptTags(b.tags, ['height', 'min_height', 'building:levels', 'building:min_level']),
     });
     count('buildings');

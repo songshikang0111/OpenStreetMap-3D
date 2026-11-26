@@ -19,6 +19,7 @@ export function writeBuildingBody(
     seed?: number;
     roofPlan: RoofPlan;
     envelopePlan: EnvelopePlan;
+    writer?: MeshWriter;
     roofWriter?: MeshWriter;
     counts?: BuildingCounts;
   },

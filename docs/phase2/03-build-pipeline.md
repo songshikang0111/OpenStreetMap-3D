@@ -154,3 +154,9 @@ city tiles serve ./out/beijing --port 4181
 ## 10. 验收要点
 
 对应 09 中的 AC301–AC312（WP-C）和 AC601–AC609（WP-F）。
+
+`--config` 的 JSON 文件遵循 [瓦片构建选项 Schema](../../schemas/tile-build-options.schema.json)。例如 `{"inferHeights":false,"landmarks":false}` 会保留 OSM 实测高度和由已知层数换算的高度。缺少两者时，建筑从已知底高向上使用 3 米单层并标记为 inferred，地标使用普通建筑路径。
+
+矩形外的形状可用 `city tiles build --input region.osm.pbf --polygon boundary.geojson --output out`。文件接受 WGS84 的 Polygon 或 MultiPolygon，也接受带该 geometry 的 Feature。轮廓须闭合，支持内环。建筑、地标、树和独立桥墩等按锚点整体归属。道路中心线按区域边界截断并线性插值高程，地表与水域按多边形相交裁切。`--bbox` 和 `--polygon` 只选一个。SDK 入口为 `buildTiles({input, output, region})`。
+
+[GeoJSON 选区 Schema](../../schemas/build-region.schema.json) 和 [Bibury 选区](../../examples/phase2/region.geojson) 可用于本地 CLI。例如 `node bin/city.js tiles build --input public/data/bibury-village.json --polygon examples/phase2/region.geojson --output /tmp/city-ink-bibury`。

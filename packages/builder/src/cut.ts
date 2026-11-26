@@ -25,6 +25,7 @@ import { fromGrid, gridToTile, tileGridRect, toGrid, toLocal } from './geo.js';
 import type { HeightFunction, PlanRecord } from './plan.js';
 import { hash52 } from './plan.js';
 import { mergeFlatGround } from './ground.js';
+import { massingBuildings, metricCell } from './massing.js';
 
 export interface LevelSpec {
   id: string;
@@ -120,7 +121,6 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
     const e = defaultExtentLog2(z);
     const full = level.profile === 'full';
     const wanted = (id: TileId) => !options.only || options.only.has(tileKey(id));
-    const smallBlocks = new Map<string, { tile: TileId; rings: G[][]; height: number; ids: string[] }>();
 
     for (const r of records) {
       if (!full && (r.layer === 'ground' || r.layer === 'structure' || r.layer === 'detail' || r.layer === 'landscape'))
@@ -148,6 +148,7 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
         push(tileOf(id, level.profile), 'detail', { ...base, geometry: [[gridToTile(toGrid(r.anchor, z, e), id, e)]] });
         continue;
       }
+      if (!full && r.layer === 'building') continue;
       if (r.layer === 'building' || r.layer === 'tree') {
         const id = lngLatToTile(r.anchor[0], r.anchor[1], z);
         if (!wanted(id)) continue;
@@ -158,26 +159,7 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
           push(t, 'tree', { ...base, geometry: [[q]] });
           continue;
         }
-        const tol = full ? 0 : 2 / (2 ** -(z + e) * 40075016.686 * Math.cos((r.anchor[1] * Math.PI) / 180));
-        let rings = r.geometry[0]!.map((ring) => ring.map((p) => toGrid(p, z, e)));
-        if (!full) {
-          const area =
-            Math.abs(ringArea(rings[0]!)) *
-            (2 ** -(z + e) * 40075016.686 * Math.cos((r.anchor[1] * Math.PI) / 180)) ** 2;
-          if (area < 30 && Number(r.properties.height) < 6) {
-            // Small low buildings are merged per 50 m block cell (02 section 2).
-            const cellSize = 50 / (2 ** -(z + e) * 40075016.686 * Math.cos((r.anchor[1] * Math.PI) / 180));
-            const c = toGrid(r.anchor, z, e);
-            const k = `${tileKey(id)}:${Math.floor(c[0] / cellSize)}:${Math.floor(c[1] / cellSize)}`;
-            const block = smallBlocks.get(k) ?? { tile: id, rings: [], height: 0, ids: [] };
-            block.rings.push(rings[0]!);
-            block.height = Math.max(block.height, Number(r.properties.height));
-            block.ids.push(r.id);
-            smallBlocks.set(k, block);
-            continue;
-          }
-          rings = rings.map((ring) => simplifyRing(ring, tol));
-        }
+        const rings = r.geometry[0]!.map((ring) => ring.map((p) => toGrid(p, z, e)));
         const q = rings.map((ring) => ring.flatMap((p) => gridToTile(p, id, e)));
         if (q.some((ring) => ring.some((v) => !fitsInt16(v)))) {
           diagnostics.push({
@@ -191,17 +173,7 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
           fallbacks.push({ id: r.id, tile: tileKey(id), reason: 'coordinate range' });
           continue;
         }
-        const props = full
-          ? r.properties
-          : {
-              ...r.properties,
-              facade: null,
-              facadeSeed: null,
-              roofShape: 'flat',
-              roofHeight: null,
-              roofDirection: null,
-            };
-        push(t, 'building', { ...base, properties: props, geometry: [q] });
+        push(t, 'building', { ...base, geometry: [q] });
         continue;
       }
 
@@ -349,20 +321,23 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
         }
     }
 
-    // L0 small-building blocks: one low prism per block cell (bounding union of the members).
-    for (const [k, block] of [...smallBlocks].sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
-      const t = tileOf(block.tile, level.profile);
-      for (const [i, ring] of block.rings.entries()) {
-        const q = ring.flatMap((p) => gridToTile(p, block.tile, e));
-        if (q.some((v) => !fitsInt16(v))) continue;
-        push(t, 'building', {
-          id: `generated/${hash52(k)}#${i}`,
-          renderId: 0,
-          geometry: [[q]],
-          properties: { height: block.height, minHeight: 0, levels: 1, roofShape: 'flat' },
-          provenance: { height: 'inferred' },
-          tags: {},
-        });
+    if (!full) {
+      for (const { tile, feature } of massingBuildings(records, z, e)) {
+        if (!wanted(tile) || !feature.geometry.length) continue;
+        if (feature.geometry.some((part) => part.some((ring) => ring.some((v) => !fitsInt16(v))))) {
+          const key = tileKey(tile);
+          diagnostics.push({
+            code: 'TILE_COORD_RANGE',
+            stage: 'cut',
+            message: `${feature.id} extends beyond the int16 range of tile ${key}.`,
+            featureId: feature.id,
+            tileId: key,
+            hint: 'The object is listed in the build report and omitted from this level.',
+          });
+          fallbacks.push({ id: feature.id, tile: key, reason: 'coordinate range' });
+          continue;
+        }
+        push(tileOf(tile, level.profile), 'building', feature);
       }
     }
 
@@ -373,13 +348,8 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
         if (r.layer !== 'tree') continue;
         const id = lngLatToTile(r.anchor[0], r.anchor[1], z);
         if (!wanted(id)) continue;
-        const metersPerGrid = 2 ** -(z + e) * 40075016.686 * Math.cos((r.anchor[1] * Math.PI) / 180);
-        const size = 100 / metersPerGrid;
-        const g = toGrid(r.anchor, z, e);
-        const cx = (Math.floor(g[0] / size) + 0.5) * size,
-          cy = (Math.floor(g[1] / size) + 0.5) * size;
-        const key = `${tileKey(id)}:${Math.floor(g[0] / size)}:${Math.floor(g[1] / size)}`;
-        const c = cells.get(key) ?? { tile: id, g: [cx, cy], n: 0 };
+        const { key, center } = metricCell(r.anchor, id, e, 100);
+        const c = cells.get(key) ?? { tile: id, g: center, n: 0 };
         c.n++;
         cells.set(key, c);
       }
@@ -413,6 +383,7 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
         for (const f of (t.layers[name] as MeshLayerInput).features) f.renderId = renderId++;
         continue;
       }
+      if (name === 'building' && layer.features.some((f) => f.provenance?.partOf)) layer.provenanceKeys!.push('partOf');
       layer.features.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
       mergeDuplicateIds(layer);
       for (const f of layer.features) f.renderId = renderId++;

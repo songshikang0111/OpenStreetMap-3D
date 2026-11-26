@@ -3,10 +3,39 @@
 import { createMap } from '@city-ink/map';
 
 const params = new URLSearchParams(location.search);
-const tiles = params.get('tiles') ?? './tiles/beijing-cbd-grow-9/tileset.json';
 const hud = document.getElementById('hud');
 if (params.get('hud') === '0') hud.style.display = 'none';
 if (params.get('panel') === '0') document.getElementById('panel')?.remove();
+
+const catalog = await fetch('./tiles/catalog.json')
+  .then((response) => (response.ok ? response.json() : []))
+  .catch(() => []);
+const tilesFor = (sample) => `./tiles/${sample.name}/tileset.json`;
+if (!catalog.length && !params.has('tiles')) {
+  hud.textContent = 'No local samples available. Run npm run demo:tiles and npm run build:demo.';
+  throw new Error(hud.textContent);
+}
+const tiles = params.get('tiles') ?? tilesFor(catalog[0]);
+const sample = catalog.find((entry) => tilesFor(entry) === tiles);
+const city = document.getElementById('city');
+if (city) {
+  for (const entry of catalog) city.add(new Option(entry.label, tilesFor(entry)));
+  if (!sample) city.add(new Option('Custom tileset', tiles));
+  city.value = tiles;
+  city.addEventListener('change', () => {
+    const url = new URL(location.href);
+    url.searchParams.set('tiles', city.value);
+    location.href = url.href;
+  });
+}
+if (sample && document.getElementById('source')) {
+  const source = document.getElementById('source');
+  source.textContent = `OSM extract · ${sample.retrievedAt.slice(0, 10)} · ${sample.license}`;
+  source.href = sample.endpoint;
+  document.getElementById('maplibre').href = `./maplibre.html?sample=${encodeURIComponent(sample.name)}`;
+}
+const overlays = document.getElementById('overlays');
+if (overlays) overlays.href = `./overlays.html?tiles=${encodeURIComponent(tiles)}`;
 
 const myDiv = document.createElement('div');
 myDiv.className = 'marker';
@@ -24,15 +53,14 @@ const styleId = params.get('style') ?? 'light';
 const map = await createMap({
   container: document.getElementById('map'),
   tiles,
-  center: params.has('tiles') ? undefined : [116.4605, 39.9095],
-  zoom: params.has('tiles') ? undefined : 16,
   pitch: 60,
   bearing: -20,
   style: await styleFor(styleId),
   onDiagnostic: (d) => console.warn(d.code, d.message),
 });
 
-map.addMarker({ lngLat: [116.4602, 39.9115], element: myDiv });
+myDiv.title = sample?.label ?? 'Map center';
+map.addMarker({ lngLat: map.getCenter(), element: myDiv });
 // Click a building: show its OSM identity, kept tags and provenance, and highlight it.
 const info = document.getElementById('info');
 let selected = null;
@@ -50,15 +78,6 @@ map.on('click', (e) => {
 });
 map.on('tileerror', (e) => console.warn('tile error', e.tile, e.error));
 
-const city = document.getElementById('city');
-if (city) {
-  city.value = tiles;
-  city.addEventListener('change', () => {
-    const url = new URL(location.href);
-    url.searchParams.set('tiles', city.value);
-    location.href = url.href; // a new tileset is a new map
-  });
-}
 const picker = document.getElementById('style');
 if (picker) {
   picker.value = styleId;
