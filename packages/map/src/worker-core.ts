@@ -12,6 +12,8 @@ import { generateTile, batchTransferables } from '@city-ink/generators';
 import type { GeneratedTile } from '@city-ink/generators';
 import { DETAIL_GENERATORS } from '@city-ink/details';
 
+import { prepareUpload, type UploadData } from './upload-data.js';
+
 export interface WorkerRequest {
   type: 'generate';
   job: number;
@@ -37,6 +39,7 @@ export type WorkerResponse =
       tile: string;
       profile: string;
       generated: GeneratedTile;
+      upload: UploadData;
       features: FeatureRecord[];
       decodeMs: number;
       generateMs: number;
@@ -107,9 +110,11 @@ export function handleRequest(request: WorkerRequest): { response: WorkerRespons
       collectNearWalls: true,
     });
     const features = featureRecords(tile);
+    const upload = prepareUpload(generated);
     const t2 = performance.now();
     const transfer = batchTransferables(generated.batches);
     transfer.push(generated.trees.data.buffer as ArrayBuffer, generated.trees.renderId.buffer as ArrayBuffer);
+    for (const array of [...upload.ink, upload.crowns, upload.trunks]) transfer.push(array.buffer as ArrayBuffer);
     return {
       response: {
         type: 'result',
@@ -117,6 +122,7 @@ export function handleRequest(request: WorkerRequest): { response: WorkerRespons
         tile: tileKey(tile.id),
         profile: tile.profile,
         generated,
+        upload,
         features,
         decodeMs: t1 - t0,
         generateMs: t2 - t1,

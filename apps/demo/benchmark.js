@@ -52,6 +52,19 @@ async function replay(plan, quality, loops) {
     const frames = [];
     const started = performance.now();
     const r0 = map.getStats().requests;
+    const gpuSamples = [],
+      workerSamples = [];
+    let latestGpu = -Infinity,
+      latestWorker = -Infinity;
+    function retainTimings(raw, end) {
+      for (const sample of raw.gpu?.rawSamples ?? [])
+        if (sample.time >= started && sample.time <= end && sample.time > latestGpu) gpuSamples.push(sample);
+      for (const sample of raw.workerSamples ?? [])
+        if (sample.profile === 'full' && sample.time >= started && sample.time <= end && sample.time > latestWorker)
+          workerSamples.push(sample);
+      latestGpu = gpuSamples.at(-1)?.time ?? latestGpu;
+      latestWorker = workerSamples.at(-1)?.time ?? latestWorker;
+    }
     let last = null;
     function collect(t) {
       const s = map.getStats();
@@ -77,6 +90,8 @@ async function replay(plan, quality, loops) {
         if (k.type === 'flyTo') await map.flyTo(target);
         else await map.easeTo(target);
       }
+      // The SDK bounds its diagnostic history. Retain each completed minute before it can be evicted.
+      if (loop + 1 < loops) retainTimings(map.getStats({ raw: true }).raw, performance.now());
     }
     await nextFrame();
     cancelAnimationFrame(raf);
@@ -84,11 +99,7 @@ async function replay(plan, quality, loops) {
     const s = map.getStats({ raw: true });
     const intervals = frames.slice(1).map((f) => f.dt);
     const rawGpu = s.raw.gpu;
-    const gpuSamples = rawGpu?.rawSamples?.filter((sample) => sample.time >= started && sample.time <= end) ?? [];
-    const workerSamples =
-      s.raw.workerSamples?.filter(
-        (sample) => sample.time >= started && sample.time <= end && sample.profile === 'full',
-      ) ?? [];
+    retainTimings(s.raw, end);
     const peak = (key) => frames.reduce((max, f) => Math.max(max, f[key]), 0);
     const longFrames = intervals.filter((d) => d > 50).length;
     const reportHash = __TILE_HASHES__[plan.tileset] ?? null;

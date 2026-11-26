@@ -6,20 +6,18 @@ import {
   BufferGeometry,
   Color,
   CylinderGeometry,
-  DynamicDrawUsage,
   Group,
   IcosahedronGeometry,
   InstancedBufferAttribute,
   InstancedMesh,
-  Matrix4,
   Mesh,
   MeshDepthMaterial,
   MeshStandardMaterial,
-  Quaternion,
   RGBADepthPacking,
   Vector3,
 } from 'three';
 import type { DataTexture, Material, Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import { prepareUpload, type UploadData } from './upload-data.js';
 import type { FeatureRecord } from './worker-core.js';
 import { installFacadeShader, extendFacadeShader, facadeAttributeDefaults } from '@city-ink/styles/facade-shader';
 import { roleStyle } from '@city-ink/styles/spec';
@@ -27,7 +25,7 @@ import type { ResolvedStyleSpec, RoleStyle } from '@city-ink/styles/spec';
 import { builtinStyle } from '@city-ink/styles/defaults';
 import type { GeneratedTile, MeshBatch } from '@city-ink/generators';
 import { EMPTY_RULES, FeatureStateTexture, STATE_WIDTH, patchFeatureState } from './picking/feature-state.js';
-import { ROLE_LIST, TREE_STRIDE, groupOf } from '@city-ink/generators';
+import { ROLE_LIST, groupOf } from '@city-ink/generators';
 
 export type { RoleStyle } from '@city-ink/styles/spec';
 
@@ -74,25 +72,6 @@ const GROUND_ROLE = /^(road|ground|water)/;
 /** Material groups of generated batches (decision E15); `tree.*` materials stay per role. */
 const GROUPS = new Set(['building', 'structure', 'ground', 'landmark', 'detail']);
 const N_ROLES = ROLE_LIST.length;
-
-/** Phase-one ink class per role index (1 building, 1.25 facade, 3 road, 3.2 walkway, 3.5 paint, 4 structure, 5, 6). */
-const INK_BY_ROLE = ROLE_LIST.map((r) =>
-  r === 'wall' || r === 'glass'
-    ? 1.25
-    : r === 'roof' || r === 'landmark'
-      ? 1
-      : r === 'road'
-        ? 3
-        : r === 'road.marking'
-          ? 3.5
-          : r === 'ground.pavement' || r === 'ground.plaza'
-            ? 3.2
-            : r === 'water'
-              ? 6
-              : r.startsWith('ground')
-                ? 5
-                : 4,
-);
 
 interface Copy {
   depth: Material | null;
@@ -401,7 +380,7 @@ varying vec4 vCityRuleMask;`,
   }
 }
 
-function geometryOf(batch: MeshBatch): BufferGeometry {
+function geometryOf(batch: MeshBatch, ink: Float32Array): BufferGeometry {
   const g = new BufferGeometry();
   g.setAttribute('position', new BufferAttribute(batch.position, 3));
   g.setAttribute('normal', new BufferAttribute(batch.normal, 3));
@@ -409,8 +388,6 @@ function geometryOf(batch: MeshBatch): BufferGeometry {
   g.setAttribute('renderId', new BufferAttribute(batch.renderId, 1));
   g.setAttribute('roleIndex', new BufferAttribute(batch.roleIndex, 1));
   // Per-vertex phase-one ink class for the ink pipelines (one batch now holds several roles).
-  const ink = new Float32Array(batch.vertexCount);
-  for (let v = 0; v < ink.length; v++) ink[v] = INK_BY_ROLE[batch.roleIndex[v]!] ?? 4;
   g.setAttribute('inkClass', new BufferAttribute(ink, 1));
   if (batch.facade) {
     g.setAttribute('aFacade', new BufferAttribute(batch.facade.aFacade, 4));
@@ -453,7 +430,12 @@ export interface TileObject {
   dispose(): void;
 }
 
-export function buildTileObject(generated: GeneratedTile, materials: MaterialLibrary, capacity?: number): TileObject {
+export function buildTileObject(
+  generated: GeneratedTile,
+  materials: MaterialLibrary,
+  capacity?: number,
+  upload: UploadData = prepareUpload(generated),
+): TileObject {
   const group = new Group();
   group.matrixAutoUpdate = false;
   let bytes = 0;
@@ -467,8 +449,8 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
   const state = new FeatureStateTexture(maxId);
   const pickable: Mesh[] = [];
   const disposables: { dispose(): void }[] = [];
-  for (const batch of generated.batches) {
-    const geometry = geometryOf(batch);
+  for (const [index, batch] of generated.batches.entries()) {
+    const geometry = geometryOf(batch, upload.ink[index]!);
     disposables.push(geometry);
     const mesh = new Mesh(geometry);
     mesh.name = `${batch.layer}:${batch.role}`;
@@ -499,44 +481,28 @@ export function buildTileObject(generated: GeneratedTile, materials: MaterialLib
   }
   const trees = generated.trees;
   if (trees.count) {
-    const crowns = new InstancedMesh(crownGeometry(), undefined, trees.count);
+    const crowns = new InstancedMesh(crownGeometry(), undefined, 0);
     crowns.name = 'tree crowns';
     crowns.userData.inkClass = 2;
     crowns.userData.city = { shader: 'foliage-v1' };
-    const trunks = new InstancedMesh(trunkGeometry(), undefined, trees.count);
+    const trunks = new InstancedMesh(trunkGeometry(), undefined, 0);
     crowns.material = materials.acquire('tree.crown', state, crowns);
     trunks.material = materials.acquire('tree.trunk', state, trunks);
     disposables.push({
       dispose: () => (materials.release(crowns.material as Material), materials.release(trunks.material as Material)),
     });
-    crowns.instanceMatrix.setUsage(DynamicDrawUsage);
-    const m = new Matrix4();
-    const q = new Quaternion();
-    for (let i = 0; i < trees.count; i++) {
-      const o = i * TREE_STRIDE;
-      const [x, y, z, h, r, shape] = [
-        trees.data[o]!,
-        trees.data[o + 1]!,
-        trees.data[o + 2]!,
-        trees.data[o + 3]!,
-        trees.data[o + 4]!,
-        trees.data[o + 5]!,
-      ];
-      const narrow = shape === 2 || shape === 4;
-      const crownR = narrow ? r * 0.55 : r;
-      const crownH = narrow ? h * 0.45 : Math.min(h * 0.55, r * 1.6);
-      m.compose(new Vector3(x, y + h - crownH, z), q, new Vector3(crownR, crownH, crownR));
-      crowns.setMatrixAt(i, m);
-      m.compose(new Vector3(x, y, z), q, new Vector3(1, h - crownH * 0.9, 1));
-      trunks.setMatrixAt(i, m);
-    }
+    crowns.count = trunks.count = trees.count;
+    crowns.instanceMatrix = new InstancedBufferAttribute(upload.crowns, 16);
+    trunks.instanceMatrix = new InstancedBufferAttribute(upload.trunks, 16);
+    const [x0, y0, z0, x1, y1, z1] = upload.bounds;
+    const bounds = new Box3(new Vector3(x0, y0, z0), new Vector3(x1, y1, z1));
+    crowns.boundingSphere = bounds.getBoundingSphere(new Sphere());
+    trunks.boundingSphere = crowns.boundingSphere.clone();
     crowns.userData.layer = trunks.userData.layer = 'tree';
     crowns.userData.renderIds = trees.renderId;
     crowns.castShadow = true;
     trunks.castShadow = true;
-    crowns.computeBoundingSphere();
-    trunks.computeBoundingSphere();
-    const instanceIds = new InstancedBufferAttribute(new Float32Array(trees.renderId), 1);
+    const instanceIds = new InstancedBufferAttribute(trees.renderId, 1);
     crowns.geometry.setAttribute('instanceRenderId', instanceIds);
     trunks.geometry.setAttribute('instanceRenderId', instanceIds);
     pickable.push(crowns);
