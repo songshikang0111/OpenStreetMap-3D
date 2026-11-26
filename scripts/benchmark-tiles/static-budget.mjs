@@ -23,13 +23,12 @@ const limits = {
   tileGzip: Number(opt('max-tile-gzip', 1024 * 1024)),
   bundleGzip: Number(opt('max-bundle-gzip', 180 * 1024)),
 };
-const problems = [];
+const problems = dirs.length ? [] : ['Provide at least one tileset directory.'];
 const summary = { limits, node: process.version, cpu: os.cpus()[0]?.model, tilesets: [] };
 const p95 = (values) => (values.length ? values.toSorted((a, b) => a - b)[Math.ceil(values.length * 0.95) - 1] : null);
 for (const dir of dirs) {
   const ts = JSON.parse(readFileSync(path.join(dir, 'tileset.json'), 'utf8'));
   const report = JSON.parse(readFileSync(path.join(dir, 'report.json'), 'utf8'));
-  const finest = ts.levels.at(-1).zoom;
   const options = { inferRoofs: Boolean(ts.build?.options?.inferRoofs), layerGenerators: DETAIL_GENERATORS };
   const decodeTimes = [],
     generateTimes = [];
@@ -58,13 +57,13 @@ for (const dir of dirs) {
       generate.push(performance.now() - start);
     }
     decodeTimes.push(decode.toSorted((a, b) => a - b)[1]);
-    if (tile.id.z === finest) generateTimes.push(generate.toSorted((a, b) => a - b)[1]);
+    const level = tile.profile === 'full' ? 'L1' : 'L0';
+    if (level === 'L1') generateTimes.push(generate.toSorted((a, b) => a - b)[1]);
     // Instanced crown (80) and trunk (24) triangles per tree in the standard single colour pass.
     const triangles = g.batches.reduce((n, b) => n + b.index.length / 3, 0) + 104 * g.trees.count;
     row.maxTriangles = Math.max(row.maxTriangles, triangles);
     if (triangles > limits.tileTriangles)
       problems.push(`${ts.name} ${key}: ${triangles} triangles > ${limits.tileTriangles}`);
-    const level = tile.id.z === finest ? 'L1' : 'L0';
     const draws = g.stats.drawCalls;
     const gz = gzipSync(bytes).length;
     row.tiles++;
