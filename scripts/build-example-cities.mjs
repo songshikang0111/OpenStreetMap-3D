@@ -12,8 +12,8 @@ const arg = (n) => (process.argv.includes(n) ? process.argv[process.argv.indexOf
 const manifest = JSON.parse(readFileSync(path.join(root, 'examples/cities.json'), 'utf8'));
 const pbfDir = arg('--pbf-dir');
 const outDir = arg('--out');
-if (!pbfDir || !outDir) {
-  console.error('Usage: node scripts/build-example-cities.mjs --pbf-dir <dir> --out <dir> [id ...]');
+if (!outDir) {
+  console.error('Usage: node scripts/build-example-cities.mjs --out <dir> [--pbf-dir <dir>] [id ...]');
   process.exit(2);
 }
 const wanted = process.argv.slice(2).filter((a, i, all) => !a.startsWith('--') && !all[i - 1]?.startsWith('--'));
@@ -36,7 +36,14 @@ if (unknown.length) {
 let failed = 0;
 for (const city of manifest.cities) {
   if (wanted.length && !wanted.includes(city.id)) continue;
-  const input = path.join(pbfDir, city.input.file);
+  if (city.input.kind !== 'repository' && !pbfDir) {
+    if (wanted.length) {
+      console.error('Supply --pbf-dir for ' + city.id);
+      failed++;
+    }
+    continue;
+  }
+  const input = path.join(city.input.kind === 'repository' ? root : pbfDir, city.input.file);
   if (!existsSync(input)) {
     console.log(JSON.stringify({ id: city.id, status: 'missing-input', download: city.input.url }));
     failed++;

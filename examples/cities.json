@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "description": "Pinned local builder examples. Download the dated OSM extract once, then run node scripts/build-example-cities.mjs --pbf-dir INPUTS --out OUTPUT. Data © OpenStreetMap contributors, ODbL-1.0.",
+  "description": "Repeat the five included OSM scenes with node scripts/build-example-cities.mjs --out OUTPUT. Add --pbf-dir INPUTS for the two dated regional PBF builds. Data © OpenStreetMap contributors, ODbL-1.0.",
   "cities": [
     {
       "id": "amsterdam-centrum",
@@ -48,6 +48,123 @@
       "output": {
         "tilesetHash": "46746d10ee4b4f56acfe71a405d639029d4abde42b21927fa6766a0f15b71b6d",
         "tiles": 272
+      }
+    },
+    {
+      "id": "beijing-cbd-grow-9",
+      "name": "Beijing · CBD",
+      "input": {
+        "kind": "repository",
+        "file": "public/data/beijing-cbd.json",
+        "url": "https://overpass-api.de/api/interpreter",
+        "retrieved": "2026-10-29T01:36:22.129277+00:00",
+        "sha256": "60324294656efb2a38a4ab8f16a9fcc28b28e2a7773ffc9290c367b42280e13e",
+        "bytes": 694149
+      },
+      "build": {
+        "inferRoofs": true,
+        "details": true,
+        "landscape": true,
+        "bbox": [
+          116.45172874350537,
+          39.9027453102474,
+          116.46927125649462,
+          39.91625468975259
+        ]
+      },
+      "output": {
+        "tilesetHash": "d1b4d9771196b3d3250c6947331ac02425226c3bcc6a3e700284614b4f38247b",
+        "tiles": 20
+      }
+    },
+    {
+      "id": "kyoto-gion-grow-9",
+      "name": "Kyoto · Gion",
+      "input": {
+        "kind": "repository",
+        "file": "public/data/kyoto-gion.json",
+        "url": "https://overpass-api.de/api/interpreter",
+        "retrieved": "2026-10-30T13:21:24.674210+00:00",
+        "sha256": "f5b83de2b81c4a68d4784441b478edb0a4a9a4c209b9f2f4c52ff77b2112237e",
+        "bytes": 3365009
+      },
+      "build": {
+        "inferRoofs": true,
+        "details": true,
+        "landscape": true,
+        "bbox": [
+          135.77007034083243,
+          34.99959380885612,
+          135.77992965916758,
+          35.00770619114388
+        ]
+      },
+      "output": {
+        "tilesetHash": "d3c27d5ae490cfffb96b0b35abc094bce4700f21b4816df82937bce7fb4f9cf4",
+        "tiles": 7
+      }
+    },
+    {
+      "id": "manhattan-financial",
+      "name": "New York · Financial District",
+      "input": {
+        "kind": "repository",
+        "file": "public/data/manhattan-financial.json",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-74.014%2C40.703%2C-74.004%2C40.711",
+        "retrieved": "2026-11-02T15:29:17.292605+00:00",
+        "sha256": "afc410752422e00c3d1141627a41a45b5730841a3eb04b0a333103023fe7ac14",
+        "bytes": 8885073
+      },
+      "build": {
+        "inferRoofs": true,
+        "details": true,
+        "landscape": true
+      },
+      "output": {
+        "tilesetHash": "e8a16980e13fdcc66b253252506553cb683aa70d4db1e2b430a90078aed5bb29",
+        "tiles": 7
+      }
+    },
+    {
+      "id": "shanghai-lujiazui",
+      "name": "Shanghai · Lujiazui",
+      "input": {
+        "kind": "repository",
+        "file": "public/data/shanghai-lujiazui.json",
+        "url": "https://overpass-api.de/api/interpreter",
+        "retrieved": "2026-10-30T13:20:41.306210+00:00",
+        "sha256": "b9b52b50d20dd924dc77ebd2446f394e4b51c3b0ddb3e0a44865974979711819",
+        "bytes": 1709045
+      },
+      "build": {
+        "inferRoofs": true,
+        "details": true,
+        "landscape": true
+      },
+      "output": {
+        "tilesetHash": "21e1b13b4f6eab81c91ada6aab5cad334544a63ebb9447bf486626ad0a09a080",
+        "tiles": 29
+      }
+    },
+    {
+      "id": "amsterdam-canals",
+      "name": "Amsterdam · Canal district",
+      "input": {
+        "kind": "repository",
+        "file": "public/data/amsterdam-canals.json",
+        "url": "https://overpass-api.de/api/interpreter",
+        "retrieved": "2026-10-30T13:22:09.679232+00:00",
+        "sha256": "d76e786cd4da6bbf592dbeaaa5a9ae3e48859b06a6472ccf251a6ed2104d8cd4",
+        "bytes": 2344629
+      },
+      "build": {
+        "inferRoofs": true,
+        "details": true,
+        "landscape": true
+      },
+      "output": {
+        "tilesetHash": "091f48fa6617f6163a6ce8b88b2a99cfbb4b8d594586456ad7973b38900b274b",
+        "tiles": 13
       }
     }
   ]

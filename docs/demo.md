@@ -41,3 +41,5 @@ The check serves the release directory on loopback under a nested path. It opens
 ## Embedded browsers
 
 The standalone map needs a nonzero-size container, WebGL 2 and module Workers. Serve a WebView's assets through an HTTP(S) origin and give its container a defined height. On navigation away, await `map.dispose()` to release the renderer and its Workers. Consult the [device matrix](support.md) for measured devices and the [runtime interface](phase2/04-runtime-sdk.md) for lifecycle methods.
+
+The five included source extracts and their expected tile counts and hashes are pinned in [the example manifest](../examples/cities.json). After compiling the packages, `node scripts/build-example-cities.mjs --out /tmp/city-ink-samples` rebuilds and verifies all five. Add `--pbf-dir INPUTS` to include the dated regional extracts, or append a single city ID to verify only that entry.

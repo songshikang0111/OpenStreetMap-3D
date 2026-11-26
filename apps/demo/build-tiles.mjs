@@ -17,20 +17,17 @@ import { fileURLToPath } from 'node:url';
 import { buildTiles, validateTilesetDir } from '../../packages/builder/dist/index.js';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
-const area = (name) => {
-  const j = JSON.parse(
-    readFileSync(path.join(root, `docs/phase1-evidence/remediation/integration/performance/${name}.json`), 'utf8'),
-  );
-  const a = j.build.config.area;
-  return [a.west, a.south, a.east, a.north];
-};
-const SAMPLES = {
-  'beijing-cbd-grow-9': { label: 'Beijing · CBD', input: 'beijing-cbd', bbox: area('beijing-cbd-grow-9') },
-  'kyoto-gion-grow-9': { label: 'Kyoto · Gion', input: 'kyoto-gion', bbox: area('kyoto-gion-grow-9') },
-  'manhattan-financial': { label: 'New York · Financial District', input: 'manhattan-financial' },
-  'shanghai-lujiazui': { label: 'Shanghai · Lujiazui', input: 'shanghai-lujiazui' },
-  'amsterdam-canals': { label: 'Amsterdam · Canal district', input: 'amsterdam-canals' },
-  'beijing-cbd': { label: 'Beijing · Full CBD sample', input: 'beijing-cbd' },
+const manifest = JSON.parse(readFileSync(path.join(root, 'examples/cities.json'), 'utf8'));
+const SAMPLES = Object.fromEntries(
+  manifest.cities
+    .filter((city) => city.input.kind === 'repository')
+    .map((city) => [city.id, { label: city.name, file: city.input.file, build: city.build }]),
+);
+// The full Beijing extract is also available as an optional benchmark.
+SAMPLES['beijing-cbd'] = {
+  label: 'Beijing · Full CBD sample',
+  file: 'public/data/beijing-cbd.json',
+  build: { inferRoofs: true, details: true, landscape: true },
 };
 const names = process.argv.slice(2);
 const outputRoot = path.join(root, 'apps/demo/public/tiles');
@@ -44,23 +41,18 @@ for (const name of names.length ? names : Object.keys(SAMPLES).filter((key) => k
   const output = mkdtempSync(path.join(work, 'demo-tiles-'));
   try {
     const { report } = await buildTiles({
-      input: path.join(root, 'public/data', `${s.input}.json`),
+      input: path.join(root, s.file),
       output,
       name,
-      // The demo shows the explicit, conservative roof inference (pitched roofs on small houses; 05 section 5). The
-      // builder default stays off, and the runtime ProvenanceFilter `roofs.inferred: false` turns it back off.
-      inferRoofs: true,
-      // Optional decorations (street furniture, parked cars, pedestrians, inferred landscape) are off by default in the
-      // builder; the demo turns them on and offers a switch (ProvenanceFilter `details`).
-      details: true,
-      landscape: true,
-      ...(s.bbox ? { bbox: s.bbox } : {}),
+      ...s.build,
     });
     console.log(name, JSON.stringify(report.counts));
     // Building footprints as GeoJSON: the stand-in "basemap buildings" of the MapLibre demo and the AC802 check.
-    const raw = JSON.parse(readFileSync(path.join(root, 'public/data', `${s.input}.json`), 'utf8'));
-    const [south, west, north, east] = s.bbox ? [s.bbox[1], s.bbox[0], s.bbox[3], s.bbox[2]] : raw.metadata.bbox;
-    const origin = s.bbox
+    const raw = JSON.parse(readFileSync(path.join(root, s.file), 'utf8'));
+    const [south, west, north, east] = s.build.bbox
+      ? [s.build.bbox[1], s.build.bbox[0], s.build.bbox[3], s.build.bbox[2]]
+      : raw.metadata.bbox;
+    const origin = s.build.bbox
       ? { lat: (south + north) / 2, lon: (west + east) / 2 }
       : { lat: raw.metadata.center[0], lon: raw.metadata.center[1] };
     const data = parseOSM(normalizeRaw(raw, { area: { south, west, north, east }, origin }), 1);
