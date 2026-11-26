@@ -1,4 +1,15 @@
 export class MeshWriter {
+  get positionLength(): number;
+  writeFace(
+    a: number[],
+    b: number[],
+    c: number[],
+    normal: number[],
+    color: { r: number; g: number; b: number },
+    id: number,
+    uv: number[][] | null,
+    role: string,
+  ): void;
   materialRuns: { start: number; count: number; role: string }[];
   positions: number[];
   normals: number[];
@@ -31,6 +42,7 @@ export function polygon(
   y: number,
   color: unknown,
   id?: number,
+  normal?: number[],
 ): void;
 export function addBox(
   writer: MeshWriter,

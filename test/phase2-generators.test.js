@@ -7,8 +7,8 @@ import path from 'node:path';
 import { Worker } from 'node:worker_threads';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildTiles } from '../packages/builder/dist/index.js';
-import { decodeTile } from '../packages/tiles/dist/index.js';
-import { generateTile } from '../packages/generators/dist/index.js';
+import { decodeTile, gridStepMeters } from '../packages/tiles/dist/index.js';
+import { generateTile, generateBuildings, BatchSet } from '../packages/generators/dist/index.js';
 import { phase1Buildings, tileBuildings, compareBuildings } from './helpers/phase2-compare.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -89,7 +89,24 @@ test('AC308/AC311: generation in a DOM-free worker equals generation in the main
     let compared = 0;
     for (const key of keys) {
       const bytes = await readFile(path.join(out, key));
-      const local = generateTile(decodeTile(bytes));
+      const tile = decodeTile(bytes);
+      if (tile.profile === 'full' && tile.layers.building?.type === 'features') {
+        const batches = (collect) => {
+          const set = new BatchSet();
+          const { triangles, nearWalls } = generateBuildings(
+            tile.layers.building,
+            tile.layers.buildingContext ?? null,
+            gridStepMeters(tile.id, tile.extentLog2),
+            { inferRoofs: true, collectNearWalls: true },
+            set,
+            'building',
+            collect,
+          );
+          return { triangles, nearWalls, batches: set.build() };
+        };
+        assert.deepEqual(batches(false), batches(true), key + ': streamed faces match the scene writer');
+      }
+      const local = generateTile(tile);
       const again = generateTile(decodeTile(bytes));
       assert.deepEqual(flatten(again), flatten(local), `${key} repeats exactly`);
       const copy = Uint8Array.prototype.slice.call(bytes).buffer;

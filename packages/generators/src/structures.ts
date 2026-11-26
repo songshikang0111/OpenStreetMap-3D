@@ -4,7 +4,7 @@
 import { HEIGHT_STEPS_PER_METER, readFeatureMetaAt } from '@city-ink/tiles';
 import type { FeatureLayer } from '@city-ink/tiles';
 import { writeRoadStructures } from '../../../src/road-structures.js';
-import type { BridgePier, BridgeRail, PlainWriter } from '../../../src/road-structures.js';
+import type { BridgePier, BridgeRail, PlainWriter, StructureFace } from '../../../src/road-structures.js';
 import { writeRoadStairs } from '../../../src/road-stairs.js';
 import type { StairFlight } from '../../../src/road-stairs.js';
 import type { Point2 } from '../../../src/phase1-types.js';
@@ -158,12 +158,26 @@ function writeDeck(batch: BatchBuilder, line: Line, halfWidth: number, thickness
 export function generateStructures(layer: FeatureLayer, step: number, batches: BatchSet): number {
   let triangles = 0;
   const batch = batches.get('structure', 'structure', true);
+  let currentId = 0,
+    extendPier = false;
+  const emitFace: StructureFace = (a, b, c, nx, ny, nz, color) => {
+    const base = batch.vertexCount;
+    for (let i = 0; i < 3; i++) {
+      const p = i === 0 ? a : i === 1 ? b : c;
+      const y = extendPier && Math.abs(p[1]! - 0.32) < 1e-6 ? 0 : p[1]! - GROUND;
+      batch.vertexCoordinates(p[0]!, y, p[2]!, nx, ny, nz, color.r, color.g, color.b, currentId);
+    }
+    batch.triangle(base, base + 1, base + 2);
+    triangles++;
+  };
   const col = (name: string) => layer.attributes.find((a) => a.name === name);
   const width = col('width');
   const thickness = col('thickness');
   for (let i = 0; i < layer.featureCount; i++) {
     const kind = String(readFeatureMetaAt(layer, i).properties?.kind ?? 'deck');
     const renderId = layer.renderId[i]!;
+    currentId = renderId;
+    extendPier = kind === 'pier';
     const w = Number(width?.values[i]);
     const t = Number(thickness?.values[i]);
     const parts = lines(layer, i, step);
@@ -183,7 +197,7 @@ export function generateStructures(layer: FeatureLayer, step: number, batches: B
             source: 'tile',
           });
       const { runs, posts } = mergeRails(rails);
-      triangles += appendPlain(batch, writeRoadStructures({ decks: [], rails: runs, piers: [] }).rail, renderId);
+      writeRoadStructures({ decks: [], rails: runs, piers: [] }, emitFace);
       for (const p of posts) {
         // the phase-one handrail post at a piece start: 0.065 m square, 1.1 m tall
         const [x, z] = p.a,
@@ -228,10 +242,7 @@ export function generateStructures(layer: FeatureLayer, step: number, batches: B
         });
       }
       // Phase-one piers start 0.32 m above its slab; extend them to the tile ground.
-      const writer = writeRoadStructures({ decks: [], rails: [], piers: piers.map((p) => ({ ...p })) }).pier;
-      for (let v = 1; v < writer.positions.length; v += 3)
-        if (Math.abs(writer.positions[v]! - 0.32) < 1e-6) writer.positions[v] = GROUND;
-      triangles += appendPlain(batch, writer, renderId);
+      writeRoadStructures({ decks: [], rails: [], piers }, emitFace);
     } else if (kind === 'stairs') {
       for (const { points, heights } of parts) {
         const flight: StairFlight = {

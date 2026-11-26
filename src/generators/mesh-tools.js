@@ -27,6 +27,9 @@ export class MeshWriter {
     this.surfaces = [];
     this.surface = [0, 1];
   }
+  get positionLength() {
+    return this.positions.length;
+  }
   triangle(a, b, c, normal, color, id = 0, uv = null) {
     // Same arithmetic as Vector3.subVectors/cross/dot, without per-triangle allocations.
     const abx = b[0] - a[0],
@@ -45,10 +48,14 @@ export class MeshWriter {
     const role =
       this.materialRole ||
       (this.style > 0 ? ([1, 5, 6].includes(this.style) ? 'glass' : 'wall') : normal[1] > 0.7 ? 'roof' : 'structure');
+    const col = color.isColor ? color : parsedColor(color);
+    this.writeFace(a, b, c, normal, col, id, uv, role);
+  }
+  /** Final oriented triangle. Tile writers override the storage step, sharing all geometry rules and winding. */
+  writeFace(a, b, c, normal, col, id, uv, role) {
     const run = this.materialRuns.at(-1);
     if (run?.role === role) run.count += 3;
     else this.materialRuns.push({ start: this.positions.length / 3, count: 3, role });
-    const col = color.isColor ? color : parsedColor(color);
     const c0 = (id & 255) / 255,
       c1 = ((id >> 8) & 255) / 255,
       c2 = ((id >> 16) & 255) / 255;
@@ -68,11 +75,8 @@ export class MeshWriter {
     }
   }
   quad(points, normal, color, id = 0, uv = null) {
-    for (const ix of [
-      [0, 1, 2],
-      [0, 2, 3],
-    ])
-      this.triangle(...ix.map((i) => points[i]), normal, color, id, uv && ix.map((i) => uv[i]));
+    this.triangle(points[0], points[1], points[2], normal, color, id, uv && [uv[0], uv[1], uv[2]]);
+    this.triangle(points[0], points[2], points[3], normal, color, id, uv && [uv[0], uv[2], uv[3]]);
   }
   geometry({ groupRoles = false } = {}) {
     const geo = new THREE.BufferGeometry();
@@ -130,54 +134,53 @@ export function normalizedRing(ring, clockwise = false) {
   return points.map((p) => p.toArray());
 }
 
-export function polygon(writer, feature, y, color, id = 0) {
+export function polygon(writer, feature, y, color, id = 0, normal = [0, 1, 0]) {
   const outer = feature.outer.map((p) => new THREE.Vector2(...p));
   const holes = (feature.holes || []).map((h) => h.map((p) => new THREE.Vector2(...p)));
   // triangulateShape removes repeated closing vertices in-place. Build its
   // index lookup afterwards, including for closed boolean-clipping results.
   const triangles = THREE.ShapeUtils.triangulateShape(outer, holes);
   const all = [...outer, ...holes.flat()];
-  for (const t of triangles) writer.triangle(...t.map((i) => [all[i].x, y, all[i].y]), [0, 1, 0], color, id);
+  for (const t of triangles) writer.triangle(...t.map((i) => [all[i].x, y, all[i].y]), normal, color, id);
 }
+
+const BOX_CORNERS = [
+  [-1, -1, -1],
+  [1, -1, -1],
+  [1, 1, -1],
+  [-1, 1, -1],
+  [-1, -1, 1],
+  [1, -1, 1],
+  [1, 1, 1],
+  [-1, 1, 1],
+];
+// Four corner indices, the outward normal axis and its sign.
+const BOX_FACES = [
+  [0, 1, 2, 3, 2, -1],
+  [4, 7, 6, 5, 2, 1],
+  [0, 4, 5, 1, 1, -1],
+  [3, 2, 6, 7, 1, 1],
+  [0, 3, 7, 4, 0, -1],
+  [1, 5, 6, 2, 0, 1],
+];
 
 function orientedBox(writer, center, axes, dimensions, color, id = 0) {
   const old = writer.style,
     oldRole = writer.materialRole;
   writer.style = 0;
   writer.materialRole = 'structure';
-  const p = ([x, y, z]) =>
-    center.map(
-      (v, k) =>
-        v +
-        (axes[0][k] * x * dimensions[0]) / 2 +
-        (axes[1][k] * y * dimensions[1]) / 2 +
-        (axes[2][k] * z * dimensions[2]) / 2,
-    );
-  const signs = [
-      [-1, -1, -1],
-      [1, -1, -1],
-      [1, 1, -1],
-      [-1, 1, -1],
-      [-1, -1, 1],
-      [1, -1, 1],
-      [1, 1, 1],
-      [-1, 1, 1],
-    ],
-    points = signs.map(p);
-  for (const [ix, axis, sign] of [
-    [[0, 1, 2, 3], 2, -1],
-    [[4, 7, 6, 5], 2, 1],
-    [[0, 4, 5, 1], 1, -1],
-    [[3, 2, 6, 7], 1, 1],
-    [[0, 3, 7, 4], 0, -1],
-    [[1, 5, 6, 2], 0, 1],
-  ])
-    writer.quad(
-      ix.map((i) => points[i]),
-      axes[axis].map((v) => v * sign),
-      color,
-      id,
-    );
+  const halfAxes = axes.map((axis, i) => axis.map((component) => (component * dimensions[i]) / 2));
+  const points = BOX_CORNERS.map(([sx, sy, sz]) => [
+    center[0] + sx * halfAxes[0][0] + sy * halfAxes[1][0] + sz * halfAxes[2][0],
+    center[1] + sx * halfAxes[0][1] + sy * halfAxes[1][1] + sz * halfAxes[2][1],
+    center[2] + sx * halfAxes[0][2] + sy * halfAxes[1][2] + sz * halfAxes[2][2],
+  ]);
+  for (const [a, b, c, d, axis, sign] of BOX_FACES) {
+    const n = axes[axis],
+      normal = [n[0] * sign, n[1] * sign, n[2] * sign];
+    writer.triangle(points[a], points[b], points[c], normal, color, id);
+    writer.triangle(points[a], points[c], points[d], normal, color, id);
+  }
   writer.style = old;
   writer.materialRole = oldRole;
 }

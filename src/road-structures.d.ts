@@ -41,7 +41,19 @@ export interface RoadStructurePlan {
 }
 
 export function planRoadStructures(data: Phase1Data, roadPlan: RoadSurfacePlan): RoadStructurePlan;
-export function writeRoadStructures(plan: Pick<RoadStructurePlan, 'decks' | 'rails' | 'piers'>): {
+export type StructureFace = (
+  a: number[],
+  b: number[],
+  c: number[],
+  nx: number,
+  ny: number,
+  nz: number,
+  color: { r: number; g: number; b: number },
+) => void;
+export function writeRoadStructures(
+  plan: Pick<RoadStructurePlan, 'decks' | 'rails' | 'piers'>,
+  emitFace?: StructureFace,
+): {
   deck: PlainWriter;
   rail: PlainWriter;
   pier: PlainWriter;
