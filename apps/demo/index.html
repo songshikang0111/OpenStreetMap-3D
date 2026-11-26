@@ -68,11 +68,7 @@
     <div id="panel">
       <label
         >City
-        <select id="city">
-          <option value="./tiles/beijing-cbd-grow-9/tileset.json">Beijing · CBD</option>
-          <option value="./tiles/kyoto-gion-grow-9/tileset.json">Kyoto · Gion</option>
-          <option value="./tiles/manhattan-financial/tileset.json">New York · Financial District</option>
-        </select>
+        <select id="city"></select>
       </label>
       <label
         >Style
@@ -90,7 +86,8 @@
       <label><input type="checkbox" id="details" checked /> street details</label>
       <label><input type="checkbox" id="observed" /> observed heights only</label>
       <label><input type="checkbox" id="roofs" checked /> inferred roofs</label>
-      <nav><a href="./overlays.html">overlays</a> · <a href="./maplibre.html">MapLibre layer</a></nav>
+      <a id="source"></a>
+      <nav><a id="overlays" href="./overlays.html">overlays</a> · <a id="maplibre" href="./maplibre.html">MapLibre layer</a> · <a href="./benchmark.html">benchmark</a></nav>
     </div>
     <div id="info" hidden></div>
     <script type="module" src="./main.js"></script>

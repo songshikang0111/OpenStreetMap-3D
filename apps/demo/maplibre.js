@@ -3,7 +3,8 @@
 // below as the docs say) and a circle layer above the city (standing in for labels, which need online glyphs).
 import * as maplibregl from 'maplibre-gl';
 import { createMapLibreLayer } from '@city-ink/map/maplibre';
-import maplibreWorker from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import maplibreWorker from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 
 // Bundled apps tell MapLibre 6 where its worker module lives.
 maplibregl.setWorkerUrl(maplibreWorker);
@@ -15,7 +16,11 @@ const tileset = await fetch(tiles).then((r) => r.json());
 const offlineStyle = {
   version: 8,
   sources: {
-    buildings: { type: 'geojson', data: `./tiles/${sample}/buildings.geojson` },
+    buildings: {
+      type: 'geojson',
+      data: new URL(`./tiles/${sample}/buildings.geojson`, location.href).href,
+      attribution: '© OpenStreetMap contributors',
+    },
     pois: {
       type: 'geojson',
       data: {

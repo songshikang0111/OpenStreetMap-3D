@@ -35,12 +35,14 @@ Requires Node 22.11+ and a WebGL 2 browser.
 
 ```sh
 npm ci
-npm run demo:tiles      # builds the Beijing CBD and Kyoto Gion sample tiles from public/data
+npm run demo:tiles -- beijing-cbd-grow-9     # build one district from the bundled OSM extract
 npm run build:demo
 node scripts/serve-static.mjs apps/demo/dist --port 5180
 ```
 
-Open `http://127.0.0.1:5180/`. Switch styles (`light`, `plain`, `dark`, and the ink looks `comic`, `line`, `color`,
+Open `http://127.0.0.1:5180/`. To prepare the five sample districts for the city selector, run `npm run demo:tiles` without arguments and rebuild the demo. [Static site and sample guide](docs/demo.md).
+
+Switch styles (`light`, `plain`, `dark`, and the ink looks `comic`, `line`, `color`,
 `white`, `cel`), toggle street details, "observed heights only" and inferred roofs, click buildings. Other pages:
 `overlays.html` (markers, lines, areas, extrusions) and `maplibre.html` (the MapLibre layer).
 
@@ -63,7 +65,7 @@ map.on('click', (e) => console.log(e.feature)); // OSM id, layer, kept tags, pro
 ```
 
 Before the packages are published, build them from this repository (`npm run build:packages`) and use the workspace
-packages or the single-file bundle `packages/map/bundle/city-map.js` (with `three` from an import map). The full API
+packages or run `npm run build:map-bundle` for the browser bundle in `packages/map/bundle/` (serve its worker alongside it and supply `three` through an import map). The full API
 is in [04 Runtime SDK](docs/phase2/04-runtime-sdk.md); [docs/llms.md](docs/llms.md) is a one-file guide for coding
 agents.
 

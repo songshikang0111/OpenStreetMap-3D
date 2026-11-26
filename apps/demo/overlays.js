@@ -2,16 +2,16 @@
 import { createMap } from '@city-ink/map';
 import { BoxGeometry, Mesh, MeshStandardMaterial } from 'three';
 
-const c = [116.4605, 39.9095];
+const params = new URLSearchParams(location.search);
 const map = await createMap({
   container: document.getElementById('map'),
-  tiles: './tiles/beijing-cbd-grow-9/tileset.json',
-  center: c,
+  tiles: params.get('tiles') ?? './tiles/beijing-cbd-grow-9/tileset.json',
   zoom: 16.3,
   pitch: 55,
   bearing: -20,
 });
 globalThis.cityMap = map;
+const c = map.getCenter();
 
 // line: a route with a constant on-screen width
 map.addLayer({
