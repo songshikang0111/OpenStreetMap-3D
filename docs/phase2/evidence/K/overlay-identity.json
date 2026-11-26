@@ -1,0 +1,127 @@
+{
+  "date": "2026-11-26T06:27:53.763Z",
+  "browser": "Chrome/158.0.8127.36",
+  "gpu": "ANGLE (AMD, AMD Radeon 780M Graphics (radeonsi phoenix ACO), OpenGL ES 3.2)",
+  "machine": {
+    "cpu": "AMD Ryzen 7 7840S with Radeon 780M Graphics",
+    "platform": "linux 7.3.4-300.fc45.x86_64"
+  },
+  "results": {
+    "AC501": {
+      "pass": true,
+      "picks": 100,
+      "correct": 100,
+      "wrong": [],
+      "sample": {
+        "id": "way/1559046232",
+        "layer": "building",
+        "provenance": {
+          "height": "inferred",
+          "minHeight": "inferred",
+          "levels": "inferred",
+          "roofShape": "inferred",
+          "roofHeight": "inferred"
+        },
+        "keys": [
+          "height",
+          "minHeight",
+          "levels",
+          "roofShape",
+          "roofHeight",
+          "roofDirection",
+          "facade",
+          "facadeSeed"
+        ]
+      }
+    },
+    "AC502": {
+      "pass": true,
+      "pickMainThreadMs": {
+        "p50": 2,
+        "p95": 3.7000000029802322
+      },
+      "note": "measured on the machine in the summary, not the high-end reference device"
+    },
+    "marker-occlusion": {
+      "pass": true,
+      "occluded": true,
+      "passThrough": true
+    },
+    "AC503": {
+      "pass": true,
+      "feature": "way/1559046231",
+      "occluded": true,
+      "passThrough": true,
+      "renderedRed": true,
+      "pixel": [
+        255,
+        144,
+        19,
+        255
+      ],
+      "highlightPickable": true,
+      "hiddenNotPicked": true,
+      "geometriesBefore": 35,
+      "geometriesAfter": 35,
+      "hiddenAtL0": true,
+      "hiddenAfterReload": true,
+      "visibleAgain": true
+    },
+    "AC504": {
+      "pass": true,
+      "p95BaseMs": 16.799999999999272,
+      "p95With500Ms": 16.799999999999272,
+      "deltaMs": 0,
+      "domLeftAfterRemove": 0
+    },
+    "AC509-markers": {
+      "pass": true,
+      "domLeftAfterRemove": 0
+    },
+    "AC505": {
+      "pass": true,
+      "reanchored": true,
+      "markerErrorPx": 2.2737367544323206e-13,
+      "picked": {
+        "id": "zone-1",
+        "layer": "zone"
+      },
+      "edgeLayer": "zone",
+      "outsideLayer": "building"
+    },
+    "AC508": {
+      "pass": true,
+      "picked": {
+        "id": "zone-1",
+        "layer": "zone"
+      }
+    },
+    "AC506": {
+      "pass": true,
+      "lineWidthsPx": [
+        12,
+        12,
+        12
+      ],
+      "pickedLayers": {
+        "area": "area",
+        "blocks": "blocks",
+        "dots": "dots"
+      },
+      "geometriesBefore": 100,
+      "geometriesAfterRemove": 83
+    },
+    "AC509": {
+      "pass": true,
+      "geometriesBefore": 100,
+      "geometriesAfterRemove": 83
+    },
+    "AC507": {
+      "pass": true,
+      "vertices": 100000,
+      "addMs": 63,
+      "untilNextFrameMs": 73
+    }
+  },
+  "consoleErrors": []
+}

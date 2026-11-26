@@ -39,50 +39,48 @@ try {
       frame: () => new Promise((r) => requestAnimationFrame(() => r())),
       sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
       rng: (seed) => () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296),
-      THREE: null,
     };
     true;
   `);
-  // CPU reference picker: raycast against the visible tile meshes, using renderId attributes.
-  await page.evaluate(`
-    T.cpuPick = (m, p) => {
-      const meshes = [];
-      m.scene.traverse((o) => { if (o.isMesh && !o.isInstancedMesh && o.geometry.getAttribute('renderId') && o.parent?.userData.tile && o.parent.parent && o.visible) meshes.push(o); });
-      const Ray = m.camera.constructor; // placeholder to keep the bundle's three instance
-      return meshes;
-    };
-    true;
-  `);
-
   // AC501/AC502: 100 picks over buildings, checked against the feature at that pixel found independently
   {
     const r = await page.evaluate(`(async () => {
       const m = cityMap;
       m.jumpTo({ center: [116.4605, 39.9095], zoom: 17, pitch: 0, bearing: 0 });
       await m.whenIdle({ timeoutMs: 60000 });
-      const rand = T.rng(501);
-      const hits = [], times = [];
-      let tries = 0;
-      while (hits.length < 100 && tries < 4000) {
-        tries++;
-        const p = { x: 20 + rand() * 1240, y: 20 + rand() * 680 };
-        const t0 = performance.now();
-        const f = m.queryFeatures(p);
-        times.push(performance.now() - t0);
-        if (!f || f.layer !== 'building') continue;
-        hits.push({ p, f });
+      const rand = T.rng(501), hits = [], times = [], wrong = [];
+      const known = new Map(), meshes = [];
+      const ray = new m.markerRay.constructor();
+      m.scene.updateMatrixWorld();
+      const rect = m.renderer.domElement.getBoundingClientRect();
+      for (const entry of m.tiles.values()) {
+        if (!entry.visible || !entry.object) continue;
+        const byId = new Map(entry.features.map((f) => [f.renderId, f]));
+        for (const mesh of entry.object.pickable) {
+          if (mesh.visible) { known.set(mesh, byId); meshes.push(mesh); }
+        }
       }
-      // independent check: the click lies inside the screen projection of the picked building's 3D bounds
-      let correct = 0; const wrong = [];
-      for (const { p, f } of hits) {
-        const [w, s, e, n] = f.bounds;
-        const top = Number(f.properties.height ?? 0) + 30;
-        const corners = [];
-        for (const lng of [w, e]) for (const lat of [s, n]) for (const alt of [Number(f.properties.minHeight ?? 0), top]) corners.push(m.project([lng, lat], alt));
-        const xs = corners.map((q) => q.x), ys = corners.map((q) => q.y);
-        const inside = p.x >= Math.min(...xs) - 2 && p.x <= Math.max(...xs) + 2 && p.y >= Math.min(...ys) - 2 && p.y <= Math.max(...ys) + 2;
-        if (inside && f.id && f.properties && f.provenance) correct++;
-        else if (wrong.length < 3) wrong.push({ id: f.id, p, bounds: f.bounds });
+      // Each expected OSM identity comes from the nearest CPU triangle at the centre of a known pixel.
+      // Select samples before consulting the GPU. A missing or incorrect GPU pick counts as a failure.
+      let correct = 0;
+      for (let tries = 0; hits.length < 100 && tries < 4000; tries++) {
+        const p = { x: Math.floor(20 + rand() * (rect.width-40)), y: Math.floor(20 + rand() * (rect.height-40)) };
+        ray.setFromCamera({x:(p.x+0.5)*2/rect.width-1,y:1-(p.y+0.5)*2/rect.height},m.camera);
+        const hit = ray.intersectObjects(meshes, false)[0];
+        if (!hit || hit.object.isInstancedMesh) continue;
+        const renderId = hit.object.geometry.getAttribute('renderId').getX(hit.face.a);
+        const expected = known.get(hit.object).get(renderId);
+        if (expected?.layer !== 'building') continue;
+        hits.push({p,expected});
+      }
+      await T.frame();
+      for (const sample of hits) {
+        const {p,expected} = sample;
+        const t0 = performance.now(), f = m.queryFeatures(p);
+        times.push(performance.now()-t0);
+        sample.f = f;
+        if (f?.id === expected.id && f.layer === expected.layer && f.provenance?.height === expected.provenance.height) correct++;
+        else if (wrong.length < 3) wrong.push({p,expected:expected.id,actual:f?.id});
       }
       times.sort((a, b) => a - b);
       const sample = hits[0]?.f;
