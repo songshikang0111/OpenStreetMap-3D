@@ -220,3 +220,42 @@ test('live timing distributions retain the original percentile definition throug
     assert.deepEqual(window.values, values.slice(-11));
   }
 });
+
+test('refinement reserves complete sibling groups and pinned ancestors before spending the remaining budget', async () => {
+  const { fitRefinements } = await import('../packages/map/dist/refinement-budget.js');
+  const leaf = (x, priority) => ({ key: `16/${x}/0`, id: { z: 16, x, y: 0 }, level: 1, priority, sse: 100 });
+  const target = [leaf(0, 1), leaf(1, 2), leaf(4, 3)];
+  const costs = new Map(
+    [
+      ['14/0/0', 10],
+      ['14/1/0', 10],
+      ['16/0/0', 40],
+      ['16/1/0', 40],
+      ['16/4/0', 35],
+    ].map(([key, n]) => [key, { bytes: n, triangles: n, draws: 1 }]),
+  );
+  const fit = (limits, ready = () => true) =>
+    fitRefinements(target, [14, 16], costs, ready, new Set(), { bytes: 100, triangles: 100, draws: 8, ...limits });
+  assert.deepEqual(
+    fit({}).leaves.map((d) => d.key),
+    ['16/0/0', '16/1/0', '14/1/0'],
+  );
+  assert.deepEqual(
+    fit({ bytes: 99 }).leaves.map((d) => d.key),
+    ['14/0/0', '16/4/0'],
+  );
+  assert.deepEqual(
+    fit({ triangles: 79 }).leaves.map((d) => d.key),
+    ['14/0/0', '16/4/0'],
+  );
+  const mandatory = fit({ bytes: 1 });
+  assert.deepEqual(
+    mandatory.leaves.map((d) => d.key),
+    ['14/0/0', '14/1/0'],
+  );
+  assert.equal(mandatory.rootCost.bytes, 20);
+  assert.deepEqual(
+    fit({ bytes: 1 }, () => false).leaves.map((d) => d.key),
+    target.map((d) => d.key),
+  );
+});

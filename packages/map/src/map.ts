@@ -40,12 +40,14 @@ import {
 import type { Coverage, Diagnostic, LngLat, TileId, Tileset } from '@city-ink/tiles';
 import { DEFAULT_FOV, Transform } from './transform.js';
 import { selectTiles } from './selection.js';
+import { fitRefinements } from './refinement-budget.js';
+import type { TileCost } from './refinement-budget.js';
 import type { DesiredTile } from './selection.js';
 import { WorkerPool } from './pool.js';
 import type { WorkerLike } from './pool.js';
 import type { FeatureRecord, WorkerResponse } from './worker-core.js';
 import { RollingTimings } from './timings.js';
-import { MaterialLibrary, prepareTileObject } from './tile-object.js';
+import { MaterialLibrary, prepareTileObject, tileCost } from './tile-object.js';
 import type { TileObject, TilePipeline, TileStylePack } from './tile-object.js';
 import { Controls } from './controls.js';
 import { Picker } from './picking/picker.js';
@@ -272,6 +274,13 @@ export class CityMapImpl implements CityMap {
   private readonly tiles = new Map<string, TileEntry>();
   private readonly uploads: PendingUpload[] = [];
   private readonly refined = new Set<string>();
+  private readonly sourceCache = new Map<string, ArrayBuffer>();
+  private sourceCacheBytes = 0;
+  private readonly knownCosts = new Map<string, TileCost>();
+  private costsChanged = false;
+  private admitted = new Set<string>();
+  private minimumVisibleTriangles = 0;
+  private minimumCoverOverBudget = false;
   private readonly listeners = new Map<MapEventType, Set<(e: MapEvent) => void>>();
   private readonly featureState = new Map<string, Record<string, unknown>>();
   private readonly markers = new Set<{
@@ -563,6 +572,10 @@ export class CityMapImpl implements CityMap {
     this.pool.terminate();
     for (const entry of this.tiles.values()) this.unload(entry);
     this.tiles.clear();
+    this.knownCosts.clear();
+    this.sourceCache.clear();
+    this.sourceCacheBytes = 0;
+    this.admitted.clear();
     for (const o of this.overlays.values()) o.built.dispose();
     this.overlays.clear();
     this.picker.dispose();
@@ -1115,6 +1128,9 @@ export class CityMapImpl implements CityMap {
     const inferRoofs = this.tilesetInferRoofs && this.filter.roofs?.inferred !== false;
     if (inferRoofs !== Boolean(this.generationOptions.inferRoofs)) {
       this.generationOptions = { ...this.generationOptions, inferRoofs };
+      // Loaded costs still describe the visible objects until regeneration completes. Evicted
+      // cost estimates from the previous generation options must be relearned.
+      for (const key of this.knownCosts.keys()) if (!this.tiles.get(key)?.object) this.knownCosts.delete(key);
     }
     this.dirty = true;
   }
@@ -1278,11 +1294,12 @@ export class CityMapImpl implements CityMap {
       Math.abs(cam.zoom - t.zoom) > 0.5 ||
       Math.hypot(cam.center[0] - t.center[0], cam.center[1] - t.center[1]) > 0.004;
     const canRelax = pressure < 0.55 && this.sseScale > 1 && moved;
-    this.budgetPending = (pressure > 1 && this.sseScale < 16) || canRelax;
+    const canCoarsen = !this.minimumCoverOverBudget && pressure > 1;
+    this.budgetPending = (canCoarsen && this.sseScale < 16) || canRelax;
     this.budgetSettled = this.budgetPending ? null : { key: shownKey, eye: eyeNow.clone(), zoom: this.transform.zoom };
     if (now - this.lastBudgetCheck < 300) return;
     this.lastBudgetCheck = now;
-    if (pressure > 1) {
+    if (canCoarsen) {
       this.sseScale = Math.min(16, this.sseScale * 1.35);
       this.overBudgetAt = { zoom: t.zoom, center: [...t.center] as LngLat };
     } else if (canRelax) {
@@ -1326,6 +1343,7 @@ export class CityMapImpl implements CityMap {
         if (entry.loadToken !== token || this.disposed) return;
         if (response.type === 'error')
           throw Object.assign(new Error(response.diagnostic.message), { diagnostic: response.diagnostic });
+        this.rememberCost(entry, response);
         this.uploads.push({ entry, response, token, replace: true });
       })
       .catch((error: Error & { diagnostic?: Diagnostic }) => {
@@ -1451,6 +1469,23 @@ export class CityMapImpl implements CityMap {
     return e;
   }
 
+  private rememberCost(entry: TileEntry, response: Extract<WorkerResponse, { type: 'result' }>) {
+    const capacity = response.features.reduce((n, f) => Math.max(n, f.renderId), 0);
+    const hostGround = this.hosted?.ground === 'host' ? HOST_GROUND_LAYERS : undefined;
+    const cost = tileCost(response.generated, capacity, entry.buffer?.byteLength ?? 0, hostGround);
+    this.knownCosts.delete(entry.key);
+    this.knownCosts.set(entry.key, cost);
+    // Keep a bounded history of unloaded tiles, so rejected groups on a return trip need no probe.
+    if (this.knownCosts.size > 4096)
+      for (const key of this.knownCosts.keys()) {
+        if (!this.tiles.has(key)) {
+          this.knownCosts.delete(key);
+          break;
+        }
+      }
+    this.costsChanged = true;
+  }
+
   private load(entry: TileEntry) {
     const token = (entry.loadToken = (entry.loadToken ?? 0) + 1);
     const current = () => entry.loadToken === token;
@@ -1458,18 +1493,27 @@ export class CityMapImpl implements CityMap {
     const controller = new AbortController();
     entry.controller = controller;
     const url = resolveTileUrl(this.tileset, this.tilesetUrl, entry.id.z, entry.id.x, entry.id.y);
-    this.requestStats.started++;
-    readBinary(url, this.options, controller.signal)
+    const retained = entry.buffer ?? this.sourceCache.get(entry.key);
+    if (this.sourceCache.delete(entry.key)) this.sourceCacheBytes -= retained!.byteLength;
+    if (retained) {
+      entry.buffer = retained;
+      entry.bytes = retained.byteLength;
+    } else this.requestStats.started++;
+    const source = retained ? Promise.resolve(retained) : readBinary(url, this.options, controller.signal);
+    source
       .then((buffer) => {
         if (controller.signal.aborted || !current())
           throw Object.assign(new Error('Cancelled'), { name: 'AbortError' });
-        this.requestStats.completed++;
-        this.requestStats.bytes += buffer.byteLength;
+        if (!retained) {
+          this.requestStats.completed++;
+          this.requestStats.bytes += buffer.byteLength;
+        }
         entry.controller = null;
         entry.state = 'generating';
-        entry.buffer = buffer.slice(0);
+        entry.buffer = buffer;
+        entry.bytes = buffer.byteLength;
         entry.inferRoofs = this.generationOptions.inferRoofs;
-        const work = this.pool.run(buffer, entry.priority, this.generationOptions);
+        const work = this.pool.run(buffer.slice(0), entry.priority, this.generationOptions);
         entry.cancelWork = work.cancel;
         return work.promise;
       })
@@ -1482,6 +1526,7 @@ export class CityMapImpl implements CityMap {
             diagnostic: response.diagnostic,
             permanent: true,
           });
+        this.rememberCost(entry, response);
         this.uploads.push({ entry, response, token });
         this.uploads.sort((a, b) => a.entry.priority - b.entry.priority);
         this.dirty = true;
@@ -1619,9 +1664,9 @@ export class CityMapImpl implements CityMap {
 
   private updateTiles(now: number) {
     this.selectionTime = now;
-    const finest = this.tileset.levels[this.tileset.levels.length - 1]!;
+    this.costsChanged = false;
     const maxDistance = Math.max(2000, this.transform.cameraToCenterDistance * this.transform.unitsPerPixel * 8);
-    const desired = (this.lastDesired = selectTiles(
+    const target = selectTiles(
       this.transform,
       this.tileset,
       this.coverage,
@@ -1632,7 +1677,39 @@ export class CityMapImpl implements CityMap {
         maxDistance,
       },
       this.refined,
-    ));
+    );
+    const levelZooms = this.tileset.levels.map((l) => l.zoom);
+    const selection = fitRefinements(
+      target,
+      levelZooms,
+      this.knownCosts,
+      (key) => this.tiles.get(key)?.state === 'ready',
+      this.admitted,
+      {
+        bytes: this.budget.residentBytes,
+        triangles: this.budget.visibleTriangles * 0.95,
+        draws: Math.max(0, this.budget.drawCalls - 4),
+      },
+      (key) => {
+        const state = this.tiles.get(key)?.state;
+        return state === 'missing' || state === 'failed';
+      },
+    );
+    const base = selection.rootCost;
+    const mandatoryExceeded =
+      base.bytes > this.budget.residentBytes ||
+      base.triangles > this.budget.visibleTriangles ||
+      base.draws > this.budget.drawCalls;
+    if (mandatoryExceeded && !this.minimumCoverOverBudget)
+      this.diagnostic({
+        code: 'TILE_MINIMUM_COVER_OVER_BUDGET',
+        stage: 'select',
+        message: `Coarsest visible coverage costs ${base.bytes} resident bytes, ${base.triangles} base triangles and ${base.draws} base draws.`,
+        hint: 'Keeping coverage visible. Use a smaller view or a higher budget for this tileset.',
+      });
+    this.minimumCoverOverBudget = mandatoryExceeded;
+    this.admitted = selection.refined;
+    const desired = selection.leaves;
     const wanted = new Set<string>();
     for (const d of desired) {
       const e = this.entry(d);
@@ -1642,11 +1719,11 @@ export class CityMapImpl implements CityMap {
     this.lastUpdate = now;
     // Ancestors of every desired tile are wanted too: they load first (as fallback cover) and are never evicted
     // while a descendant is wanted, so no region is left without a parent or complete children (04 section 5.2).
-    const levelZoomsAll = this.tileset.levels.map((l) => l.zoom);
+
     const ancestors: DesiredTile[] = [];
     for (const d of desired)
       for (let l = d.level - 1; l >= 0; l--) {
-        const id = parentTile(d.id, levelZoomsAll[l]!);
+        const id = parentTile(d.id, levelZooms[l]!);
         const key = tileKey(id);
         if (wanted.has(key) || (this.coverage && !this.coverage.has(id))) continue;
         wanted.add(key);
@@ -1666,7 +1743,6 @@ export class CityMapImpl implements CityMap {
     }
     // Decide visibility.
     const show = new Set<string>();
-    const levelZooms = this.tileset.levels.map((l) => l.zoom);
     for (const d of desired) {
       const e = this.tiles.get(d.key)!;
       if (e.state === 'ready') {
@@ -1696,13 +1772,39 @@ export class CityMapImpl implements CityMap {
       if (wantedChildren.length && wantedChildren.every((c) => this.tiles.get(c)?.state === 'ready')) show.delete(key);
       else for (const c of children) show.delete(c);
     }
-    // Minimum residence: keep recently shown tiles a little longer to avoid flicker on small moves.
-    for (const e of this.tiles.values())
-      if (e.visible && !show.has(e.key) && now - e.shownAt < this.budget.minResidenceMs && e.state === 'ready') {
-        // Keep it only if nothing else now covers the same ground (never stack two levels).
-        const covered = [...show].some((k) => overlaps(this.tiles.get(k)!.id, e.id));
-        if (!covered) show.add(e.key);
-      }
+    const protectedKeys = new Set(wanted);
+    const extraPins = (entry: TileEntry) => {
+      const keys = [entry.key];
+      for (let i = 0; i < entry.level; i++) keys.push(tileKey(parentTile(entry.id, levelZooms[i]!)));
+      return keys.filter((k) => !protectedKeys.has(k));
+    };
+    let minTriangles = 0;
+    for (const key of show) {
+      const entry = this.tiles.get(key)!;
+      for (const pin of extraPins(entry)) protectedKeys.add(pin);
+      minTriangles += this.knownCosts.get(key)?.triangles ?? 0;
+    }
+    let requiredBytes = 0;
+    for (const key of protectedKeys) requiredBytes += this.knownCosts.get(key)?.bytes ?? 0;
+    // Keep a recently shown tile only when the new cover and its pinned ancestors all fit.
+    for (const e of this.tiles.values()) {
+      if (!e.visible || show.has(e.key) || now - e.shownAt >= this.budget.minResidenceMs || e.state !== 'ready')
+        continue;
+      if ([...show].some((k) => overlaps(this.tiles.get(k)!.id, e.id))) continue;
+      const cost = this.knownCosts.get(e.key);
+      const pins = extraPins(e);
+      const extraBytes = pins.reduce((sum, k) => sum + (this.knownCosts.get(k)?.bytes ?? 0), 0);
+      if (
+        !cost ||
+        minTriangles + cost.triangles > this.budget.visibleTriangles * 0.95 ||
+        requiredBytes + extraBytes > this.budget.residentBytes
+      )
+        continue;
+      show.add(e.key);
+      minTriangles += cost.triangles;
+      requiredBytes += extraBytes;
+      for (const pin of pins) protectedKeys.add(pin);
+    }
     for (const e of this.tiles.values()) {
       const visible = show.has(e.key);
       if (visible && !e.visible && e.object) {
@@ -1743,21 +1845,39 @@ export class CityMapImpl implements CityMap {
     }
     // Unload tiles that are neither wanted nor shown, after a delay; then enforce the resident budget (LRU).
     let resident = 0;
-    for (const e of this.tiles.values()) resident += e.bytes;
+    for (const e of this.tiles.values()) {
+      // Leave room for wanted children as soon as their exact arrays are known, including jobs
+      // awaiting incremental upload. Release old, unpinned LRU entries before allocating them.
+      resident += wanted.has(e.key) ? Math.max(e.bytes, this.knownCosts.get(e.key)?.bytes ?? 0) : e.bytes;
+    }
     // Ancestors of visible tiles stay resident so zooming out never shows a region without a parent (AC406).
-    const pinned = new Set<string>();
-    for (const e of this.tiles.values())
-      if (e.visible) for (let l = e.level - 1; l >= 0; l--) pinned.add(tileKey(parentTile(e.id, levelZooms[l]!)));
+    const projected = new Set(target.map((t) => t.key));
     const evictable = [...this.tiles.values()]
-      .filter((e) => !wanted.has(e.key) && !e.visible && !(pinned.has(e.key) && e.state === 'ready'))
+      .filter((e) => !wanted.has(e.key) && !e.visible && !(protectedKeys.has(e.key) && e.state === 'ready'))
       .sort((a, b) => a.lastWanted - b.lastWanted);
     for (const e of evictable) {
       const keepRoot = e.level === 0 && e.state === 'ready' && resident < this.budget.residentBytes * 0.5;
-      if ((now - e.lastWanted > this.budget.unloadDelayMs && !keepRoot) || resident > this.budget.residentBytes) {
+      const stillInView = e.state === 'ready' && projected.has(e.key);
+      if (
+        (now - e.lastWanted > this.budget.unloadDelayMs && !keepRoot && !stillInView) ||
+        resident > this.budget.residentBytes
+      ) {
         resident -= e.bytes;
+        // Keep the immutable source for a return trip when there is room after reserving
+        // the selected geometry. In-flight sources can be reused after a stale job is cancelled.
+        if (e.buffer && e.state !== 'failed') {
+          this.sourceCache.set(e.key, e.buffer);
+          this.sourceCacheBytes += e.buffer.byteLength;
+        }
         this.unload(e);
         this.tiles.delete(e.key);
       }
+    }
+    const cacheAllowance = Math.min(8 * 2 ** 20, this.budget.residentBytes / 8, this.budget.residentBytes - resident);
+    for (const [key, buffer] of this.sourceCache) {
+      if (this.sourceCacheBytes <= cacheAllowance) break;
+      this.sourceCache.delete(key);
+      this.sourceCacheBytes -= buffer.byteLength;
     }
     if (!desired.length && !this.emptyNotified && this.transform.zoom < this.tileset.levels[0]!.zoom - 2) {
       this.emptyNotified = true;
@@ -1767,7 +1887,7 @@ export class CityMapImpl implements CityMap {
         message: `Zoom ${this.transform.zoom.toFixed(1)} is far below the coarsest content level (${this.tileset.levels[0]!.zoom}); showing empty ground.`,
       });
     }
-    void finest;
+    this.minimumVisibleTriangles = minTriangles;
   }
 
   // ------------------------------------------------------------------------------------------- frame loop
@@ -1790,6 +1910,7 @@ export class CityMapImpl implements CityMap {
     if (this.disposed || !this.hosted || !this.tileset) return;
     const now = performance.now();
     this.syncHostCamera();
+    if (this.costsChanged) this.updateTiles(now);
     this.processUploads(now);
     this.updateTiles(now);
     this.renderer.resetState();
@@ -1869,6 +1990,7 @@ export class CityMapImpl implements CityMap {
     this.raf = requestAnimationFrame((t) => this.tick(t));
     if (this.paused) return;
     const now = performance.now();
+    if (this.costsChanged) this.updateTiles(now);
     this.processUploads(now);
     const loading = this.busy();
     if (this.dirty || loading || this.budgetPending) {
@@ -1955,12 +2077,18 @@ export class CityMapImpl implements CityMap {
   private updateNearDetails() {
     const cam = this.transform.camera.position;
     const visible = [...this.tiles.values()].filter((e) => e.visible && e.object && e.nearWalls?.length);
-    const key = `${Math.round(cam.x / 25)},${Math.round(cam.y / 25)},${Math.round(cam.z / 25)}|${visible.map((e) => e.key).join(',')}`;
+    // Near attachments take at most a fifth of the triangle budget (12 triangles per instance).
+    const shadowPass = this.sun.castShadow && this.renderer.shadowMap.enabled;
+    const room = Math.max(0, this.budget.visibleTriangles * 0.95 - this.minimumVisibleTriangles);
+    const limit = Math.min(
+      this.budget.nearDetails,
+      Math.floor((this.budget.visibleTriangles * 0.2) / 12),
+      Math.floor(room / (shadowPass ? 24 : 12)),
+    );
+    const key = `${Math.round(cam.x / 25)},${Math.round(cam.y / 25)},${Math.round(cam.z / 25)}|${visible.map((e) => e.key).join(',')}|${limit}`;
     if (key === this.nearKey) return;
     this.nearKey = key;
     let count = 0;
-    // Near attachments take at most a fifth of the triangle budget (12 triangles per instance).
-    const limit = Math.min(this.budget.nearDetails, Math.floor((this.budget.visibleTriangles * 0.2) / 12));
     if (limit > 0 && this.filter.details !== false) {
       const inverse = new Matrix4();
       const local = new Vector3();
@@ -2056,7 +2184,7 @@ export class CityMapImpl implements CityMap {
     this.assertAlive();
     const info = this.renderer.info;
     const counts = { visible: 0, loaded: 0, loading: 0, queued: 0, failed: 0 };
-    let resident = 0;
+    let resident = this.sourceCacheBytes;
     for (const e of this.tiles.values()) {
       if (e.visible) counts.visible++;
       if (e.state === 'ready') counts.loaded++;

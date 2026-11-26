@@ -417,6 +417,43 @@ function inkClassOf(layer: string, role: string): number {
 const crownGeometry = () => new IcosahedronGeometry(1, 1);
 const trunkGeometry = () => new CylinderGeometry(0.12, 0.18, 1, 6, 1).translate(0, 0.5, 0);
 
+let treeInstanceTriangles: number | undefined;
+
+/** Same geometry arrays and instance matrices counted by TileObject.bytes, available before uploading. */
+export function tileCost(
+  generated: GeneratedTile,
+  capacity: number,
+  sourceBytes: number,
+  hostGround?: ReadonlySet<string>,
+) {
+  let bytes = sourceBytes + Math.max(1, Math.ceil((capacity + 1) / STATE_WIDTH)) * STATE_WIDTH * 4;
+  let triangles = 0,
+    draws = 0;
+  for (const b of generated.batches) {
+    for (const a of [b.position, b.normal, b.color, b.renderId, b.roleIndex, b.index]) bytes += a.byteLength;
+    if (b.facade) for (const a of Object.values(b.facade)) bytes += a.byteLength;
+    bytes += b.vertexCount * Float32Array.BYTES_PER_ELEMENT; // ink class
+    if (b.layer !== 'structure' && !hostGround?.has(b.layer)) {
+      triangles += b.index.length / 3;
+      draws++;
+    }
+  }
+  const trees = generated.trees;
+  if (trees.count) {
+    if (treeInstanceTriangles === undefined) {
+      treeInstanceTriangles = 0;
+      for (const g of [crownGeometry(), trunkGeometry()]) {
+        treeInstanceTriangles += (g.index?.count ?? g.attributes.position!.count) / 3;
+        g.dispose();
+      }
+    }
+    triangles += trees.count * treeInstanceTriangles;
+    draws += 2;
+    bytes += trees.count * 16 * 4 * 2 + trees.data.byteLength;
+  }
+  return { bytes, triangles, draws };
+}
+
 export interface TileObject {
   group: Group;
   bytes: number;
