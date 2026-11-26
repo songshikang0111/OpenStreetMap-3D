@@ -1,0 +1,16 @@
+{
+  "fileBytes": 279310732,
+  "sha256": "bde786ce75819ee56a7ba4722851f4806d6be20e813a5587ec034595110ba31c",
+  "tiles": 252,
+  "meshNodes": 59487,
+  "triangles": 5450800,
+  "validator": "2.0.0-dev.3.10",
+  "issues": {
+    "numErrors": 0,
+    "numWarnings": 0,
+    "numInfos": 0,
+    "numHints": 0,
+    "messages": [],
+    "truncated": false
+  }
+}

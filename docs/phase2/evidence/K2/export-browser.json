@@ -1,0 +1,57 @@
+{
+  "browser": "Chrome/158.0.8127.36",
+  "png": {
+    "type": "image/png",
+    "width": 1280,
+    "height": 720,
+    "sourceSize": [
+      1280,
+      720
+    ],
+    "colors": 3817,
+    "footerInk": 624,
+    "attribution": {
+      "text": "© OpenStreetMap contributors",
+      "url": "https://www.openstreetmap.org/copyright",
+      "license": "ODbL-1.0"
+    }
+  },
+  "glb": {
+    "type": "model/gltf-binary",
+    "bytes": 18967964,
+    "declared": 18967964,
+    "magic": 1179937895,
+    "version": 2,
+    "visible": 8,
+    "ids": [
+      "14/13491/6207",
+      "14/13491/6208",
+      "14/13492/6207",
+      "16/53968/24832",
+      "16/53968/24833",
+      "16/53969/24832",
+      "16/53969/24833",
+      "16/53970/24832"
+    ],
+    "roots": [
+      "14/13491/6207",
+      "14/13491/6208",
+      "14/13492/6207",
+      "16/53968/24832",
+      "16/53968/24833",
+      "16/53969/24832",
+      "16/53969/24833",
+      "16/53970/24832"
+    ],
+    "meshes": 36,
+    "scope": "loaded",
+    "attribution": {
+      "text": "© OpenStreetMap contributors",
+      "url": "https://www.openstreetmap.org/copyright",
+      "license": "ODbL-1.0"
+    },
+    "capped": true
+  },
+  "requestsBefore": 9,
+  "requestsAfter": 9
+}
