@@ -1130,7 +1130,13 @@ export class CityMapImpl implements CityMap {
       this.generationOptions = { ...this.generationOptions, inferRoofs };
       // Loaded costs still describe the visible objects until regeneration completes. Evicted
       // cost estimates from the previous generation options must be relearned.
-      for (const key of this.knownCosts.keys()) if (!this.tiles.get(key)?.object) this.knownCosts.delete(key);
+      for (const [key, cost] of this.knownCosts) {
+        const entry = this.tiles.get(key);
+        if (entry?.object || cost.sourceOnly) continue;
+        const source = entry?.buffer ?? this.sourceCache.get(key);
+        if (source) this.knownCosts.set(key, { bytes: source.byteLength, draws: 0, triangles: 0, sourceOnly: true });
+        else this.knownCosts.delete(key);
+      }
     }
     this.dirty = true;
   }
@@ -1472,7 +1478,10 @@ export class CityMapImpl implements CityMap {
   private rememberCost(entry: TileEntry, response: Extract<WorkerResponse, { type: 'result' }>) {
     const capacity = response.features.reduce((n, f) => Math.max(n, f.renderId), 0);
     const hostGround = this.hosted?.ground === 'host' ? HOST_GROUND_LAYERS : undefined;
-    const cost = tileCost(response.generated, capacity, entry.buffer?.byteLength ?? 0, hostGround);
+    this.storeCost(entry, tileCost(response.generated, capacity, entry.buffer?.byteLength ?? 0, hostGround));
+  }
+
+  private storeCost(entry: TileEntry, cost: TileCost) {
     this.knownCosts.delete(entry.key);
     this.knownCosts.set(entry.key, cost);
     // Keep a bounded history of unloaded tiles, so rejected groups on a return trip need no probe.
@@ -1514,6 +1523,9 @@ export class CityMapImpl implements CityMap {
         entry.state = 'generating';
         entry.buffer = buffer;
         entry.bytes = buffer.byteLength;
+        // Keep this lower bound even when admission cancels the worker and later evicts its source.
+        if (!this.knownCosts.has(entry.key))
+          this.storeCost(entry, { bytes: buffer.byteLength, draws: 0, triangles: 0, sourceOnly: true });
         entry.inferRoofs = this.generationOptions.inferRoofs;
         const work = this.pool.run(buffer.slice(0), entry.priority, this.generationOptions);
         entry.cancelWork = work.cancel;
