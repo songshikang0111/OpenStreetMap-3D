@@ -1494,6 +1494,7 @@ export class CityMapImpl implements CityMap {
     const url = resolveTileUrl(this.tileset, this.tilesetUrl, entry.id.z, entry.id.x, entry.id.y);
     const retained = entry.buffer ?? this.sourceCache.get(entry.key);
     if (this.sourceCache.delete(entry.key)) this.sourceCacheBytes -= retained!.byteLength;
+    let fetching = !retained;
     if (retained) {
       entry.buffer = retained;
       entry.bytes = retained.byteLength;
@@ -1503,7 +1504,8 @@ export class CityMapImpl implements CityMap {
       .then((buffer) => {
         if (controller.signal.aborted || !current())
           throw Object.assign(new Error('Cancelled'), { name: 'AbortError' });
-        if (!retained) {
+        if (fetching) {
+          fetching = false;
           this.requestStats.completed++;
           this.requestStats.bytes += buffer.byteLength;
         }
@@ -1532,14 +1534,14 @@ export class CityMapImpl implements CityMap {
       })
       .catch((error: Error & { diagnostic?: Diagnostic; permanent?: boolean; status?: number }) => {
         if (!current()) {
-          if (error.name === 'AbortError') this.requestStats.cancelled++;
+          if (fetching && error.name === 'AbortError') this.requestStats.cancelled++;
           return;
         }
         entry.controller = null;
         entry.cancelWork = null;
         if (this.disposed) return;
         if (error.name === 'AbortError') {
-          this.requestStats.cancelled++;
+          if (fetching) this.requestStats.cancelled++;
           if (entry.state !== 'ready') entry.state = 'queued';
           return;
         }

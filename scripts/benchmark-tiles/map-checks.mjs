@@ -208,6 +208,7 @@ try {
   // AC408: moving away quickly cancels stale requests; the worker queue stays within budget
   {
     await page.send('Network.enable');
+    await page.send('Network.setCacheDisabled', { cacheDisabled: true });
     await page.send('Network.emulateNetworkConditions', {
       offline: false,
       latency: 400,
@@ -215,7 +216,9 @@ try {
       uploadThroughput: 2_000_000,
     });
     const r = await page.evaluate(`(async () => {
-      const m = cityMap;
+      const container = T.container();
+      const m = await createCityMap({ container, tiles: T.tilesUrl, center: [115,39], zoom: 18 });
+      await m.whenIdle();
       const s0 = m.getStats().requests;
       m.jumpTo({ center: [116.4560, 39.9050], zoom: 18, pitch: 70, bearing: 120 });
       let maxQueue = 0;
@@ -225,6 +228,8 @@ try {
       while (performance.now() - t0 < 6000) { const w = m.getStats().workers; maxQueue = Math.max(maxQueue, w.queued + w.busy); await T.frame(); }
       await m.whenIdle({ timeoutMs: 60000 });
       const s1 = m.getStats().requests;
+      await m.dispose();
+      container.remove();
       return { cancelled: s1.cancelled - s0.cancelled, started: s1.started - s0.started, maxWorkerQueue: maxQueue, budget: 12 };
     })()`);
     await page.send('Network.emulateNetworkConditions', {
@@ -233,7 +238,8 @@ try {
       downloadThroughput: -1,
       uploadThroughput: -1,
     });
-    record('AC408', r.cancelled > 0 && r.maxWorkerQueue <= r.budget, r);
+    await page.send('Network.setCacheDisabled', { cacheDisabled: false });
+    record('AC408', r.started >= r.cancelled && r.cancelled > 0 && r.maxWorkerQueue <= r.budget, r);
   }
 
   // AC409: decode and generation never run on the main thread (CPU profile of the page's main thread)
