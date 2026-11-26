@@ -1,5 +1,6 @@
 // `city tiles <build|validate|inspect|serve|pack>`; follows the phase-one CLI output contract: with --json the
 // result object goes to stdout and progress to stderr, with schemaVersion/status/artifacts/diagnostics.
+import { exportTilesGLB } from './export-glb.js';
 import { packTiles } from './archive/pack.js';
 import { readFile } from 'node:fs/promises';
 import os from 'node:os';
@@ -16,6 +17,7 @@ export const TILES_HELP = `city tiles — build and check static 3D city tiles
   city tiles validate <dir> [--json]
   city tiles inspect <dir> --tile z/x/y [--json]
   city tiles pack <dir> --output file.archive [--json]
+  city tiles export <dir> --output city.glb [--json]
   city tiles serve <dir> [--port 4181] [--json]
 
 Input: OSM JSON (Overpass / OSM Map), an .osm.pbf extract (<= 1 GB, build area <= 5,000 km2) or a phase-one project.
@@ -181,6 +183,13 @@ export async function runTilesCLI(
       const server = await serveTiles(resolve(target), { port: o.port ? Number(o.port) : 4181 });
       stderr.write(`Serving ${resolve(target)} at ${server.url} (loopback only, Ctrl+C to stop)\n`);
       return { ...ok({ url: server.url, artifacts: [`${server.url}/tileset.json`] }), server };
+    }
+    if (command === 'export') {
+      if (!target || !o.output)
+        throw Object.assign(new Error('city tiles export <dir> --output city.glb'), { code: 'OPTION_MISSING' });
+      const output = resolve(o.output);
+      const tiles = await exportTilesGLB(resolve(target), output, signal);
+      return ok({ artifacts: [output], tiles });
     }
     if (command === 'pack') {
       if (!target || !o.output)

@@ -1,3 +1,4 @@
+import { crownGeometry, trunkGeometry } from '@city-ink/generators';
 // Builds Three.js objects for one generated tile. One mesh per material role batch (≤ 12 draw calls per L1 tile).
 import {
   Box3,
@@ -5,9 +6,7 @@ import {
   BufferAttribute,
   BufferGeometry,
   Color,
-  CylinderGeometry,
   Group,
-  IcosahedronGeometry,
   InstancedBufferAttribute,
   InstancedMesh,
   Mesh,
@@ -413,9 +412,6 @@ function inkClassOf(layer: string, role: string): number {
   if (role.startsWith('ground')) return 5;
   return 4;
 }
-
-const crownGeometry = () => new IcosahedronGeometry(1, 1);
-const trunkGeometry = () => new CylinderGeometry(0.12, 0.18, 1, 6, 1).translate(0, 0.5, 0);
 
 let treeInstanceTriangles: number | undefined;
 

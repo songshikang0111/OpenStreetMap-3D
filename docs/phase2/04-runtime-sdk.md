@@ -223,6 +223,14 @@ map.on('load', () => {
 - `createMap` 接受 `tiles`。两者内部共用：资源生命周期与回收、预算与降级策略、整帧统计与 GPU 计时、风格绑定、PNG 导出。
 - 一期的 GLB 导出在瓦片模式下提供"当前已加载范围"导出；"完整范围"导出改由构建端命令提供，不在浏览器中做。
 
+### 导出瓦片地图
+
+独立地图在画面就绪后可调用 `await map.exportPNG()`，取返回值的 `blob`。PNG 使用当前 WebGL 画布的物理分辨率，图像底部包含来源与许可。地图网页中的 HTML 标记不属于 WebGL 画面。
+
+`await map.exportGLB({scope: 'loaded'})` 返回 `blob`、`tileIds` 和 `attribution`。导出使用当下真正显示的瓦片层级，保留楼体、道路和树实例的模型几何。只作为后备的父瓦片不会叠加到子瓦片上。可用 `maxBytes` 指定输出字节上限，默认为地图驻留预算。GLB 使用通用材质，后处理、着色器风格和业务叠加层仅在地图中显示。地理原点、坐标方向、数据源和 OSM 许可写入 GLB 的 `extras`。示例见[类型检查用例](../../examples/phase2/map-usage.ts)。
+
+完整已构建目录可运行 `city tiles export ./tiles --output ./city.glb --json`。命令逐一读取覆盖位图里的最高精度瓦片，校验内容哈希，将几何块暂存到输出文件所在磁盘，再原子替换最终文件。请预留临时几何和最终模型所需空间。单份 GLB 受格式的 32 位文件长度限制，必要时分区构建和导出。[glTF 2.0 文件格式](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html)
+
 ## 10. 包体积
 
 - `@scope/map` 压缩后不超过 180 KB（不含 `three`）；Worker 代码单独成块并按需加载。

@@ -7,3 +7,5 @@ export * from './building.js';
 export * from './surfaces.js';
 export * from './tile.js';
 export { generateStructures, quad as windQuad } from './structures.js';
+
+export { crownGeometry, trunkGeometry } from './tree-geometry.js';

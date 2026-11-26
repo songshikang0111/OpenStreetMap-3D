@@ -192,6 +192,13 @@ export interface CityMap {
   setStyle(style: string | StyleSpec | StylePack): Promise<void>;
   setFilter(filter: ProvenanceFilter): void;
 
+  /** Capture the current WebGL frame at its drawing-buffer resolution, with OSM credit. */
+  exportPNG(): Promise<{ blob: Blob; width: number; height: number; attribution: Tileset['attribution'] }>;
+  /** Export the current displayed tile cover using portable geometry. No additional tiles are fetched. */
+  exportGLB(options: {
+    scope: 'loaded';
+    maxBytes?: number;
+  }): Promise<{ blob: Blob; scope: 'loaded'; tileIds: string[]; attribution: Tileset['attribution'] }>;
   whenIdle(o?: { timeoutMs?: number }): Promise<void>;
   getStats(o?: { raw?: boolean }): MapStats;
   resize(): void;

@@ -10,7 +10,15 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./glb": {
+      "types": "./dist/glb.d.ts",
+      "import": "./dist/glb.js"
+    },
+    "./tree-transforms": {
+      "types": "./dist/tree-transforms.d.ts",
+      "import": "./dist/tree-transforms.js"
+    }
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

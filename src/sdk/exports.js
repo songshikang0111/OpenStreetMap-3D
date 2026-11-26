@@ -1,3 +1,4 @@
+import { attributedPNG } from '../runtime/attributed-png.js';
 import { Color, Group, Matrix4, Mesh, MeshStandardMaterial } from 'three';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { ResourceRegistry } from '../runtime/resources.js';
@@ -44,26 +45,8 @@ export async function exportViewerPNG(ctx, { width = ctx.width, height = ctx.hei
     ctx.renderer.setPixelRatio(1);
     ctx.resize(width, height);
     ctx.render();
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const drawing = canvas.getContext('2d');
-    drawing.drawImage(ctx.renderer.domElement, 0, 0);
-    const credit = attributionText(ctx.manifest),
-      font = Math.max(11, Math.round(width / 130));
-    drawing.font = `${font}px sans-serif`;
-    const text = drawing.measureText(credit).width;
-    drawing.fillStyle = 'rgba(255,255,255,.95)';
-    drawing.fillRect(0, height - font - 18, width, font + 18);
-    drawing.fillStyle = '#28352f';
-    drawing.fillText(credit, Math.max(7, width - text - 10), height - 9, width - 14);
-    const blob = await new Promise((resolve, reject) =>
-      canvas.toBlob(
-        (b) =>
-          b ? resolve(b) : reject(runtimeError('PNG_ENCODING_FAILED', 'export', 'Browser could not encode PNG.')),
-        'image/png',
-      ),
-    );
+    const credit = attributionText(ctx.manifest);
+    const blob = await attributedPNG(ctx.renderer.domElement, width, height, credit);
     return {
       blob,
       scope: 'current-view-loaded-lods',

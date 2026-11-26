@@ -1,3 +1,5 @@
+import { loadedTileGLB } from './exports.js';
+import { attributedPNG } from '../../../src/runtime/attributed-png.js';
 import { openTileArchive } from './archive.js';
 // createMap: map-style SDK over static City Ink tiles (04). Owns the camera and the render loop in standalone mode.
 import {
@@ -1950,6 +1952,41 @@ export class CityMapImpl implements CityMap {
       this.idleWaiters = [];
       for (const w of waiters) w();
     }
+  }
+
+  async exportPNG() {
+    this.assertAlive();
+    const { width, height } = this.canvas;
+    // Render and copy in the same task; WebGL's default drawing buffer is transient.
+    this.render(performance.now());
+    const attribution = this.tileset.attribution;
+    const blob = await attributedPNG(
+      this.canvas,
+      width,
+      height,
+      [attribution.text, attribution.url, attribution.license].join(' · '),
+    );
+    return { blob, width, height, attribution: { ...attribution } };
+  }
+
+  async exportGLB({ scope, maxBytes = this.budget.residentBytes }: { scope: 'loaded'; maxBytes?: number }) {
+    this.assertAlive();
+    if (scope !== 'loaded')
+      throw new MapError(
+        'EXPORT_SCOPE_INVALID',
+        'export',
+        'Use scope "loaded" or city tiles export for the full area.',
+      );
+    const tiles: [string, TileObject][] = [];
+    for (const e of this.tiles.values()) if (e.visible && e.object) tiles.push([e.key, e.object]);
+    if (!tiles.length)
+      throw new MapError('EXPORT_EMPTY', 'export', 'No visible tile is ready. Wait for map.whenIdle().');
+    return {
+      blob: loadedTileGLB(this.tileset, this.transform.anchor, tiles, maxBytes),
+      scope,
+      tileIds: tiles.map(([key]) => key),
+      attribution: { ...this.tileset.attribution },
+    };
   }
 
   requestRender(): void {

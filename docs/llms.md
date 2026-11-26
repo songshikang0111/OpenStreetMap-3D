@@ -103,6 +103,16 @@ mlMap.setLayoutProperty('building-3d', 'visibility', 'none'); // hide the basema
 The layer shares MapLibre's WebGL context and camera; host labels draw on top. Ink looks are rejected here
 (`STYLE_NOT_HOST_COMPATIBLE`).
 
+## 8. Export the standalone map or the complete tileset
+
+```js
+await map.whenIdle();
+const { blob: png } = await map.exportPNG();
+const { blob: model, tileIds } = await map.exportGLB({ scope: 'loaded' });
+```
+
+The PNG includes visible attribution. The GLB uses the displayed tile cover and embeds the geographic origin and license. To export every covered full-detail tile, run `city tiles export ./tiles/my-city --output ./my-city.glb`.
+
 ## Pitfalls
 
 - The standalone map draws no text labels.
