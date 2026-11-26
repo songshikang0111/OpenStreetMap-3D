@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { serveTiles } from '@city-ink/builder';
 import { openPage } from './browser.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
@@ -23,12 +24,15 @@ const params = new URLSearchParams({
   device: os.cpus()[0]?.model ?? os.arch(),
 });
 const headless = !process.argv.includes('--headful');
-const page = await openPage(path.join(root, 'apps/demo/dist'), 'benchmark.html?' + params, {
-  width: Number(arg('width', 1280)),
-  height: Number(arg('height', 720)),
-  headless,
-});
+const dist = path.join(root, 'apps/demo/dist');
+const server = await serveTiles(dist, { port: 0 });
+let page;
 try {
+  page = await openPage(dist, server.url + '/benchmark.html?' + params, {
+    width: Number(arg('width', 1280)),
+    height: Number(arg('height', 720)),
+    headless,
+  });
   await page.waitFor(
     'window.benchmarkError || !!window.benchmarkResult',
     120000 + loops * plan.keyframes.reduce((sum, k) => sum + k.duration, 0),
@@ -51,5 +55,6 @@ try {
   }
   process.stdout.write(text);
 } finally {
-  await page.close();
+  await page?.close();
+  await server.close();
 }
