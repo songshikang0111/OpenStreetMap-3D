@@ -40,3 +40,22 @@ node scripts/benchmark-tiles/path-run.mjs scripts/benchmark-tiles/paths/enkhuize
 node scripts/benchmark-tiles/path-run.mjs scripts/benchmark-tiles/paths/enkhuizen.json \
   --acceptance --loops 10 --json /tmp/enkhuizen-acceptance.json --frames /tmp/enkhuizen-acceptance-frames.json
 ```
+
+## F6 新数据的十圈验收
+
+SDK `b5e0bb7` 在 272 块 F6 恩克赫伊曾城区瓦片上跑完十圈。瓦片内容哈希为 `61a90202410666d4fbd262aec2b76073610f967c0e3a20a673a12239d9c3c94b`，实际服务的构建报告 SHA-256 为 `ebb9619aa4506addeb0d1aacc2579b7aaa29d6126928e75f477db124d427ab3d`。浏览器记录连续漫游 601.208 秒；包含启动、预热、取回逐帧记录和关闭浏览器的命令用时 606.82 秒。计时采集之外的完整记录留在仓库外。
+
+| 实机项目 | 十圈实测 |
+| --- | ---: |
+| 记录帧数 | 35,978 |
+| 全空帧、瓦片错误、WebGL 上下文丢失 | 0、0、0 |
+| 超三角数、绘制调用、驻留上限的帧数 | 0、0、0 |
+| 三角形、绘制调用、驻留字节峰值 | 569,037、92、134,214,920 |
+| RAF 间隔 p95、超过 50 ms 的长帧 | 16.7 ms、19 次（1.90 次/分钟） |
+| 首个可用画面、默认视角首屏编码字节 | 527 ms、782,845 B |
+| L1 Worker 解码和生成 p95 | 133.9 ms |
+| CPU 对象准备峰值、首次 WebGL 提交峰值 | 20.2 ms、123.9 ms |
+| 两项合计的单帧峰值、超 4 ms 帧数 | 124.4 ms、244 |
+| GPU 时间 p95 | 4.59 ms |
+
+验收结果为 **未通过**。未达标的机器字段为 `uploadFrames`, `workerP95Ms`。已完成的实测仅对应这台桌面设备。运行中记录了瓦片错误和上下文丢失；此后添加的 CDP 控制台错误检查未随这次长跑采集。[完整验收摘要](enkhuizen-f6-ten-loops.json)
