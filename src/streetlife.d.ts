@@ -17,5 +17,11 @@ export interface PlannedTree {
 
 export function planStreetLife(
   data: Phase1Data,
-  options?: { seed?: number; maxTrees?: number | null; roadPlan?: RoadSurfacePlan | null; landscapeTrees?: unknown[] },
+  options?: {
+    treeMode?: 'all' | 'observed';
+    seed?: number;
+    maxTrees?: number | null;
+    roadPlan?: RoadSurfacePlan | null;
+    landscapeTrees?: unknown[];
+  },
 ): { trees: PlannedTree[]; stats: Record<string, number>; [key: string]: unknown };

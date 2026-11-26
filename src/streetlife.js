@@ -253,6 +253,7 @@ export function planStreetLife(
     maxPeople = 170,
     roadPlan = null,
     landscapeTrees = [],
+    treeMode,
   } = {},
 ) {
   const planting = { ...TREE_PLANTING_PROFILE };
@@ -416,6 +417,17 @@ export function planStreetLife(
       stats.observedTrees++;
     else stats.rejectedObservedTrees++;
   }
+  // Tile builds can omit furnishings entirely. Observed-only builds also avoid generating candidates
+  // whose inferred provenance excludes them from the output.
+  const finishTrees = () => {
+    stats.trees = trees.length;
+    stats.generatedTrees = stats.rowTrees + stats.streetTrees + stats.greenTrees + stats.landscapeTrees;
+    return gradeStreetLife(
+      { trees, lamps: [], cars: [], people: [], curbs: [], crosswalks: [], signals: [], stats },
+      roadPlan,
+    );
+  };
+  if (treeMode === 'observed') return finishTrees();
   // Queue inferred planting by source AND site. A long first road must not
   // spend the whole budget before parks and courtyards receive any trees.
   const candidates = new Map();
@@ -519,10 +531,11 @@ export function planStreetLife(
             if (!suitable(q)) continue;
             // In concave polygons the row from a neighbouring edge can pass
             // farther into the lawn; enforce distance to the closest edge.
-            const edge = Math.min(
-              ...green.outer.map((a, i) => segmentDistance(q, a, green.outer[(i + 1) % green.outer.length])),
-            );
-            if (edge > (lawn ? planting.lawnEdgeDepth : planting.parkEdgeDepth)) continue;
+            const maxDepth = lawn ? planting.lawnEdgeDepth : planting.parkEdgeDepth;
+            if (
+              !green.outer.some((a, i) => segmentDistance(q, a, green.outer[(i + 1) % green.outer.length]) <= maxDepth)
+            )
+              continue;
             offer('inferred-green', String(green.id), {
               point: q,
               key: `green:${green.id}:${index}:${row}:${side}`,
@@ -572,6 +585,7 @@ export function planStreetLife(
   }
   stats.treeBudget = maxTrees;
   stats.treeBudgetLimited = [...queues.values()].some((q) => q.index < q.items.length);
+  if (treeMode === 'all') return finishTrees();
   const facilityGrid = new Grid(20),
     reserveFacility = (p, distance = 12) => {
       if ([...facilityGrid.near(p, distance)].some((q) => Math.hypot(q[0] - p[0], q[1] - p[1]) < distance))
