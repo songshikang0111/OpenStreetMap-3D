@@ -87,3 +87,28 @@ test('diagnostic completion and ten-minute acceptance require separate evidence'
   for (const key of ['tileErrors', 'context', 'environment', 'dataIdentity', 'workerSamples', 'workerP95Ms', 'route'])
     assert.ok(v.failures.includes(key));
 });
+
+test('the WebGL meter forwards the original call and separates stores inside and after the upload slice', async () => {
+  const { measureBufferCreation } = await import('../apps/demo/buffer-meter.js');
+  const args = [];
+  const gl = {
+    bufferData(...parameters) {
+      args.push(parameters);
+      return 7;
+    },
+  };
+  const original = gl.bufferData;
+  const meter = measureBufferCreation(gl);
+  const data = new Uint16Array(64);
+  assert.equal(gl.bufferData(1, data, 0, 10, 12), 7);
+  const boundary = performance.now();
+  gl.bufferData(1, 32, 0);
+  const frame = meter.take(boundary);
+  assert.equal(frame.firstBufferCalls, 2);
+  assert.equal(frame.firstBufferBytes, 56);
+  assert.ok(frame.insideSliceMs <= frame.firstBufferMs);
+  assert.deepEqual(args[0], [1, data, 0, 10, 12]);
+  assert.equal(meter.take().firstBufferCalls, 0);
+  meter.dispose();
+  assert.equal(gl.bufferData, original);
+});
