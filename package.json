@@ -99,7 +99,13 @@
   "optionalDependencies": {
     "esbuild": "0.25.12"
   },
+  "peerDependenciesMeta": {
+    "@city-ink/builder": {
+      "optional": true
+    }
+  },
   "peerDependencies": {
+    "@city-ink/builder": "0.0.0",
     "@types/node": ">=22",
     "@types/three": "0.187.0"
   },

@@ -34,11 +34,19 @@ try {
   mkdirSync(tgz);
   for (const p of ['tiles', 'generators', 'builder', 'map', 'styles', 'styles-ink', 'details', 'landmarks'])
     npm(['pack', '--ignore-scripts', '--pack-destination', tgz], path.join(root, 'packages', p));
+  npm(['pack', '--ignore-scripts', '--pack-destination', tgz], root);
   const app = path.join(work, 'app');
   mkdirSync(app);
   writeFileSync(path.join(app, 'package.json'), JSON.stringify({ name: 'pack-check', private: true, type: 'module' }));
   npm(
-    ['install', '--ignore-scripts', ...readdirSync(tgz).map((f) => path.join(tgz, f)), 'three@0.186.1', 'vite@6.4.5'],
+    [
+      'install',
+      '--ignore-scripts',
+      ...readdirSync(tgz).map((f) => path.join(tgz, f)),
+      'three@0.186.1',
+      '@types/node@22.20.5',
+      'vite@6.4.5',
+    ],
     app,
   );
   cpSync(path.join(root, 'public/data/bibury-village.json'), path.join(app, 'area.json'));
@@ -47,6 +55,15 @@ try {
     "import { buildTiles } from '@city-ink/builder';\nconst { report } = await buildTiles({ input: './area.json', output: './public/tiles/area' });\nconsole.log(Object.keys(report.hashes).length);\n",
   );
   result.tiles = Number(execFileSync(process.execPath, ['build.mjs'], { cwd: app, encoding: 'utf8' }).trim());
+  const city = path.join(app, 'node_modules/beijing-city-ink/bin/city.js');
+  const packedCLI = JSON.parse(
+    execFileSync(process.execPath, [city, 'tiles', 'validate', './public/tiles/area', '--json'], {
+      cwd: app,
+      encoding: 'utf8',
+    }),
+  );
+  if (packedCLI.status !== 'succeeded') throw new Error('Installed city tiles CLI failed.');
+  result.packedCLI = packedCLI.status;
   writeFileSync(
     path.join(app, 'index.html'),
     '<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;height:100%}#map{position:absolute;inset:0}</style></head><body><div id="map"></div><script type="module" src="./main.js"></script></body></html>',

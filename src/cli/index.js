@@ -25,7 +25,7 @@ Usage: city <command> [options]
   landmarks check <package-dir>
   landmarks update <package-dir> --project path [--rollback]
   jobs status|cancel|resume <JOB_ID> --project path
-  tiles build|validate|inspect|serve … (phase-two static tiles; run city tiles --help)
+  tiles build|validate|inspect|pack|serve … (phase-two static tiles; run city tiles --help)
 Common: --json (one structured stdout result), --help, --offline, --project path
 Data source options (init/search/data fetch/batch/studio): --endpoint URL --transport post|get
   --provider overpass-main|private-coffee|vk-maps|dresel-europe (presets set URL + transport)
@@ -176,7 +176,7 @@ export async function runCLI(
     options.json = args.includes('--json');
     let tiles;
     try {
-      tiles = await import('../../packages/builder/dist/cli.js');
+      tiles = await import('@city-ink/builder');
     } catch {
       return emit(
         result({
@@ -185,8 +185,8 @@ export async function runCLI(
             {
               code: 'TILES_UNAVAILABLE',
               stage: 'tiles',
-              message: 'The tile builder is not built.',
-              hint: 'Run npm run build:packages in the repository.',
+              message: 'The tile builder package could not be loaded.',
+              hint: 'Run npm run build:packages in the repository or install the matching @city-ink/builder package alongside the CLI.',
             },
           ],
         }),
