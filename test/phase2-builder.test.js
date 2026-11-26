@@ -1,11 +1,12 @@
 // WP-C acceptance tests on real phase-one samples (AC303-AC305, AC307, AC309-AC310).
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { boundaryCoverage, sampleAt } from './helpers/tile-boundary.js';
 import { buildTiles, BuildInterrupted } from '../packages/builder/dist/index.js';
 import {
   decodeTile,
@@ -134,44 +135,6 @@ test('AC305: tile buildings equal the phase-one building set and each appears in
     await rm(base, { recursive: true, force: true });
   }
 });
-
-/** Edges of polygon features that lie on the line x = X (vertical) or y = Y (horizontal), in global grid units. */
-function boundaryCoverage(tile, layerName, axis, value) {
-  const layer = tile.layers[layerName];
-  if (!layer || layer.type !== 'features') return [];
-  const e = 2 ** tile.extentLog2;
-  const ox = tile.id.x * e + e / 2,
-    oy = tile.id.y * e + e / 2;
-  const spans = [];
-  for (let ring = 0; ring + 1 < layer.vertexStart.length; ring++) {
-    const a0 = layer.vertexStart[ring],
-      a1 = layer.vertexStart[ring + 1];
-    for (let v = a0; v < a1; v++) {
-      const w = v + 1 < a1 ? v + 1 : a0;
-      const p = [layer.positions[v * 2] + ox, layer.positions[v * 2 + 1] + oy];
-      const q = [layer.positions[w * 2] + ox, layer.positions[w * 2 + 1] + oy];
-      const h = (i) => (layer.elevation ? layer.baseElevation + layer.elevation[i] / 16 : 0);
-      if (axis === 'x' && p[0] === value && q[0] === value)
-        spans.push({ lo: Math.min(p[1], q[1]), hi: Math.max(p[1], q[1]), p, q, hp: h(v), hq: h(w) });
-      if (axis === 'y' && p[1] === value && q[1] === value)
-        spans.push({ lo: Math.min(p[0], q[0]), hi: Math.max(p[0], q[0]), p, q, hp: h(v), hq: h(w) });
-    }
-  }
-  return spans;
-}
-
-function sampleAt(spans, t, axis) {
-  const k = axis === 'x' ? 1 : 0;
-  const levels = spans
-    .filter((s) => s.lo < t && t < s.hi)
-    .map((s) => {
-      const u = (t - s.p[k]) / (s.q[k] - s.p[k]);
-      return s.hp + (s.hq - s.hp) * u;
-    })
-    .sort((a, b) => a - b);
-  // identical levels from overlapping pieces count once
-  return levels.filter((h, i) => i === 0 || Math.abs(h - levels[i - 1]) > 0.01);
-}
 
 test('AC307: ground, water and green are seamless across L1 tile edges (random boundary samples)', async () => {
   const base = await tmp();
@@ -323,6 +286,33 @@ test('AC310: the build report and the CLI follow the phase-one output contract',
       assert.equal(JSON.parse(error.stdout).diagnostics[0].code, 'TILESET_MISSING');
     }
     assert.equal(code, 1);
+  } finally {
+    await rm(base, { recursive: true, force: true });
+  }
+});
+
+test('AC604/606: parallel planning and verified incremental output agree byte-for-byte', async () => {
+  const base = await tmp();
+  const options = { input: sample('bibury-village'), cellZoom: 14 };
+  try {
+    const single = path.join(base, 'one');
+    const output = path.join(base, 'eight');
+    await buildTiles({ ...options, output: single, concurrency: 1 });
+    const { report } = await buildTiles({ ...options, output, concurrency: 8 });
+    const baseline = await filesOf(single);
+    assertSameFiles(await filesOf(output), baseline, 'parallel');
+    const phases = [];
+    await buildTiles({ ...options, output, resume: true, onProgress: (p) => phases.push(p) });
+    assert.ok(phases.some((p) => p.detail === 'verified existing build'));
+    const [one, two] = Object.keys(report.hashes).filter((f) => f.endsWith('.c3t'));
+    await rm(path.join(output, one));
+    const edited = Buffer.from(baseline[two]);
+    edited[edited.length - 1] ^= 1;
+    await writeFile(path.join(output, two), edited);
+    await buildTiles({ ...options, output, resume: true });
+    assertSameFiles(await filesOf(output), baseline, 'repaired');
+    const rename = await buildTiles({ ...options, output, resume: true, name: 'renamed' });
+    assert.equal(rename.tileset.name, 'renamed');
   } finally {
     await rm(base, { recursive: true, force: true });
   }
