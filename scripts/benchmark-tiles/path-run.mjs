@@ -48,6 +48,16 @@ try {
     headless,
   });
   summary.path = path.relative(root, pathFile);
+  summary.browserErrors = page.events.filter((event) => event.level === 'error');
+  summary.verdict.checks.browserErrors = {
+    pass: summary.browserErrors.length === 0,
+    value: summary.browserErrors.length,
+    limit: 0,
+  };
+  if (summary.browserErrors.length) {
+    summary.verdict.failures.push('browserErrors');
+    summary.verdict.passed = false;
+  }
   const text = JSON.stringify(summary, null, 2) + '\n';
   if (arg('json')) writeFileSync(arg('json'), text);
   if (arg('frames')) {
@@ -56,6 +66,26 @@ try {
   }
   process.stdout.write(text);
   if (!summary.verdict?.passed) process.exitCode = 1;
+} catch (error) {
+  // Replace any previous successful report if navigation, the context or the benchmark itself dies.
+  const summary = {
+    date: new Date().toISOString(),
+    path: path.relative(root, pathFile),
+    tileset: { name: plan.tileset },
+    status: 'incomplete',
+    verdict: {
+      mode: params.get('acceptance') === '1' || loops === 10 ? 'acceptance' : 'diagnostic',
+      passed: false,
+      failures: ['incomplete'],
+    },
+    error: String(error),
+    browserErrors: page?.events.filter((event) => event.level === 'error') ?? [],
+  };
+  const text = JSON.stringify(summary, null, 2) + '\n';
+  if (arg('json')) writeFileSync(arg('json'), text);
+  if (arg('frames')) writeFileSync(arg('frames'), JSON.stringify({ summary, frames: null }));
+  process.stderr.write(text);
+  process.exitCode = 1;
 } finally {
   await page?.close();
   await server.close();
