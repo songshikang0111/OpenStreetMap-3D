@@ -46,6 +46,35 @@ function ringToMeters(layer: FeatureLayer, ring: number, step: number): Ring {
   return out;
 }
 
+/** The optional string column records [normalized ring index, edge index, source length in metres]. */
+function sourceWallLengths(value: unknown, rings: Ring[]): number[][] | undefined {
+  if (typeof value !== 'string') return;
+  let entries: unknown;
+  try {
+    entries = JSON.parse(value);
+  } catch {
+    return;
+  }
+  if (!Array.isArray(entries)) return;
+  const lengths: number[][] = [];
+  for (const entry of entries) {
+    if (!Array.isArray(entry) || entry.length !== 3) return;
+    const [ring, edge, length] = entry;
+    if (
+      !Number.isInteger(ring) ||
+      !Number.isInteger(edge) ||
+      edge < 0 ||
+      !rings[ring] ||
+      edge >= rings[ring]!.length ||
+      !Number.isFinite(length) ||
+      length < 0
+    )
+      return;
+    (lengths[ring] ??= [])[edge] = length;
+  }
+  return lengths;
+}
+
 /** Rebuilds the phase-one building record (local metres of the tile) for feature i. */
 export function phase1Building(
   layer: FeatureLayer,
@@ -81,6 +110,7 @@ export function phase1Building(
     osmId: Number(/\d+/.exec(id)?.[0] ?? 0),
     outer,
     holes,
+    ...(props.wallLengths ? { wallLengths: sourceWallLengths(props.wallLengths, [outer, ...holes]) } : {}),
     tags,
     center: [(x0 + x1) / 2, (z0 + z1) / 2],
     area: footprint,

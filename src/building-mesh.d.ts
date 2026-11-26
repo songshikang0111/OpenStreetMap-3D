@@ -3,6 +3,10 @@ import type { MeshWriter } from './generators/mesh-tools.js';
 import type { RoofPlan } from './roofs.js';
 import type { EnvelopePlan } from './building-envelope.js';
 
+export const WALL_TRIM_MIN: number;
+export const ENTRANCE_TIE: number;
+export const ENTRANCE_MIN: number;
+
 export interface BuildingCounts {
   familyCounts?: Record<string, number>;
   surfaceCounts?: Record<string, number>;

@@ -18,10 +18,11 @@ test('AC306: tile-generated buildings match phase-one direct generation', async 
   const base = await mkdtemp(path.join(os.tmpdir(), 'city-gen-'));
   try {
     let total = 0;
-    const exceptions = [];
+
     for (const name of ['bibury-village', 'beijing-cbd', 'beijing-lingxiu-d']) {
       const out = path.join(base, name);
-      const { report } = await buildTiles({ input: sample(name), output: out });
+      // Include the five landmark-eligible buildings in the same geometry comparison.
+      const { report } = await buildTiles({ input: sample(name), output: out, landmarks: false });
       const probe = await phase1Buildings(sample(name));
       const tiles = await tileBuildings(out, report, probe.data.project);
       const { buildings } = await phase1Buildings(sample(name), undefined, tiles.landmarks);
@@ -34,15 +35,11 @@ test('AC306: tile-generated buildings match phase-one direct generation', async 
       const a = rows.reduce((s, r) => s + r.triangles[0], 0),
         b = rows.reduce((s, r) => s + r.triangles[1], 0);
       assert.ok(Math.abs(a - b) / a < 0.005, `${name}: total triangles ${a} vs ${b}`);
-      for (const r of rows) if (r.dBounds > 0.1 || r.dTriangles > 0.02) exceptions.push({ name, ...r });
+      for (const row of rows) {
+        assert.ok(row.dBounds <= 0.1 && row.dTriangles <= 0.02, name + ' ' + JSON.stringify(row));
+      }
     }
-    // Documented classes (docs/phase2/evidence/C/report.md): entrance canopies on two walls whose lengths sit
-    // inside the quantisation band around the 10 cm tie threshold, and facade bay counts at a length threshold.
-    assert.ok(
-      exceptions.length <= Math.ceil(total * 0.01),
-      `${exceptions.length} of ${total}: ${JSON.stringify(exceptions)}`,
-    );
-    for (const e of exceptions) assert.ok(e.dBounds < 0.5 && e.dTriangles < 0.1, JSON.stringify(e));
+    assert.equal(total, 888);
   } finally {
     await rm(base, { recursive: true, force: true });
   }

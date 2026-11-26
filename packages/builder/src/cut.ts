@@ -3,6 +3,7 @@ import clipping from 'polygon-clipping';
 import {
   LAYER_SCHEMAS,
   defaultExtentLog2,
+  gridStepMeters,
   lngLatToTile,
   tileKey,
   tileToLngLatBounds,
@@ -24,6 +25,7 @@ import type { G, Rect } from './clip.js';
 import { fromGrid, gridToTile, tileGridRect, toGrid, toLocal } from './geo.js';
 import type { HeightFunction, PlanRecord } from './plan.js';
 import { hash52 } from './plan.js';
+import { buildingWallLengths } from './building-wall-lengths.js';
 import { mergeFlatGround } from './ground.js';
 import { massingBuildings, metricCell } from './massing.js';
 
@@ -173,7 +175,16 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
           fallbacks.push({ id: r.id, tile: tileKey(id), reason: 'coordinate range' });
           continue;
         }
-        push(t, 'building', { ...base, geometry: [q] });
+        const hints = buildingWallLengths(
+          r.geometry[0]!,
+          q,
+          gridStepMeters(id, e),
+          options.data.project,
+          Number(r.properties.height),
+          Number(r.properties.minHeight),
+        );
+        const properties = hints ? { ...base.properties, wallLengths: hints } : base.properties;
+        push(t, 'building', { ...base, properties, geometry: [q] });
         continue;
       }
 
@@ -383,6 +394,8 @@ export function cutTiles(records: PlanRecord[], options: CutOptions): CutResult 
         for (const f of (t.layers[name] as MeshLayerInput).features) f.renderId = renderId++;
         continue;
       }
+      if (name === 'building' && layer.features.some((f) => f.properties?.wallLengths))
+        layer.attributes!.push({ name: 'wallLengths', type: 'string' });
       if (name === 'building' && layer.features.some((f) => f.provenance?.partOf)) layer.provenanceKeys!.push('partOf');
       layer.features.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
       mergeDuplicateIds(layer);

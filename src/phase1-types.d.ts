@@ -18,6 +18,8 @@ export interface Phase1Building {
   levels: number;
   source: 'height' | 'levels' | 'estimated';
   part: boolean;
+  /** Sparse normalized-ring edge lengths from the source projection for L1 generation decisions. */
+  wallLengths?: number[][];
   [key: string]: unknown;
 }
 
